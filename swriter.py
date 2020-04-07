@@ -4,6 +4,7 @@ import unohelper
 
 
 # a UNO struct later needed to create a document
+from com.sun.star.style.ParagraphAdjust import CENTER, LEFT
 from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK
 from com.sun.star.text.TextContentAnchorType import AS_CHARACTER
 from com.sun.star.awt import Size
@@ -34,19 +35,23 @@ text = doc.Text
 cursor = text.createTextCursor()
 cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
 cursor.setPropertyValue( "CharHeight", 10.0 )
-cursor.setPropertyValue("ParaAdjust", 18 )
-#cursor.setPropertyValue("CharPosture", "com.sun.star.awt.FontSlant.ITALIC")cursor.goRight(6, False)
-text.insertString( cursor, "                                                               A. Pickel-Voigt", 0 )
+cursor.setPropertyValue( "ParaAdjust", CENTER )
+text.insertString( cursor, "A. Pickel-Voigt", 0 )
 text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
-#cursor.goLeft(6, False)
-text.insertString( cursor, "                                                            MSc Physiotherapy (UWC)" , 0 )
+text.insertString( cursor, "MSc Physiotherapy (UWC)" , 0 )
+text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
 
-text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
-#cursor.goLeft(6, False)
+cursor.setPropertyValue( "ParaAdjust", LEFT)
 text.insertString( cursor, "Practice No: 072 0000 637653" , 0 )
 
+#link = doc.createInstance( "com.sun.star.text.textfield.URL" )
+#link.Representation = "anpickel@gmail.com"
+#text.insertString( cursor, "anpickel@gmail.com" , 0 )
 
-
+cursor.setString("anpickel@gmail.com")
+#cursor.gotoStart(False)
+#cursor.gotoEnd(True)
+cursor.HyperLinkURL = "http://user.services.openoffice.org/en/forum/"
 
 # create a text table
 table = doc.createInstance( "com.sun.star.text.TextTable" )
