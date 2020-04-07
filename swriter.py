@@ -4,16 +4,19 @@ import unohelper
 
 
 # a UNO struct later needed to create a document
-from com.sun.star.style.ParagraphAdjust import CENTER, LEFT
-from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK
+from com.sun.star.style.ParagraphAdjust import CENTER, LEFT, RIGHT, BLOCK, STRETCH
+from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK, APPEND_PARAGRAPH, LINE_BREAK
 from com.sun.star.text.TextContentAnchorType import AS_CHARACTER
 from com.sun.star.awt import Size
+from com.sun.star.table import BorderLine
+#from com.sun.star.rendering.Text
 
 
-def insertTextIntoCell( table, cellName, text, color ):
+def insertTextIntoCell( table, cellName, text, color = None ):
     tableText = table.getCellByName( cellName )
     cursor = tableText.createTextCursor()
-    cursor.setPropertyValue( "CharColor", color )
+    if color != None: 
+        cursor.setPropertyValue( "CharColor", color )
     tableText.setString( text )
 
 localContext = uno.getComponentContext()
@@ -33,6 +36,7 @@ desktop = smgr.createInstanceWithContext( "com.sun.star.frame.Desktop",remoteCon
 doc = desktop.loadComponentFromURL( "private:factory/swriter","_blank", 0, () )
 text = doc.Text
 cursor = text.createTextCursor()
+#paraCursor = text.createParagraphCursor()
 cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
 cursor.setPropertyValue( "CharHeight", 10.0 )
 cursor.setPropertyValue( "ParaAdjust", CENTER )
@@ -41,17 +45,55 @@ text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
 text.insertString( cursor, "MSc Physiotherapy (UWC)" , 0 )
 text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
 
+
+
+topTable = doc.createInstance( "com.sun.star.text.TextTable" )
+topTable.initialize( 1,2)
+text.insertTextContent( cursor, topTable, 0 )
+firsttopTableText = topTable.getCellByName("A1")
+firsttopTableText.setString("this should work now really!" )
+topTable.BorderLine("Topline","Color",  6710932)
+#secondtopTableText.setString("this too")
+#secondtopTableCursor = topTable.gotoCellByName("B1")
+#setPropertyValue( "ParaAdjust", RIGHT )
+
+topTable.createCursorByCellName("B1").setPropertyValue( "ParaAdjust", RIGHT )
+topTable.getCellByName("B1").setString("Pleeeeeese ich wil feierabend")
+#topTable.setPropertyValue("Color", False)
+
+#setString("hope this works")
+
+#propVal = BorderLine()                 # Default constructor
+#propVal.Name = "InnerLineWidth"
+#propVal.Value =  13421823  
+#text.insertTextContent( topTableCursor, topTable, 0 )
+rows = topTable.Rows
+#toptable.getCellByName("A2").setPropertyValue( "ParaAdjust", RIGHT )
+
+
+#insertTextIntoCell( topTable, "A1", "FirstColumn" )
+#insertTextIntoCell( topTable, "B1", "SecondColumn" )
+
+#colorForWhatever = BorderLine("Color",  6710932) 
 cursor.setPropertyValue( "ParaAdjust", LEFT)
 text.insertString( cursor, "Practice No: 072 0000 637653" , 0 )
 
 #link = doc.createInstance( "com.sun.star.text.textfield.URL" )
 #link.Representation = "anpickel@gmail.com"
 #text.insertString( cursor, "anpickel@gmail.com" , 0 )
-
-cursor.setString("anpickel@gmail.com")
 #cursor.gotoStart(False)
-#cursor.gotoEnd(True)
+#cursor.gotoEnd(False)
+
+#cursor.setPropertyValue( "ParaSplit", True)
+#cursor.setPropertyValue( "ParaAdjust", RIGHT)
+
+#cursor.gotoEndOfParagraph(True)
+#cursor.collapseToStart()
+#text.insertControlCharacter(cursor, LINE_BREAK, False)
+#cursor.goLeft(1, False)
+text.insertString(cursor, "anpickel@gmail.com", False)
 cursor.HyperLinkURL = "http://user.services.openoffice.org/en/forum/"
+text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
 
 # create a text table
 table = doc.createInstance( "com.sun.star.text.TextTable" )
@@ -104,14 +146,13 @@ text.insertControlCharacter( cursor, PARAGRAPH_BREAK, 0 )
 textFrame = doc.createInstance( "com.sun.star.text.TextFrame" )
 textFrame.setSize( Size(15000,400))
 textFrame.setPropertyValue( "AnchorType" , AS_CHARACTER )
-
-
 text.insertTextContent( cursor, textFrame, 0 )
 
 textInTextFrame = textFrame.getText()
 cursorInTextFrame = textInTextFrame.createTextCursor()
 textInTextFrame.insertString( cursorInTextFrame, "The first line in the newly created text frame.", 0 )
 textInTextFrame.insertString( cursorInTextFrame, "\nWith this second line the height of the rame raises.",0)
+textInTextFrame.insertControlCharacter( cursorInTextFrame, PARAGRAPH_BREAK, 0 )
 text.insertControlCharacter( cursor, PARAGRAPH_BREAK, 0 )
 
 cursor.setPropertyValue( "CharColor", 65536 )
