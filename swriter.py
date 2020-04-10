@@ -12,13 +12,6 @@ from com.sun.star.awt import Size
 #from com.sun.star.rendering.Text
 from com.sun.star.text import TableColumnSeparator
 #aSize = uno.createUnoStruct('com.sun.star.awt.Size')
-def insertTextIntoCell( table, cellName, text, color = None ):
-    tableText = table.getCellByName( cellName )
-    cursor = tableText.createTextCursor()
-    if color != None: 
-        cursor.setPropertyValue( "CharColor", color )
-    tableText.setString( text )
-
 localContext = uno.getComponentContext()
 				   
 resolver = localContext.ServiceManager.createInstanceWithContext(
@@ -73,13 +66,60 @@ eCursor.HyperLinkURL = "mailto:anpickel@gmail.com"
 
 text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
 
-def populateInvoice(unitCount, unitCode, unitDescription, unitDate):
+
+def insertTextIntoCell( table, cellName, text, color = None ):
+    tableText = table.getCellByName( cellName )
+    cursor = tableText.createTextCursor()
+    if color != None: 
+        cursor.setPropertyValue( "CharColor", color )
+    tableText.setString( text )
 
 
 
-table = doc.createInstance( "com.sun.star.text.TextTable" )
-table.initialize( 4,4)
-text.insertTextContent( cursor, table, 1 )
+def createTable(unitCount):
+    table = doc.createInstance( "com.sun.star.text.TextTable" )
+    table.initialize(unitCount + 2, 4)
+    text.insertTextContent( cursor, table, 1 )
+    otabseps = table.TableColumnSeparators
+    relativeTableWidth = table.getPropertyValue( "TableColumnRelativeSum" )
+    otabseps[0].Position = relativeTableWidth * 0.10
+    otabseps[1].Position = relativeTableWidth * 0.2
+    otabseps[2].Position = relativeTableWidth * 0.85
+    table.TableColumnSeparators = otabseps 
+    table.setPropertyValue("TableColumnSeparators", otabseps)
+    cRange = table.getCellRangeByName("A1:D1")
+    cRange.setPropertyValue( "ParaAdjust", LEFT )
+    insertTextIntoCell( table, "A1", "Date of Service" )
+    insertTextIntoCell( table, "B1", "Namaf Code" )
+    insertTextIntoCell( table, "C1", "Description")
+    insertTextIntoCell( table, "D1", "Amount")
+    table.getCellByName("D" + str(2 + unitCount)).setFormula("sum <D2:D" + str(1 + unitCount) + ">")
+    return table
+
+
+
+def populateTable(unitCount, unitDate,  unitCode, unitDescription, unitAmount):
+    table = createTable(unitCount)
+    for i in range(len(unitDate)):
+        insertTextIntoCell(table, "A" +  str(i + 2), unitDate[i])
+    for i in range(len(unitCode)):
+        table.getCellByName("B" + str(i + 2)).setValue(unitCode[i])
+    for i in range(len(unitDescription)):
+        insertTextIntoCell(table, "C" + str(i + 2), unitDescription[i])
+    for i in range(len(unitAmount)):
+        insertTextIntoCell(table,"D" + str(i + 2), unitAmount[i])
+    return None 
+
+
+populateTable(2,["11.04.20","13.04.20"],[343,211],["This is the test description","this is the second description"],[600,199])
+
+
+
+
+#row.setPropertyValue( "BackTransparent", uno.Bool(0) )
+#row.setPropertyValue( "BackColor", 6710932 )
+#table.TableColumnSeparators = otabseps
+#table.initialize( unitCount,4)
 #column = table.Columns 
 #rows = table.Rows
 
@@ -95,45 +135,19 @@ text.insertTextContent( cursor, table, 1 )
 #otabseps = table.TableColumnSeparators#(1500 * 10000 / 21000, True)
 #cursorTop = cRange.createCursorByRange()
 #tcs = TableColumnSeparator(1500 * 10000 / 21000, True)
-otabseps = table.TableColumnSeparators
 #print(otabseps[0])
 #absoluteTableWidth = table.getPropertyValue( "Width" )
-relativeTableWidth = table.getPropertyValue( "TableColumnRelativeSum" )
 #dRatio = relativeTableWidth / absoluteTableWidth
 
 #print(otabseps)
 #dRelativeWidth =  2000 * dRatio
 #print(relativeTableWidth)
 #print(relativeTableWidth * 0.05)
-otabseps[0].Position = relativeTableWidth * 0.10
-otabseps[1].Position = relativeTableWidth * 0.2
-otabseps[2].Position = relativeTableWidth * 0.85
-
-table.TableColumnSeparators = otabseps 
 #print(otabseps[0].Position)
 #otabseps[3].Position = relativeTableWidth * 0.3
 #table.setPropertyValue( "BackTransparent", uno.Bool(0) )
 #table.setPropertyValue( "BackColor", 13421823 )
 #row = rows.getByIndex(0)
-#row.setPropertyValue( "BackTransparent", uno.Bool(0) )
-#row.setPropertyValue( "BackColor", 6710932 )
-#table.TableColumnSeparators = otabseps
-#table.setPropertyValue( "TableColumnSeparators", otabseps );
-table.setPropertyValue("TableColumnSeparators", otabseps)
-#table.TableColumnSeparators = otabseps
-#textColor = 0
-
-#insertTextIntoCell( table, "A1", "Date of Service", textColor )
-#insertTextIntoCell( table, "B1", "Namaf Code", textColor )
-#insertTextIntoCell( table, "C1", "Description", textColor )
-#insertTextIntoCell( table, "D1", "Amount", textColor )
-
-#values = ( (22.5,21.5,121.5),
-#	   (5615.3,615.3,-615.3),
-#	   (-2315.7,315.7,415.7) )
-#table.getCellByName("A2").setValue(22.5)
-#table.getCellByName("B2").setValue(5615.3)
-#table.getCellByName("C2").setValue(-2315.7)
 #table.getCellByName("D2").setFormula("sum <A2:C2>")
 
 #table.getCellByName("A3").setValue(21.5)
