@@ -1,28 +1,16 @@
-# bootstrap uno component context 	
 import uno
 import unohelper
-
-
-# a UNO struct later needed to create a document
 from com.sun.star.style.ParagraphAdjust import CENTER, LEFT, RIGHT, BLOCK, STRETCH
 from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK, APPEND_PARAGRAPH, LINE_BREAK
 from com.sun.star.text.TextContentAnchorType import AS_CHARACTER
 from com.sun.star.awt import Size
-#from com.sun.star.table import BorderLine
-#from com.sun.star.rendering.Text
 from com.sun.star.text import TableColumnSeparator
-#aSize = uno.createUnoStruct('com.sun.star.awt.Size')
-localContext = uno.getComponentContext()
-				   
+
+localContext = uno.getComponentContext()				   
 resolver = localContext.ServiceManager.createInstanceWithContext(
 				"com.sun.star.bridge.UnoUrlResolver", localContext )
-
 smgr = resolver.resolve( "uno:socket,host=localhost,port=2002;urp;StarOffice.ServiceManager" )
 remoteContext = smgr.getPropertyValue( "DefaultContext" )
-
-#remoteContext = resolver.resolve( "uno:socket,host=localhost,port=2002;urp;StarOffice.ComponentContext" )
-#smgr = remoteContext.ServiceManager
-
 desktop = smgr.createInstanceWithContext( "com.sun.star.frame.Desktop",remoteContext)
 
 # open a writer document
