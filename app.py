@@ -1,7 +1,6 @@
 from flask import Flask, render_template, Response, request, session
 from jinja2 import Template
-from forms import Sample
-
+from forms import Sample, addTreatment
 
 app = Flask(__name__)
 
@@ -14,6 +13,12 @@ def contact():
     if form.validate_on_submit():
         return redirect(url_for('success'))
     return render_template('index.html', form=form)
+
+
+@app.route('/add-treatment',methods=('GET','POST'))
+def adding(key):
+    addTreatment(key)
+
 
 if __name__ == '__main__':
     app.secret_key = 'super secret key'
