@@ -6,15 +6,17 @@
         <p>{{description}}</p>
 
 	  <form action="" method="post">
-    {{ form.name }}
+    {{ form.myField }}
+          {{ form.name }}
     <button type="button" id="addNewItemButton">Add Field</button>
     {{ form.flist }}
     {{ form.submit }}
-    </form>
 
     <div id="myDiv"></div>
     </div>
-	<script>
+
+</form> 
+    <script>
 		    var fieldNum = 0;
     $("#addNewItemButton").click(function() {
     var newInput = $("<textarea></textarea></br>")
