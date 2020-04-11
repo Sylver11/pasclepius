@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1>{{title}}</h1>
+        <p>{{description}}</p>
+
+	  <form action="" method="post">
+    {{ form.name }}
+    <button type="button" id="addNewItemButton">Add Field</button>
+    {{ form.flist }}
+    {{ form.submit }}
+    </form>
+
+    <div id="myDiv"></div>
+    </div>
+	<script>
+		    var fieldNum = 0;
+    $("#addNewItemButton").click(function() {
+    var newInput = $("<textarea></textarea></br>")
+        .attr("class", "form-control")
+        .attr("id", "flist-" + fieldNum)
+        .attr("name", "flist-" + fieldNum)
+        .attr("rows", "3")
+    $("#myDiv").append(newInput);
+    fieldNum++;
+    });
+	</script>
+
+ {% endblock %}
