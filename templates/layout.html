@@ -6,20 +6,8 @@
     <meta charset="utf-8">
     <meta name="description" content={{description}}>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <link rel="shortcut icon" href="/favicon.ico">
-	<script>
-		var fieldNum = 0;
-    $("#addNewItemButton").click(function() {
-    var newInput = $("<textarea></textarea></br>")
-        .attr("class", "form-control")
-        .attr("id", "flist-" + fieldNum)
-        .attr("name", "flist-" + fieldNum)
-        .attr("rows", "3")
-    $("#myDiv").append(newInput);
-    fieldNum++;
-    });
-	</script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.js"></script>
+    <link rel="shortcut icon" href="/favicon.ico">  
   </head>
 
   <body>

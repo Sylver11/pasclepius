@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1>{{title}}</h1>
+        <p>{{description}}</p>
+
+	  <form action="" method="post">
+    {% for select_form in select_metadata_form_list.select_entries %}
+    {{select_form.select.label}}: {{ select_form.select}}
+{% endfor %}
+            <div id="myDiv"></div>
+    </div>
+
+</form> 
+    <script>
+		//    var fieldNum = 0;
+    $("#aaddNewItemButton").click(function() {
+    var newInput = $("<textarea></textarea></br>")
+        .attr("class", "form-control")
+        .attr("id", "flist-" + fieldNum)
+        .attr("name", "flist-" + fieldNum)
+        .attr("rows", "3")
+    $("#myDiv").append(newInput);
+    fieldNum++;
+    });
+
+
+$(function() {
+    var fieldNum = 0;
+    $("#addNewItemButton").click(function() {
+        $.ajax({
+            url: "/add-treatment",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({"a": fieldNum, "b": 2, "c":5}),
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+        fieldNum++;
+    });
+});
+
+
+
+	</script>
+
+ {% endblock %}

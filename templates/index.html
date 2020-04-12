@@ -5,52 +5,116 @@
         <h1>{{title}}</h1>
         <p>{{description}}</p>
 
-	  <form action="" method="post">
-    
-        {{ form.name }}
-        <br>
-        {{ form.myField }}
-        {{ form.date }}
-        <button type="button" id="addNewItemButton">Add Field</button>
-        {{ form.flist }}
-        {{ form.submit }}
 
-    <div id="myDiv"></div>
-    </div>
+<form id="NewOrderForm" class="form">  
+        
+        {{ form.hidden_tag() }}
 
-</form> 
+         <table class="table table-striped">
+              <thead>
+                  <tr>
+                      <td><b>Set Type</b></td>
+                      <td><b>Quantity requested</b></td>        
+                  </tr>
+              </thead>
+              <tbody class="tbodyClone">
+                  <tr id="clonedInput0" class="clonedInput">
+                      <td>{{ form.set(id='set-0')}}</td>
+                      <td><input required="" type="text" value="" id="product-0" name="product-0" class="form-control"></td>
+                      <td>
+                          <button id="btnAdd_0" name="btnAdd_0" type="button" class="clone">+</button>
+                          <button id="btnDel_0" name="btnDel_0" type="button" class="remove">-</button>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+
+  <div>{{ form.submit }}</div>
+  <span>Result: <span id="result"></span></span>
+</form>  
+
+
     <script>
-		    var fieldNum = 0;
-    $("#aaddNewItemButton").click(function() {
-    var newInput = $("<textarea></textarea></br>")
-        .attr("class", "form-control")
-        .attr("id", "flist-" + fieldNum)
-        .attr("name", "flist-" + fieldNum)
-        .attr("rows", "3")
-    $("#myDiv").append(newInput);
-    fieldNum++;
-    });
+ $(document).ready(function(){
 
+    function addSubmit(ev) {
+      ev.preventDefault();  // block the traditional submission of the form.
+      $.ajax({
+        method: 'POST',
+        url: {{ url_for('main.add_product')|tojson }},
+        data: $(this).serialize() 
+      }).done(addShow);
+    }
 
-$(function() {
-    $("#addNewItemButton").click(function() {
-        $.ajax({
-            url: "/add-treatment",
-            type: "POST",
-            data: fieldNum,
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(error) {
-                console.log(error);
+    function addShow(data) {
+      $('#result').text(data.result);
+    }
+
+    $('#NewOrderForm').on('submit', addSubmit);
+
+    $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                }
             }
-        });
-        fieldNum++;
-    });
-});
+        })
 
+    var regex = /^(.*)(\d)+$/i; 
+    var cloneIndex = $(".clonedInput").length; // count how many rows there are
+    
+    // if there's only one table row, do not show the 'remove' button
+    if ($(".clonedInput").length == 1) {
+        $('.remove').hide();
+    } else {
+        $('.remove').show();
+    }
 
+    function clone() {
+        $(this).parents(".clonedInput").clone() // travels from button to <tr> element
+            .appendTo(".tbodyClone") // copied table row is added <tbody>
+            .attr("id", "clonedInput" + cloneIndex) // for each table row, id is incremented
+            .find("*") // return all descendant elements of selected element.
+            .each(function () { // execute function for each matched element
+                 var id = this.id || ""; // I'm guessing this makes id a string?
+                 var match = id.match(regex) || []; // searches a string against a regular,         
+                                                //expression and assigns results to var match as 
+                                               //list. Example result 
+                                              //["clonedInputNN","clonedInput","NN"]
+                 if (match.length == 3) {
+                     this.id = match[1] + (cloneIndex);    // match[1] would be the string with the numbers stripped out
+                 }
+                 var name = this.name || ""; 
+                 var match2 = name.match(regex) || []; 
+                 if (match2.length == 3) {
+                     this.name = match2[1] + (cloneIndex);   
+                 }
+            }            
+            )
+            .on('click', 'clone', clone)
+            .on('click', 'remove', remove);
+        cloneIndex++;
+      
+        if ($(".clonedInput").length == 1) {
+            $('.remove').hide();
+        } else {
+            $('.remove').show();
+        }
+    }
+    function remove() {        
+        $(this).parents(".clonedInput").remove();
 
-	</script>
+        if ($(".clonedInput").length == 1) {
+            $('.remove').hide();
+        } else {
+            $('.remove').show();
+        }
+
+    }    
+    $(document).on("click", ".clone", clone);
+    $(document).on("click", ".remove", remove);
+   });
+
+    </script>
 
  {% endblock %}
