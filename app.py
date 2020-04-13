@@ -50,11 +50,14 @@ def sessionValues():
 @app.route('/generate-invoice', methods=['POST'])
 def generateInvoice():
     form = Treatment()
-    print(request.json)
+    print(request.values)
+    dates = request.form.getlist('date')
+    treatments = request.form.getlist('set')
     if form.set.data:
        # print(form.set.data)
-        for item in range(len(form.set.data)):
-            print(form.set.data[item])
+        for item in range(len(dates)):
+            print(dates[item])
+            print(treatments[item])
            # newOrder = Order(qty = item)
            # db.session.add(newOrder)
            # db.session.commit()

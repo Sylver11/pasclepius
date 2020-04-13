@@ -47,7 +47,7 @@
       $.ajax({
         method: 'POST',
         url: '/generate-invoice',
-        data: console.log($(this).serialize()) 
+        data: $('form').serialize(),
       }).done(addShow);
     }
 
