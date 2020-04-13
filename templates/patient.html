@@ -28,13 +28,13 @@
 <script>
     $(document).ready(function() {
         $('form').submit(function (e) {
-            var url = "{{ url_for('newInvoice') }}"; // send the form data here.
+            var url = "{{ url_for('selectPatient') }}"; // send the form data here.
             $.ajax({
                 type: "POST",
                 url: url,
                 data: $('form').serialize(), // serializes the form's elements.
-                success: function (data) {
-                    console.log(data)  // display the returned data in the console.
+                success: function (refData) {
+			window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
                 }
             });
             e.preventDefault(); // block the traditional submission of the form.
