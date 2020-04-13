@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1>{{title}}</h1>
+        <p>{{description}}</p>
+
+
+<form id="newInvoice" class="form">  
+        
+        {{ form.hidden_tag() }}
+	{{ form.medical.label }} {{ form.medical }}
+	<br>
+	{{ form.name.label }} {{ form.name }}
+	<br>
+	{{ form.case.label }} {{ form.case }}
+	<br>
+	{{ form.po.label }} {{ form.po }}
+	<br>
+	{{ form.date.label }} {{ form.date }}
+	<br>
+	{{ form.submit }}
+</form>  
+
+
+
+		
+<script>
+    $(document).ready(function() {
+        $('form').submit(function (e) {
+            var url = "{{ url_for('newInvoice') }}"; // send the form data here.
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $('form').serialize(), // serializes the form's elements.
+                success: function (data) {
+                    console.log(data)  // display the returned data in the console.
+                }
+            });
+            e.preventDefault(); // block the traditional submission of the form.
+        });
+
+        // Inject our CSRF token into our AJAX request.
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                }
+            }
+        })
+    });
+</script>
+
+
+
+
+ {% endblock %}

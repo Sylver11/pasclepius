@@ -19,7 +19,8 @@
               </thead>
               <tbody class="tbodyClone">
                   <tr id="clonedInput0" class="clonedInput">
-                      <td>{{ form.set(id='set-0')}}</td>
+                      <td>{{  form.set(id='set-0')  }}</td>
+                      <td>{{  form.date(id='date-0')  }}</td>
                       <td><input required="" type="text" value="" id="product-0" name="product-0" class="form-control"></td>
                       <td>
                           <button id="btnAdd_0" name="btnAdd_0" type="button" class="clone">+</button>
@@ -41,7 +42,7 @@
       ev.preventDefault();  // block the traditional submission of the form.
       $.ajax({
         method: 'POST',
-        url: {{ url_for('main.add_product')|tojson }},
+        url: '/add-product',
         data: $(this).serialize() 
       }).done(addShow);
     }

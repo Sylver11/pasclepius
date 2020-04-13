@@ -1,6 +1,6 @@
 from flask import Flask, render_template, Response, request, session, jsonify
 from jinja2 import Template
-from forms import Sample, addTreatment, ExpensesForm, MyForm, NewOrderForm
+from forms import Patient, Treatment
 import json
 
 app = Flask(__name__)
@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=('GET', 'POST'))
 def contact():
-    form = Sample()
+    form = Patient()
     #if form.validate_on_submit():
      #   if form.flist.data:
           #  for item in form.flist.data:
@@ -17,9 +17,22 @@ def contact():
     return render_template('index.html', form=form)
 
 
+
+@app.route('/patient', methods=('GET', 'POST'))
+def newInvoice():
+    form = Patient()
+    #if form.validate_on_submit():
+     #   if form.flist.data:
+          #  for item in form.flist.data:
+                    # do stuff
+
+    return render_template('patient.html', form=form)
+
+
+
 @app.route('/add-product', methods=['POST'])
 def add_product():
-    form = NewOrderForm()
+    form = Treatment()
     if form.quantity.data:
         for item in form.quantity.data:
             newOrder = Order(qty = item)
@@ -28,40 +41,13 @@ def add_product():
         return jsonify(result='success')
     return jsonify(result='error')
 
-@app.route('/add-product-test')
+@app.route('/invoice/patient/<')
 def add_product_test():
-    form = NewOrderForm()
-    set_choices = [(set.id, set.friendly_name)
-    for set in Set.query.order_by(Set.friendly_name).all()]
+    form = Treatment()
+    set_choices = [('mutual', 'Mutual'),('personal#1', 'Personal #1'),('personal#2', 'Personal #2')]
+    #[(set.id, set.friendly_name)
+    #for set in Set.query.order_by(Set.friendly_name).all()]
     return render_template('index.html', form=form, set_choices=set_choices)
-
-@app.route("/newqualification/<welder_id>", methods=['GET', 'POST'])
-def newqualification(welder_id=None):
-    form = MyForm()
-
-        #writemethod.
-
-    return render_template('index.html', title='xyz', form=form)
-
-@app.route("/modifywps", methods=['POST', 'GET'])
-def modifywps():
-    application_standard_id = request.args.get('std') # gets value from the getJson()
-
-   # process it however you want.. 
-
-    return
-
-
-@app.route('/add-treatment',methods=('GET','POST'))
-def adding():
-    response = request.get_json()
-    print(response)
-    a,b,c = [response[k] for k in ('a', 'b','c')]
-    message = response.values()
-    addTreatment(response)
-    print(a)
-    return jsonify(response)
-  #  addTreatment(key)
 
 
 if __name__ == '__main__':
