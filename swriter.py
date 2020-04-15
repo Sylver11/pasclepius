@@ -1,5 +1,7 @@
 import uno
-import unohelper
+from unohelper import systemPathToFileUrl
+#import unohelper 
+from com.sun.star.beans import PropertyValue
 from com.sun.star.style.ParagraphAdjust import CENTER, LEFT, RIGHT, BLOCK, STRETCH
 from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK, APPEND_PARAGRAPH, LINE_BREAK
 from com.sun.star.text.TextContentAnchorType import AS_CHARACTER
@@ -8,10 +10,15 @@ from com.sun.star.awt import Size
 from com.sun.star.text import TableColumnSeparator
 cursor = None
 
-def createTable(unitCount):
-    global cursor
-    doc, text  = setupConnection()
-    ##setting up no borders for the top table in this function
+def saveDocument(doc):
+    url = systemPathToFileUrl('/Users/justusvoigt/Documents/out.odt')
+    args = (PropertyValue('FilterName',0, 'writer8', 0),)
+    doc.storeToURL(url, args)
+  #  doc.storeToURL('file:///c:/temp/out.doc', (createPropertyValue("FilterName","MS Word 97"),)
+    doc.dispose()
+
+
+def configureBorders(doc, text):
     no_line = BorderLine2()
     no_line.Color = 0
     no_line.InnerLineWidth = 0
@@ -19,10 +26,7 @@ def createTable(unitCount):
     no_line.LineStyle = 0
     no_line.LineWidth = 0
     no_line.OuterLineWidth = 0
-    table = doc.createInstance( "com.sun.star.text.TextTable" )
-    table.initialize(unitCount + 2, 4)
     text_tables = doc.getTextTables()
-    print(text_tables)
     get_top_table = text_tables.getByIndex(0)
     table_top_border = get_top_table.TableBorder
     table_top_border.LeftLine = no_line
@@ -32,7 +36,6 @@ def createTable(unitCount):
     table_top_border.HorizontalLine = no_line
     table_top_border.VerticalLine = no_line
     get_top_table.TableBorder = table_top_border
-   #Middle table invisible borders
     get_middle_table =  text_tables.getByIndex(1)
     table_middle_border = get_middle_table.TableBorder
     table_middle_border.LeftLine = no_line
@@ -42,7 +45,55 @@ def createTable(unitCount):
     table_middle_border.HorizontalLine = no_line
     table_middle_border.VerticalLine = no_line
     get_middle_table.TableBorder = table_middle_border
-    # print(table.Name)
+    get_bottom_table =  text_tables.getByIndex(3)
+    table_bottom_border = get_bottom_table.TableBorder
+    table_bottom_border.HorizontalLine = no_line
+    table_bottom_border.VerticalLine = no_line
+    get_bottom_table.TableBorder = table_bottom_border
+    return doc, text
+
+
+
+def populateBottomTable(doc, text):
+    global cursor
+    bottom_table = doc.createInstance( "com.sun.star.text.TextTable" )
+    bottom_table.initialize(5,3)
+    bottom_table.setName('bottom_table')
+    text.insertTextContent( cursor, bottom_table, 1 )
+    first_bottom_table_text = bottom_table.getCellByName("A1")
+    first_bottom_table_text.setString("Accounts Details:" )
+    first_bottom_table_text = bottom_table.getCellByName("A2")
+    first_bottom_table_text.setString("Account Holder:" )
+    first_bottom_table_text = bottom_table.getCellByName("A3")
+    first_bottom_table_text.setString("Bank:" )
+    first_bottom_table_text = bottom_table.getCellByName("A4")
+    first_bottom_table_text.setString("Account Number:" )
+    first_bottom_table_text = bottom_table.getCellByName("A5")
+    first_bottom_table_text.setString("Branch Code:" )
+    first_bottom_table_text = bottom_table.getCellByName("B2")
+    first_bottom_table_text.setString("A.Pickel-Voigt" )
+    first_bottom_table_text = bottom_table.getCellByName("B3")
+    first_bottom_table_text.setString("Standard Bank" )
+    first_bottom_table_text = bottom_table.getCellByName("B4")
+    first_bottom_table_text.setString("241710812" )
+    first_bottom_table_text = bottom_table.getCellByName("B5")
+    first_bottom_table_text.setString("084873 (Oshakati Branch)" )
+    first_bottom_table_text = bottom_table.getCellByName("C1")
+    first_bottom_table_text.setString("Postal:" )
+    first_bottom_table_text = bottom_table.getCellByName("C2")
+    first_bottom_table_text.setString("PO Box 37" )
+    first_bottom_table_text = bottom_table.getCellByName("C3")
+    first_bottom_table_text.setString("Oshakati" )
+    first_bottom_table_text = bottom_table.getCellByName("C4")
+    first_bottom_table_text.setString("Namibia" )
+    return doc, text
+
+
+
+def createTable(doc, text, unitCount):
+    global cursor
+    table = doc.createInstance( "com.sun.star.text.TextTable" )
+    table.initialize(unitCount + 2, 4)
     text.insertTextContent( cursor, table, 1 )
     otabseps = table.TableColumnSeparators
     relativeTableWidth = table.getPropertyValue( "TableColumnRelativeSum" )
@@ -57,20 +108,11 @@ def createTable(unitCount):
     insertTextIntoCell( table, "B1", "Namaf Code" )
     insertTextIntoCell( table, "C1", "Description")
     insertTextIntoCell( table, "D1", "Amount")
-    table.getCellByName("D" + str(2 + unitCount)).setFormula("sum <D2:D" + str(1 + unitCount) + ">")
-    return table
-
-
-def populateTable(items, treatments, dates, patient):
-    print(dates)
-    print(patient)
-    table = createTable(len(treatments))
-    for a, b, c in zip(enumerate(treatments), dates, items):
-        insertTextIntoCell(table, "B" + str(a[0] + 2), c)
-        insertTextIntoCell(table, "A" + str(a[0] + 2), b)
-        insertTextIntoCell(table, "C" + str(a[0] + 2), a[1]['description'])
-        insertTextIntoCell(table, "D" + str(a[0] + 2), str(a[1]['value']))
-    #return None 
+    insertTextIntoCell( table, "C" + str(2 + unitCount), "NS")
+    cursor_right = table.createCursorByCellName("C" + str(2 + unitCount))
+    cursor_right.setPropertyValue( "ParaAdjust", RIGHT )
+    text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
+    return table, unitCount
 
 
 def insertTextIntoCell( table, cellName, text, color = None ):
@@ -81,6 +123,15 @@ def insertTextIntoCell( table, cellName, text, color = None ):
     tableText.setString( text )
 
 
+def populateTable(doc, text, items, treatments, dates, patient):
+    table, unitCount = createTable(doc, text, len(treatments))
+    for a, b, c in zip(enumerate(treatments), dates, items):
+        insertTextIntoCell(table, "B" + str(a[0] + 2), c)
+        insertTextIntoCell(table, "A" + str(a[0] + 2), b)
+        insertTextIntoCell(table, "C" + str(a[0] + 2), a[1]['description'])
+        insertTextIntoCell(table, "D" + str(a[0] + 2), str(a[1]['value']))
+    table.getCellByName("D" + str(2 + unitCount)).setFormula("=sum <D2:D" + str(1 + unitCount) + ">")
+    return doc, text
 
 
 
@@ -95,15 +146,13 @@ def populateMiddleTable(doc, text):
     cursor_middle_right = middle_table.createCursorByCellName("B1")
     cursor_middle_right.setPropertyValue( "ParaAdjust", RIGHT )
     middle_table.getCellByName("B1").setString("Invoice Date: ")
-   # eText = top_table.getCellByName("B1").getText()
-   # eCursor = eText.createTextCursor()
-   # eText.insertString(eCursor, "", False)
-   # eCursor.goRight(len("anpickel@gmail.com"), True)
-   # eCursor.HyperLinkURL = "mailto:anpickel@gmail.com"
-    text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
+    text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
+    return doc, text
+
 
 def populateTopTable(doc, text):
     global cursor
+    cursor.setPropertyValue( "CharHeight", 10.0 )
     top_table = doc.createInstance( "com.sun.star.text.TextTable" )
     top_table.initialize(1,2)
     top_table.setName('top_Table')
@@ -119,7 +168,7 @@ def populateTopTable(doc, text):
     eCursor.goRight(len("anpickel@gmail.com"), True)
     eCursor.HyperLinkURL = "mailto:anpickel@gmail.com"
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
-    populateMiddleTable(doc, text)
+    return doc, text
 
 
 def populateTopText(doc, text):
@@ -129,17 +178,13 @@ def populateTopText(doc, text):
     cursor.setPropertyValue( "CharHeight", 10.0 )
     cursor.setPropertyValue( "ParaAdjust", CENTER )
     text.insertString( cursor, "A. Pickel-Voigt", 0 )
-    text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
+    text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
     text.insertString( cursor, "MSc Physiotherapy (UWC)" , 0 )
+    text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
-    populateTopTable(doc, text)
-
-
-
+    return doc, text
 
 def setupConnection():
-    global view_cursor
-    global get_table
     localContext = uno.getComponentContext()
     resolver = localContext.ServiceManager.createInstanceWithContext("com.sun.star.bridge.UnoUrlResolver", localContext )
     smgr = resolver.resolve( "uno:socket,host=localhost,port=2002;urp;StarOffice.ServiceManager" )
@@ -147,28 +192,25 @@ def setupConnection():
     desktop = smgr.createInstanceWithContext( "com.sun.star.frame.Desktop",remoteContext)
     doc = desktop.loadComponentFromURL( "private:factory/swriter","_blank", 0, () )
     text = doc.Text
-    populateTopText(doc, text)
     return doc, text
 
-
-
-
-#aSize = uno.createUnoStruct('com.sun.star.table.BorderLine')
-#bSize = uno.createUnoStruct('com.sun.star.table.TableBorder')
-#aSize.TableLine = "TopLine"
-#aSize.TopLine
-#aSize.OuterLineWidth
-#bSize.TopLine   
-#aSiz 
+def createTextInvoice(items, treatments, dates, patient):
+    doc, text = setupConnection()
+    doc, text = populateTopText(doc, text)
+    doc, text = populateTopTable(doc, text)
+    doc, text = populateMiddleTable(doc, text)
+    doc, text = populateTable(doc, text, items, treatments, dates, patient)
+    doc, text = populateBottomTable(doc, text)
+    doc, text = configureBorders(doc, text)
+    saveDocument(doc)
 
 
 def testing():
     patient = {'case': 'asdfasdfa', 'csrf_token': 'ImU5NjFiYWEwN2Y1MGUyMmFiZDBkY2ZiYTQ5NDgxYzdiN2NlODQ2MDQi.XpVy6A.zOXe-xkr0gUZJroWUQHqVEoGxu0', 'date': '2020-04-14', 'medical': 'psemas', 'name': 'asdfasdf', 'po': '423423423'}
     dates = ['2020-04-15', '2020-04-15', '2020-04-15', '2020-04-15']
-    treatments = [{'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98.40}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98.40}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98.40}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98.40}]
+    treatments = [{'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98}]
     items = ['001', '001', '001', '001']
-    setupConnection()
-    populateTable(items, treatments, dates, patient)
+    createTextInvoice(items, treatments, dates, patient)
 
 
 
