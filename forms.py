@@ -14,7 +14,7 @@ class Treatment(FlaskForm):
     treatments = SelectField(u'Treatments', coerce=int)
     date = DateField('Date', format='%Y-%m-%d', validators=[DataRequired()], default=datetime.datetime.today().date())
     submit = SubmitField('Submit')
-    
+
     def __init__(self, *args, **kwargs):
         super(Treatment, self).__init__(*args, **kwargs)
         self.treatments.choices =  [(i['item'], i['description']) for i in self.filtered_result]

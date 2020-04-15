@@ -5,66 +5,11 @@ from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK, APPEND_PARAGRAPH
 from com.sun.star.text.TextContentAnchorType import AS_CHARACTER
 from com.sun.star.awt import Size
 from com.sun.star.text import TableColumnSeparator
-
-localContext = uno.getComponentContext()				   
-resolver = localContext.ServiceManager.createInstanceWithContext(
-				"com.sun.star.bridge.UnoUrlResolver", localContext )
-smgr = resolver.resolve( "uno:socket,host=localhost,port=2002;urp;StarOffice.ServiceManager" )
-remoteContext = smgr.getPropertyValue( "DefaultContext" )
-desktop = smgr.createInstanceWithContext( "com.sun.star.frame.Desktop",remoteContext)
-
-# open a writer document
-doc = desktop.loadComponentFromURL( "private:factory/swriter","_blank", 0, () )
-text = doc.Text
-cursor = text.createTextCursor()
-cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
-cursor.setPropertyValue( "CharHeight", 10.0 )
-cursor.setPropertyValue( "ParaAdjust", CENTER )
-text.insertString( cursor, "A. Pickel-Voigt", 0 )
-text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
-text.insertString( cursor, "MSc Physiotherapy (UWC)" , 0 )
-text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
-
-
-
-topTable = doc.createInstance( "com.sun.star.text.TextTable" )
-topTable.initialize( 1,2)
-text.insertTextContent( cursor, topTable, 1 )
-firsttopTableText = topTable.getCellByName("A1")
-firsttopTableText.setString("Practice No: 072 0000 637653" )
-
-#aSize = uno.createUnoStruct('com.sun.star.table.BorderLine')
-#bSize = uno.createUnoStruct('com.sun.star.table.TableBorder')
-#aSize.TableLine = "TopLine"
-#aSize.TopLine
-#aSize.OuterLineWidth
-#bSize.TopLine   
-#aSize.Color = 255 
-
-cursorTopRight = topTable.createCursorByCellName("B1")
-cursorTopRight.setPropertyValue( "ParaAdjust", RIGHT )
-topTable.getCellByName("B1").setString("anpickel@gmail.com")
-eText = topTable.getCellByName("B1").getText()
-eCursor = eText.createTextCursor()
-eText.insertString(eCursor, "", False)
-eCursor.goRight(len("anpickel@gmail.com"), True)
-eCursor.HyperLinkURL = "mailto:anpickel@gmail.com"
-
-
-
-text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
-
-
-def insertTextIntoCell( table, cellName, text, color = None ):
-    tableText = table.getCellByName( cellName )
-    cursor = tableText.createTextCursor()
-    if color != None: 
-        cursor.setPropertyValue( "CharColor", color )
-    tableText.setString( text )
-
-
+cursor = None
 
 def createTable(unitCount):
+    global cursor
+    doc, text  = setupConnection()
     table = doc.createInstance( "com.sun.star.text.TextTable" )
     table.initialize(unitCount + 2, 4)
     text.insertTextContent( cursor, table, 1 )
@@ -85,21 +30,88 @@ def createTable(unitCount):
     return table
 
 
-
-def populateTable(unitCount, unitDate,  unitCode, unitDescription, unitAmount):
-    table = createTable(unitCount)
-    for i in range(len(unitDate)):
-        insertTextIntoCell(table, "A" +  str(i + 2), unitDate[i])
-    for i in range(len(unitCode)):
-        table.getCellByName("B" + str(i + 2)).setValue(unitCode[i])
-    for i in range(len(unitDescription)):
-        insertTextIntoCell(table, "C" + str(i + 2), unitDescription[i])
-    for i in range(len(unitAmount)):
-        insertTextIntoCell(table,"D" + str(i + 2), unitAmount[i])
-    return None 
+def populateTable(items, treatments, dates, patient):
+    print(dates)
+    print(patient)
+    table = createTable(len(treatments))
+    for a, b, c in zip(enumerate(treatments), dates, items):
+        insertTextIntoCell(table, "B" + str(a[0] + 2), c)
+        insertTextIntoCell(table, "A" + str(a[0] + 2), b)
+        insertTextIntoCell(table, "C" + str(a[0] + 2), a[1]['description'])
+        insertTextIntoCell(table, "D" + str(a[0] + 2), str(a[1]['value']))
+    #return None 
 
 
-populateTable(2,["11.04.20","13.04.20"],[343,211],["This is the test description","this is the second description"],[600,199])
+def insertTextIntoCell( table, cellName, text, color = None ):
+    tableText = table.getCellByName( cellName )
+    cursor = tableText.createTextCursor()
+    if color != None: 
+        cursor.setPropertyValue( "CharColor", color )
+    tableText.setString( text )
+
+
+def populateTopTable(doc, text):
+    global cursor
+    topTable = doc.createInstance( "com.sun.star.text.TextTable" )
+    topTable.initialize( 1,2)
+    text.insertTextContent( cursor, topTable, 1 )
+    firsttopTableText = topTable.getCellByName("A1")
+    firsttopTableText.setString("Practice No: 072 0000 637653" )
+    cursorTopRight = topTable.createCursorByCellName("B1")
+    cursorTopRight.setPropertyValue( "ParaAdjust", RIGHT )
+    topTable.getCellByName("B1").setString("anpickel@gmail.com")
+    eText = topTable.getCellByName("B1").getText()
+    eCursor = eText.createTextCursor()
+    eText.insertString(eCursor, "", False)
+    eCursor.goRight(len("anpickel@gmail.com"), True)
+    eCursor.HyperLinkURL = "mailto:anpickel@gmail.com"
+    text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
+
+
+
+
+def populateTop(doc, text):
+    global cursor
+    cursor = text.createTextCursor()
+    cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
+    cursor.setPropertyValue( "CharHeight", 10.0 )
+    cursor.setPropertyValue( "ParaAdjust", CENTER )
+    text.insertString( cursor, "A. Pickel-Voigt", 0 )
+    text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
+    text.insertString( cursor, "MSc Physiotherapy (UWC)" , 0 )
+    text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
+    populateTopTable(doc, text)
+
+
+
+
+def setupConnection():
+    localContext = uno.getComponentContext()
+    resolver = localContext.ServiceManager.createInstanceWithContext("com.sun.star.bridge.UnoUrlResolver", localContext )
+    smgr = resolver.resolve( "uno:socket,host=localhost,port=2002;urp;StarOffice.ServiceManager" )
+    remoteContext = smgr.getPropertyValue( "DefaultContext" )
+    desktop = smgr.createInstanceWithContext( "com.sun.star.frame.Desktop",remoteContext)
+    doc = desktop.loadComponentFromURL( "private:factory/swriter","_blank", 0, () )
+    text = doc.Text
+    populateTop(doc, text)
+    return doc, text
+
+
+
+
+#aSize = uno.createUnoStruct('com.sun.star.table.BorderLine')
+#bSize = uno.createUnoStruct('com.sun.star.table.TableBorder')
+#aSize.TableLine = "TopLine"
+#aSize.TopLine
+#aSize.OuterLineWidth
+#bSize.TopLine   
+#aSiz 
+
+
+
+
+
+#populateTable(2,["11.04.20","13.04.20"],[343,211],["This is the test description","this is the second description"],[600,199])
 
 
 
@@ -152,23 +164,23 @@ populateTable(2,["11.04.20","13.04.20"],[343,211],["This is the test description
 #cursor.setPropertyValue( "CharColor", 255 )
 #cursor.setPropertyValue( "CharShadowed", uno.Bool(1) )
 
-text.insertControlCharacter( cursor, PARAGRAPH_BREAK, 0 )
-text.insertString( cursor, " This is a colored Text - blue with shadow\n" , 0 )
-text.insertControlCharacter( cursor, PARAGRAPH_BREAK, 0 )
+#text.insertControlCharacter( cursor, PARAGRAPH_BREAK, 0 )
+#text.insertString( cursor, " This is a colored Text - blue with shadow\n" , 0 )
+#text.insertControlCharacter( cursor, PARAGRAPH_BREAK, 0 )
 
-textFrame = doc.createInstance( "com.sun.star.text.TextFrame" )
-textFrame.setSize( Size(15000,400))
-textFrame.setPropertyValue( "AnchorType" , AS_CHARACTER )
-text.insertTextContent( cursor, textFrame, 0 )
+#textFrame = doc.createInstance( "com.sun.star.text.TextFrame" )
+#textFrame.setSize( Size(15000,400))
+#textFrame.setPropertyValue( "AnchorType" , AS_CHARACTER )
+#text.insertTextContent( cursor, textFrame, 0 )
 
-textInTextFrame = textFrame.getText()
-cursorInTextFrame = textInTextFrame.createTextCursor()
-textInTextFrame.insertString( cursorInTextFrame, "The first line in the newly created text frame.", 0 )
-textInTextFrame.insertString( cursorInTextFrame, "\nWith this second line the height of the rame raises.",0)
-textInTextFrame.insertControlCharacter( cursorInTextFrame, PARAGRAPH_BREAK, 0 )
-text.insertControlCharacter( cursor, PARAGRAPH_BREAK, 0 )
+#textInTextFrame = textFrame.getText()
+#cursorInTextFrame = textInTextFrame.createTextCursor()
+#textInTextFrame.insertString( cursorInTextFrame, "The first line in the newly created text frame.", 0 )
+#textInTextFrame.insertString( cursorInTextFrame, "\nWith this second line the height of the rame raises.",0)
+#textInTextFrame.insertControlCharacter( cursorInTextFrame, PARAGRAPH_BREAK, 0 )
+#text.insertControlCharacter( cursor, PARAGRAPH_BREAK, 0 )
 
-cursor.setPropertyValue( "CharColor", 65536 )
-cursor.setPropertyValue( "CharShadowed", False )
+#cursor.setPropertyValue( "CharColor", 65536 )
+#cursor.setPropertyValue( "CharShadowed", False )
 
-text.insertString( cursor, " That's all for now !!" , 0 )	
+#text.insertString( cursor, " That's all for now !!" , 0 )	

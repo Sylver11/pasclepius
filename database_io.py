@@ -1,5 +1,5 @@
 from db_utils import connection
-
+from swriter import populateTable, setupConnection
 
 
 #sql = """CREATE TABLE treatments (
@@ -31,39 +31,16 @@ def getTreatments2019():
         return filtered_result
 
 
-def getTreatmentByItem(treatments):
+def getTreatmentByItem(treatments, dates, patient):
   #  try:
     with connection.cursor() as cursor:
-       # tupletreatments = tuple(treatments)
-       # l=[]
         treatment_list=[]
         for i in treatments:
-            print(i)
             sql = """SELECT description, units, value FROM treatments WHERE item = {}""".format(i)
             cursor.execute(sql)
             q = cursor.fetchone()
+            #print(q['value'])
+            #print(q)
             treatment_list.append(q)
-       # print(tupletreatments) 
-      #  treatments.insert(0, 'item')
-    # extratupletreatments = item + tupletreatments
-       # item = tuple(treatments)
-       # group_id = tuple(l)
-       # print(item)
-       # print(tupletreatments)
-       # placeholder= '?' # For SQLite. See DBAPI paramstyle.
-       # placeholders= ', '.join(placeholder for unused in treatments)
-       # sql = """SELECT COUNT(*) AS total, description, units, value FROM treatments WHERE item IN {} ORDER BY FIELD{}""".format(tupletreatments, item) 
-    #results = cursor.execute(sql)
-       # sql = """SELECT description, units, value WHERE item IN {}""".format(tupletreatments)
-       # print(tupletreatments)
-       # cursor.execute(sql)
-       # result = cursor.fetchall()
-       # results = list(result)
-        print(treatment_list)
-       # for i in range(len(result)):
-       #     print(result[i])
-         #   return result
-    #finally:
-    #    connection.close()
-       # return result
-
+        setupConnection()
+        populateTable(treatments, treatment_list, dates, patient)
