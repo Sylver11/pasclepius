@@ -5,20 +5,19 @@ from wtforms.validators import DataRequired, Length, Email, Required
 from wtforms import Form as NoCsrfForm
 import datetime
 import wtforms_json
+from database_io import getTreatments2019
 
 wtforms_json.init()
 
 class Treatment(FlaskForm):
-    set = SelectField('Set', choices=[(314, 'Lymph drainage'),(305, 'Re-education of movement/ Exercises (excluding ante- and post-natal exercises)'),(131, 'Ante and post natal exercises/counselling'),])
+    filtered_result = getTreatments2019()
+    treatments = SelectField(u'Treatments', coerce=int)
     date = DateField('Date', format='%Y-%m-%d', validators=[DataRequired()], default=datetime.datetime.today().date())
-
-   # qty = StringField('Quantity', validators=[DataRequired()])
-   # db = [(1, 'C++'), (2, 'Python'), (3, 'Plain Text')]
     submit = SubmitField('Submit')
-
-   # def __init__(self, *args, **kwargs):
-    #    super(NewOrderForm, self).__init__(*args, **kwargs)
-     #   self.set.choices =  [(set.id, set.name) for set in self.db]
+    
+    def __init__(self, *args, **kwargs):
+        super(Treatment, self).__init__(*args, **kwargs)
+        self.treatments.choices =  [(i['item'], i['description']) for i in self.filtered_result]
 
 
 class Patient(FlaskForm): 

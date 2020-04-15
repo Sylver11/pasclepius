@@ -2,20 +2,14 @@ from flask import Flask, render_template, Response, request, session, jsonify, r
 from jinja2 import Template
 from forms import Patient, Treatment
 import json
-
+from database_io import getTreatmentByItem
 app = Flask(__name__)
 
 
 @app.route('/', methods=('GET', 'POST'))
 def contact():
     form = Patient()
-    #if form.validate_on_submit():
-     #   if form.flist.data:
-          #  for item in form.flist.data:
-                    # do stuff
-
     return render_template('index.html', form=form)
-
 
 
 @app.route('/patient', methods=('GET', 'POST'))
@@ -38,8 +32,6 @@ def selectPatient():
 def newInvoice(patient):
     form = Treatment() 
     set_choices = [(105, 'Muscle and nerve stimulating currents'),(301,'Percussion'),(314, 'Lymph drainage')]
-    #[(set.id, set.friendly_name)
-    #for set in Set.query.order_by(Set.friendly_name).all()]
     return render_template('index.html', form=form, set_choices=set_choices, patient = patient, po = session.get('PATIENT')["po"], case = session.get('PATIENT')["case"], date = session.get('PATIENT')["date"], medical = session.get('PATIENT')['medical'])
 
 
@@ -47,20 +39,14 @@ def newInvoice(patient):
 def sessionValues():
       return str(session.get('PATIENT')["po"])
 
+
 @app.route('/generate-invoice', methods=['POST'])
 def generateInvoice():
     form = Treatment()
-    print(request.values)
     dates = request.form.getlist('date')
-    treatments = request.form.getlist('set')
-    if form.set.data:
-       # print(form.set.data)
-        for item in range(len(dates)):
-            print(dates[item])
-            print(treatments[item])
-           # newOrder = Order(qty = item)
-           # db.session.add(newOrder)
-           # db.session.commit()
+    treatments = request.form.getlist('treatments')
+    if form.treatments.data:
+        getTreatmentByItem(treatments)
         return jsonify(result='success')
     return jsonify(result='error')
 
