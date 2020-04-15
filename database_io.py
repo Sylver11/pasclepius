@@ -1,5 +1,5 @@
 from db_utils import connection
-from swriter import populateTable, setupConnection
+from swriter import createTextInvoice
 
 
 #sql = """CREATE TABLE treatments (
@@ -42,5 +42,4 @@ def getTreatmentByItem(treatments, dates, patient):
             #print(q['value'])
             #print(q)
             treatment_list.append(q)
-        setupConnection()
-        populateTable(treatments, treatment_list, dates, patient)
+        createTextInvoice(treatments, treatment_list, dates, patient)

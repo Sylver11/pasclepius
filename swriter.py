@@ -1,6 +1,5 @@
 import uno
 from unohelper import systemPathToFileUrl
-#import unohelper 
 from com.sun.star.beans import PropertyValue
 from com.sun.star.style.ParagraphAdjust import CENTER, LEFT, RIGHT, BLOCK, STRETCH
 from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK, APPEND_PARAGRAPH, LINE_BREAK
@@ -10,13 +9,11 @@ from com.sun.star.awt import Size
 from com.sun.star.text import TableColumnSeparator
 cursor = None
 
-def saveDocument(doc):
-    url = systemPathToFileUrl('/Users/justusvoigt/Documents/out.odt')
+def saveDocument(doc, patient):
+    url = systemPathToFileUrl('/Users/justusvoigt/Documents/' + str(patient['case']) + '.odt')
     args = (PropertyValue('FilterName',0, 'writer8', 0),)
     doc.storeToURL(url, args)
-  #  doc.storeToURL('file:///c:/temp/out.doc', (createPropertyValue("FilterName","MS Word 97"),)
     doc.dispose()
-
 
 def configureBorders(doc, text):
     no_line = BorderLine2()
@@ -52,8 +49,6 @@ def configureBorders(doc, text):
     get_bottom_table.TableBorder = table_bottom_border
     return doc, text
 
-
-
 def populateBottomTable(doc, text):
     global cursor
     bottom_table = doc.createInstance( "com.sun.star.text.TextTable" )
@@ -88,8 +83,6 @@ def populateBottomTable(doc, text):
     first_bottom_table_text.setString("Namibia" )
     return doc, text
 
-
-
 def createTable(doc, text, unitCount):
     global cursor
     table = doc.createInstance( "com.sun.star.text.TextTable" )
@@ -114,7 +107,6 @@ def createTable(doc, text, unitCount):
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
     return table, unitCount
 
-
 def insertTextIntoCell( table, cellName, text, color = None ):
     tableText = table.getCellByName( cellName )
     cursor = tableText.createTextCursor()
@@ -122,8 +114,7 @@ def insertTextIntoCell( table, cellName, text, color = None ):
         cursor.setPropertyValue( "CharColor", color )
     tableText.setString( text )
 
-
-def populateTable(doc, text, items, treatments, dates, patient):
+def populateTable(doc, text, items, treatments, dates):
     table, unitCount = createTable(doc, text, len(treatments))
     for a, b, c in zip(enumerate(treatments), dates, items):
         insertTextIntoCell(table, "B" + str(a[0] + 2), c)
@@ -133,24 +124,28 @@ def populateTable(doc, text, items, treatments, dates, patient):
     table.getCellByName("D" + str(2 + unitCount)).setFormula("=sum <D2:D" + str(1 + unitCount) + ">")
     return doc, text
 
-
-
-def populateMiddleTable(doc, text):
+def populateMiddleTable(doc, text, patient):
     global cursor
     middle_table = doc.createInstance( "com.sun.star.text.TextTable" )
-    middle_table.initialize(1,2)
+    middle_table.initialize(2,3)
     middle_table.setName('middle_table')
     text.insertTextContent( cursor, middle_table, 1 )
     first_middle_table_text = middle_table.getCellByName("A1")
     first_middle_table_text.setString("Invoice No: MVA/2020/H" )
-    cursor_middle_right = middle_table.createCursorByCellName("B1")
+    second_middle_table_text = middle_table.getCellByName("A2")
+    second_middle_table_text.setString("Patient Name: " + str(patient['name']))
+    third_middle_table_text = middle_table.getCellByName("B2")
+    third_middle_table_text.setString("Case Number: " + str(patient['case'])) 
+    cursor_middle_right = middle_table.createCursorByCellName("C1")
     cursor_middle_right.setPropertyValue( "ParaAdjust", RIGHT )
-    middle_table.getCellByName("B1").setString("Invoice Date: ")
+    middle_table.getCellByName("C1").setString("Invoice Date: " + str(patient['date']))
+    fourth_middle_table_text = middle_table.getCellByName("C2")
+    fourth_middle_table_text.setString("PO: " + str(patient['po']))
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
     return doc, text
 
-
-def populateTopTable(doc, text):
+def populateTopTable(doc, text, patient):
+    print(patient['name'])
     global cursor
     cursor.setPropertyValue( "CharHeight", 10.0 )
     top_table = doc.createInstance( "com.sun.star.text.TextTable" )
@@ -169,7 +164,6 @@ def populateTopTable(doc, text):
     eCursor.HyperLinkURL = "mailto:anpickel@gmail.com"
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
     return doc, text
-
 
 def populateTopText(doc, text):
     global cursor
@@ -197,12 +191,12 @@ def setupConnection():
 def createTextInvoice(items, treatments, dates, patient):
     doc, text = setupConnection()
     doc, text = populateTopText(doc, text)
-    doc, text = populateTopTable(doc, text)
-    doc, text = populateMiddleTable(doc, text)
-    doc, text = populateTable(doc, text, items, treatments, dates, patient)
+    doc, text = populateTopTable(doc, text, patient)
+    doc, text = populateMiddleTable(doc, text, patient)
+    doc, text = populateTable(doc, text, items, treatments, dates)
     doc, text = populateBottomTable(doc, text)
     doc, text = configureBorders(doc, text)
-    saveDocument(doc)
+    saveDocument(doc, patient)
 
 
 def testing():
