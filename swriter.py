@@ -3,6 +3,7 @@ import unohelper
 from com.sun.star.style.ParagraphAdjust import CENTER, LEFT, RIGHT, BLOCK, STRETCH
 from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK, APPEND_PARAGRAPH, LINE_BREAK
 from com.sun.star.text.TextContentAnchorType import AS_CHARACTER
+from com.sun.star.table import BorderLine2
 from com.sun.star.awt import Size
 from com.sun.star.text import TableColumnSeparator
 cursor = None
@@ -10,8 +11,38 @@ cursor = None
 def createTable(unitCount):
     global cursor
     doc, text  = setupConnection()
+    ##setting up no borders for the top table in this function
+    no_line = BorderLine2()
+    no_line.Color = 0
+    no_line.InnerLineWidth = 0
+    no_line.LineDistance = 0
+    no_line.LineStyle = 0
+    no_line.LineWidth = 0
+    no_line.OuterLineWidth = 0
     table = doc.createInstance( "com.sun.star.text.TextTable" )
     table.initialize(unitCount + 2, 4)
+    text_tables = doc.getTextTables()
+    print(text_tables)
+    get_top_table = text_tables.getByIndex(0)
+    table_top_border = get_top_table.TableBorder
+    table_top_border.LeftLine = no_line
+    table_top_border.RightLine = no_line
+    table_top_border.TopLine = no_line
+    table_top_border.BottomLine = no_line
+    table_top_border.HorizontalLine = no_line
+    table_top_border.VerticalLine = no_line
+    get_top_table.TableBorder = table_top_border
+   #Middle table invisible borders
+    get_middle_table =  text_tables.getByIndex(1)
+    table_middle_border = get_middle_table.TableBorder
+    table_middle_border.LeftLine = no_line
+    table_middle_border.RightLine = no_line
+    table_middle_border.TopLine = no_line
+    table_middle_border.BottomLine = no_line
+    table_middle_border.HorizontalLine = no_line
+    table_middle_border.VerticalLine = no_line
+    get_middle_table.TableBorder = table_middle_border
+    # print(table.Name)
     text.insertTextContent( cursor, table, 1 )
     otabseps = table.TableColumnSeparators
     relativeTableWidth = table.getPropertyValue( "TableColumnRelativeSum" )
@@ -50,27 +81,48 @@ def insertTextIntoCell( table, cellName, text, color = None ):
     tableText.setString( text )
 
 
+
+
+
+def populateMiddleTable(doc, text):
+    global cursor
+    middle_table = doc.createInstance( "com.sun.star.text.TextTable" )
+    middle_table.initialize(1,2)
+    middle_table.setName('middle_table')
+    text.insertTextContent( cursor, middle_table, 1 )
+    first_middle_table_text = middle_table.getCellByName("A1")
+    first_middle_table_text.setString("Invoice No: MVA/2020/H" )
+    cursor_middle_right = middle_table.createCursorByCellName("B1")
+    cursor_middle_right.setPropertyValue( "ParaAdjust", RIGHT )
+    middle_table.getCellByName("B1").setString("Invoice Date: ")
+   # eText = top_table.getCellByName("B1").getText()
+   # eCursor = eText.createTextCursor()
+   # eText.insertString(eCursor, "", False)
+   # eCursor.goRight(len("anpickel@gmail.com"), True)
+   # eCursor.HyperLinkURL = "mailto:anpickel@gmail.com"
+    text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
+
 def populateTopTable(doc, text):
     global cursor
-    topTable = doc.createInstance( "com.sun.star.text.TextTable" )
-    topTable.initialize( 1,2)
-    text.insertTextContent( cursor, topTable, 1 )
-    firsttopTableText = topTable.getCellByName("A1")
-    firsttopTableText.setString("Practice No: 072 0000 637653" )
-    cursorTopRight = topTable.createCursorByCellName("B1")
-    cursorTopRight.setPropertyValue( "ParaAdjust", RIGHT )
-    topTable.getCellByName("B1").setString("anpickel@gmail.com")
-    eText = topTable.getCellByName("B1").getText()
+    top_table = doc.createInstance( "com.sun.star.text.TextTable" )
+    top_table.initialize(1,2)
+    top_table.setName('top_Table')
+    text.insertTextContent( cursor, top_table, 1 )
+    first_top_table_text = top_table.getCellByName("A1")
+    first_top_table_text.setString("Practice No: 072 0000 637653 \nHPCNA No: PHY 00194" )
+    cursor_top_right = top_table.createCursorByCellName("B1")
+    cursor_top_right.setPropertyValue( "ParaAdjust", RIGHT )
+    top_table.getCellByName("B1").setString("anpickel@gmail.com \nCell: 081 648 11 82")
+    eText = top_table.getCellByName("B1").getText()
     eCursor = eText.createTextCursor()
     eText.insertString(eCursor, "", False)
     eCursor.goRight(len("anpickel@gmail.com"), True)
     eCursor.HyperLinkURL = "mailto:anpickel@gmail.com"
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
+    populateMiddleTable(doc, text)
 
 
-
-
-def populateTop(doc, text):
+def populateTopText(doc, text):
     global cursor
     cursor = text.createTextCursor()
     cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
@@ -86,6 +138,8 @@ def populateTop(doc, text):
 
 
 def setupConnection():
+    global view_cursor
+    global get_table
     localContext = uno.getComponentContext()
     resolver = localContext.ServiceManager.createInstanceWithContext("com.sun.star.bridge.UnoUrlResolver", localContext )
     smgr = resolver.resolve( "uno:socket,host=localhost,port=2002;urp;StarOffice.ServiceManager" )
@@ -93,7 +147,7 @@ def setupConnection():
     desktop = smgr.createInstanceWithContext( "com.sun.star.frame.Desktop",remoteContext)
     doc = desktop.loadComponentFromURL( "private:factory/swriter","_blank", 0, () )
     text = doc.Text
-    populateTop(doc, text)
+    populateTopText(doc, text)
     return doc, text
 
 
@@ -108,9 +162,17 @@ def setupConnection():
 #aSiz 
 
 
+def testing():
+    patient = {'case': 'asdfasdfa', 'csrf_token': 'ImU5NjFiYWEwN2Y1MGUyMmFiZDBkY2ZiYTQ5NDgxYzdiN2NlODQ2MDQi.XpVy6A.zOXe-xkr0gUZJroWUQHqVEoGxu0', 'date': '2020-04-14', 'medical': 'psemas', 'name': 'asdfasdf', 'po': '423423423'}
+    dates = ['2020-04-15', '2020-04-15', '2020-04-15', '2020-04-15']
+    treatments = [{'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98.40}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98.40}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98.40}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98.40}]
+    items = ['001', '001', '001', '001']
+    setupConnection()
+    populateTable(items, treatments, dates, patient)
 
 
 
+testing()
 #populateTable(2,["11.04.20","13.04.20"],[343,211],["This is the test description","this is the second description"],[600,199])
 
 
