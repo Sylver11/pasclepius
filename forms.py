@@ -11,14 +11,13 @@ wtforms_json.init()
 
 class Treatment(FlaskForm):
     filtered_result = getTreatments2019()
-    treatments = SelectField(u'Treatments', coerce=int)
+    treatments = SelectField(u'Treatments',  coerce=int)
     date = DateField('Date', format='%Y-%m-%d', validators=[DataRequired()], default=datetime.datetime.today().date())
     submit = SubmitField('Submit')
 
     def __init__(self, *args, **kwargs):
         super(Treatment, self).__init__(*args, **kwargs)
-        self.treatments.choices =  [(i['item'], i['description']) for i in self.filtered_result]
-
+        self.treatments.choices =[(0, "Select treatment")] + [(i['item'], i['description']) for i in self.filtered_result] 
 
 class Patient(FlaskForm): 
     medicalAid = [("psemas","PSEMAS"),("mva", "MVA"),("other", "OTHER")]

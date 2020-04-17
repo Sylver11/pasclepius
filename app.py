@@ -1,8 +1,9 @@
 from flask import Flask, render_template, Response, request, session, jsonify, redirect, url_for
 from jinja2 import Template
 from forms import Patient, Treatment
-import json
-from database_io import getTreatmentByItem
+import simplejson as json
+from decimal import *
+from database_io import getTreatmentByItem, getValueTreatments
 app = Flask(__name__)
 
 
@@ -32,7 +33,7 @@ def selectPatient():
 def newInvoice(patient):
     form = Treatment() 
     set_choices = [(105, 'Muscle and nerve stimulating currents'),(301,'Percussion'),(314, 'Lymph drainage')]
-    return render_template('index.html', form=form, set_choices=set_choices, patient = patient, po = session.get('PATIENT')["po"], case = session.get('PATIENT')["case"], date = session.get('PATIENT')["date"], medical = session.get('PATIENT')['medical'])
+    return render_template('invoice.html', form=form, set_choices=set_choices, patient = patient, po = session.get('PATIENT')["po"], case = session.get('PATIENT')["case"], date = session.get('PATIENT')["date"], medical = session.get('PATIENT')['medical'])
 
 
 @app.route('/session')
@@ -51,6 +52,14 @@ def generateInvoice():
         return jsonify(result='success')
     return jsonify(result='error')
 
+
+@app.route('/get-value',methods=['GET','POST'])
+def getValue():
+    item = request.args.get('item', 0, type=int)
+    value = getValueTreatments(item, 2019)
+    value_json = json.dumps({'value' : Decimal(value['value'])}, use_decimal=True)
+    return value_json
+ 
 
 if __name__ == '__main__':
     app.secret_key = 'super secret key'

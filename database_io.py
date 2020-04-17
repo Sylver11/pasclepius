@@ -17,12 +17,27 @@ from swriter import createTextInvoice
 
 #mysqlimport --ignore-lines=1 --fields-terminated-by=\; --columns='item,description,units,value,category,year' --local -u root -p pasclepius /Users/justusvoigt/Documents/treatments.csv
 
+def getValueTreatments(item, year):
+    with connection.cursor() as cursor:
+        sql = """SELECT value FROM treatments WHERE item = {} AND year = {}""".format(item, year)
+        cursor.execute(sql)
+        filtered_result = cursor.fetchone()
+        return filtered_result
+
+
+
+def getTreatments2018():
+    with connection.cursor() as cursor:
+        sql = """SELECT LPAD(item, 3, 0) AS item, description FROM treatments WHERE year = 2018 ORDER BY id"""
+        cursor.execute(sql)
+        filtered_result = cursor.fetchall()
+        return filtered_result
 
 
 def getTreatments2019():
    # try:
     with connection.cursor() as cursor:
-        sql = """SELECT LPAD(item, 3, 0) AS item, description FROM treatments ORDER BY id"""
+        sql = """SELECT LPAD(item, 3, 0) AS item, description FROM treatments WHERE year = 2019 ORDER BY id"""
         cursor.execute(sql)
         filtered_result = cursor.fetchall()
            # return filtered_result
@@ -32,14 +47,11 @@ def getTreatments2019():
 
 
 def getTreatmentByItem(treatments, dates, patient):
-  #  try:
     with connection.cursor() as cursor:
         treatment_list=[]
         for i in treatments:
             sql = """SELECT description, units, value FROM treatments WHERE item = {}""".format(i)
             cursor.execute(sql)
             q = cursor.fetchone()
-            #print(q['value'])
-            #print(q)
             treatment_list.append(q)
         createTextInvoice(treatments, treatment_list, dates, patient)
