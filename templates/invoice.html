@@ -16,20 +16,21 @@
               <thead>
                   <tr>
                       <td><b>Treatment</b></td>
-                      <td><b>Date</b></td>        
+                      <td><b>Value</b></td>
+                      <td><b>Premium</b></td>
+                      <td><b>Date</b></td>         
                   </tr>
               </thead>
               <tbody class="tbodyClone">
                   <tr id="clonedInput0" class="clonedInput">
-                      <td>{{  form.treatments(id='treatment-0', class='treatment')  }}</td>
-                     
-                      <td class="value"></td>
-		      <td>
+                        <td>{{  form.treatments(id='treatment-0', class='treatment')  }}</td>
+                        <td>{{  form.price(id='value-0', class='value')  }}</td>
+		                <td>
                           <button id="btnAdd_1" name="btnAdd_1" type="button" class="thirty">30%</button>
                           <button id="btnDel_1" name="btnDel_1" type="button" class="fourty">40%</button>
-                      </td>
+                        </td>
 
-		      <td>{{  form.date(id='date-0')  }}</td>
+		      <td>{{  form.date(id='date-0', class='datepicker')  }}</td>
                       <td>
                           <button id="btnAdd_0" name="btnAdd_0" type="button" class="clone">+</button>
                           <button id="btnDel_0" name="btnDel_0" type="button" class="remove">-</button>
@@ -47,7 +48,13 @@
 $(document).ready(function(){
 
     function addSubmit(ev) {
-      ev.preventDefault();  // block the traditional submission of the form.
+        ev.preventDefault();
+        var test = $('form').serializeArray();
+        console.log(test)
+       // test.push({name: "NonFormValue", value: $('form').children().children().children().children(".value").text() });
+      //  console.log(test)
+    //    console.log($('form').serialize() + '&NonFormValue=' + $('form').children().children().children().children(".value").text() )
+      //console.log($('form').children().children().children().children(".value").text())
       $.ajax({
         method: 'POST',
         url: '/generate-invoice',
@@ -122,9 +129,9 @@ $(document).ready(function(){
     }
 
     function addPremium(object, id, percent){
-        var current_value = parseInt(object.parent().parent().children(".value").text());
+        var current_value = parseInt(object.parent().parent().children().children(".value").val());
 	   	let plus_premium = current_value * percent;
-	  	object.parent().parent().children(".value").text(plus_premium);
+	  	object.parent().parent().children().children(".value").val(plus_premium);
         object.siblings().css('background-color', 'white');
         object.css('background-color', 'green');
         value_edit[id] = {
@@ -138,7 +145,7 @@ $(document).ready(function(){
 
     function subtractPremium(object, id){
         current_value = value_edit[id].value;
-        object.parent().parent().children(".value").text(current_value);
+        object.parent().parent().children().children(".value").val(current_value);
 		object.css('background-color', 'white');
         object.siblings().css('background-color', 'white');
  	    value_edit[id]={
@@ -152,7 +159,7 @@ $(document).ready(function(){
     function replacePremium(object, id, percent){
         original_value = value_edit[id].value;
         let plus_premium = original_value * percent;
-	  	object.parent().parent().children(".value").text(plus_premium);
+	  	object.parent().parent().children().children(".value").val(plus_premium);
         object.siblings().css('background-color', 'white');
         object.css('background-color', 'green');
         value_edit[id] = {
@@ -163,17 +170,6 @@ $(document).ready(function(){
             };
         console.log(value_edit);
     }
-
-
-    var value_edit = [];
-
-    $(document).on('click', '.thirty', function(){
-        var percent = 1.3;
-        var get_id_from_html = $(this).parent().parent().attr('id');
-        var id = get_id_from_html.match(regex)[2]
-        var object = $(this)
-        checkState(object, id, percent)
-    })
 
     function checkState(object, id, percent){    
 	    if (typeof value_edit[id] !== 'undefined'){
@@ -192,6 +188,18 @@ $(document).ready(function(){
 	   }
     }
 
+    var value_edit = [];
+
+    $(document).on('click', '.thirty', function(){
+        var percent = 1.3;
+        var get_id_from_html = $(this).parent().parent().attr('id');
+        var id = get_id_from_html.match(regex)[2]
+        var object = $(this)
+        checkState(object, id, percent)
+    })
+
+    
+
     $(document).on('click', '.fourty', function(){
         var percent = 1.4;
         var get_id_from_html = $(this).parent().parent().attr('id');
@@ -205,10 +213,15 @@ $(document).ready(function(){
 
 
 
-    $('.thirty').hide()
-	$('.fourty').hide()
+    $('.thirty').hide();
+	$('.fourty').hide();
+    // $.datepicker.formatDate( "dd-mm-yy")
+    // $('.datepicker' ).datepicker();
+    // $.datepicker.formatDate('dd-mm-yy');
     var sibling_of_value = null; 
     $(document).on('change', '.treatment',function() {
+        $('.datepicker' ).datepicker({dateFormat: 'dd.mm.yy'});
+        // $.datepicker.formatDate( "dd-mm-yy")
 	  //  console.log($(".clonedInput").length) 
 	    	$('.thirty').show()
 	    	$('.fourty').show()
@@ -216,7 +229,7 @@ $(document).ready(function(){
       		$.getJSON('/get-value', {
         	item: $(this).val()			
       }, function(data) {
-        $(sibling_of_value).parent().parent().children(".value").text(data.value);
+        $(sibling_of_value).parent().parent().children().children(".value").val(data.value);
       });
       return false;
     });

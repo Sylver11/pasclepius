@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm, RecaptchaField
-from wtforms.fields.html5 import DateField
-from wtforms import StringField, IntegerField, TextField, SubmitField, validators, FieldList, SelectField, FormField, FloatField
+#from wtforms.fields.html5 import DateField
+from wtforms import StringField, IntegerField, TextField, SubmitField, validators, FieldList, SelectField, FormField, FloatField, DateField
 from wtforms.validators import DataRequired, Length, Email, Required
 from wtforms import Form as NoCsrfForm
 import datetime
@@ -12,7 +12,9 @@ wtforms_json.init()
 class Treatment(FlaskForm):
     filtered_result = getTreatments2019()
     treatments = SelectField(u'Treatments',  coerce=int)
-    date = DateField('Date', format='%Y-%m-%d', validators=[DataRequired()], default=datetime.datetime.today().date())
+    date = DateField('Date', format='%d-%m-%Y', validators=[DataRequired()])
+            #, default=datetime.datetime.today().date())
+    price = TextField(u'Value')
     submit = SubmitField('Submit')
 
     def __init__(self, *args, **kwargs):

@@ -46,9 +46,11 @@ def generateInvoice():
     form = Treatment()
     dates = request.form.getlist('date')
     treatments = request.form.getlist('treatments')
+    price = request.form.getlist('price')
     patient = session.get('PATIENT')
     if form.treatments.data:
-        getTreatmentByItem(treatments, dates, patient)
+        getTreatmentByItem(treatments, price, dates, patient)
+        print("data is received at the server")
         return jsonify(result='success')
     return jsonify(result='error')
 
