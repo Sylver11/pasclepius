@@ -6,49 +6,153 @@
         <p>{{description}}</p>
 
 
-<form id="newInvoice" class="form">  
+        <select class="medical">
+            <option value="0">Select medical aid</option>
+            <option value="psemas">PSEMAS</option>
+            <option value="mva">MVA</option>
+            <option value="other">OTHER</option>
+        </select>
+
+<form id="newInvoice" class="mva" style="display:none">  
         
-        {{ form.hidden_tag() }}
-	{{ form.medical.label }} {{ form.medical }}
+        {{ form_mva.hidden_tag() }}
+        {{ form_mva.medical(style='display:none') }}
+        {{ form_mva.tariff.label }} {{ form_mva.tariff }}
 	<br>
-	{{ form.name.label }} {{ form.name }}
+	{{ form_mva.name.label }} {{ form_mva.name }}
 	<br>
-	{{ form.case.label }} {{ form.case }}
+	{{ form_mva.case.label }} {{ form_mva.case }}
 	<br>
-	{{ form.po.label }} {{ form.po }}
+	{{ form_mva.po.label }} {{ form_mva.po }}
 	<br>
-	{{ form.date.label }} {{ form.date }}
+	{{ form_mva.date.label }} {{ form_mva.date(id='date_mva') }}
 	<br>
-	{{ form.submit }}
+	{{ form_mva.submit }}
+</form>  
+
+<form id="newInvoice" class="psemas" style="display:none">  
+        
+    {{ form_psemas.hidden_tag() }}
+    {{ form_psemas.medical(style='display:none') }}
+    <br>
+    {{ form_psemas.tariff.label }} 
+    
+    {{ form_psemas.tariff }}
+<br>
+{{ form_psemas.name.label }} {{ form_psemas.name }}
+<br>
+{{ form_psemas.main.label }} {{ form_psemas.main }}
+<br>
+{{ form_psemas.dob.label }} {{ form_psemas.dob }}
+<br>
+{{ form_psemas.number.label }} {{ form_psemas.number }}
+<br>
+{{ form_psemas.date.label }} {{ form_psemas.date(id='date_psemas') }}
+<br>
+{{ form_mva.submit }}
+</form>  
+
+<form id="newInvoice" class="other" style="display:none">  
+        
+    {{ form_other.hidden_tag() }}
+<br>     
+{{form_other.medical.label}}  {{ form_other.medical }}
+<br>    
+{{ form_other.tariff.label }} {{ form_other.tariff }}
+<br>
+{{ form_other.name.label }} {{ form_other.name }}
+<br>
+{{ form_other.main.label }} {{ form_other.main }}
+<br>
+{{ form_other.dob.label }} {{ form_other.dob }}
+<br>
+{{ form_other.number.label }} {{ form_other.number }}
+<br>
+{{ form_other.date.label }} {{ form_other.date(id='date_other') }}
+<br>
+{{ form_other.submit }}
 </form>  
 
 
 
 		
 <script>
+
     $(document).ready(function() {
-        $('form').submit(function (e) {
-            var url = "{{ url_for('selectPatient') }}"; // send the form data here.
+        $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
+        $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
+        $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})
+        $(document).on('change', '.medical',function() {
+            var selection = $(this).val()
+            if(selection == 'psemas'){
+                $('.mva').css("display","none")
+                $('.other').css("display","none")
+                $('.psemas').css("display","block")
+                $( ".psemas" ).children('#medical').val(selection)
+
+            }else if(selection == 'mva'){
+                $('.psemas').css("display","none")
+                $('.other').css("display","none")
+                $('.mva').css("display","block")
+                $( ".mva" ).children('#medical').val(selection)
+
+            }else if(selection =='other'){
+                $('.psemas').css("display","none")
+                $('.mva').css("display","none")
+                $('.other').css("display","block")
+            }else{
+                console.log("nothing selected")}
+        })
+
+        $('.psemas').submit(function (e) {
+            e.preventDefault();
+            var url = "{{ url_for('selectPatient') }}";
+                $.ajax({
+                type: "POST",
+                url: url,
+                data: $('.psemas').serialize(), 
+                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+                }
+            });
+        })
+            
+
+        $('.other').submit(function (e) {
+            e.preventDefault();
+            var url = "{{ url_for('selectPatient') }}";
             $.ajax({
                 type: "POST",
                 url: url,
-                data: $('form').serialize(), // serializes the form's elements.
-                success: function (refData) {
-			window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+                data: $('.other').serialize(), 
+                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
                 }
             });
-            e.preventDefault(); // block the traditional submission of the form.
+        })
+
+
+        $('.mva').submit(function (e) {
+            e.preventDefault(); 
+            var url = "{{ url_for('selectPatient') }}";
+            console.log($('.mva').serialize()) 
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $('.mva').serialize(), 
+                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+                }
+            });
         });
 
         // Inject our CSRF token into our AJAX request.
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
                 if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form_mva.csrf_token._value() }}")
                 }
             }
         })
     });
+
 </script>
 
 

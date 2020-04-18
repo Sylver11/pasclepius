@@ -1,9 +1,10 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div class="container">
+    <div class="container personal_style">
         <h3>Patient Name: {{patient}}</h3>
         <p>Medical Aid: {{medical}}<br>
+            Tariff: {{tariff}}<br>
         Case Number: {{case}}<br>
         PO: {{po}}<br>
         Date of invoice: {{date}}</p>
@@ -13,31 +14,32 @@
         {{ form.hidden_tag() }}
 
          <table class="table table-striped">
-              <thead>
+              <!-- <thead>
                   <tr>
                       <td><b>Treatment</b></td>
                       <td><b>Value</b></td>
                       <td><b>Premium</b></td>
                       <td><b>Date</b></td>         
                   </tr>
-              </thead>
+              </thead> -->
               <tbody class="tbodyClone">
-                  <tr id="clonedInput0" class="clonedInput">
-                        <td>{{  form.treatments(id='treatment-0', class='treatment')  }}</td>
+                  <tr id="clonedInput0" class="clonedInput form-inline col-md-6">
+                        <td class= 'col-md-6'>{{  form.treatments(id='treatment-0', class='treatment form-control')  }}</td>
                         <td>{{  form.price(id='value-0', class='value form-control')  }}
                         </td>
 		                <td>
                             <input value = "30%" type="button" class="thirty">
                             <input value = "40%" type="button" class="fourty inline"> 
                         </td>
-                        <td>{{  form.date(id='date-0', class='datepicker')  }}</td>
+                        <td>{{  form.date(id='date-0', class='datepicker form-control', placeholder="DD/MM/YYYY")  }}</td>
                         <td>
-                            <input id="btnAdd_0" value="+" type="button" style="width:25px" class="clone">
-                            <input id="btnDel_0" value="-" type="button" style="width:25px" class="remove">
+                            <input id="btnDel_0" value="Delete" type="button" style="width:100px" class="remove">
                           </td>
                   </tr>
               </tbody>
           </table>
+          <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
+            <!-- <input id="btnDel_0" value="-" type="button" style="width:25px" class="remove"> -->
 
   <div>{{ form.submit }}</div>
   <span>Result: <span id="result"></span></span>
@@ -81,13 +83,13 @@ $(document).ready(function(){
     } else {
         $('.remove').show();
     }
-
     function clone() {
-        $(this).parents(".clonedInput").clone() // travels from button to <tr> element
+        $(".clonedInput").last().clone()
             .appendTo(".tbodyClone") // copied table row is added <tbody>
             .attr("id", "clonedInput" + cloneIndex) // for each table row, id is incremented
             .find("*") // return all descendant elements of selected element.
-            .each(function () { // execute function for each matched element
+            .each(function () { 
+                 // execute function for each matched element
                  var id = this.id || ""; // I'm guessing this makes id a string?
                  var match = id.match(regex) || []; // searches a string against a regular,         
                                                 //expression and assigns results to var match as 
@@ -105,6 +107,7 @@ $(document).ready(function(){
             )
             .on('click', 'clone', clone)
             .on('click', 'remove', remove);
+            
         cloneIndex++;
       
         if ($(".clonedInput").length == 1) {
@@ -205,10 +208,6 @@ $(document).ready(function(){
     })
 
 
-
-
-
-
     $('.thirty').hide();
 	$('.fourty').hide();
     var sibling_of_value = null; 
@@ -228,6 +227,10 @@ $(document).ready(function(){
 
     $(document).on("click", ".clone", clone);
     $(document).on("click", ".remove", remove);
+    $(document).on("click", ".datepicker", function() {
+        $(this).removeClass('hasDatepicker');
+        $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" );
+});
    });
 
     </script>

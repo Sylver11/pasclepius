@@ -1,3 +1,13 @@
+.datepicker {
+    /* height: auto; */
+    width: 30px;
+}
+
+.personal_style{
+	overflow-x: hidden;
+}
+
+
 .treatment {
 	display: block;
 	font-size: 16px;
@@ -44,3 +54,5 @@
 .inline{
 	display:inline-block;
 }
+
+
