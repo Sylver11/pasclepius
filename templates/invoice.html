@@ -24,17 +24,17 @@
               <tbody class="tbodyClone">
                   <tr id="clonedInput0" class="clonedInput">
                         <td>{{  form.treatments(id='treatment-0', class='treatment')  }}</td>
-                        <td>{{  form.price(id='value-0', class='value')  }}</td>
-		                <td>
-                          <button id="btnAdd_1" name="btnAdd_1" type="button" class="thirty">30%</button>
-                          <button id="btnDel_1" name="btnDel_1" type="button" class="fourty">40%</button>
+                        <td>{{  form.price(id='value-0', class='value form-control')  }}
                         </td>
-
-		      <td>{{  form.date(id='date-0', class='datepicker')  }}</td>
-                      <td>
-                          <button id="btnAdd_0" name="btnAdd_0" type="button" class="clone">+</button>
-                          <button id="btnDel_0" name="btnDel_0" type="button" class="remove">-</button>
-                      </td>
+		                <td>
+                            <input value = "30%" type="button" class="thirty">
+                            <input value = "40%" type="button" class="fourty inline"> 
+                        </td>
+                        <td>{{  form.date(id='date-0', class='datepicker')  }}</td>
+                        <td>
+                            <input id="btnAdd_0" value="+" type="button" style="width:25px" class="clone">
+                            <input id="btnDel_0" value="-" type="button" style="width:25px" class="remove">
+                          </td>
                   </tr>
               </tbody>
           </table>
@@ -51,10 +51,6 @@ $(document).ready(function(){
         ev.preventDefault();
         var test = $('form').serializeArray();
         console.log(test)
-       // test.push({name: "NonFormValue", value: $('form').children().children().children().children(".value").text() });
-      //  console.log(test)
-    //    console.log($('form').serialize() + '&NonFormValue=' + $('form').children().children().children().children(".value").text() )
-      //console.log($('form').children().children().children().children(".value").text())
       $.ajax({
         method: 'POST',
         url: '/generate-invoice',
@@ -215,14 +211,9 @@ $(document).ready(function(){
 
     $('.thirty').hide();
 	$('.fourty').hide();
-    // $.datepicker.formatDate( "dd-mm-yy")
-    // $('.datepicker' ).datepicker();
-    // $.datepicker.formatDate('dd-mm-yy');
     var sibling_of_value = null; 
     $(document).on('change', '.treatment',function() {
         $('.datepicker' ).datepicker({dateFormat: 'dd.mm.yy'});
-        // $.datepicker.formatDate( "dd-mm-yy")
-	  //  console.log($(".clonedInput").length) 
 	    	$('.thirty').show()
 	    	$('.fourty').show()
 		sibling_of_value = $(this);
