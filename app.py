@@ -40,12 +40,24 @@ def selectPatient():
 
 @app.route('/patient/<patient>/new-invoice')
 def newInvoice(patient):
-    tariff = session.get('PATIENT')["tariff"]
+    medical = (session.get('PATIENT')["medical"])
+    tariff = (session.get('PATIENT')["tariff"])
+    date = session.get('PATIENT')['date']
     form = getFormByYear(tariff) 
-    set_choices = [(105, 'Muscle and nerve stimulating currents'),(301,'Percussion'),(314, 'Lymph drainage')]
-    return render_template('invoice.html', form=form, set_choices=set_choices, patient = patient, tariff = session.get('PATIENT')["tariff"], po = session.get('PATIENT')["po"], case = session.get('PATIENT')["case"], date = session.get('PATIENT')["date"], medical = session.get('PATIENT')['medical'])
+    if (medical == 'mva'):
+        po = session.get('PATIENT')['po']
+        case = session.get('PATIENT')["case"]
+        return render_template('invoice.html', form=form, patient = patient, tariff = tariff, po = po, case = case, date = date, medical = medical)
+    if (medical == 'psemas'):
+        number = session.get('PATIENT')['number']
+        main = session.get('PATIENT')['main']
+        dob = session.get('PATIENT')['dob']
+        return render_template('invoice.html', form=form, patient = patient,
+                tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
 
-
+   # set_choices = [(105, 'Muscle and nerve stimulating currents'),(301,'Percussion'),(314, 'Lymph drainage')]
+   # po = None
+    
 @app.route('/session')
 def sessionValues():
       return str(session.get('PATIENT')["po"])

@@ -1,50 +1,59 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div class="container personal_style">
-        <h3>Patient Name: {{patient}}</h3>
-        <p>Medical Aid: {{medical}}<br>
+<div class="container personal_style">
+    <h3>Patient Name: {{patient}}</h3>
+        {% if medical =='mva' %}
+            <p>Medical Aid: {{medical}}<br>
             Tariff: {{tariff}}<br>
-        Case Number: {{case}}<br>
-        PO: {{po}}<br>
-        Date of invoice: {{date}}</p>
-        <br>
-<form id="NewOrderForm" class="form">  
+            Case Number: {{case}}<br>
+            PO: {{po}}<br>
+            Date of invoice: {{date}}</p>
+        {% endif %}
+
+        {% if medical =='psemas' %}
+            <p>Medical Aid: {{medical}}<br>
+            Tariff: {{tariff}}<br>
+            Main Member: {{main}}<br>
+            Medical Aid Number: {{number}}<br>
+            Date of Birth: {{dob}}<br>
+            Date of invoice: {{date}}</p>
+        {% endif %}
+
+        {% if medical =='other' %}
+            <p>Medical Aid: {{medical}}<br>
+            Tariff: {{tariff}}<br>
+            Main Member: {{main}}<br>
+            Medical Aid Number: {{number}}<br>
+            Date of Birth: {{dob}}<br>
+            Date of invoice: {{date}}</p>
+        {% endif %}
         
+    <br>
+
+    <form id="NewOrderForm" class="form">   
         {{ form.hidden_tag() }}
-
-         <table class="table table-striped">
-              <!-- <thead>
-                  <tr>
-                      <td><b>Treatment</b></td>
-                      <td><b>Value</b></td>
-                      <td><b>Premium</b></td>
-                      <td><b>Date</b></td>         
-                  </tr>
-              </thead> -->
-              <tbody class="tbodyClone">
-                  <tr id="clonedInput0" class="clonedInput form-inline col-md-6">
-                        <td class= 'col-md-6'>{{  form.treatments(id='treatment-0', class='treatment form-control')  }}</td>
-                        <td>{{  form.price(id='value-0', class='value form-control')  }}
-                        </td>
-		                <td>
-                            <input value = "30%" type="button" class="thirty">
-                            <input value = "40%" type="button" class="fourty inline"> 
-                        </td>
-                        <td>{{  form.date(id='date-0', class='datepicker form-control', placeholder="DD/MM/YYYY")  }}</td>
-                        <td>
-                            <input id="btnDel_0" value="Delete" type="button" style="width:100px" class="remove">
-                          </td>
-                  </tr>
-              </tbody>
-          </table>
-          <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
-            <!-- <input id="btnDel_0" value="-" type="button" style="width:25px" class="remove"> -->
-
-  <div>{{ form.submit }}</div>
-  <span>Result: <span id="result"></span></span>
-</form>  
-
+        <table class="table table-striped">
+            <tbody class="tbodyClone">
+                <tr id="clonedInput0" class="clonedInput form-inline col-md-6">
+                    <td class= 'col-md-6'>{{  form.treatments(id='treatment-0', class='treatment form-control')  }}</td>
+                    <td>{{  form.price(id='value-0', class='value form-control')  }}</td>
+		            <td>
+                        <input value = "30%" type="button" class="thirty">
+                        <input value = "40%" type="button" class="fourty inline"> 
+                    </td>
+                    <td>{{  form.date(id='date-0', class='datepicker form-control', placeholder="DD/MM/YYYY")  }}</td>
+                    <td>
+                        <input id="btnDel_0" value="Delete" type="button" style="width:100px" class="remove">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
+        <div>{{ form.submit }}</div>
+        <span>Result: <span id="result"></span></span>
+    </form>  
+</div>
 
 <script>
 $(document).ready(function(){
@@ -233,6 +242,6 @@ $(document).ready(function(){
 });
    });
 
-    </script>
+</script>
 
- {% endblock %}
+{% endblock %}

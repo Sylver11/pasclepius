@@ -13,10 +13,11 @@
             <option value="other">OTHER</option>
         </select>
 
-<form id="newInvoice" class="mva" style="display:none">  
+<form id="newInvoice_mva" class="mva" style="display:none">  
         
         {{ form_mva.hidden_tag() }}
         {{ form_mva.medical(style='display:none') }}
+        <br>
         {{ form_mva.tariff.label }} {{ form_mva.tariff }}
 	<br>
 	{{ form_mva.name.label }} {{ form_mva.name }}
@@ -30,7 +31,7 @@
 	{{ form_mva.submit }}
 </form>  
 
-<form id="newInvoice" class="psemas" style="display:none">  
+<form id="newInvoice_psemas" class="psemas" style="display:none">  
         
     {{ form_psemas.hidden_tag() }}
     {{ form_psemas.medical(style='display:none') }}
@@ -52,7 +53,7 @@
 {{ form_mva.submit }}
 </form>  
 
-<form id="newInvoice" class="other" style="display:none">  
+<form id="newInvoice_other" class="other" style="display:none">  
         
     {{ form_other.hidden_tag() }}
 <br>     
