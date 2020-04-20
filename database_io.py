@@ -47,7 +47,7 @@ def getTreatments(tariff, featured=None):
             return featured_result
 
 
-def getTreatmentByItem(treatments, tariff, value, dates, patient):
+def getTreatmentByItem(treatments, tariff, value, dates, patient, modifier):
     with connection.cursor() as cursor:
         treatment_list=[]
         for i in treatments:
@@ -55,4 +55,4 @@ def getTreatmentByItem(treatments, tariff, value, dates, patient):
             cursor.execute(sql)
             q = cursor.fetchone()
             treatment_list.append(q)
-        createTextInvoice(treatments, treatment_list, value,  dates, patient)
+        createTextInvoice(treatments, treatment_list, value,  dates, patient, modifier)

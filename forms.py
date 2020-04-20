@@ -13,6 +13,7 @@ def getTreatmentForm(tariff = None):
         treatments = SelectField(u'Treatments',  coerce=int)
         date = TextField('Date', validators=[DataRequired()])
         price = TextField(u'Value')
+        modifier = SelectField(u'Modifier', choices= [(0, 'None'), (14,'Rendered hospital'),(13, 'Travelling cost')], default=0)
         submit = SubmitField('Submit')
         def initialise_SelectOption(self,list_ordered_by_category = None, featured_ordered_by_category = None,  *args, **kwargs):
             super(Treatment, self).__init__(*args, **kwargs)

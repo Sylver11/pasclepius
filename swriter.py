@@ -15,7 +15,7 @@ def saveDocument(doc, patient):
     doc.storeToURL(url, args)
     doc.dispose()
 
-def configureBorders(doc, text):
+def configureBorders(doc, text, items):
     no_line = BorderLine2()
     no_line.Color = 0
     no_line.InnerLineWidth = 0
@@ -42,9 +42,33 @@ def configureBorders(doc, text):
     table_middle_border.HorizontalLine = no_line
     table_middle_border.VerticalLine = no_line
     get_middle_table.TableBorder = table_middle_border
+    get_main_table =  text_tables.getByIndex(2)
+    count = 0
+    col = ['A', 'B', 'C', 'D']
+    for i in items:
+        count = count + 1
+
+    for i in col:
+        table_main_cell = get_main_table.getCellByName(i + str(count+2))
+        left_border_a_cell = table_main_cell.LeftBorder
+        left_border_a_cell.OuterLineWidth = 0 
+        left_border_a_cell.LineWidth = 0 
+        table_main_cell.LeftBorder = left_border_a_cell
+
+    cRange = get_main_table.getCellRangeByName("A" + str(count +2) + ":D" + str(count + 2))
+    cRange.setPropertyValue( "CharFontName", "Liberation Serif" )
+    cRange.setPropertyValue( "CharHeight", 10.0 )
+    table_main_cell = get_main_table.getCellByName("D" + str(count+2))
+    right_border_a_cell = table_main_cell.RightBorder
+    right_border_a_cell.OuterLineWidth = 0 
+    right_border_a_cell.LineWidth = 0 
+    table_main_cell.RightBorder = right_border_a_cell
+    table_main_border = get_main_table.TableBorder
+    table_main_border.BottomLine = no_line
+    get_main_table.TableBorder = table_main_border
     get_bottom_table =  text_tables.getByIndex(3)
     table_bottom_border = get_bottom_table.TableBorder 
-    table_bottom_border.Distance = 3
+    table_bottom_border.Distance = 1
     table_bottom_border.HorizontalLine = no_line
     table_bottom_border.VerticalLine = no_line
     get_bottom_table.TableBorder = table_bottom_border
@@ -82,14 +106,16 @@ def populateBottomTable(doc, text):
     first_bottom_table_text = bottom_table.getCellByName("C1")
     first_bottom_table_text.setString("Postal:" )
     first_bottom_table_text = bottom_table.getCellByName("C2")
-    first_bottom_table_text.setString("PO Box 37" )
+    first_bottom_table_text.setString("A. Pickel-Voigt" )
     first_bottom_table_text = bottom_table.getCellByName("C3")
-    first_bottom_table_text.setString("Oshakati" )
+    first_bottom_table_text.setString("PO Box 37" )
     first_bottom_table_text = bottom_table.getCellByName("C4")
+    first_bottom_table_text.setString("Oshakati" )
+    first_bottom_table_text = bottom_table.getCellByName("C5")
     first_bottom_table_text.setString("Namibia" )
     range = bottom_table.getCellRangeByName("A1:C5")
     range.setPropertyValue( "CharFontName", "Liberation Serif" )
-    range.setPropertyValue( "CharHeight", 8.0 )
+    range.setPropertyValue( "CharHeight", 8.5 )
     range.setPropertyValue("ParaAdjust", LEFT)
     otabseps = bottom_table.TableColumnSeparators
     relativeTableWidth = bottom_table.getPropertyValue( "TableColumnRelativeSum" )
@@ -120,7 +146,8 @@ def createTable(doc, text, unitCount):
     insertTextIntoCell( table, "B1", "Namaf Code" )
     insertTextIntoCell( table, "C1", "Description")
     insertTextIntoCell( table, "D1", "Amount")
-    insertTextIntoCell( table, "C" + str(2 + unitCount), "NS")
+    insertTextIntoCell( table, "C" + str(2 + unitCount), "N$: ")
+    insertTextIntoCell( table, "A" + str(2 + unitCount), "Total")
     cursor_right = table.createCursorByCellName("C" + str(2 + unitCount))
     cursor_right.setPropertyValue( "ParaAdjust", RIGHT )
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
@@ -135,12 +162,15 @@ def insertTextIntoCell( table, cellName, text, color = None ):
         cursor.setPropertyValue( "CharColor", color )
     tableText.setString( text )
 
-def populateTable(doc, text, items, treatments, price, dates):
+def populateTable(doc, text, items, treatments, price, dates, modifier):
     table, unitCount = createTable(doc, text, len(treatments))
     print(price)
     print(treatments)
-    for a, b, c, d in zip(enumerate(treatments), dates, items, price):
-        insertTextIntoCell(table, "B" + str(a[0] + 2), c)
+    for a, b, c, d, e in zip(enumerate(treatments), dates, items, price, modifier):
+        if e == '14':
+            insertTextIntoCell(table, "B" + str(a[0] + 2), str(c + " 0" + e))
+        else:
+            insertTextIntoCell(table, "B" + str(a[0] + 2), c)
         insertTextIntoCell(table, "A" + str(a[0] + 2), b)
         insertTextIntoCell(table, "C" + str(a[0] + 2), a[1]['description'])
         insertTextIntoCell(table, "D" + str(a[0] + 2), str(d))
@@ -180,7 +210,7 @@ def populateMiddleTable(doc, text, patient):
         fourth_middle_table_text.setPropertyValue( "ParaAdjust", RIGHT )
         text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
         text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
-    
+
     else:
         middle_table.initialize(3,3)
         middle_table.setName('middle_table')
@@ -272,24 +302,25 @@ def setupConnection():
     text = doc.Text
     return doc, text
 
-def createTextInvoice(items, treatments, price, dates, patient):
+def createTextInvoice(items, treatments, price, dates, patient, modifier):
     doc, text = setupConnection()
     doc, text = populateTopText(doc, text)
     doc, text = populateTopTable(doc, text, patient)
     doc, text = populateMiddleTable(doc, text, patient)
-    doc, text = populateTable(doc, text, items, treatments, price, dates)
+    doc, text = populateTable(doc, text, items, treatments, price, dates, modifier)
     doc, text = populateBottomTable(doc, text)
-    doc, text = configureBorders(doc, text)
+    doc, text = configureBorders(doc, text, items)
   #  saveDocument(doc, patient)
 
 
 def testing():
-    patient = {'case': 'asdfasdfa', 'csrf_token': 'ImU5NjFiYWEwN2Y1MGUyMmFiZDBkY2ZiYTQ5NDgxYzdiN2NlODQ2MDQi.XpVy6A.zOXe-xkr0gUZJroWUQHqVEoGxu0', 'date': '2020-04-14', 'medical': 'psemas', 'name': 'asdfasdf', 'po': '423423423'}
+    patient = {'case': 'asdfasdfa', 'csrf_token':'ImU5NjFiYWEwN2Y1MGUyMmFiZDBkY2ZiYTQ5NDgxYzdiN2NlODQ2MDQi.XpVy6A.zOXe-xkr0gUZJroWUQHqVEoGxu0','date': '2020-04-14', 'medical': 'mva', 'name': 'asdfasdf', 'po': '423423423'}
     dates = ['01-04-2020', '04-04-2020', '10-04-2020', '15-04-2020']
     treatments = [{'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98}]
     items = ['001', '001', '001', '001']
     price = ['300','435', '196', '444']
-    createTextInvoice(items, treatments, price, dates, patient)
+    modifier = ['0','0','0','0']
+    createTextInvoice(items, treatments, price, dates, patient, modifier)
 
 #testing()
 #populateTable(2,["11.04.20","13.04.20"],[343,211],["This is the test description","this is the second description"],[600,199])

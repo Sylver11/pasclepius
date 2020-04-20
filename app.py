@@ -65,21 +65,18 @@ def newInvoice(patient):
         dob = session.get('PATIENT')['dob']
         return render_template('invoice.html', form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
  
-@app.route('/session')
-def sessionValues():
-      return str(session.get('PATIENT'))
-
 
 @app.route('/generate-invoice', methods=['POST'])
 def generateInvoice():
     dates = request.form.getlist('date')
     treatments = request.form.getlist('treatments')
+    modifier = request.form.getlist('modifier')
     price = request.form.getlist('price')
     tariff = session.get('PATIENT')["tariff"]
     patient = session.get('PATIENT')
     form = getTreatmentForm(tariff) 
     if form.treatments.data:
-        getTreatmentByItem(treatments, tariff, price, dates, patient)
+        getTreatmentByItem(treatments, tariff, price, dates, patient, modifier)
         return jsonify(result='success')
     return jsonify(result='error')
 
@@ -91,7 +88,11 @@ def getValue():
     value = getValueTreatments(item, tariff)
     value_json = json.dumps({'value' : Decimal(value['value'])}, use_decimal=True)
     return value_json
- 
+
+@app.route('/session')
+def sessionValues():
+      return str(session.get('PATIENT'))
+
 
 if __name__ == '__main__':
     app.secret_key = 'super secret key'
