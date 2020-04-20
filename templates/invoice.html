@@ -8,19 +8,15 @@
             Tariff: {{tariff}}<br>
             Case Number: {{case}}<br>
             PO: {{po}}<br>
-            Date of invoice: {{date}}</p>
-        {% endif %}
-
-        {% if medical =='psemas' %}
+            Date of invoice: {{date}}</p>    
+        {% elif medical =='psemas' %}
             <p>Medical Aid: {{medical}}<br>
             Tariff: {{tariff}}<br>
             Main Member: {{main}}<br>
             Medical Aid Number: {{number}}<br>
             Date of Birth: {{dob}}<br>
             Date of invoice: {{date}}</p>
-        {% endif %}
-
-        {% if medical =='other' %}
+        {% else %}
             <p>Medical Aid: {{medical}}<br>
             Tariff: {{tariff}}<br>
             Main Member: {{main}}<br>

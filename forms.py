@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm, RecaptchaField
-#from wtforms.fields.html5 import DateField
-from wtforms import StringField, IntegerField, TextField, SubmitField, validators, FieldList, SelectField, FormField, FloatField, DateField
+from wtforms import StringField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField
+from wtforms_components.fields import SelectField
 from wtforms.validators import DataRequired, Length, Email, Required
 from wtforms import Form as NoCsrfForm
 import datetime
@@ -8,16 +8,51 @@ import wtforms_json
 from database_io import getTreatments
 
 wtforms_json.init()
-def getFormByYear(tariff):
+def getTreatmentForm(tariff = None):
     class Treatment(FlaskForm):
-        filtered_result = getTreatments(tariff)
         treatments = SelectField(u'Treatments',  coerce=int)
         date = TextField('Date', validators=[DataRequired()])
         price = TextField(u'Value')
         submit = SubmitField('Submit')
-        def __init__(self, *args, **kwargs):
+        def initialise_SelectOption(self,list_ordered_by_category = None, featured_ordered_by_category = None,  *args, **kwargs):
             super(Treatment, self).__init__(*args, **kwargs)
-            self.treatments.choices =[(0, "Select treatment")] + [(i['item'], i['description']) for i in self.filtered_result] 
+            self.treatments.choices =  [(0, "Select treatment")] + featured_ordered_by_category + list_ordered_by_category
+
+        def nestedObjects(something, filtered_result, featured_result):
+            list_of_categories = []
+            list_ordered_by_category = []
+            featured_ordered_by_category = []
+            for i in filtered_result:
+                list_of_categories.append(i['category'])
+            seen = {}
+            dupes = []
+            for x in list_of_categories:
+                if x not in seen:
+                    seen[x] = 1
+            else:
+                if seen[x] == 1:
+                    dupes.append(x)
+                seen[x] += 1
+            for keys, values in seen.items():
+                a = (keys, )
+                b = []
+                for x in filtered_result:
+                    if x['category'] == keys:
+                        b.append((x['item'],x['description']))
+                c = a + (tuple(b,),)
+                list_ordered_by_category.append(c)
+            for i in featured_result:
+                featured_ordered_by_category.append((i['item'],i['description']))
+            featured_ordered_by_category  = [('Featured',) + (tuple(featured_ordered_by_category,),)]
+            return list_ordered_by_category, featured_ordered_by_category
+
+        def __init__(self, *args, **kwargs):
+            if(tariff is not None):
+                featured = [501, 303, 314, 703, 702, 401, 405, 317, 503, 107, 901]
+                filtered_result = getTreatments(tariff)
+                featured_result = getTreatments(tariff, featured)
+                list_ordered_by_category, featured_ordered_by_category = self.nestedObjects(filtered_result, featured_result)
+                self.initialise_SelectOption(list_ordered_by_category = list_ordered_by_category, featured_ordered_by_category = featured_ordered_by_category)
     return Treatment()
 
 

@@ -29,13 +29,22 @@ def getValueTreatments(item, tariff):
         return filtered_result
 
 
-def getTreatments(tariff):
-    print(tariff)
+def getTreatments(tariff, featured=None):
     with connection.cursor() as cursor:
-        sql = """SELECT LPAD(item, 3, 0) AS item, description FROM treatments WHERE tariff = '{}' ORDER BY id""".format(tariff)
-        cursor.execute(sql)
-        filtered_result = cursor.fetchall()
-        return filtered_result
+        if (featured is None):
+            sql = """SELECT LPAD(item, 3, 0) AS item, description, category FROM treatments WHERE tariff = '{}' ORDER BY id""".format(tariff)
+            cursor.execute(sql)
+            filtered_result = cursor.fetchall()
+            return filtered_result
+        elif(featured is not None):
+            featured = tuple(featured)
+           # print(featured)
+           # print("featured result query is running")
+            sql = """SELECT LPAD(item, 3, 0) AS item, description FROM treatments WHERE item IN {} AND tariff = '{}' ORDER BY id""".format(featured, tariff)
+            cursor.execute(sql)
+            featured_result = cursor.fetchall()
+            #print(featured_result)
+            return featured_result
 
 
 def getTreatmentByItem(treatments, tariff, value, dates, patient):
