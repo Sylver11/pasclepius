@@ -48,7 +48,7 @@
         </table>
         <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
         <div>{{ form.submit }}</div>
-        <span>Result: <span id="result"></span></span>
+        <span>Result: <span id="result"></span></span><span><input id="download_invoice" value="Download invoice" type="button" style="widows: 200pxpx"></span>
     </form>  
 </div>
 
@@ -65,6 +65,16 @@ $(document).ready(function(){
         data: $('form').serialize(),
       }).done(addShow);
     }
+
+
+    $(document).on("click", "#download_invoice", function(){
+       
+            // $("#load").fadeIn(1000).delay(2000).fadeOut(1000);
+            console.log("also runnign ")
+                $('head').append('<meta http-equiv="refresh" content="1;url=/download-invoice"/>');
+                console.log("redirect is running")
+        })
+
 
     function addShow(data) {
       $('#result').text(data.result);

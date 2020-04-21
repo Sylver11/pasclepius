@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response, request, session, jsonify, redirect, url_for
+from flask import Flask, render_template, Response, request, session, jsonify, redirect, url_for, send_file
 from jinja2 import Template
 from forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm
 import simplejson as json
@@ -89,9 +89,19 @@ def getValue():
     value_json = json.dumps({'value' : Decimal(value['value'])}, use_decimal=True)
     return value_json
 
+
+@app.route('/download-invoice')
+def downloadInvoice():
+    name = session.get('PATIENT')["name"]
+    print(name)
+    path = "/Users/justusvoigt/Documents/" + str(name) + ".odt"
+    print(path)
+    print("this is running")
+    return send_file(path, as_attachment=True)
+
 @app.route('/session')
 def sessionValues():
-      return str(session.get('PATIENT'))
+    return str(session.get('PATIENT'))
 
 
 if __name__ == '__main__':

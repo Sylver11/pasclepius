@@ -1,4 +1,4 @@
-from db_utils import connection
+from db_utils import pool
 from swriter import createTextInvoice
 
 def setupTable():
@@ -22,37 +22,47 @@ def setupTable():
 #mysqlimport --ignore-lines=1 --fields-terminated-by=\; --columns='item,description,units,value,category,tariff' --local -u root -p pasclepius /Users/justusvoigt/Documents/treatments.csv
 
 def getValueTreatments(item, tariff):
-    with connection.cursor() as cursor:
-        sql = """SELECT value FROM treatments WHERE item = {} AND tariff = '{}'""".format(item, tariff)
-        cursor.execute(sql)
-        filtered_result = cursor.fetchone()
-        return filtered_result
-
+    sql = """SELECT value FROM treatments WHERE item = {} AND tariff = '{}'""".format(item, tariff)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    filtered_result = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return filtered_result 
 
 def getTreatments(tariff, featured=None):
-    with connection.cursor() as cursor:
-        if (featured is None):
-            sql = """SELECT LPAD(item, 3, 0) AS item, description, category FROM treatments WHERE tariff = '{}' ORDER BY id""".format(tariff)
-            cursor.execute(sql)
-            filtered_result = cursor.fetchall()
-            return filtered_result
-        elif(featured is not None):
-            featured = tuple(featured)
-           # print(featured)
-           # print("featured result query is running")
-            sql = """SELECT LPAD(item, 3, 0) AS item, description FROM treatments WHERE item IN {} AND tariff = '{}' ORDER BY id""".format(featured, tariff)
-            cursor.execute(sql)
-            featured_result = cursor.fetchall()
-            #print(featured_result)
-            return featured_result
+    if (featured is None):
+        sql = """SELECT LPAD(item, 3, 0) AS item, description, category FROM treatments WHERE tariff = '{}' ORDER BY id""".format(tariff)
+        connection = pool.connection()
+        cursor = connection.cursor()
+        cursor.execute(sql)
+        filtered_result = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        return filtered_result
+
+    elif(featured is not None):
+        featured = tuple(featured)
+        sql = """SELECT LPAD(item, 3, 0) AS item, description FROM treatments WHERE item IN {} AND tariff = '{}' ORDER BY id""".format(featured, tariff)
+        connection = pool.connection()
+        cursor = connection.cursor()
+        cursor.execute(sql)
+        featured_result = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        return featured_result
 
 
 def getTreatmentByItem(treatments, tariff, value, dates, patient, modifier):
-    with connection.cursor() as cursor:
-        treatment_list=[]
-        for i in treatments:
-            sql = """SELECT description, units, value FROM treatments WHERE item = {} AND tariff = '{}'""".format(i, tariff)
-            cursor.execute(sql)
-            q = cursor.fetchone()
-            treatment_list.append(q)
-        createTextInvoice(treatments, treatment_list, value,  dates, patient, modifier)
+    treatment_list=[]
+    connection = pool.connection()
+    cursor = connection.cursor()
+    for i in treatments:
+        sql = """SELECT description, units, value FROM treatments WHERE item = {} AND tariff = '{}'""".format(i, tariff)
+        cursor.execute(sql)
+        q = cursor.fetchone()
+        treatment_list.append(q)
+    createTextInvoice(treatments, treatment_list, value,  dates, patient, modifier)
+    cursor.close()
+    connection.close()
