@@ -45,11 +45,14 @@ def configureBorders(doc, text, items):
     get_main_table =  text_tables.getByIndex(2)
     count = 0
     col = ['A', 'B', 'C', 'D']
+
+    # in order to get the count can't you rather just do:
+    # len(items)
     for i in items:
         count = count + 1
 
     for i in col:
-        table_main_cell = get_main_table.getCellByName(i + str(count+2))
+        table_main_cell = get_main_table.getCellByName(i + str(count + 2))
         left_border_a_cell = table_main_cell.LeftBorder
         left_border_a_cell.OuterLineWidth = 0 
         left_border_a_cell.LineWidth = 0 

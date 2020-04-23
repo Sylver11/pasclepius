@@ -13,12 +13,14 @@ def getTreatmentForm(tariff = None):
         treatments = SelectField(u'Treatments',  coerce=int)
         date = TextField('Date', validators=[DataRequired()])
         price = TextField(u'Value')
+        # I would move the definition of these choices somewhere else instead of doing them inline
         modifier = SelectField(u'Modifier', choices= [(0, 'None'), (14,'Rendered hospital'),(13, 'Travelling cost')], default=0)
         submit = SubmitField('Submit')
         def initialise_SelectOption(self,list_ordered_by_category = None, featured_ordered_by_category = None,  *args, **kwargs):
             super(Treatment, self).__init__(*args, **kwargs)
             self.treatments.choices =  [(0, "Select treatment")] + featured_ordered_by_category + list_ordered_by_category
 
+        # maybe better naming for this method?
         def nestedObjects(something, filtered_result, featured_result):
             list_of_categories = []
             list_ordered_by_category = []

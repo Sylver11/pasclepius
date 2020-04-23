@@ -28,6 +28,18 @@ def selectPatient():
     if form_mva.validate_on_submit():
         session["PATIENT"] = request.values
        # print(request.values)
+       # I would refactor these dictionaries/hashes so that you can just call them from a method
+       # eg
+       # jsonify(data=mva_hash(form))
+       # def mva_hash(form)
+       # {
+       #   "medical": str(form.medical.data),
+       #   ..etc
+       # }
+       #
+       # will make it much easier to read and change, and maybe you could declare it in a module somewhere if
+       # it gets reused somewhere else in the app
+
         jsonData = jsonify(data={"medical": str(form_mva.medical.data), 'name': str(form_mva.name.data),'case': str(form_mva.case.data), 'po':str(form_mva.po.data), 'date': str(form_mva.date.data) })
         return jsonData
     if form_psemas.validate_on_submit():
@@ -49,7 +61,10 @@ def newInvoice(patient):
     medical = (session.get('PATIENT')["medical"])
     tariff = (session.get('PATIENT')["tariff"])
     date = session.get('PATIENT')['date']
-    form = getTreatmentForm(tariff) 
+    form = getTreatmentForm(tariff)
+    # there is a clever way we can refactor this using the factory pattern
+    # https://realpython.com/factory-method-python/
+    # If you need help/insight with it let me know
     if (medical == 'mva'):
         po = session.get('PATIENT')['po']
         case = session.get('PATIENT')["case"]
@@ -92,6 +107,7 @@ def getValue():
 
 @app.route('/download-invoice')
 def downloadInvoice():
+    # probably want to remove these print statements
     name = session.get('PATIENT')["name"]
     print(name)
     path = "/Users/justusvoigt/Documents/" + str(name) + ".odt"
@@ -105,6 +121,7 @@ def sessionValues():
 
 
 if __name__ == '__main__':
+    # also need to store the secret here in an environment variable like I suggested for db creds
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     app.run(host='0.0.0.0', port =4003, debug=True, threaded=True)
