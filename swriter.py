@@ -176,10 +176,10 @@ def populateTable(doc, text, items, treatments, price, dates, modifier):
         insertTextIntoCell(table, "D" + str(a[0] + 2), str(d))
     cell_sum = table.getCellByName("D" + str(2 + unitCount))
     cell_sum.setFormula("=sum <D2:D" + str(1 + unitCount) + ">")
-    NumForms = doc.getNumberFormats()
-    dateFormatString = "YYYY/MM/DD\\ HH:MM:SS"
-    DateKey = NumForms.queryKey(dateFormatString, sLocale, True)
-    cell_sum.NumberFormat = DateKey
+   # NumForms = doc.getNumberFormats()
+   # dateFormatString = "YYYY/MM/DD\\ HH:MM:SS"
+   # DateKey = NumForms.queryKey(dateFormatString, sLocale, True)
+   # cell_sum.NumberFormat = DateKey
     return doc, text
 
 def populateMiddleTable(doc, text, patient):
@@ -350,4 +350,4 @@ def testing():
     modifier = ['0','0','0','14']
     createTextInvoice(items, treatments, price, dates, patient, modifier)
 
-#testing()
+testing()
