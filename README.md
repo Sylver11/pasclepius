@@ -1,7 +1,14 @@
 # pasclepius
 
+Pre-requsits:
+LibreOffice 6+
+python3 
+
+following python packages: 
+TODO 
 
 
-run: 
-/Applications/LibreOffice.app/Contents/MacOS/python ~/Code/justus/python/pasclepius/swriter.py
+
+run on Mac: 
 /Applications/LibreOffice.app/Contents/MacOS/soffice "--accept=socket,host=localhost,port=2002;urp;"
+/Applications/LibreOffice.app/Contents/MacOS/python app.py
