@@ -1,3 +1,4 @@
+import os
 import uno
 from unohelper import systemPathToFileUrl
 from com.sun.star.beans import PropertyValue
@@ -7,10 +8,11 @@ from com.sun.star.text.TextContentAnchorType import AS_CHARACTER
 from com.sun.star.table import BorderLine2
 from com.sun.star.awt import Size
 from com.sun.star.text import TableColumnSeparator
+
 cursor = None
 
 def saveDocument(doc, patient):
-    url = systemPathToFileUrl('/Users/justusvoigt/Documents/' + str(patient['name']) + '.odt')
+    url = systemPathToFileUrl(os.getenv("SYSTEM_URL") + '/Documents/'+ str(patient['name']) + '.odt')
     args = (PropertyValue('FilterName',0, 'writer8', 0),)
     doc.storeToURL(url, args)
     doc.dispose()
@@ -350,4 +352,4 @@ def testing():
     modifier = ['0','0','0','14']
     createTextInvoice(items, treatments, price, dates, patient, modifier)
 
-testing()
+#testing()
