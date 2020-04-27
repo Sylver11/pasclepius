@@ -1,11 +1,12 @@
-from flask import Flask, render_template, Response, request, session, jsonify, redirect, url_for, send_file
+from flask import current_app as app
+import subprocess 
+import os
+from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file
 from jinja2 import Template
-from forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm
+from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm
 import simplejson as json
 from decimal import *
-from database_io import getTreatmentByItem, getValueTreatments
-app = Flask(__name__)
-
+from application.database_io import getTreatmentByItem, getValueTreatments
 
 @app.route('/', methods=('GET', 'POST'))
 def home():
@@ -25,23 +26,10 @@ def selectPatient():
     form_mva = Patient_mva()
     form_psemas = Patient_psemas()
     form_other = Patient_other()
-    if form_mva.validate_on_submit():
+    if form_mva.validate_on_submit() or form_psemas.validate_on_submit() or form_other.validate_on_submit():
         session["PATIENT"] = request.values
-       # print(request.values)
-        jsonData = jsonify(data={"medical": str(form_mva.medical.data), 'name': str(form_mva.name.data),'case': str(form_mva.case.data), 'po':str(form_mva.po.data), 'date': str(form_mva.date.data) })
+        jsonData = jsonify(data={'name': str(form_mva.name.data)})
         return jsonData
-    if form_psemas.validate_on_submit():
-        session["PATIENT"] = request.values
-       # print(request.values)
-        jsonData = jsonify(data={"medical": str(form_psemas.medical.data), 'name': str(form_psemas.name.data),'main': str(form_psemas.main.data), 'dob':str(form_psemas.dob.data), 'date': str(form_psemas.date.data), 'number': str(form_psemas.number.data)})
-        return jsonData
-    if form_other.validate_on_submit():
-        session["PATIENT"] = request.values
-       # print(request.values)
-        jsonData = jsonify(data={"medical": str(form_other.medical.data), 'name': str(form_other.name.data),'main': str(form_other.main.data), 'dob':str(form_other.dob.data), 'date': str(form_other.date.data), 'number': str(form_other.number.data)})
-        return jsonData
-   # print(form_psemas.errors)
-   # return jsonify(data=form_mva.errors)
 
 
 @app.route('/patient/<patient>/new-invoice')
@@ -64,7 +52,7 @@ def newInvoice(patient):
         main = session.get('PATIENT')['main']
         dob = session.get('PATIENT')['dob']
         return render_template('invoice.html', form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
- 
+
 
 @app.route('/generate-invoice', methods=['POST'])
 def generateInvoice():
@@ -76,7 +64,8 @@ def generateInvoice():
     patient = session.get('PATIENT')
     form = getTreatmentForm(tariff) 
     if form.treatments.data:
-        getTreatmentByItem(treatments, tariff, price, dates, patient, modifier)
+        treatment_list = getTreatmentByItem(treatments, tariff)
+        subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") + '/application/swriter.py', json.dumps(treatments), json.dumps(treatment_list), json.dumps(price), json.dumps(dates), json.dumps(patient), json.dumps(modifier)])
         return jsonify(result='success')
     return jsonify(result='error')
 
@@ -93,18 +82,10 @@ def getValue():
 @app.route('/download-invoice')
 def downloadInvoice():
     name = session.get('PATIENT')["name"]
-    print(name)
-    path = "/Users/justusvoigt/Documents/" + str(name) + ".odt"
-    print(path)
-    print("this is running")
+    path = "Users/justusvoigt/Documents/" + str(name) + ".odt"
     return send_file(path, as_attachment=True)
 
 @app.route('/session')
 def sessionValues():
     return str(session.get('PATIENT'))
 
-
-if __name__ == '__main__':
-    app.secret_key = 'super secret key'
-    app.config['SESSION_TYPE'] = 'filesystem'
-    app.run(host='0.0.0.0', port =4003, debug=True, threaded=True)

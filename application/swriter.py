@@ -166,8 +166,6 @@ def insertTextIntoCell( table, cellName, text, color = None ):
 
 def populateTable(doc, text, items, treatments, price, dates, modifier):
     table, unitCount = createTable(doc, text, len(treatments))
-    print(price)
-    print(treatments)
     for a, b, c, d, e in zip(enumerate(treatments), dates, items, price, modifier):
         if e == '14':
             insertTextIntoCell(table, "B" + str(a[0] + 2), str(c + " (0" + e + ")"))
@@ -215,14 +213,10 @@ def populateMiddleTable(doc, text, patient):
         fourth_middle_table_text.setPropertyValue( "CharFontName", "Liberation Serif" )
         fourth_middle_table_text.setPropertyValue( "CharHeight", 10.0 )
        # fourth_middle_table_text.setPropertyValue( "ParaAdjust", RIGHT )
-        
         seventh_middle_table_text = middle_table.getCellByName("B1")
         seventh_middle_table_text.setString("Invoice")
         seventh_middle_table_text.setPropertyValue( "CharFontName", "Liberation Serif" )
         seventh_middle_table_text.setPropertyValue( "CharHeight", 11.0 )
-
-
-
         text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
        # text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
 
@@ -258,21 +252,18 @@ def populateMiddleTable(doc, text, patient):
         fifth_middle_table_text.setString("Patient Name: " + str(patient['name']))
         fifth_middle_table_text.setPropertyValue( "CharFontName", "Liberation Serif" )
         fifth_middle_table_text.setPropertyValue( "CharHeight", 10.0 )
-       # fifth_middle_table_text.setPropertyValue("ParaAdjust", CENTER)
+        #fifth_middle_table_text.setPropertyValue("ParaAdjust", CENTER)
         sixth_middle_table_text = middle_table.getCellByName("B3")
         sixth_middle_table_text.setString("Patient DoB: " + str(patient['dob']))
         sixth_middle_table_text.setPropertyValue( "CharFontName", "Liberation Serif" )
-        sixth_middle_table_text.setPropertyValue( "CharHeight", 10.0 )
-        
+        sixth_middle_table_text.setPropertyValue( "CharHeight", 10.0 ) 
         seventh_middle_table_text = middle_table.getCellByName("B1")
         seventh_middle_table_text.setString("Invoice")
         seventh_middle_table_text.setPropertyValue( "CharFontName", "Liberation Serif" )
         seventh_middle_table_text.setPropertyValue( "CharHeight", 11.0 )
-
-
         #sixth_middle_table_text.setPropertyValue("ParaAdjust", CENTER)
         text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
-       # text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
+        #text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
 
     return doc, text
 
@@ -309,7 +300,6 @@ def populateTopText(doc, text):
 #    header_text = oDefaultStyle.getPropertyValue("HeaderText")
 #    header_cursor = header_text.createTextCursor()
 #    header_text.insertString(header_cursor, "hello",0)
-
     cursor = text.createTextCursor()
     cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
     cursor.setPropertyValue( "CharHeight", 10.0 )
@@ -340,7 +330,7 @@ def createTextInvoice(items, treatments, price, dates, patient, modifier):
     doc, text = populateTable(doc, text, items, treatments, price, dates, modifier)
     doc, text = populateBottomTable(doc, text)
     doc, text = configureBorders(doc, text, items)
-    saveDocument(doc, patient)
+#    saveDocument(doc, patient)
 
 
 def testing():
@@ -352,4 +342,17 @@ def testing():
     modifier = ['0','0','0','14']
     createTextInvoice(items, treatments, price, dates, patient, modifier)
 
-#testing()
+
+if __name__ == '__main__':
+    import argparse
+    import json
+    parser = argparse.ArgumentParser(description='Creating an invoice')
+    parser.add_argument('items',type=json.loads, help='this is a item list')
+    parser.add_argument('treatments', type=json.loads, help='This should be a treatment list')
+    parser.add_argument('price', type=json.loads, help='this should be a price list')
+    parser.add_argument('dates', type=json.loads, help='this should be a dates list')
+    parser.add_argument('patient', type=json.loads)
+    parser.add_argument('modifier', type=json.loads, help='this should be a modifier list')
+    args = parser.parse_args()
+    createTextInvoice(args.items, args.treatments, args.price, args.dates, args.patient, args.modifier)
+    #testing()

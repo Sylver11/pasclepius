@@ -1,13 +1,10 @@
-from flask_wtf import FlaskForm, RecaptchaField
+from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField
 from wtforms_components.fields import SelectField
 from wtforms.validators import DataRequired, Length, Email, Required
 from wtforms import Form as NoCsrfForm
-import datetime
-import wtforms_json
-from database_io import getTreatments
+from application.database_io import getTreatments
 
-wtforms_json.init()
 def getTreatmentForm(tariff = None):
     class Treatment(FlaskForm):
         treatments = SelectField(u'Treatments',  coerce=int)

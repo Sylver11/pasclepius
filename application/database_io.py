@@ -1,5 +1,5 @@
-from db_utils import pool
-from swriter import createTextInvoice
+from application.db_utils import pool
+
 
 def setupTable():
     sql = """CREATE TABLE treatments (
@@ -54,7 +54,7 @@ def getTreatments(tariff, featured=None):
         return featured_result
 
 
-def getTreatmentByItem(treatments, tariff, value, dates, patient, modifier):
+def getTreatmentByItem(treatments, tariff):
     treatment_list=[]
     connection = pool.connection()
     cursor = connection.cursor()
@@ -63,6 +63,6 @@ def getTreatmentByItem(treatments, tariff, value, dates, patient, modifier):
         cursor.execute(sql)
         q = cursor.fetchone()
         treatment_list.append(q)
-    createTextInvoice(treatments, treatment_list, value,  dates, patient, modifier)
     cursor.close()
     connection.close()
+    return treatment_list
