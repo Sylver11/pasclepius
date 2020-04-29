@@ -12,7 +12,7 @@ from com.sun.star.text import TableColumnSeparator
 cursor = None
 
 def saveDocument(doc, patient):
-    url = systemPathToFileUrl( '/home/justus/owncloud/'+ str(patient['name']) + '.odt')
+    url = systemPathToFileUrl( '/Users/justusvoigt/'+ str(patient['name']) + '.odt')
     args = (PropertyValue('FilterName',0, 'writer8', 0),)
     #os.getenv("SYSTEM_URL"))
     doc.storeToURL(url, args)

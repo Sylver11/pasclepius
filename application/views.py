@@ -63,6 +63,8 @@ def generateInvoice():
     tariff = session.get('PATIENT')["tariff"]
     patient = session.get('PATIENT')
     form = getTreatmentForm(tariff) 
+    print(price)
+    print(treatments)
     if form.treatments.data:
         treatment_list = getTreatmentByItem(treatments, tariff)
         subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") + '/application/swriter.py', json.dumps(treatments), json.dumps(treatment_list), json.dumps(price), json.dumps(dates), json.dumps(patient), json.dumps(modifier)])

@@ -1,25 +1,6 @@
 from application.db_utils import pool
+import os 
 
-
-def setupTable():
-    sql = """CREATE TABLE treatments (
-    id int(11) NOT NULL AUTO_INCREMENT,
-    item int(11) NOT NULL,
-    description varchar(255) COLLATE utf8_bin NOT NULL,
-    units int(11) NOT NULL,
-    value decimal(10,2) NOT NULL,
-    category varchar(255) COLLATE utf8_bin NOT NULL,
-    tariff varchar(255) NOT NULL,
-    PRIMARY KEY (id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin
-    AUTO_INCREMENT=1 ;"""
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-    finally:
-        connection.close()
-#setupTable()
-#mysqlimport --ignore-lines=1 --fields-terminated-by=\; --columns='item,description,units,value,category,tariff' --local -u root -p pasclepius /Users/justusvoigt/Documents/treatments.csv
 
 def getValueTreatments(item, tariff):
     sql = """SELECT value FROM treatments WHERE item = {} AND tariff = '{}'""".format(item, tariff)

@@ -55,6 +55,37 @@
 <script>
 $(document).ready(function(){
 
+    $('.treatment').prepend($('<option value="" disabled hidden selected>Choose treatment</option>')); 
+//     var x = document.getElementById("treatment-0");
+// var option = document.createElement("option");
+// option.text = "Kiwi";
+// x.prependTo(option);
+
+
+// // get reference to select element
+// var sel = document.getElementsByClassName('treatment');
+// console.log(sel)
+// // create new option element
+// var opt = document.createElement('option');
+
+// // create text node to add to option element (opt)
+// opt.appendChild( document.createTextNode('Select treatment') );
+
+// // set value property of opt
+// opt.value = ''; 
+
+// // add opt to end of select box (sel)
+// sel.appendChild(opt); 
+
+
+
+
+
+
+
+
+
+
     function addSubmit(ev) {
         ev.preventDefault();
         // var test = $('form').serializeArray();
@@ -117,6 +148,15 @@ $(document).ready(function(){
                  if (match2.length == 3) {
                      this.name = match2[1] + (cloneIndex);   
                  }
+                 if (this.className.includes("value")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("datepicker")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("thirty") || (this.className.includes("fourty"))){
+                    this.style.backgroundColor = "white";
+                 } 
             }            
             )
             .on('click', 'clone', clone)
@@ -142,8 +182,8 @@ $(document).ready(function(){
     }
 
     function addPremium(object, id, percent){
-        var current_value = parseInt(object.parent().parent().children().children(".value").val());
-	   	let plus_premium = current_value * percent;
+        var current_value = parseFloat(object.parent().parent().children().children(".value").val());
+	   	let plus_premium = current_value.toFixed(3) * percent;
 	  	object.parent().parent().children().children(".value").val(plus_premium.toFixed(2));
         object.siblings().css('background-color', 'white');
         object.css('background-color', 'green');
@@ -171,7 +211,7 @@ $(document).ready(function(){
 
     function replacePremium(object, id, percent){
         original_value = value_edit[id].value;
-        let plus_premium = original_value * percent;
+        let plus_premium = original_value.toFixed(3) * percent;
 	  	object.parent().parent().children().children(".value").val(plus_premium.toFixed(2));
         object.siblings().css('background-color', 'white');
         object.css('background-color', 'green');
@@ -229,12 +269,18 @@ $(document).ready(function(){
         $('.datepicker' ).datepicker({dateFormat: 'dd.mm.yy'});
 	    	$('.thirty').show()
 	    	$('.fourty').show()
-		sibling_of_value = $(this);
-      		$.getJSON('/get-value', {
-        	item: $(this).val()			
-      }, function(data) {
-        $(sibling_of_value).parent().parent().children().children(".value").val(data.value.toFixed(2));
-      });
+		    sibling_of_value = $(this);
+            if($(this).val()!= 0){
+                $.getJSON('/get-value', {
+        	        item: $(this).val()			
+                }, function(data) {
+                        $(sibling_of_value).parent().parent().children().children(".value").val(data.value.toFixed(2));
+                    });
+            }
+            else{
+                $(sibling_of_value).parent().parent().children().children(".value").val("");
+            }
+      		
       return false;
     });
 
