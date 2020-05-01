@@ -1,10 +1,16 @@
-#!/usr/local/bin/python3
 import sys
 import os
+
+python_home = '/var/www/flaskapp/pasclepius/env'
+
+activator = python_home + '/bin/activate_this.py'
+with open(activator) as f:
+    exec(f.read(), {'__file__': activator})
+
 sys.path.insert(0, os.getenv("APP_URL"))
+sys.path.append('/var/www/flaskapp/pasclepius/env/lib/python3.7/site-packages')
 
 from application import create_app
-
 application = create_app()
 
 if __name__ == '__main__':

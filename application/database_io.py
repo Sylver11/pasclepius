@@ -1,5 +1,5 @@
 from application.db_utils import pool
-import os 
+import os
 
 
 def getValueTreatments(item, tariff):
@@ -10,7 +10,7 @@ def getValueTreatments(item, tariff):
     filtered_result = cursor.fetchone()
     cursor.close()
     conn.close()
-    return filtered_result 
+    return filtered_result
 
 def getTreatments(tariff, featured=None):
     if (featured is None):

@@ -19,5 +19,7 @@ def create_app():
         from . import db_utils
         from . import database_io
         from . import views
+        from . import url_generator
+        from . import database_invoice
         return application
 

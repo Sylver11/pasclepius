@@ -7,6 +7,11 @@ from application.forms import Patient_mva, Patient_psemas, Patient_other, getTre
 import simplejson as json
 from decimal import *
 from application.database_io import getTreatmentByItem, getValueTreatments
+from application.database_invoice import get_index, add_invoice
+from application.url_generator import InvoicePath
+from application.name_generator import InvoiceName
+
+url = None
 
 @app.route('/', methods=('GET', 'POST'))
 def home():
@@ -56,18 +61,31 @@ def newInvoice(patient):
 
 @app.route('/generate-invoice', methods=['POST'])
 def generateInvoice():
+  #  global url
     dates = request.form.getlist('date')
     treatments = request.form.getlist('treatments')
     modifier = request.form.getlist('modifier')
     price = request.form.getlist('price')
+    date = session.get('PATIENT')['date']
     tariff = session.get('PATIENT')["tariff"]
     patient = session.get('PATIENT')
+    medical = session.get('PATIENT')['medical']
     form = getTreatmentForm(tariff) 
-    print(price)
-    print(treatments)
     if form.treatments.data:
         treatment_list = getTreatmentByItem(treatments, tariff)
-        subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") + '/application/swriter.py', json.dumps(treatments), json.dumps(treatment_list), json.dumps(price), json.dumps(dates), json.dumps(patient), json.dumps(modifier)])
+        index = get_index(medical, date)
+        url = InvoicePath(patient, index)
+        url = url.generate()
+        print(url)
+        invoice_name = InvoiceName(patient, index, modifier)
+        invoice_name = invoice_name.generate()
+        add_invoice(patient, invoice_name)
+        subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
+                         '/application/swriter.py', json.dumps(treatments),
+                         json.dumps(treatment_list), json.dumps(price),
+                         json.dumps(dates), json.dumps(patient),
+                         json.dumps(modifier), json.dumps(url),
+                         json.dumps(invoice_name)])
         return jsonify(result='success')
     return jsonify(result='error')
 
@@ -81,10 +99,11 @@ def getValue():
     return value_json
 
 
-@app.route('/download-invoice')
-def downloadInvoice():
-    name = session.get('PATIENT')["name"]
-    path = "Users/justusvoigt/Documents/" + str(name) + ".odt"
+@app.route('/download-invoice/<random>')
+def downloadInvoice(random):
+ #   global url
+    print(url)
+    path = str(url) + ".odt"
     return send_file(path, as_attachment=True)
 
 @app.route('/session')

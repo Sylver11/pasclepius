@@ -27,7 +27,7 @@
         
     <br>
 
-    <form id="NewOrderForm" class="form">   
+    <form autocomplete="off" id="NewOrderForm" class="form">   
         {{ form.hidden_tag() }}
         <table class="table table-striped">
             <tbody class="tbodyClone">
@@ -56,52 +56,25 @@
 $(document).ready(function(){
 
     $('.treatment').prepend($('<option value="" disabled hidden selected>Choose treatment</option>')); 
-//     var x = document.getElementById("treatment-0");
-// var option = document.createElement("option");
-// option.text = "Kiwi";
-// x.prependTo(option);
-
-
-// // get reference to select element
-// var sel = document.getElementsByClassName('treatment');
-// console.log(sel)
-// // create new option element
-// var opt = document.createElement('option');
-
-// // create text node to add to option element (opt)
-// opt.appendChild( document.createTextNode('Select treatment') );
-
-// // set value property of opt
-// opt.value = ''; 
-
-// // add opt to end of select box (sel)
-// sel.appendChild(opt); 
-
-
-
-
-
-
-
-
-
 
     function addSubmit(ev) {
-        ev.preventDefault();
-        // var test = $('form').serializeArray();
-      $.ajax({
-        method: 'POST',
-        url: '/generate-invoice',
-        data: $('form').serialize(),
-      }).done(addShow);
+        ev.preventDefault();   
+        if ($('form').data('submitted') === true) {
+            console.log("form is submitted ")
+            ev.preventDefault();
+        } else {
+            $.ajax({
+            method: 'POST',
+            url: '/generate-invoice',
+            data: $('form').serialize(),
+        }).done(addShow);
+      $('form').data('submitted', true);
+        }
     }
 
-
     $(document).on("click", "#download_invoice", function(){
-        $('head').append('<meta http-equiv="refresh" content="1;url=/download-invoice"/>');
+        $('head').append('<meta http-equiv="refresh" content="1;url=/download-invoice/' + Math.floor(Math.random() * 10000) + '"/>');
         })
-
-
     function addShow(data) {
       $('#result').text(data.result);
       if(data.result =='success'){

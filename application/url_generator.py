@@ -1,19 +1,20 @@
 from datetime import datetime
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 import calendar
 import os
 
-load_dotenv()
+#load_dotenv()
 
 
 class InvoicePath(object):
 
-    def __init__(self, date, medical):
-        self.date = date
-        self.medical = medical
+    def __init__(self, patient, index):
+        self.date = patient['date']
+        self.medical = patient['medical']
+        self.name = patient['name']
+        self.index = index
 
     def convert(self):
-        print(self.date)
         self.date  =  datetime.strptime(self.date, '%d.%m.%Y')
         return self.date
 
@@ -26,10 +27,10 @@ class InvoicePath(object):
             return self.date.day
 
 
-    def generate(self, name):
+    def generate(self):
        # date_component = self.date_digits(date_component)
         self.date = self.convert()
-        self.path = os.getenv("OWNCLOUD_URL") +'/' + str(self.medical).upper() + '_' + os.getenv("USERNAME") + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + calendar.month_name[self.date_digits('month')] + str(self.date_digits('year')) + '/' + name
+        self.path = os.getenv("OWNCLOUD_URL") +'/' + str(self.medical).upper() + '_' + os.getenv("USERNAME") + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + calendar.month_name[self.date_digits('month')] + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + '_' + str(self.index) + self.name
 
 
         return self.path
@@ -41,11 +42,13 @@ class InvoicePath(object):
 
 
 
-
-date = InvoicePath('14.04.2020', 'mva')
+#patient = {'case': 'asdfasdfa',
+       #    'csrf_token':'ImU5NjFiYWEwN2Y1MGUyMmFiZDBkY2ZiYTQ5NDgxYzdiN2NlODQ2MDQi.XpVy6A.zOXe-xkr0gUZJroWUQHqVEoGxu0','date':
+       #    '14.04.2020', 'medical': 'mva', 'name': 'lotharrrr hoo', 'po': '423423423'}
+#date = InvoicePath(patient, 3)
 #print(date)
-date_convert = date.generate("Justus")
+#date_convert = date.generate()
 
-print(date_convert)
+#print(date_convert)
 
 
