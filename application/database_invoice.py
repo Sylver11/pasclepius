@@ -15,7 +15,21 @@ def get_index(medical, date):
     conn.close()
     return index['COUNT(*)'] + 1
 
-def add_invoice(patient, invoice):
+
+def getInvoiceURL(name, date):
+    date = datetime.strptime(date, '%d.%m.%Y')
+    sql = """SELECT url FROM andrea_invoice WHERE name = '{}' AND date =
+    '{}'""".format(name, date)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    url = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return url
+
+
+def add_invoice(patient, invoice, url, treatments):
     name = patient['name']
     date = patient['date']
     medical = patient['medical']
@@ -34,10 +48,11 @@ def add_invoice(patient, invoice):
         number = patient['number']
 
     date = datetime.strptime(date, '%d.%m.%Y')
-    sql = """INSERT INTO andrea_invoice (name, date, medical, invoice, tariff,
-    main, dob, number, `case`, po)
-    VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}')
-    """.format(name, date, medical, invoice, tariff, main, dob, number, case, po)
+    treatments = ','.join(map(str, treatments))
+    sql = """INSERT INTO andrea_invoice (name, date, medical, invoice, url,
+    treatments, tariff, main, dob, number, `case`, po)
+    VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}')
+    """.format(name, date, medical, invoice, url, treatments, tariff, main, dob, number, case, po)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)

@@ -7,11 +7,10 @@ from application.forms import Patient_mva, Patient_psemas, Patient_other, getTre
 import simplejson as json
 from decimal import *
 from application.database_io import getTreatmentByItem, getValueTreatments
-from application.database_invoice import get_index, add_invoice
+from application.database_invoice import get_index, add_invoice, getInvoiceURL
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 
-url = None
 
 @app.route('/', methods=('GET', 'POST'))
 def home():
@@ -61,7 +60,6 @@ def newInvoice(patient):
 
 @app.route('/generate-invoice', methods=['POST'])
 def generateInvoice():
-  #  global url
     dates = request.form.getlist('date')
     treatments = request.form.getlist('treatments')
     modifier = request.form.getlist('modifier')
@@ -76,10 +74,9 @@ def generateInvoice():
         index = get_index(medical, date)
         url = InvoicePath(patient, index)
         url = url.generate()
-        print(url)
         invoice_name = InvoiceName(patient, index, modifier)
         invoice_name = invoice_name.generate()
-        add_invoice(patient, invoice_name)
+        add_invoice(patient, invoice_name, url, treatments)
         subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                          '/application/swriter.py', json.dumps(treatments),
                          json.dumps(treatment_list), json.dumps(price),
@@ -101,9 +98,10 @@ def getValue():
 
 @app.route('/download-invoice/<random>')
 def downloadInvoice(random):
- #   global url
-    print(url)
-    path = str(url) + ".odt"
+    name = session.get('PATIENT')['name']
+    date = session.get('PATIENT')['date']
+    url = getInvoiceURL(name, date)
+    path = str(url['url']) + ".odt"
     return send_file(path, as_attachment=True)
 
 @app.route('/session')

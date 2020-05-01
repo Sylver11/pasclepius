@@ -23,6 +23,8 @@ def setupTable():
         date DATETIME NOT NULL,
         medical varchar(255) NOT NULL,
         invoice varchar(255) NOT NULL,
+        url varchar(255) NOT NULL,
+        treatments varchar(255) NOT NULL,
         tariff varchar(255) NOT NULL,
         main varchar(255),
         dob varchar(255),
