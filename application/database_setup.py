@@ -43,7 +43,7 @@ def setupTable():
     cursor.execute(sql_drop_table_invoice)
     cursor.execute(sql_create_table)
     cursor.execute(sql_create_table_invoice)
-    data = pd.read_csv (os.getenv("SYSTEM_URL") + '/Documents/treatments.csv', delimiter=';')
+    data = pd.read_csv (os.getenv("SYSTEM_URL") + '/owncloud/Documents/Physio Practice/Namaf_tariffs/treatments.csv', delimiter=';')
     df = pd.DataFrame(data, columns= ['item','description','units','value','category', 'tariff'])
     sql_insert =  """INSERT INTO treatments (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
     for row in df.itertuples():

@@ -12,15 +12,9 @@ from com.sun.star.lang import Locale
 
 cursor = None
 
-<<<<<<< HEAD
-def saveDocument(doc, patient):
-    url = systemPathToFileUrl( '/home/justus/owncloud/'+ str(patient['name']) + '.odt')
-=======
 def saveDocument(doc, url):
     url = systemPathToFileUrl( url + '.odt')
->>>>>>> 437788070fa0866acc38404cfd56a76cc29b6d8a
     args = (PropertyValue('FilterName',0, 'writer8', 0),)
-    #os.getenv("SYSTEM_URL"))
     doc.storeToURL(url, args)
     doc.dispose()
 
@@ -202,64 +196,21 @@ def populateMiddleTable(doc, text, patient, invoice_name):
         middle_table.setName('middle_table')
         text.insertTextContent( cursor, middle_table, 1 )
         first_middle_table_text = middle_table.getCellByName("A1")
-<<<<<<< HEAD
-        #first_middle_table_text.setPropertyValue( "ParaAdjust", LEFT )
-
-
-        range_top = middle_table.getCellRangeByName("A1:A2")
-        #range.setPropertyValue( "CharFontName", "Liberation Serif" )
-        range_top.setPropertyValue( "ParaAdjust", LEFT )
-
-
-       # first_middle_table_text.setPropertyValue( "CharHeight", 10.0 )
-        first_middle_table_text.setString("Invoice No: MVA/2020/H" )
-        second_middle_table_text = middle_table.getCellByName("A2")
-        second_middle_table_text.setString("Patient Name: " + str(patient['name']) + "\nCase Number: " + str(patient['case']) + "\nPO: " + str(patient['po']))
-       # second_middle_table_text.setPropertyValue( "CharFontName", "Liberation Serif" )
-       # second_middle_table_text.setPropertyValue( "CharHeight", 10.0 )
-      #  third_middle_table_text = middle_table.getCellByName("B2")
-      #  third_middle_table_text.setString("Case Number: " + str(patient['case']))
-       # third_middle_table_text.setPropertyValue( "CharFontName", "Liberation Serif" )
-       # third_middle_table_text.setPropertyValue( "CharHeight", 10.0 )
-       # third_middle_table_text.setPropertyValue("ParaAdjust", CENTER)
-=======
         range_top = middle_table.getCellRangeByName("A1:A2")
         range_top.setPropertyValue( "ParaAdjust", LEFT )
         first_middle_table_text.setString("Invoice No: " + str(invoice_name))
         second_middle_table_text = middle_table.getCellByName("A2")
         second_middle_table_text.setString("Patient Name: " + str(patient['name']) + "\nCase Number: " + str(patient['case']) + "\nPO: " + str(patient['po']))
->>>>>>> 437788070fa0866acc38404cfd56a76cc29b6d8a
         cursor_middle_right = middle_table.createCursorByCellName("C1")
         cursor_middle_right.setPropertyValue( "ParaAdjust", RIGHT )
         cursor_middle_table_c1 = middle_table.getCellByName("C1")
         cursor_middle_table_c1.setString("Date: " + str(patient['date']))
-<<<<<<< HEAD
-       # cursor_middle_table_c1.setPropertyValue( "CharFontName", "Liberation Serif" )
-       # cursor_middle_table_c1.setPropertyValue( "CharHeight", 10.0 )
-        fourth_middle_table_text = middle_table.getCellByName("C2")
-      #  fourth_middle_table_text.setString("PO: " + str(patient['po']))
-        #fourth_middle_table_text.setPropertyValue( "CharFontName", "Liberation Serif" )
-        #fourth_middle_table_text.setPropertyValue( "CharHeight", 10.0 )
-        seventh_middle_table_text = middle_table.getCellByName("B1")
-        seventh_middle_table_text.setString("Invoice")
-       # seventh_middle_table_text.setPropertyValue( "CharFontName", "Liberation Serif" )
-       # seventh_middle_table_text.setPropertyValue( "CharHeight", 11.0 )
-       
-
-        range = middle_table.getCellRangeByName("A2:C2")
-        range.setPropertyValue( "CharFontName", "Liberation Serif" )
-        range.setPropertyValue( "CharHeight", 10.0 )
- #   range.setPropertyValue("ParaAdjust", LEFT)
-
-
-=======
         fourth_middle_table_text = middle_table.getCellByName("C2")
         seventh_middle_table_text = middle_table.getCellByName("B1")
         seventh_middle_table_text.setString("Invoice")
         range = middle_table.getCellRangeByName("A1:C2")
         range.setPropertyValue( "CharFontName", "Liberation Serif" )
         range.setPropertyValue( "CharHeight", 10.0 )
->>>>>>> 437788070fa0866acc38404cfd56a76cc29b6d8a
         text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
 
     else:
@@ -294,47 +245,24 @@ def populateMiddleTable(doc, text, patient, invoice_name):
 
 def populateTopTable(doc, text, patient):
     global cursor
-<<<<<<< HEAD
-   # cursor.setPropertyValue( "CharHeight", 10.0 )
-   # cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
-=======
->>>>>>> 437788070fa0866acc38404cfd56a76cc29b6d8a
     top_table = doc.createInstance( "com.sun.star.text.TextTable" )
     top_table.initialize(1,2)
     top_table.setName('top_Table')
     text.insertTextContent( cursor, top_table, 1 )
     first_top_table_text = top_table.getCellByName("A1")
     first_top_table_text.setString("Practice No: 072 0000 637653 \nHPCNA No: PHY 00194" )
-<<<<<<< HEAD
-   # first_top_table_text.setPropertyValue( 'CharHeight', 10.0 )
     cursor_top_right = top_table.createCursorByCellName("B1")
     cursor_top_right.setPropertyValue( "ParaAdjust", RIGHT )
     second_top_table_text = top_table.getCellByName("B1")
-   # second_top_table_text.setPropertyValue( 'CharHeight', 10.0 )
-=======
-    cursor_top_right = top_table.createCursorByCellName("B1")
-    cursor_top_right.setPropertyValue( "ParaAdjust", RIGHT )
-    second_top_table_text = top_table.getCellByName("B1")
->>>>>>> 437788070fa0866acc38404cfd56a76cc29b6d8a
     second_top_table_text.setString("anpickel@gmail.com\nCell: 081 648 11 82")
     eText = top_table.getCellByName("B1").getText()
     eCursor = eText.createTextCursor()
     eText.insertString(eCursor, "", False)
     eCursor.goRight(len("anpickel@gmail.com"), True)
     eCursor.HyperLinkURL = "mailto:anpickel@gmail.com"
-<<<<<<< HEAD
-    
     range = top_table.getCellRangeByName("A1:B1")
     range.setPropertyValue( "CharFontName", "Liberation Serif" )
     range.setPropertyValue( "CharHeight", 10.0 )
- #   range.setPropertyValue("ParaAdjust", LEFT)
-
-    
-=======
-    range = top_table.getCellRangeByName("A1:B1")
-    range.setPropertyValue( "CharFontName", "Liberation Serif" )
-    range.setPropertyValue( "CharHeight", 10.0 )
->>>>>>> 437788070fa0866acc38404cfd56a76cc29b6d8a
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
     return doc, text
 
@@ -371,11 +299,7 @@ def createTextInvoice(items, treatments, price, dates, patient, modifier,
     doc, text = populateTable(doc, text, items, treatments, price, dates, modifier)
     doc, text = populateBottomTable(doc, text)
     doc, text = configureBorders(doc, text, items)
-<<<<<<< HEAD
-    saveDocument(doc, patient)
-=======
     saveDocument(doc, url)
->>>>>>> 437788070fa0866acc38404cfd56a76cc29b6d8a
 
 
 def testing():
@@ -385,17 +309,11 @@ def testing():
     items = ['001', '001', '001', '001']
     price = ['300.45','435.25', '196', '444']
     modifier = ['0','0','0','14']
-<<<<<<< HEAD
-    createTextInvoice(items, treatments, price, dates, patient, modifier)
-
-#testing()
-=======
     url ='some/weird/url'
     invoice_name = 'soemwierdname'
     createTextInvoice(items, treatments, price, dates, patient, modifier, url,
                      invoice_name)
 
->>>>>>> 437788070fa0866acc38404cfd56a76cc29b6d8a
 if __name__ == '__main__':
     import argparse
     import json
@@ -409,11 +327,6 @@ if __name__ == '__main__':
     parser.add_argument('url', type=json.loads, help='this should be a modifier list')
     parser.add_argument('invoice_name', type=json.loads, help='this should be a modifier list')
     args = parser.parse_args()
-<<<<<<< HEAD
-    createTextInvoice(args.items, args.treatments, args.price, args.dates, args.patient, args.modifier)
-#    testing()
-=======
     createTextInvoice(args.items, args.treatments, args.price, args.dates,
                       args.patient, args.modifier, args.url, args.invoice_name)
    # testing()
->>>>>>> 437788070fa0866acc38404cfd56a76cc29b6d8a

@@ -28,7 +28,7 @@ class InvoicePath(object):
 
     def generate(self):
         self.date = self.convert()
-        self.path = os.getenv("OWNCLOUD_URL") +'/' + str(self.medical).upper() + '_' + os.getenv("USERNAME") + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + calendar.month_name[self.date_digits('month')] + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + '_' + str(self.index) + self.name
+        self.path = os.getenv("OWNCLOUD_URL") +'/' + str(self.medical).upper() + '_' + os.getenv("PA_USERNAME") + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + calendar.month_name[self.date_digits('month')] + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + '_' + str(self.index) + self.name
         return self.path
 
 
