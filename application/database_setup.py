@@ -15,7 +15,6 @@ def setupTable():
         tariff varchar(255) NOT NULL,
         PRIMARY KEY (id)
         )AUTO_INCREMENT=1 ;"""
-  # ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin
 
     sql_create_table_invoice = """CREATE TABLE andrea_invoice (
         id int(11) NOT NULL AUTO_INCREMENT,
@@ -35,15 +34,13 @@ def setupTable():
         PRIMARY KEY (id))
         AUTO_INCREMENT=1 ;"""
 
-#
-        #ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql_drop_table)
     cursor.execute(sql_drop_table_invoice)
     cursor.execute(sql_create_table)
     cursor.execute(sql_create_table_invoice)
-    data = pd.read_csv (os.getenv("SYSTEM_URL") + '/owncloud/Documents/Physio Practice/Namaf_tariffs/treatments.csv', delimiter=';')
+    data = pd.read_csv (os.getenv("CSV_URL"), delimiter=';')
     df = pd.DataFrame(data, columns= ['item','description','units','value','category', 'tariff'])
     sql_insert =  """INSERT INTO treatments (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
     for row in df.itertuples():
