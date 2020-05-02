@@ -8,6 +8,7 @@ from com.sun.star.text.TextContentAnchorType import AS_CHARACTER
 from com.sun.star.table import BorderLine2
 from com.sun.star.awt import Size
 from com.sun.star.text import TableColumnSeparator
+from com.sun.star.lang import Locale
 
 cursor = None
 
@@ -70,7 +71,7 @@ def configureBorders(doc, text, items):
     get_main_table.TableBorder = table_main_border
     get_bottom_table =  text_tables.getByIndex(3)
     table_bottom_border = get_bottom_table.TableBorder
-    table_bottom_border.Distance = 1
+    table_bottom_border.Distance = 50
     table_bottom_border.HorizontalLine = no_line
     table_bottom_border.VerticalLine = no_line
     get_bottom_table.TableBorder = table_bottom_border
@@ -117,7 +118,7 @@ def populateBottomTable(doc, text):
     first_bottom_table_text.setString("Namibia" )
     range = bottom_table.getCellRangeByName("A1:C5")
     range.setPropertyValue( "CharFontName", "Liberation Serif" )
-    range.setPropertyValue( "CharHeight", 8.5 )
+    range.setPropertyValue( "CharHeight", 7.5 )
     range.setPropertyValue("ParaAdjust", LEFT)
     otabseps = bottom_table.TableColumnSeparators
     relativeTableWidth = bottom_table.getPropertyValue( "TableColumnRelativeSum" )
@@ -140,7 +141,6 @@ def createTable(doc, text, unitCount):
     table.TableColumnSeparators = otabseps
     table.setPropertyValue("TableColumnSeparators", otabseps)
     cRange = table.getCellRangeByName("A1:D1")
-    cRange.setPropertyValue( "ParaAdjust", LEFT )
     cRange.setPropertyValue( "CharFontName", "Liberation Serif" )
     cRange.setPropertyValue( "CharHeight", 10.0 )
     insertTextIntoCell( table, "A1", "Date of Service" )
@@ -171,11 +171,17 @@ def populateTable(doc, text, items, treatments, price, dates, modifier):
             insertTextIntoCell(table, "B" + str(a[0] + 2), c)
         insertTextIntoCell(table, "A" + str(a[0] + 2), b)
         insertTextIntoCell(table, "C" + str(a[0] + 2), a[1]['description'])
-        insertTextIntoCell(table, "D" + str(a[0] + 2), d.replace('.',','))
-        #print(d)
-        #print(d.replace('.', ','))
+        insertTextIntoCell(table, "D" + str(a[0] + 2), d)
     cell_sum = table.getCellByName("D" + str(2 + unitCount))
     cell_sum.setFormula("=sum <D2:D" + str(1 + unitCount) + ">")
+    cRange = table.getCellRangeByName("D2:D" + str(2 + unitCount) )
+    xNumberFormats = doc.NumberFormats
+    xLocale = Locale('en', 'US', '')
+    format_string = '#,##0.00#'#[$€-407];[RED]-#,##0.00 [$€-407]'
+    key = xNumberFormats.queryKey(format_string, xLocale, True)
+    key = xNumberFormats.addNew(format_string, xLocale)
+    cRange.NumberFormat = key
+    cRange.setPropertyValue( "ParaAdjust", RIGHT )
    # NumForms = doc.getNumberFormats()
    # dateFormatString = "YYYY/MM/DD\\ HH:MM:SS"
    # DateKey = NumForms.queryKey(dateFormatString, sLocale, True)
@@ -192,7 +198,6 @@ def populateMiddleTable(doc, text, patient, invoice_name):
         first_middle_table_text = middle_table.getCellByName("A1")
         range_top = middle_table.getCellRangeByName("A1:A2")
         range_top.setPropertyValue( "ParaAdjust", LEFT )
-        range_top.setPropertyValue( "CharHeight", 10.0 )
         first_middle_table_text.setString("Invoice No: " + str(invoice_name))
         second_middle_table_text = middle_table.getCellByName("A2")
         second_middle_table_text.setString("Patient Name: " + str(patient['name']) + "\nCase Number: " + str(patient['case']) + "\nPO: " + str(patient['po']))
@@ -203,7 +208,7 @@ def populateMiddleTable(doc, text, patient, invoice_name):
         fourth_middle_table_text = middle_table.getCellByName("C2")
         seventh_middle_table_text = middle_table.getCellByName("B1")
         seventh_middle_table_text.setString("Invoice")
-        range = middle_table.getCellRangeByName("A2:C2")
+        range = middle_table.getCellRangeByName("A1:C2")
         range.setPropertyValue( "CharFontName", "Liberation Serif" )
         range.setPropertyValue( "CharHeight", 10.0 )
         text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
@@ -216,7 +221,6 @@ def populateMiddleTable(doc, text, patient, invoice_name):
         first_middle_table_text.setString("Invoice No: " + str(invoice_name))
         range_top = middle_table.getCellRangeByName("A1:A2")
         range_top.setPropertyValue( "ParaAdjust", LEFT )
-        range_top.setPropertyValue( "CharHeight", 10.0 )
         second_middle_table_text = middle_table.getCellByName("A2")
         second_middle_table_text.setString("Main Member: " + str(patient['main']))
         third_middle_table_text = middle_table.getCellByName("B2")
@@ -264,13 +268,6 @@ def populateTopTable(doc, text, patient):
 
 def populateTopText(doc, text):
     global cursor
-#    styles = doc.StyleFamilies
-#    page_styles = styles.getByName("PageStyles")
-#    oDefaultStyle = page_styles.getByName("Standard")
-#    oDefaultStyle.HeaderIsOn = True
-#    header_text = oDefaultStyle.getPropertyValue("HeaderText")
-#    header_cursor = header_text.createTextCursor()
-#    header_text.insertString(header_cursor, "hello",0)
     cursor = text.createTextCursor()
     cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
     cursor.setPropertyValue( "CharHeight", 10.0 )
@@ -310,9 +307,12 @@ def testing():
     dates = ['01-04-2020', '04-04-2020', '10-04-2020', '15-04-2020']
     treatments = [{'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98}, {'description': 'Infra-red, Radiant heat, Wax therapy Hot packs', 'units': 10, 'value': 98}]
     items = ['001', '001', '001', '001']
-    price = ['300','435', '196', '444']
+    price = ['300.45','435.25', '196', '444']
     modifier = ['0','0','0','14']
-    createTextInvoice(items, treatments, price, dates, patient, modifier)
+    url ='some/weird/url'
+    invoice_name = 'soemwierdname'
+    createTextInvoice(items, treatments, price, dates, patient, modifier, url,
+                     invoice_name)
 
 if __name__ == '__main__':
     import argparse
@@ -329,4 +329,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     createTextInvoice(args.items, args.treatments, args.price, args.dates,
                       args.patient, args.modifier, args.url, args.invoice_name)
-#    testing()
+   # testing()
