@@ -25,10 +25,11 @@ def setupTable():
         invoice varchar(255) NOT NULL,
         url varchar(255) NOT NULL,
         treatments varchar(255) NOT NULL,
+        dates varchar(255) NOT NULL,
         tariff varchar(255) NOT NULL,
         main varchar(255),
         dob varchar(255),
-        `number` varchar(255),
+        number varchar(255),
         `case`varchar(255),
         po int(11),
         PRIMARY KEY (id))

@@ -6,11 +6,9 @@ def create_app():
     """Initialize the core application."""
     load_dotenv()
     application = Flask(__name__)
-    application.secret_key = "hellllllll"
-    #os.getenv("SECRET_KEY")
-   # application.config['SESSION_TYPE'] = 'filesystem'
+    application.secret_key = os.getenv("SECRET_KEY")
+    application.config['SESSION_TYPE'] = 'filesystem'
     application.config.update(
-    #Set the secret key to a sufficiently random value
   #  SECRET_KEY =  os.getenv("SECRET_KEY")
 )
 

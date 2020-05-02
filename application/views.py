@@ -1,15 +1,15 @@
-from flask import current_app as app
-import subprocess 
 import os
+from flask import current_app as app
 from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file
-from jinja2 import Template
 from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm
-import simplejson as json
-from decimal import *
 from application.database_io import getTreatmentByItem, getValueTreatments
 from application.database_invoice import get_index, add_invoice, getInvoiceURL
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
+from jinja2 import Template
+from decimal import *
+import subprocess 
+import simplejson as json
 
 
 @app.route('/', methods=('GET', 'POST'))
@@ -76,7 +76,7 @@ def generateInvoice():
         url = url.generate()
         invoice_name = InvoiceName(patient, index, modifier)
         invoice_name = invoice_name.generate()
-        add_invoice(patient, invoice_name, url, treatments)
+        add_invoice(patient, invoice_name, url, treatments, dates)
         subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                          '/application/swriter.py', json.dumps(treatments),
                          json.dumps(treatment_list), json.dumps(price),

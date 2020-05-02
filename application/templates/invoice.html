@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<div class="container personal_style">
+<div class="container personal_style" id="container_id">
     <h3>Patient Name: {{patient}}</h3>
         {% if medical =='mva' %}
             <p>Medical Aid: {{medical}}<br>
@@ -47,9 +47,11 @@
             </tbody>
         </table>
         <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
+        <br><br>
         <div>{{ form.submit }}</div>
         <span>Result: <span id="result"></span></span><span><input id="download_invoice" value="Download invoice" type="button" style="display:none;"></span>
     </form>  
+    <br><br><br><br>
 </div>
 
 <script>
@@ -102,6 +104,7 @@ $(document).ready(function(){
         $('.remove').show();
     }
     function clone() {
+
         $(".clonedInput").last().clone()
             .appendTo(".tbodyClone") // copied table row is added <tbody>
             .attr("id", "clonedInput" + cloneIndex) // for each table row, id is incremented
@@ -142,6 +145,7 @@ $(document).ready(function(){
         } else {
             $('.remove').show();
         }
+        $(document).scrollTop($(document).height());
     }
     function remove() {        
         $(this).parents(".clonedInput").remove();

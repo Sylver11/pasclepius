@@ -61,9 +61,9 @@ class Patient_mva(FlaskForm):
     medical = StringField('Medical Aid')
     name = StringField(u'Full Name', validators=[DataRequired()])
     case = StringField(u'Case Number', validators=[DataRequired()])
-    po = IntegerField(u'PO', validators=[DataRequired()])
+    po = IntegerField(u'PO', widget=NumberInput(min=111111,max=999999))
     tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
-    date =  StringField(u'Invoice Date', validators=[DataRequired()])# default=datetime.datetime.today().date())
+    date =  StringField(u'Invoice Date', validators=[DataRequired()])
     submit = SubmitField('Continue')
 
 
@@ -74,7 +74,7 @@ class Patient_psemas(FlaskForm):
     number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
     dob = StringField(u'Date of Birth', validators=[DataRequired()])
     tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
-    date =  StringField(u'Invoice Date', validators=[DataRequired()])# default=datetime.datetime.today().date())
+    date =  StringField(u'Invoice Date', validators=[DataRequired()])
     submit = SubmitField('Continue')
 
 class Patient_other(FlaskForm): 
@@ -84,5 +84,5 @@ class Patient_other(FlaskForm):
     number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
     dob = StringField(u'Date of Birth', validators=[DataRequired()])
     tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
-    date =  StringField(u'Invoice Date', validators=[DataRequired()])# default=datetime.datetime.today().date())
+    date =  StringField(u'Invoice Date', validators=[DataRequired()])
     submit = SubmitField('Continue')

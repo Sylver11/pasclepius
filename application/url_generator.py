@@ -26,20 +26,10 @@ class InvoicePath(object):
         elif date_component == 'day':
             return self.date.day
 
-
     def generate(self):
-       # date_component = self.date_digits(date_component)
         self.date = self.convert()
         self.path = os.getenv("OWNCLOUD_URL") +'/' + str(self.medical).upper() + '_' + os.getenv("USERNAME") + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + calendar.month_name[self.date_digits('month')] + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + '_' + str(self.index) + self.name
-
-
         return self.path
-   # os.getenv("OWNCLOUD_URL") + 
-   # os.getenv("SYSTEM_URL")
-   # def patient(self, name):
-   #     self.date 
-
-
 
 
 #patient = {'case': 'asdfasdfa',
@@ -48,7 +38,4 @@ class InvoicePath(object):
 #date = InvoicePath(patient, 3)
 #print(date)
 #date_convert = date.generate()
-
 #print(date_convert)
-
-

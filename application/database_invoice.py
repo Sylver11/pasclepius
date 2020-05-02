@@ -29,7 +29,7 @@ def getInvoiceURL(name, date):
     return url
 
 
-def add_invoice(patient, invoice, url, treatments):
+def add_invoice(patient, invoice, url, treatments, dates):
     name = patient['name']
     date = patient['date']
     medical = patient['medical']
@@ -49,10 +49,11 @@ def add_invoice(patient, invoice, url, treatments):
 
     date = datetime.strptime(date, '%d.%m.%Y')
     treatments = ','.join(map(str, treatments))
+    dates = ','.join(map(str, dates))
     sql = """INSERT INTO andrea_invoice (name, date, medical, invoice, url,
-    treatments, tariff, main, dob, number, `case`, po)
-    VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}')
-    """.format(name, date, medical, invoice, url, treatments, tariff, main, dob, number, case, po)
+    treatments, dates, tariff, main, dob, number, `case`, po)
+    VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}')
+    """.format(name, date, medical, invoice, url, treatments, dates, tariff, main, dob, number, case, po)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
