@@ -1,12 +1,16 @@
-from flask import current_app as app
-import subprocess 
 import os
+from flask import current_app as app
 from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file
-from jinja2 import Template
 from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm
-import simplejson as json
-from decimal import *
 from application.database_io import getTreatmentByItem, getValueTreatments
+from application.database_invoice import get_index, add_invoice, getInvoiceURL
+from application.url_generator import InvoicePath
+from application.name_generator import InvoiceName
+from jinja2 import Template
+from decimal import *
+import subprocess 
+import simplejson as json
+
 
 @app.route('/', methods=('GET', 'POST'))
 def home():
@@ -60,12 +64,25 @@ def generateInvoice():
     treatments = request.form.getlist('treatments')
     modifier = request.form.getlist('modifier')
     price = request.form.getlist('price')
+    date = session.get('PATIENT')['date']
     tariff = session.get('PATIENT')["tariff"]
     patient = session.get('PATIENT')
+    medical = session.get('PATIENT')['medical']
     form = getTreatmentForm(tariff) 
     if form.treatments.data:
         treatment_list = getTreatmentByItem(treatments, tariff)
-        subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") + '/application/swriter.py', json.dumps(treatments), json.dumps(treatment_list), json.dumps(price), json.dumps(dates), json.dumps(patient), json.dumps(modifier)])
+        index = get_index(medical, date)
+        url = InvoicePath(patient, index)
+        url = url.generate()
+        invoice_name = InvoiceName(patient, index, modifier)
+        invoice_name = invoice_name.generate()
+        add_invoice(patient, invoice_name, url, treatments, dates)
+        subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
+                         '/application/swriter.py', json.dumps(treatments),
+                         json.dumps(treatment_list), json.dumps(price),
+                         json.dumps(dates), json.dumps(patient),
+                         json.dumps(modifier), json.dumps(url),
+                         json.dumps(invoice_name)])
         return jsonify(result='success')
     return jsonify(result='error')
 
@@ -79,10 +96,12 @@ def getValue():
     return value_json
 
 
-@app.route('/download-invoice')
-def downloadInvoice():
-    name = session.get('PATIENT')["name"]
-    path = "Users/justusvoigt/Documents/" + str(name) + ".odt"
+@app.route('/download-invoice/<random>')
+def downloadInvoice(random):
+    name = session.get('PATIENT')['name']
+    date = session.get('PATIENT')['date']
+    url = getInvoiceURL(name, date)
+    path = str(url['url']) + ".odt"
     return send_file(path, as_attachment=True)
 
 @app.route('/session')

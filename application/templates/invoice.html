@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<div class="container personal_style">
+<div class="container personal_style" id="container_id">
     <h3>Patient Name: {{patient}}</h3>
         {% if medical =='mva' %}
             <p>Medical Aid: {{medical}}<br>
@@ -27,7 +27,7 @@
         
     <br>
 
-    <form id="NewOrderForm" class="form">   
+    <form autocomplete="off" id="NewOrderForm" class="form">   
         {{ form.hidden_tag() }}
         <table class="table table-striped">
             <tbody class="tbodyClone">
@@ -47,30 +47,36 @@
             </tbody>
         </table>
         <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
+        <br><br>
         <div>{{ form.submit }}</div>
         <span>Result: <span id="result"></span></span><span><input id="download_invoice" value="Download invoice" type="button" style="display:none;"></span>
     </form>  
+    <br><br><br><br>
 </div>
 
 <script>
 $(document).ready(function(){
 
+    $('.treatment').prepend($('<option value="" disabled hidden selected>Choose treatment</option>')); 
+
     function addSubmit(ev) {
-        ev.preventDefault();
-        // var test = $('form').serializeArray();
-      $.ajax({
-        method: 'POST',
-        url: '/generate-invoice',
-        data: $('form').serialize(),
-      }).done(addShow);
+        ev.preventDefault();   
+        if ($('form').data('submitted') === true) {
+            console.log("form is submitted ")
+            ev.preventDefault();
+        } else {
+            $.ajax({
+            method: 'POST',
+            url: '/generate-invoice',
+            data: $('form').serialize(),
+        }).done(addShow);
+      $('form').data('submitted', true);
+        }
     }
 
-
     $(document).on("click", "#download_invoice", function(){
-        $('head').append('<meta http-equiv="refresh" content="1;url=/download-invoice"/>');
+        $('head').append('<meta http-equiv="refresh" content="1;url=/download-invoice/' + Math.floor(Math.random() * 10000) + '"/>');
         })
-
-
     function addShow(data) {
       $('#result').text(data.result);
       if(data.result =='success'){
@@ -98,6 +104,7 @@ $(document).ready(function(){
         $('.remove').show();
     }
     function clone() {
+
         $(".clonedInput").last().clone()
             .appendTo(".tbodyClone") // copied table row is added <tbody>
             .attr("id", "clonedInput" + cloneIndex) // for each table row, id is incremented
@@ -117,6 +124,15 @@ $(document).ready(function(){
                  if (match2.length == 3) {
                      this.name = match2[1] + (cloneIndex);   
                  }
+                 if (this.className.includes("value")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("datepicker")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("thirty") || (this.className.includes("fourty"))){
+                    this.style.backgroundColor = "white";
+                 } 
             }            
             )
             .on('click', 'clone', clone)
@@ -129,6 +145,7 @@ $(document).ready(function(){
         } else {
             $('.remove').show();
         }
+        $(document).scrollTop($(document).height());
     }
     function remove() {        
         $(this).parents(".clonedInput").remove();
@@ -142,8 +159,8 @@ $(document).ready(function(){
     }
 
     function addPremium(object, id, percent){
-        var current_value = parseInt(object.parent().parent().children().children(".value").val());
-	   	let plus_premium = current_value * percent;
+        var current_value = parseFloat(object.parent().parent().children().children(".value").val());
+	   	let plus_premium = current_value.toFixed(3) * percent;
 	  	object.parent().parent().children().children(".value").val(plus_premium.toFixed(2));
         object.siblings().css('background-color', 'white');
         object.css('background-color', 'green');
@@ -171,7 +188,7 @@ $(document).ready(function(){
 
     function replacePremium(object, id, percent){
         original_value = value_edit[id].value;
-        let plus_premium = original_value * percent;
+        let plus_premium = original_value.toFixed(3) * percent;
 	  	object.parent().parent().children().children(".value").val(plus_premium.toFixed(2));
         object.siblings().css('background-color', 'white');
         object.css('background-color', 'green');
@@ -229,12 +246,18 @@ $(document).ready(function(){
         $('.datepicker' ).datepicker({dateFormat: 'dd.mm.yy'});
 	    	$('.thirty').show()
 	    	$('.fourty').show()
-		sibling_of_value = $(this);
-      		$.getJSON('/get-value', {
-        	item: $(this).val()			
-      }, function(data) {
-        $(sibling_of_value).parent().parent().children().children(".value").val(data.value.toFixed(2));
-      });
+		    sibling_of_value = $(this);
+            if($(this).val()!= 0){
+                $.getJSON('/get-value', {
+        	        item: $(this).val()			
+                }, function(data) {
+                        $(sibling_of_value).parent().parent().children().children(".value").val(data.value.toFixed(2));
+                    });
+            }
+            else{
+                $(sibling_of_value).parent().parent().children().children(".value").val("");
+            }
+      		
       return false;
     });
 

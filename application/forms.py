@@ -1,20 +1,22 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField
+from wtforms import StringField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField, DecimalField
+from wtforms.fields.html5 import DecimalField
 from wtforms_components.fields import SelectField
-from wtforms.validators import DataRequired, Length, Email, Required
+from wtforms.validators import DataRequired, Length, Email, Required, NumberRange
+from wtforms.widgets.html5 import NumberInput
 from wtforms import Form as NoCsrfForm
 from application.database_io import getTreatments
 
 def getTreatmentForm(tariff = None):
     class Treatment(FlaskForm):
-        treatments = SelectField(u'Treatments',  coerce=int)
+        treatments = SelectField(u'Treatments',coerce=int, validators=[DataRequired()] )
         date = TextField('Date', validators=[DataRequired()])
-        price = TextField(u'Value')
+        price = DecimalField(u'Value')
         modifier = SelectField(u'Modifier', choices= [(0, 'None'), (14,'Rendered hospital'),(13, 'Travelling cost')], default=0)
         submit = SubmitField('Submit')
         def initialise_SelectOption(self,list_ordered_by_category = None, featured_ordered_by_category = None,  *args, **kwargs):
             super(Treatment, self).__init__(*args, **kwargs)
-            self.treatments.choices =  [(0, "Select treatment")] + featured_ordered_by_category + list_ordered_by_category
+            self.treatments.choices = featured_ordered_by_category + list_ordered_by_category
 
         def nestedObjects(something, filtered_result, featured_result):
             list_of_categories = []
@@ -59,9 +61,9 @@ class Patient_mva(FlaskForm):
     medical = StringField('Medical Aid')
     name = StringField(u'Full Name', validators=[DataRequired()])
     case = StringField(u'Case Number', validators=[DataRequired()])
-    po = IntegerField(u'PO', validators=[DataRequired()])
-    tariff = SelectField(u'Tariff', choices = [("namaf_pyhsio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
-    date =  StringField(u'Invoice Date', validators=[DataRequired()])# default=datetime.datetime.today().date())
+    po = IntegerField(u'PO', widget=NumberInput(min=111111,max=999999))
+    tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
+    date =  StringField(u'Invoice Date', validators=[DataRequired()])
     submit = SubmitField('Continue')
 
 
@@ -71,8 +73,8 @@ class Patient_psemas(FlaskForm):
     main = StringField(u'Main Member', validators=[DataRequired()])
     number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
     dob = StringField(u'Date of Birth', validators=[DataRequired()])
-    tariff = SelectField(u'Tariff', choices = [("namaf_pyhsio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
-    date =  StringField(u'Invoice Date', validators=[DataRequired()])# default=datetime.datetime.today().date())
+    tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
+    date =  StringField(u'Invoice Date', validators=[DataRequired()])
     submit = SubmitField('Continue')
 
 class Patient_other(FlaskForm): 
@@ -81,6 +83,6 @@ class Patient_other(FlaskForm):
     main = StringField(u'Main Member', validators=[DataRequired()])
     number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
     dob = StringField(u'Date of Birth', validators=[DataRequired()])
-    tariff = SelectField(u'Tariff', choices = [("namaf_pyhsio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
-    date =  StringField(u'Invoice Date', validators=[DataRequired()])# default=datetime.datetime.today().date())
+    tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
+    date =  StringField(u'Invoice Date', validators=[DataRequired()])
     submit = SubmitField('Continue')
