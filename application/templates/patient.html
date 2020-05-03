@@ -2,10 +2,8 @@
 
 {% block content %}
     <div class="container">
-        <h1>{{title}}</h1>
-        <p>{{description}}</p>
-
-
+        <h2>Patient: {{patient}}</h2>
+       
         <select class="medical">
             <option value="0">Select medical aid</option>
             <option value="psemas">PSEMAS</option>
@@ -74,12 +72,40 @@
 {{ form_other.submit }}
 </form>  
 
-
+<br><br>
+<h2>Past invoice</h2>  
+<ul>
+    {% for i in data %} 
+       <li class="invoice_list" >{{i['name']}} {{i['medical']}} {{i['date'].strftime('%d.%m.%Y')}} </li>
+       <ul class="treatment_list" style="display:none;">
+            <script>
+                $.getJSON('/get-treatment-name', {
+                    items: '{{ i["treatments"] }}',
+                    tariff: '{{ i["tariff"] }}'		
+                }, function(data) {
+                    for (i = 0; i < data.treatments.length; i++) {
+                        var el = document.getElementsByTagName("ul")[parseInt('{{loop.index}}') + 1];
+                        var node = document.createElement("li");
+                        node.innerText = data.treatments[i]['description'];
+                        el.appendChild(node);
+                    }
+                    var el_out = document.getElementsByTagName("ul")[parseInt('{{loop.index}}') + 1];
+                    var button = document.createElement("button");
+                    button.innerHTML = "Continue Invoice";
+                    el.appendChild(button);
+                });
+           </script>
+       </ul>
+    {% endfor %}
+</ul>    
 
 		
 <script>
 
     $(document).ready(function() {
+        $('.invoice_list').click(function() {
+            $(this).next().css("display", "block");
+        });
         $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
         $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
         $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})
@@ -139,7 +165,7 @@
                 type: "POST",
                 url: url,
                 data: $('.mva').serialize(), 
-                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString();// +"/new-invoice";
                 }
             });
         });
