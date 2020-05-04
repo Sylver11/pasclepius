@@ -56,6 +56,36 @@
 
 <script>
 $(document).ready(function(){
+    /////continue invoice section
+    if('{{invoice}}' !== null){
+        var treatments = '{{treatments}}'
+        console.log("this is a previous invoice")
+        // console.log(treatments);
+        
+        var t = treatments.split(",")
+        // console.log(t.length)
+        for (var i = 0; i < t.length; i++){
+        // for (i in treatments.split(",")){
+            // clone()
+            // parseInt(t[i])
+           // console.log(i)
+            // let element = document.getElementById("treatment-" + i);
+            //  console.log("treatment-" + i)
+            // var cloneIndex = $(".clonedInput").length;
+            //  cloneIndex++;
+            //  $('.clone').click();
+            //  document.getElementById('btnAdd_0').click();
+            //  console.log(parseInt(t[i]))
+            //   element.value = 7
+            //   parseInt(t[i]);
+            var cloneIndex = i + 1
+            // console.log(cloneIndex)
+            clone(cloneIndex)
+            // clone()
+            
+            // console.log(i)
+        }
+    }
 
     $('.treatment').prepend($('<option value="" disabled hidden selected>Choose treatment</option>')); 
 
@@ -103,8 +133,7 @@ $(document).ready(function(){
     } else {
         $('.remove').show();
     }
-    function clone() {
-
+    function clone(cloneIndex = 0) {
         $(".clonedInput").last().clone()
             .appendTo(".tbodyClone") // copied table row is added <tbody>
             .attr("id", "clonedInput" + cloneIndex) // for each table row, id is incremented

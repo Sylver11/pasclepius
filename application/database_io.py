@@ -35,6 +35,19 @@ def getTreatments(tariff, featured=None):
         return featured_result
 
 
+def getTreatmentByGroup(items, tariff):
+    treatment_list=[]
+    connection = pool.connection()
+    cursor = connection.cursor()
+    for i in items.split(","):
+        sql = """SELECT description FROM treatments WHERE item = {} AND tariff = '{}'""".format(i, tariff)
+        cursor.execute(sql)
+        q = cursor.fetchone()
+        treatment_list.append(q)
+    return treatment_list
+
+
+
 def getTreatmentByItem(treatments, tariff):
     treatment_list=[]
     connection = pool.connection()

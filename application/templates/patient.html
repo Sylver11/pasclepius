@@ -72,27 +72,41 @@
 {{ form_other.submit }}
 </form>  
 
-<br><br>
+<br><br><br>
 <h2>Past invoice</h2>  
 <ul>
     {% for i in data %} 
-       <li class="invoice_list" >{{i['name']}} {{i['medical']}} {{i['date'].strftime('%d.%m.%Y')}} </li>
+       <li class="invoice_list" ><span id="patient_name-{{loop.index}}">{{i['name']}}</span> {{i['medical']}} {{i['date'].strftime('%d.%m.%Y')}} <span style="display:none;" id="patient_date-{{loop.index}}">{{ i['date'] }}</span></li>
        <ul class="treatment_list" style="display:none;">
             <script>
                 $.getJSON('/get-treatment-name', {
                     items: '{{ i["treatments"] }}',
                     tariff: '{{ i["tariff"] }}'		
                 }, function(data) {
+                    var button = document.createElement("button");
+                    var el = document.getElementsByTagName("ul")[parseInt('{{loop.index}}') + 1];
                     for (i = 0; i < data.treatments.length; i++) {
-                        var el = document.getElementsByTagName("ul")[parseInt('{{loop.index}}') + 1];
                         var node = document.createElement("li");
                         node.innerText = data.treatments[i]['description'];
                         el.appendChild(node);
                     }
-                    var el_out = document.getElementsByTagName("ul")[parseInt('{{loop.index}}') + 1];
-                    var button = document.createElement("button");
                     button.innerHTML = "Continue Invoice";
+                    button.classList.add("continue" + '{{loop.index}}')
                     el.appendChild(button);
+
+                    $('.continue' + '{{loop.index}}').click(function(){
+                        var patient_name = $('#patient_name-{{loop.index}}').text();
+                        var patient_date = $('#patient_date-{{loop.index}}').text();
+                        console.log(patient_name, patient_date)
+                        $.getJSON('/set-known-patient', {
+                            patient: patient_name,
+                            date: patient_date		
+                        }, function(data) {
+                            window.location.href = "/patient/" + patient_name.toString() +"/continue-invoice"
+                            // console.log(data)
+                        })
+        })
+                    
                 });
            </script>
        </ul>
@@ -103,6 +117,10 @@
 <script>
 
     $(document).ready(function() {
+        $('.continue').click(function(){
+            console.log("this runns")
+            console.log($(this).parent().siblings('li'));
+        })
         $('.invoice_list').click(function() {
             $(this).next().css("display", "block");
         });

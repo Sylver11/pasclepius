@@ -29,6 +29,27 @@ def getInvoiceURL(name, date):
     return url
 
 
+def queryInvoice(patient):
+    sql = """SELECT * FROM andrea_invoice WHERE name = '{}' """.format(patient)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return data
+
+def getSingleInvoice(patient, date):
+    sql = """SELECT * FROM andrea_invoice WHERE name = '{}' AND date = '{}'
+    """.format(patient, date)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    data = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return data
+
 def add_invoice(patient, invoice, url, treatments, dates):
     name = patient['name']
     date = patient['date']
@@ -39,6 +60,7 @@ def add_invoice(patient, invoice, url, treatments, dates):
     number = None
     case = None
     po = 0
+    status = None
     if (medical == 'mva'):
         case = patient['case']
         po = patient['po']
@@ -54,11 +76,19 @@ def add_invoice(patient, invoice, url, treatments, dates):
     treatments, dates, tariff, main, dob, number, `case`, po)
     VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}')
     """.format(name, date, medical, invoice, url, treatments, dates, tariff, main, dob, number, case, po)
+    sql_check_duplicate = """ SELECT * FROM andrea_invoice WHERE name='{}' AND date='{}'""".format(name, date)
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute(sql)
+    cursor.execute(sql_check_duplicate)
+    rows = cursor.fetchall()
+    if not rows:
+        cursor.execute(sql)
+        status = True
+    else:
+        status = False
     cursor.close()
     conn.close()
+    return status
 
 if __name__ == '__main__':
     from dotenv import load_dotenv
