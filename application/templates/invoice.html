@@ -56,38 +56,37 @@
 
 <script>
 $(document).ready(function(){
-    /////continue invoice section
+    var regex = /^(.*)(\d)+$/i; 
     if('{{invoice}}' !== null){
         var treatments = '{{treatments}}'
-        console.log("this is a previous invoice")
-        // console.log(treatments);
-        
         var t = treatments.split(",")
-        // console.log(t.length)
-        for (var i = 0; i < t.length; i++){
-        // for (i in treatments.split(",")){
-            // clone()
-            // parseInt(t[i])
-           // console.log(i)
-            // let element = document.getElementById("treatment-" + i);
-            //  console.log("treatment-" + i)
-            // var cloneIndex = $(".clonedInput").length;
-            //  cloneIndex++;
-            //  $('.clone').click();
-            //  document.getElementById('btnAdd_0').click();
-            //  console.log(parseInt(t[i]))
-            //   element.value = 7
-            //   parseInt(t[i]);
-            var cloneIndex = i + 1
-            // console.log(cloneIndex)
-            clone(cloneIndex)
-            // clone()
-            
-            // console.log(i)
-        }
+        var d = '{{dates}}'.split(",")
+        console.log(d)
+        var cloneIndex = 0
+        $.each(t, function(index, value) {        
+            $.ajax({
+                url: '/get-value',
+                type: "GET",
+                cache: false,
+                data: { item: t[index] },
+            success: function(data) {
+                var data = $.parseJSON(data)
+                $('#value-' + index).val(data['value'])
+                return data;
+                }
+            });
+
+
+        // for (var i = 0; i < t.length; i++){
+            cloneIndex = index + 1 
+            clone()
+            $('select#treatment-'+ (cloneIndex -1)).prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
+            $('select#treatment-'+ (cloneIndex -2) + ' option[value='+t[index]+']').attr("selected",true);
+           
+        })
     }
 
-    $('.treatment').prepend($('<option value="" disabled hidden selected>Choose treatment</option>')); 
+    // $('.treatment').prepend($('<option value="" disabled hidden selected>Choose treatment</option>')); 
 
     function addSubmit(ev) {
         ev.preventDefault();   
@@ -124,35 +123,47 @@ $(document).ready(function(){
             }
         })
 
-    var regex = /^(.*)(\d)+$/i; 
+    // var regex = /^(.*)(\d)+$/i; 
     var cloneIndex = $(".clonedInput").length; // count how many rows there are
-    
+    // console.log("This cloneIndex is just below the var: " + cloneIndex)
     // if there's only one table row, do not show the 'remove' button
     if ($(".clonedInput").length == 1) {
         $('.remove').hide();
     } else {
         $('.remove').show();
     }
-    function clone(cloneIndex = 0) {
+    function clone() {
         $(".clonedInput").last().clone()
             .appendTo(".tbodyClone") // copied table row is added <tbody>
             .attr("id", "clonedInput" + cloneIndex) // for each table row, id is incremented
             .find("*") // return all descendant elements of selected element.
             .each(function () { 
+                // console.log("T`his is the clone index of inside each funtin: " + cloneIndex)
                  // execute function for each matched element
                  var id = this.id || ""; // I'm guessing this makes id a string?
                  var match = id.match(regex) || []; // searches a string against a regular,         
                                                 //expression and assigns results to var match as 
                                                //list. Example result 
                                               //["clonedInputNN","clonedInput","NN"]
+                //  console.log(match)
                  if (match.length == 3) {
                      this.id = match[1] + (cloneIndex);    // match[1] would be the string with the numbers stripped out
+                    // console.log(this)
                  }
                  var name = this.name || ""; 
+                //  console.log(name)
                  var match2 = name.match(regex) || []; 
+                //  console.log(match2)
                  if (match2.length == 3) {
-                     this.name = match2[1] + (cloneIndex);   
+                     this.name = match2[1] + (cloneIndex);
+                    //  console.log
+                    //  console.log(cloneIndex)   
                  }
+
+
+                //  if (this.className.includes("treatment")){
+                //     this.prepend($('<option value="" disabled hidden selected>Choose treatment</option>'))
+                //  }
                  if (this.className.includes("value")){
                     this.value = ''
                  } 
@@ -168,6 +179,7 @@ $(document).ready(function(){
             .on('click', 'remove', remove);
             
         cloneIndex++;
+        // console.log("And this one is where it counts: " + cloneIndex)
       
         if ($(".clonedInput").length == 1) {
             $('.remove').hide();
