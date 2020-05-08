@@ -183,7 +183,7 @@
                 type: "POST",
                 url: url,
                 data: $('.mva').serialize(), 
-                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString();// +"/new-invoice";
+                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
                 }
             });
         });

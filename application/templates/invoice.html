@@ -56,7 +56,7 @@
 
 <script>
 $(document).ready(function(){
-
+    $('.treatment').prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
     function addSubmit(ev) {
         ev.preventDefault();   
         if ($('form').data('submitted') === true) {
@@ -265,7 +265,7 @@ $(document).ready(function(){
 });
 
 
-if('{{invoice}}' !== null){
+if('{{invoice}}' !== ""){
         var treatments = '{{treatments}}'
         var t = treatments.split(",")
         var d = '{{dates}}'.split(",")

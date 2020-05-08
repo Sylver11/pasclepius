@@ -3,7 +3,7 @@ from flask import current_app as app
 from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file
 from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm
 from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup
-from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice
+from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 from datetime import datetime
@@ -106,8 +106,18 @@ def generateInvoice():
     form = getTreatmentForm(tariff)
     if form.treatments.data:
         treatment_list = getTreatmentByItem(treatments, tariff)
-        if session.get('PATIENT')['url'] is None:
-            print("this runs")
+        if 'url' in session['PATIENT']:#session.get('PATIENT')['url'] is None:
+             
+            url = session.get('PATIENT')['url']
+            invoice_name = session.get('PATIENT')['invoice']
+            print("the url in session was not ture")
+            status = updateInvoice(treatments, dates, patient)
+       
+
+
+        else:
+
+            print("the url in session runs")
             date = session.get('PATIENT')['date']
             index = get_index(medical, date)
             url = InvoicePath(patient, index)
@@ -115,10 +125,14 @@ def generateInvoice():
             invoice_name = InvoiceName(patient, index, modifier)
             invoice_name = invoice_name.generate()
             status = add_invoice(patient, invoice_name, url, treatments, dates)
-        else:
-            url = session.get('PATIENT')['url']
-            invoice_name = session.get('PATIENT')['invoice']
-            status = True
+
+
+
+
+
+
+
+
         if status:
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/application/swriter.py', json.dumps(treatments),

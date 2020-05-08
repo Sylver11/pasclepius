@@ -50,6 +50,29 @@ def getSingleInvoice(patient, date):
     conn.close()
     return data
 
+
+
+
+def updateInvoice(treatments, dates, patient):
+    name = patient['name']
+    date = patient['date']
+    treatments = ','.join(map(str, treatments))
+    dates = ','.join(map(str, dates))
+    date = datetime.strptime(date, '%d.%m.%Y')
+    print(treatments)
+    print(dates)
+    sql = """UPDATE andrea_invoice SET treatments = '{}', dates = '{}' WHERE
+    name = '{}' AND date = '{}'""".format(treatments, dates, name, date)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    cursor.close()
+    conn.close()
+    status = True
+    return status
+
+
+
 def add_invoice(patient, invoice, url, treatments, dates):
     name = patient['name']
     date = patient['date']
