@@ -19,17 +19,10 @@ def home():
 
 @app.route('/patient', methods=('GET', 'POST'))
 def findPatient():
-        return render_template('search.html')
-
-@app.route('/patient/select', methods=('GET', 'POST'))
-def selectPatient():
     form_mva = Patient_mva()
     form_psemas = Patient_psemas()
     form_other = Patient_other()
-    if form_mva.validate_on_submit() or form_psemas.validate_on_submit() or form_other.validate_on_submit():
-        session["PATIENT"] = request.values
-        jsonData = jsonify(data={'name': str(form_mva.name.data)})
-        return jsonData
+    return render_template('create.html',form_mva=form_mva, form_psemas = form_psemas, form_other = form_other)
 
 @app.route('/patient/<patient>')
 def invoiceOption(patient):
@@ -89,6 +82,16 @@ def continueInvoice(patient):
         dob = session.get('PATIENT')['dob']
         return render_template('invoice.html', dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
 
+@app.route('/patient/select', methods=('GET', 'POST'))
+def selectPatient():
+    form_mva = Patient_mva()
+    form_psemas = Patient_psemas()
+    form_other = Patient_other()
+    if form_mva.validate_on_submit() or form_psemas.validate_on_submit() or form_other.validate_on_submit():
+        session["PATIENT"] = request.values
+        jsonData = jsonify(data={'name': str(form_mva.name.data)})
+        return jsonData
+
 
 
 @app.route('/generate-invoice', methods=['POST'])
@@ -106,18 +109,11 @@ def generateInvoice():
     form = getTreatmentForm(tariff)
     if form.treatments.data:
         treatment_list = getTreatmentByItem(treatments, tariff)
-        if 'url' in session['PATIENT']:#session.get('PATIENT')['url'] is None:
-             
+        if 'url' in session['PATIENT']:
             url = session.get('PATIENT')['url']
             invoice_name = session.get('PATIENT')['invoice']
-            print("the url in session was not ture")
             status = updateInvoice(treatments, dates, patient)
-       
-
-
         else:
-
-            print("the url in session runs")
             date = session.get('PATIENT')['date']
             index = get_index(medical, date)
             url = InvoicePath(patient, index)
@@ -125,14 +121,6 @@ def generateInvoice():
             invoice_name = InvoiceName(patient, index, modifier)
             invoice_name = invoice_name.generate()
             status = add_invoice(patient, invoice_name, url, treatments, dates)
-
-
-
-
-
-
-
-
         if status:
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/application/swriter.py', json.dumps(treatments),

@@ -2,116 +2,165 @@
 
 {% block content %}
     <div class="container">
-        <h2>Patient: {{patient}}</h2>
-       
-        <select class="medical">
-            <option value="0">Select medical aid</option>
-            <option value="psemas">PSEMAS</option>
-            <option value="mva">MVA</option>
-            <option value="other">OTHER</option>
-        </select>
+        <h2>{{patient}}</h2>
 
-<form autocomplete="off" id="newInvoice_mva" class="mva" style="display:none">  
-        
-        {{ form_mva.hidden_tag() }}
-        {{ form_mva.medical(style='display:none') }}
-        <br>
-        {{ form_mva.tariff.label }} {{ form_mva.tariff }}
-	<br>
-	{{ form_mva.name.label }} {{ form_mva.name }}
-	<br>
-	{{ form_mva.case.label }} {{ form_mva.case }}
-	<br>
-	{{ form_mva.po.label }} {{ form_mva.po }}
-	<br>
-	{{ form_mva.date.label }} {{ form_mva.date(id='date_mva') }}
-	<br>
-	{{ form_mva.submit }}
-</form>  
+<br><br>
 
-<form autocomplete="off" id="newInvoice_psemas" class="psemas" style="display:none">  
-        
-    {{ form_psemas.hidden_tag() }}
-    {{ form_psemas.medical(style='display:none') }}
-    <br>
-    {{ form_psemas.tariff.label }} 
-    
-    {{ form_psemas.tariff }}
-<br>
-{{ form_psemas.name.label }} {{ form_psemas.name }}
-<br>
-{{ form_psemas.main.label }} {{ form_psemas.main }}
-<br>
-{{ form_psemas.dob.label }} {{ form_psemas.dob }}
-<br>
-{{ form_psemas.number.label }} {{ form_psemas.number }}
-<br>
-{{ form_psemas.date.label }} {{ form_psemas.date(id='date_psemas') }}
-<br>
-{{ form_mva.submit }}
-</form>  
-
-<form  autocomplete="off" id="newInvoice_other" class="other" style="display:none">  
-        
-    {{ form_other.hidden_tag() }}
-<br>     
-{{form_other.medical.label}}  {{ form_other.medical }}
-<br>    
-{{ form_other.tariff.label }} {{ form_other.tariff }}
-<br>
-{{ form_other.name.label }} {{ form_other.name }}
-<br>
-{{ form_other.main.label }} {{ form_other.main }}
-<br>
-{{ form_other.dob.label }} {{ form_other.dob }}
-<br>
-{{ form_other.number.label }} {{ form_other.number }}
-<br>
-{{ form_other.date.label }} {{ form_other.date(id='date_other') }}
-<br>
-{{ form_other.submit }}
-</form>  
-
-<br><br><br>
-<h2>Past invoice</h2>  
-<ul>
+<h2>Patients</h2>  
+<div class="list-group">
     {% for i in data %} 
-       <li class="invoice_list" ><span id="patient_name-{{loop.index}}">{{i['name']}}</span> {{i['medical']}} {{i['date'].strftime('%d.%m.%Y')}} <span style="display:none;" id="patient_date-{{loop.index}}">{{ i['date'] }}</span></li>
-       <ul class="treatment_list" style="display:none;">
+    <a href="#!" class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{i['name']}}</h5>
+            <small>
+                <span style="text-transform: uppercase;">{{i['medical']}}</span>
+                {% if i['medical'] == 'mva'%}
+                <span>{{i['case']}}</span>
+            </small>
+        </div>
+        <form autocomplete="off" id="newInvoice_mva" class="mva" >  
+            {{ form_mva.hidden_tag() }}
+            {{ form_mva.medical(style='display:none') }}
+            <br>
+            {{ form_mva.tariff.label }} {{ form_mva.tariff }}
+            <br>
+             {{ form_mva.name(value=i['name'], style="display: none") }}
+            <br>
+            {{ form_mva.case.label }} {{ form_mva.case }}
+            <br>
+            {{ form_mva.po.label }} {{ form_mva.po }}
+            <br>
+            {{ form_mva.date.label }} {{ form_mva.date(id='date_mva') }}
+            <br>
+            {{ form_mva.submit }}
+        </form>  
+        <small>Donec id elit non mi porta.</small>
+    </a>
+
+
+
+            {% elif i['medical'] == 'psemas'%}
+                <span></span>
+            </small>
+        </div>
+
+
+        <form autocomplete="off" id="newInvoice_psemas" class="psemas" >  
+        
+            {{ form_psemas.hidden_tag() }}
+            {{ form_psemas.medical(style='display:none') }}
+            <br>
+            {{ form_psemas.tariff.label }} 
+            
+            {{ form_psemas.tariff(value=i['tariff']) }}
+        
+         {{ form_psemas.name(value=i['name'], style="display: none")  }}
+        
+        {{ form_psemas.main(value=i['main'], style="display: none") }}
+      
+        {{ form_psemas.dob(value=i['dob'], style="display: none" )}}
+        
+         {{ form_psemas.number(value=i['number'], style="display: none") }}
+        
+        {{ form_psemas.date.label }} {{ form_psemas.date(id='date_psemas') }}
+        <br>
+        {{ form_mva.submit }}
+        </form>
+        <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['number']}} <br>Main Member: {{i['main']}} <br>Date of Birth: {{i['dob']}}</small>
+    </a>
+
+
+
+
+        {% else %}
+        <span>{{i['number']}}</span>
+    </small>
+</div>
+
+        <form  autocomplete="off" id="newInvoice_other" class="other" >  
+        
+            {{ form_other.hidden_tag() }}
+        <br>     
+        {{form_other.medical.label}}  {{ form_other.medical }}
+        <br>    
+        {{ form_other.tariff.label }} {{ form_other.tariff }}
+        <br>
+         {{ form_other.name(value=i['name'], style="display: none")  }}
+        <br>
+        {{ form_other.main.label }} {{ form_other.main }}
+        <br>
+        {{ form_other.dob.label }} {{ form_other.dob }}
+        <br>
+        {{ form_other.number.label }} {{ form_other.number }}
+        <br>
+        {{ form_other.date.label }} {{ form_other.date(id='date_other') }}
+        <br>
+        {{ form_other.submit }}
+        </form>  
+    </a>
+
+
+
+        {% endif %}
+        
+       <!-- <ul class="patient_list list-group-item" style="display:none;"> -->
+            <!-- <script>
+                    $('.continue' + '{{loop.index}}').click(function(){
+                        var patient_name = $('#patient_name-{{loop.index}}').text();
+                        // var patient_date = $('#patient_date-{{loop.index}}').text();
+                        // console.log(patient_name, patient_date)
+                        $.getJSON('/set-known-invoice', {
+                            patient: patient_name,
+                            date: patient_date		
+                        }, function(data) {
+                            window.location.href = "/patient/" + patient_name.toString() +"/new-invoice"
+                        })
+        })
+           </script> -->
+       <!-- </ul>s -->
+    {% endfor %}
+        </div>    
+<br><br>
+
+<h2>Past invoice</h2>  
+<ul class="list-group">
+    {% for i in data %} 
+       <li class="invoice_list list-group-item" ><span id="patient_name-{{loop.index}}">{{i['name']}}</span> {{i['medical']}} {{i['date'].strftime('%d.%m.%Y')}} <span style="display:none;" id="patient_date-{{loop.index}}">{{ i['date'] }}</span></li>
+       <ul class="treatment_list list-group-item" id="treatment-list-{{loop.index}}" style="display:none;">
             <script>
                 $.getJSON('/get-treatment-name', {
                     items: '{{ i["treatments"] }}',
                     tariff: '{{ i["tariff"] }}'		
                 }, function(data) {
                     var button = document.createElement("button");
-                    var el = document.getElementsByTagName("ul")[parseInt('{{loop.index}}') + 1];
+                    var el = document.getElementById('treatment-list-{{loop.index}}')
                     for (i = 0; i < data.treatments.length; i++) {
                         var node = document.createElement("li");
+                        node.classList.add('list-group-item');
                         node.innerText = data.treatments[i]['description'];
                         el.appendChild(node);
                     }
                     button.innerHTML = "Continue Invoice";
                     button.classList.add("continue" + '{{loop.index}}')
                     el.appendChild(button);
-
                     $('.continue' + '{{loop.index}}').click(function(){
                         var patient_name = $('#patient_name-{{loop.index}}').text();
                         var patient_date = $('#patient_date-{{loop.index}}').text();
-                        console.log(patient_name, patient_date)
-                        $.getJSON('/set-known-patient', {
+                        $.getJSON('/set-known-invoice', {
                             patient: patient_name,
                             date: patient_date		
                         }, function(data) {
-                            window.location.href = "/patient/" + patient_name.toString() +"/continue-invoice"
-                            // console.log(data)
-                        })
-        })
+                            window.location.href = "/patient/" + patient_name.toString() +"/continue-invoice";
+                            })
+                    })
                     
                 });
            </script>
        </ul>
     {% endfor %}
 </ul>    
+
+
 
 		
 <script>
