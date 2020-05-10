@@ -1,5 +1,4 @@
 {% extends 'layout.html' %}
-
 {% block content %}
     <div class="container">
         <form action="/patient/" method="get">
@@ -8,9 +7,6 @@
             <button type="submit">Continue</button>
         </form>
     </div>
-
-
-
 <script>
 $(document).ready(function() {
     $('form').submit(function() {
@@ -19,5 +15,4 @@ $(document).ready(function() {
     });
 })
 </script>
-
  {% endblock %}
