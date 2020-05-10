@@ -1,37 +1,36 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div class="container">
-        <h2>{{patient}}</h2>
+<div class="container">
+    <h2>{{patient}}</h2>
+    <br><br>
 
-<br><br>
-
-<h2>Patients</h2>  
-<div class="list-group">
-    {% for i in patient_data %} 
-    <a href="#!" class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">{{i['name']}}</h5>
-            <small>
-                <span style="text-transform: uppercase;">{{i['medical']}}</span>
-                
-                {% if i['medical'] == 'mva'%}
-            </small>
-        </div>
-        <form autocomplete="off" id="continue_mva_{{loop.index}}" class="mva" >  
-                {{ form_mva.hidden_tag() }}
-                {{ form_mva.medical(style='display:none', value=i['medical']) }}
-                {{ form_mva.tariff(style="display: none;", id='tariff_' ~ loop.index) }}
-                {{ form_mva.name(value=i['name'], style="display: none") }}
-                {{ form_mva.case(style="display: none;", value=i['case']) }}
-                {{ form_mva.po.label }} {{ form_mva.po }}
-                <br>
-                {{ form_mva.date.label }} {{ form_mva.date(id='date_mva_' ~ loop.index) }}
-                <br>
-                {{ form_mva.submit }}
-        </form>  
-        <small>Tariff: {{i['tariff']}} <br> Case Number: {{i['case']}}</small>
-    </a>
+    <h2>Patients</h2>  
+    <div class="list-group">
+        {% for i in patient_data %} 
+        <a href="#!" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{i['name']}}</h5>
+                <small>
+                    <span style="text-transform: uppercase;">{{i['medical']}}</span>
+                    
+                    {% if i['medical'] == 'mva'%}
+                </small>
+            </div>
+            <form autocomplete="off" id="continue_mva_{{loop.index}}" class="mva" >  
+                    {{ form_mva.hidden_tag() }}
+                    {{ form_mva.medical(style='display:none', value=i['medical']) }}
+                    {{ form_mva.tariff(style="display: none;", id='tariff_' ~ loop.index) }}
+                    {{ form_mva.name(value=i['name'], style="display: none") }}
+                    {{ form_mva.case(style="display: none;", value=i['case']) }}
+                    {{ form_mva.po.label }} {{ form_mva.po }}
+                    <br>
+                    {{ form_mva.date.label }} {{ form_mva.date(id='date_mva_' ~ loop.index) }}
+                    <br>
+                    {{ form_mva.submit }}
+            </form>  
+            <small>Tariff: {{i['tariff']}} <br> Case Number: {{i['case']}}</small>
+        </a>
     <script>
          $('#continue_mva_{{loop.index}}').submit(function (e) {
             e.preventDefault(); 
@@ -118,53 +117,52 @@
             $('.other').children('#date_other_{{loop.index}}').datepicker({dateFormat: 'dd.mm.yy'})
             $('.mva').children('#date_mva_{{loop.index}}').datepicker({dateFormat: 'dd.mm.yy'})
             $('.psemas').children('#date_psemas_{{loop.index}}').datepicker({dateFormat: 'dd.mm.yy'})
-}
+            }
         </script>
     {% endfor %}
     </div>    
-<br><br>
+    <br><br>
+    <h2>Past invoice</h2>  
+    <ul class="list-group">
+        {% for i in data %} 
+        <li class="invoice_list list-group-item" ><span id="patient_name-{{loop.index}}">{{i['name']}}</span> {{i['medical']}} {{i['date'].strftime('%d.%m.%Y')}} <span style="display:none;" id="patient_date-{{loop.index}}">{{ i['date'] }}</span></li>
+        <ul class="treatment_list list-group-item" id="treatment-list-{{loop.index}}" style="display:none;">
+                <script>
+                    $.getJSON('/get-treatment-name', {
+                        items: '{{ i["treatments"] }}',
+                        tariff: '{{ i["tariff"] }}'		
+                    }, function(data) {
+                        var button = document.createElement("button");
+                        var el = document.getElementById('treatment-list-{{loop.index}}')
+                        for (i = 0; i < data.treatments.length; i++) {
+                            var node = document.createElement("li");
+                            node.classList.add('list-group-item');
+                            node.innerText = data.treatments[i]['description'];
+                            el.appendChild(node);
+                        }
+                        button.innerHTML = "Continue Invoice";
+                        button.classList.add("continue" + '{{loop.index}}')
+                        el.appendChild(button);
+                        $('.continue' + '{{loop.index}}').click(function(){
+                            var patient_name = $('#patient_name-{{loop.index}}').text();
+                            var patient_date = $('#patient_date-{{loop.index}}').text();
+                            $.getJSON('/set-known-invoice', {
+                                patient: patient_name,
+                                date: patient_date		
+                            }, function(data) {
+                                window.location.href = "/patient/" + patient_name.toString() +"/continue-invoice";
+                                })
+                        })
+                        
+                    });
+            </script>
+        </ul>
+        {% endfor %}
+    </ul>
+    <br><br><br>    
+</div>
 
-<h2>Past invoice</h2>  
-<ul class="list-group">
-    {% for i in data %} 
-       <li class="invoice_list list-group-item" ><span id="patient_name-{{loop.index}}">{{i['name']}}</span> {{i['medical']}} {{i['date'].strftime('%d.%m.%Y')}} <span style="display:none;" id="patient_date-{{loop.index}}">{{ i['date'] }}</span></li>
-       <ul class="treatment_list list-group-item" id="treatment-list-{{loop.index}}" style="display:none;">
-            <script>
-                $.getJSON('/get-treatment-name', {
-                    items: '{{ i["treatments"] }}',
-                    tariff: '{{ i["tariff"] }}'		
-                }, function(data) {
-                    var button = document.createElement("button");
-                    var el = document.getElementById('treatment-list-{{loop.index}}')
-                    for (i = 0; i < data.treatments.length; i++) {
-                        var node = document.createElement("li");
-                        node.classList.add('list-group-item');
-                        node.innerText = data.treatments[i]['description'];
-                        el.appendChild(node);
-                    }
-                    button.innerHTML = "Continue Invoice";
-                    button.classList.add("continue" + '{{loop.index}}')
-                    el.appendChild(button);
-                    $('.continue' + '{{loop.index}}').click(function(){
-                        var patient_name = $('#patient_name-{{loop.index}}').text();
-                        var patient_date = $('#patient_date-{{loop.index}}').text();
-                        $.getJSON('/set-known-invoice', {
-                            patient: patient_name,
-                            date: patient_date		
-                        }, function(data) {
-                            window.location.href = "/patient/" + patient_name.toString() +"/continue-invoice";
-                            })
-                    })
-                    
-                });
-           </script>
-       </ul>
-    {% endfor %}
-</ul>    
 
-
-
-		
 <script>
 
     $(document).ready(function() {
@@ -175,47 +173,6 @@
         $('.invoice_list').click(function() {
             $(this).next().css("display", "block");
         });
-
-
-        // $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
-        // $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
-        // $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})
-        // $('.psemas').submit(function (e) {
-        //     e.preventDefault();
-        //     var url = "{{ url_for('selectPatient') }}";
-        //         $.ajax({
-        //         type: "POST",
-        //         url: url,
-        //         data: $('.psemas').serialize(), 
-        //         success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-        //         }
-        //     });
-        // })
-        // $('.other').submit(function (e) {
-        //     e.preventDefault();
-        //     var url = "{{ url_for('selectPatient') }}";
-        //     $.ajax({
-        //         type: "POST",
-        //         url: url,
-        //         data: $('.other').serialize(), 
-        //         success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-        //         }
-        //     });
-        // })
-        // $('.mva').submit(function (e) {
-        //     e.preventDefault(); 
-        //     var url = "{{ url_for('selectPatient') }}";
-        //     console.log($('.mva').serialize()) 
-        //     $.ajax({
-        //         type: "POST",
-        //         url: url,
-        //         data: $('.mva').serialize(), 
-        //         success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-        //         }
-        //     });
-        // });
-
-        // Inject our CSRF token into our AJAX request.
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
                 if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
