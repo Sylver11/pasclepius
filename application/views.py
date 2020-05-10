@@ -137,6 +137,18 @@ def generateInvoice():
 @app.route('/set-known-patient',methods=['GET','POST'])
 def knownPatient():
     patient = request.args.get('patient')
+   # date = request.args.get('date')
+    data =  queryInvoice(patient)
+   # d = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+   # date_deutsch = d.strftime('%d.%m.%Y')
+    session["PATIENT"] = data
+   # session["PATIENT"]["date"]= date_deutsch
+    return data
+
+
+@app.route('/set-known-invoice',methods=['GET','POST'])
+def knownInvoice():
+    patient = request.args.get('patient')
     date = request.args.get('date')
     data =  getSingleInvoice(patient, date)
     d = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
@@ -144,6 +156,8 @@ def knownPatient():
     session["PATIENT"] = data
     session["PATIENT"]["date"]= date_deutsch
     return data
+
+
 
 
 @app.route('/get-value',methods=['GET','POST'])

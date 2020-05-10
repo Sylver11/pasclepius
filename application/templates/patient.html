@@ -14,76 +14,54 @@
             <h5 class="mb-1">{{i['name']}}</h5>
             <small>
                 <span style="text-transform: uppercase;">{{i['medical']}}</span>
+                
                 {% if i['medical'] == 'mva'%}
-                <span>{{i['case']}}</span>
             </small>
         </div>
         <form autocomplete="off" id="newInvoice_mva" class="mva" >  
-            {{ form_mva.hidden_tag() }}
-            {{ form_mva.medical(style='display:none') }}
-            <br>
-            {{ form_mva.tariff.label }} {{ form_mva.tariff }}
-            <br>
-             {{ form_mva.name(value=i['name'], style="display: none") }}
-            <br>
-            {{ form_mva.case.label }} {{ form_mva.case }}
-            <br>
-            {{ form_mva.po.label }} {{ form_mva.po }}
-            <br>
-            {{ form_mva.date.label }} {{ form_mva.date(id='date_mva') }}
-            <br>
-            {{ form_mva.submit }}
+                {{ form_mva.hidden_tag() }}
+                {{ form_mva.medical(style='display:none') }}
+                {{ form_mva.tariff(style="display: none;", id='tariff_' ~ loop.index) }}
+                {{ form_mva.name(value=i['name'], style="display: none") }}
+                {{ form_mva.case(style="display: none;", value=i['case']) }}
+                <br>
+                {{ form_mva.po.label }} {{ form_mva.po }}
+                <br>
+                {{ form_mva.date.label }} {{ form_mva.date(id='date_mva_' ~ loop.index) }}
+                <br>
+                {{ form_mva.submit }}
         </form>  
-        <small>Donec id elit non mi porta.</small>
+        <small>Tariff: {{i['tariff']}} <br> Case Number: {{i['case']}}</small>
     </a>
 
-
-
-            {% elif i['medical'] == 'psemas'%}
-                <span></span>
+    {% elif i['medical'] == 'psemas'%}
             </small>
         </div>
-
-
         <form autocomplete="off" id="newInvoice_psemas" class="psemas" >  
-        
             {{ form_psemas.hidden_tag() }}
-            {{ form_psemas.medical(style='display:none') }}
-            <br>
-            {{ form_psemas.tariff.label }} 
-            
-            {{ form_psemas.tariff(value=i['tariff']) }}
-        
-         {{ form_psemas.name(value=i['name'], style="display: none")  }}
-        
-        {{ form_psemas.main(value=i['main'], style="display: none") }}
-      
-        {{ form_psemas.dob(value=i['dob'], style="display: none" )}}
-        
-         {{ form_psemas.number(value=i['number'], style="display: none") }}
-        
-        {{ form_psemas.date.label }} {{ form_psemas.date(id='date_psemas') }}
+            {{ form_psemas.medical(value=i['medical'], style="display: none;") }}
+            {{ form_psemas.tariff(id='tariff_' ~ loop.index, style="display: none;") }}
+            {{ form_psemas.name(value=i['name'], style="display: none")  }}
+            {{ form_psemas.main(value=i['main'], style="display: none") }}
+            {{ form_psemas.dob(value=i['dob'], style="display: none") }}
+            {{ form_psemas.number(value=i['number'], style="display: none") }}
+            {{ form_psemas.date.label }} {{ form_psemas.date(id='date_psemas_' ~ loop.index) }}
         <br>
         {{ form_mva.submit }}
         </form>
         <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['number']}} <br>Main Member: {{i['main']}} <br>Date of Birth: {{i['dob']}}</small>
     </a>
 
-
-
-
         {% else %}
-        <span>{{i['number']}}</span>
-    </small>
-</div>
+        <!-- <span>{{i['number']}}</span> -->
+            </small>
+        </div>
 
         <form  autocomplete="off" id="newInvoice_other" class="other" >  
-        
             {{ form_other.hidden_tag() }}
         <br>     
-        {{form_other.medical.label}}  {{ form_other.medical }}
-        <br>    
-        {{ form_other.tariff.label }} {{ form_other.tariff }}
+        {{form_other.medical.label}}  {{ form_other.medical }}  
+        {{ form_other.tariff.label }} {{ form_other.tariff(id=tariff_ + loop.index) }}
         <br>
          {{ form_other.name(value=i['name'], style="display: none")  }}
         <br>
@@ -93,33 +71,25 @@
         <br>
         {{ form_other.number.label }} {{ form_other.number }}
         <br>
-        {{ form_other.date.label }} {{ form_other.date(id='date_other') }}
+        {{ form_other.date.label }} {{ form_other.date(id='date_other_' ~ loop.index) }}
         <br>
         {{ form_other.submit }}
         </form>  
     </a>
 
-
-
         {% endif %}
-        
-       <!-- <ul class="patient_list list-group-item" style="display:none;"> -->
-            <!-- <script>
-                    $('.continue' + '{{loop.index}}').click(function(){
-                        var patient_name = $('#patient_name-{{loop.index}}').text();
-                        // var patient_date = $('#patient_date-{{loop.index}}').text();
-                        // console.log(patient_name, patient_date)
-                        $.getJSON('/set-known-invoice', {
-                            patient: patient_name,
-                            date: patient_date		
-                        }, function(data) {
-                            window.location.href = "/patient/" + patient_name.toString() +"/new-invoice"
-                        })
-        })
-           </script> -->
-       <!-- </ul>s -->
+        <script>
+            selectElement('tariff_{{ loop.index }}', '{{ i["tariff"] }}')
+            function selectElement(id, valueToSelect) {    
+            let element = document.getElementById(id);
+            element.value = valueToSelect;
+            $('.other').children('#date_other_{{loop.index}}').datepicker({dateFormat: 'dd.mm.yy'})
+            $('.mva').children('#date_mva_{{loop.index}}').datepicker({dateFormat: 'dd.mm.yy'})
+            $('.psemas').children('#date_psemas_{{loop.index}}').datepicker({dateFormat: 'dd.mm.yy'})
+}
+        </script>
     {% endfor %}
-        </div>    
+    </div>    
 <br><br>
 
 <h2>Past invoice</h2>  
@@ -173,30 +143,32 @@
         $('.invoice_list').click(function() {
             $(this).next().css("display", "block");
         });
+
+
         $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
         $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
         $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})
-        $(document).on('change', '.medical',function() {
-            var selection = $(this).val()
-            if(selection == 'psemas'){
-                $('.mva').css("display","none")
-                $('.other').css("display","none")
-                $('.psemas').css("display","block")
-                $( ".psemas" ).children('#medical').val(selection)
+        // $(document).on('change', '.medical',function() {
+        //     var selection = $(this).val()
+        //     if(selection == 'psemas'){
+        //         $('.mva').css("display","none")
+        //         $('.other').css("display","none")
+        //         $('.psemas').css("display","block")
+        //         $( ".psemas" ).children('#medical').val(selection)
 
-            }else if(selection == 'mva'){
-                $('.psemas').css("display","none")
-                $('.other').css("display","none")
-                $('.mva').css("display","block")
-                $( ".mva" ).children('#medical').val(selection)
+        //     }else if(selection == 'mva'){
+        //         $('.psemas').css("display","none")
+        //         $('.other').css("display","none")
+        //         $('.mva').css("display","block")
+        //         $( ".mva" ).children('#medical').val(selection)
 
-            }else if(selection =='other'){
-                $('.psemas').css("display","none")
-                $('.mva').css("display","none")
-                $('.other').css("display","block")
-            }else{
-                console.log("nothing selected")}
-        })
+        //     }else if(selection =='other'){
+        //         $('.psemas').css("display","none")
+        //         $('.mva').css("display","none")
+        //         $('.other').css("display","block")
+        //     }else{
+        //         console.log("nothing selected")}
+        // })
 
         $('.psemas').submit(function (e) {
             e.preventDefault();
