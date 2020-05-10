@@ -3,7 +3,7 @@ from flask import current_app as app
 from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file
 from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm
 from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup
-from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch
+from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch, getPatient
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 from datetime import datetime
@@ -30,7 +30,8 @@ def invoiceOption(patient):
     form_psemas = Patient_psemas()
     form_other = Patient_other()
     data = queryInvoice(patient)
-    return  render_template('patient.html',data=data, patient=patient, form_mva=form_mva, form_psemas = form_psemas, form_other = form_other)
+    patient_data = getPatient(patient)
+    return  render_template('patient.html', patient_data=patient_data, data=data, patient=patient, form_mva=form_mva, form_psemas = form_psemas, form_other = form_other)
 
 
 @app.route('/patient/<patient>/new-invoice')

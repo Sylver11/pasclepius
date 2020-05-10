@@ -8,7 +8,7 @@
 
 <h2>Patients</h2>  
 <div class="list-group">
-    {% for i in data %} 
+    {% for i in patient_data %} 
     <a href="#!" class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
             <h5 class="mb-1">{{i['name']}}</h5>
@@ -20,7 +20,7 @@
         </div>
         <form autocomplete="off" id="continue_mva_{{loop.index}}" class="mva" >  
                 {{ form_mva.hidden_tag() }}
-                {{ form_mva.medical(style='display:none') }}
+                {{ form_mva.medical(style='display:none', value=i['medical']) }}
                 {{ form_mva.tariff(style="display: none;", id='tariff_' ~ loop.index) }}
                 {{ form_mva.name(value=i['name'], style="display: none") }}
                 {{ form_mva.case(style="display: none;", value=i['case']) }}
@@ -36,7 +36,7 @@
          $('#continue_mva_{{loop.index}}').submit(function (e) {
             e.preventDefault(); 
             var url = "{{ url_for('selectPatient') }}";
-            console.log($('.mva').serialize()) 
+            // console.log($('.mva').serialize()) 
             $.ajax({
                 type: "POST",
                 url: url,

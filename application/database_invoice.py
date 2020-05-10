@@ -27,6 +27,18 @@ def liveSearch(name):
     conn.close()
     return data
 
+def getPatient(name):
+    sql = """ SELECT any_value(tariff) AS tariff, any_value(dob) AS dob,
+    any_value(number) AS number, any_value(medical) AS medical,
+    any_value(`case`) AS `case`, any_value(main) AS main, name FROM
+    andrea_invoice WHERE name = '{}' GROUP BY CASE WHEN medical = 'mva' THEN `case` ELSE number END;""".format(name)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    patient_data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return patient_data
 
 def getInvoiceURL(name, date):
     date = datetime.strptime(date, '%d.%m.%Y')
