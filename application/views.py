@@ -3,7 +3,7 @@ from flask import current_app as app
 from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file
 from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm
 from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup
-from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice
+from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 from datetime import datetime
@@ -53,9 +53,6 @@ def newInvoice(patient):
         main = session.get('PATIENT')['main']
         dob = session.get('PATIENT')['dob']
         return render_template('invoice.html', dates=None, treatments=None,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
-
-
-
 
 
 
@@ -133,18 +130,12 @@ def generateInvoice():
             return jsonify(result='Error: Entry already exists')
     return jsonify(result='error')
 
-
-@app.route('/set-known-patient',methods=['GET','POST'])
-def knownPatient():
-    patient = request.args.get('patient')
-   # date = request.args.get('date')
-    data =  queryInvoice(patient)
-   # d = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-   # date_deutsch = d.strftime('%d.%m.%Y')
-    session["PATIENT"] = data
-   # session["PATIENT"]["date"]= date_deutsch
-    return data
-
+@app.route('/live-search',methods=['GET','POST'])
+def liveSearchPatient():
+    name = request.args.get('username')
+    data = liveSearch(name)
+    value_json = json.dumps(data)
+    return value_json
 
 @app.route('/set-known-invoice',methods=['GET','POST'])
 def knownInvoice():
@@ -156,8 +147,6 @@ def knownInvoice():
     session["PATIENT"] = data
     session["PATIENT"]["date"]= date_deutsch
     return data
-
-
 
 
 @app.route('/get-value',methods=['GET','POST'])

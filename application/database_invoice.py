@@ -16,6 +16,18 @@ def get_index(medical, date):
     return index['COUNT(*)'] + 1
 
 
+def liveSearch(name):
+    sql = """SELECT name FROM andrea_invoice WHERE name LIKE '{}%'
+    """.format(name)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return data
+
+
 def getInvoiceURL(name, date):
     date = datetime.strptime(date, '%d.%m.%Y')
     sql = """SELECT url FROM andrea_invoice WHERE name = '{}' AND date =
