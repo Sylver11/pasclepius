@@ -18,13 +18,12 @@
                 {% if i['medical'] == 'mva'%}
             </small>
         </div>
-        <form autocomplete="off" id="newInvoice_mva" class="mva" >  
+        <form autocomplete="off" id="continue_mva_{{loop.index}}" class="mva" >  
                 {{ form_mva.hidden_tag() }}
                 {{ form_mva.medical(style='display:none') }}
                 {{ form_mva.tariff(style="display: none;", id='tariff_' ~ loop.index) }}
                 {{ form_mva.name(value=i['name'], style="display: none") }}
                 {{ form_mva.case(style="display: none;", value=i['case']) }}
-                <br>
                 {{ form_mva.po.label }} {{ form_mva.po }}
                 <br>
                 {{ form_mva.date.label }} {{ form_mva.date(id='date_mva_' ~ loop.index) }}
@@ -33,11 +32,25 @@
         </form>  
         <small>Tariff: {{i['tariff']}} <br> Case Number: {{i['case']}}</small>
     </a>
+    <script>
+         $('#continue_mva_{{loop.index}}').submit(function (e) {
+            e.preventDefault(); 
+            var url = "{{ url_for('selectPatient') }}";
+            console.log($('.mva').serialize()) 
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $('#continue_mva_{{loop.index}}').serialize(), 
+                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+                }
+            });
+        });
+    </script>
 
     {% elif i['medical'] == 'psemas'%}
             </small>
         </div>
-        <form autocomplete="off" id="newInvoice_psemas" class="psemas" >  
+        <form autocomplete="off" id="continue_psemas_{{loop.index}}" class="psemas" >  
             {{ form_psemas.hidden_tag() }}
             {{ form_psemas.medical(value=i['medical'], style="display: none;") }}
             {{ form_psemas.tariff(id='tariff_' ~ loop.index, style="display: none;") }}
@@ -51,31 +64,50 @@
         </form>
         <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['number']}} <br>Main Member: {{i['main']}} <br>Date of Birth: {{i['dob']}}</small>
     </a>
+    <script>
+         $('#continue_psemas_{{loop.index}}').submit(function (e) {
+            e.preventDefault();
+            var url = "{{ url_for('selectPatient') }}";
+                $.ajax({
+                type: "POST",
+                url: url,
+                data: $('#continue_psemas_{{loop.index}}').serialize(), 
+                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+                }
+            });
+        })
+    </script>
 
         {% else %}
-        <!-- <span>{{i['number']}}</span> -->
             </small>
         </div>
-
-        <form  autocomplete="off" id="newInvoice_other" class="other" >  
+        <form  autocomplete="off" id="continue_other_{{loop.index}}" class="other" >  
             {{ form_other.hidden_tag() }}
-        <br>     
-        {{form_other.medical.label}}  {{ form_other.medical }}  
-        {{ form_other.tariff.label }} {{ form_other.tariff(id=tariff_ + loop.index) }}
-        <br>
-         {{ form_other.name(value=i['name'], style="display: none")  }}
-        <br>
-        {{ form_other.main.label }} {{ form_other.main }}
-        <br>
-        {{ form_other.dob.label }} {{ form_other.dob }}
-        <br>
-        {{ form_other.number.label }} {{ form_other.number }}
-        <br>
-        {{ form_other.date.label }} {{ form_other.date(id='date_other_' ~ loop.index) }}
+            {{ form_other.medical(value=i['medical'], style="display: none") }}  
+            {{ form_other.tariff(id='tariff_' ~ loop.index, style="display: none") }}
+            {{ form_other.name(value=i['name'], style="display: none")  }}
+            {{ form_other.main(value=i['main'], style="display: none") }}
+            {{ form_other.dob(value=i['dob'], style="display: none") }}
+            {{ form_other.number(value=i['number'], style="display: none") }}
+            {{ form_other.date.label }} {{ form_other.date(id='date_other_' ~ loop.index) }}
         <br>
         {{ form_other.submit }}
         </form>  
+        <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['number']}} <br>Main Member: {{i['main']}} <br>Date of Birth: {{i['dob']}}</small>
     </a>
+    <script>
+        $('#continue_other_{{loop.index}}').submit(function (e) {
+            e.preventDefault();
+            var url = "{{ url_for('selectPatient') }}";
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $('#continue_other_{{loop.index}}').serialize(), 
+                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+                }
+            });
+        })
+    </script>
 
         {% endif %}
         <script>
@@ -145,69 +177,43 @@
         });
 
 
-        $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
-        $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
-        $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})
-        // $(document).on('change', '.medical',function() {
-        //     var selection = $(this).val()
-        //     if(selection == 'psemas'){
-        //         $('.mva').css("display","none")
-        //         $('.other').css("display","none")
-        //         $('.psemas').css("display","block")
-        //         $( ".psemas" ).children('#medical').val(selection)
-
-        //     }else if(selection == 'mva'){
-        //         $('.psemas').css("display","none")
-        //         $('.other').css("display","none")
-        //         $('.mva').css("display","block")
-        //         $( ".mva" ).children('#medical').val(selection)
-
-        //     }else if(selection =='other'){
-        //         $('.psemas').css("display","none")
-        //         $('.mva').css("display","none")
-        //         $('.other').css("display","block")
-        //     }else{
-        //         console.log("nothing selected")}
+        // $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
+        // $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
+        // $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})
+        // $('.psemas').submit(function (e) {
+        //     e.preventDefault();
+        //     var url = "{{ url_for('selectPatient') }}";
+        //         $.ajax({
+        //         type: "POST",
+        //         url: url,
+        //         data: $('.psemas').serialize(), 
+        //         success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+        //         }
+        //     });
         // })
-
-        $('.psemas').submit(function (e) {
-            e.preventDefault();
-            var url = "{{ url_for('selectPatient') }}";
-                $.ajax({
-                type: "POST",
-                url: url,
-                data: $('.psemas').serialize(), 
-                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-                }
-            });
-        })
-            
-
-        $('.other').submit(function (e) {
-            e.preventDefault();
-            var url = "{{ url_for('selectPatient') }}";
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: $('.other').serialize(), 
-                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-                }
-            });
-        })
-
-
-        $('.mva').submit(function (e) {
-            e.preventDefault(); 
-            var url = "{{ url_for('selectPatient') }}";
-            console.log($('.mva').serialize()) 
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: $('.mva').serialize(), 
-                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-                }
-            });
-        });
+        // $('.other').submit(function (e) {
+        //     e.preventDefault();
+        //     var url = "{{ url_for('selectPatient') }}";
+        //     $.ajax({
+        //         type: "POST",
+        //         url: url,
+        //         data: $('.other').serialize(), 
+        //         success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+        //         }
+        //     });
+        // })
+        // $('.mva').submit(function (e) {
+        //     e.preventDefault(); 
+        //     var url = "{{ url_for('selectPatient') }}";
+        //     console.log($('.mva').serialize()) 
+        //     $.ajax({
+        //         type: "POST",
+        //         url: url,
+        //         data: $('.mva').serialize(), 
+        //         success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+        //         }
+        //     });
+        // });
 
         // Inject our CSRF token into our AJAX request.
         $.ajaxSetup({

@@ -57,7 +57,7 @@ def getTreatmentForm(tariff = None):
 
 
 
-class Patient_mva(FlaskForm): 
+class Patient_mva(FlaskForm):
     medical = StringField('Medical Aid')
     name = StringField(u'Full Name', validators=[DataRequired()])
     case = StringField(u'Case Number', validators=[DataRequired()])
@@ -67,7 +67,7 @@ class Patient_mva(FlaskForm):
     submit = SubmitField('Continue')
 
 
-class Patient_psemas(FlaskForm): 
+class Patient_psemas(FlaskForm):
     medical = StringField('Medical Aid')
     name = StringField(u'Full Name', validators=[DataRequired()])
     main = StringField(u'Main Member', validators=[DataRequired()])
@@ -77,7 +77,7 @@ class Patient_psemas(FlaskForm):
     date =  StringField(u'Invoice Date', validators=[DataRequired()])
     submit = SubmitField('Continue')
 
-class Patient_other(FlaskForm): 
+class Patient_other(FlaskForm):
     medical = StringField('Medical Aid', validators=[DataRequired()])
     name = StringField(u'Full Name', validators=[DataRequired()])
     main = StringField(u'Main Member', validators=[DataRequired()])

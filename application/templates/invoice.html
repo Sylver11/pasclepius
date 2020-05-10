@@ -263,10 +263,9 @@ $(document).ready(function(){
         $(this).removeClass('hasDatepicker');
         $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" );
 });
-console.log('{{treatments}}')
 
-if('{{treatments}}' !== ""){
-    console.log('{{invoice}}')
+if('{{treatments}}' !== 'None'){
+    console.log("the continue section runs")
         var treatments = '{{treatments}}'
         var t = treatments.split(",")
         var d = '{{dates}}'.split(",")
@@ -291,7 +290,7 @@ if('{{treatments}}' !== ""){
                 var m = str.match(/^(\d{1,2}).(\d{1,2}).(\d{4})$/);
                 return (m) ? new Date(m[3], m[2]-1, m[1]) : null;
                 }
-            $('#date-' + index).datepicker({dateFormat: 'dd.mm.yy'}) //.datepicker( "show" )
+            $('#date-' + index).datepicker({dateFormat: 'dd.mm.yy'})
             $('#date-' + index).datepicker("setDate", date);
             $('select#treatment-'+ (cloneIndex -1)).prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
             $('select#treatment-'+ (cloneIndex -2) + ' option[value='+t[index]+']').attr("selected",true);
