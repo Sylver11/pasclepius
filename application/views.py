@@ -1,21 +1,39 @@
 import os
 from flask import current_app as app
 from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file
-from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm
+from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm, RegistrationForm
 from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup
 from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch, getPatient
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
+from flask_login import LoginManager
+from . import login_manager
 from datetime import datetime
 from jinja2 import Template
 from decimal import *
 import subprocess 
 import simplejson as json
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(user_id)
 
 @app.route('/', methods=('GET', 'POST'))
 def home():
     return render_template('index.html')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user = User(form.username.data, form.email.data,
+                    form.password.data)
+       # db_session.add(user)
+        flash('Thanks for registering')
+        return redirect(url_for('home'))
+    return render_template('register.html', form=form)
+
 
 @app.route('/patient', methods=('GET', 'POST'))
 def findPatient():

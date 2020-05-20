@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField, DecimalField
+from wtforms import StringField, PasswordField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField, DecimalField
 from wtforms.fields.html5 import DecimalField
 from wtforms_components.fields import SelectField
 from wtforms.validators import DataRequired, Length, Email, Required, NumberRange
@@ -54,6 +54,16 @@ def getTreatmentForm(tariff = None):
                 list_ordered_by_category, featured_ordered_by_category = self.nestedObjects(filtered_result, featured_result)
                 self.initialise_SelectOption(list_ordered_by_category = list_ordered_by_category, featured_ordered_by_category = featured_ordered_by_category)
     return Treatment()
+
+
+class RegistrationForm(FlaskForm):
+    username = StringField('Username', [validators.Length(min=4, max=25)])
+    email = StringField('Email Address', [validators.Length(min=6, max=35)])
+    password = PasswordField('New Password', [
+        validators.DataRequired(),
+        validators.EqualTo('confirm', message='Passwords must match')
+    ])
+    confirm = PasswordField('Repeat Password')
 
 
 
