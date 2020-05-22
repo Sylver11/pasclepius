@@ -1,18 +1,17 @@
 {% extends 'layout.html' %}
 {% block content %}
     <div class="container">
-        <form action="/patient/" method="get">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="user_name">
-            <button type="submit">Continue</button>
+        Hi {{ current_user.name }}!
+        <form method="post" class="form">
+            {{ form.hidden_tag() }}
+            {{ form.email }}
+            {% for error in form.email.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            <br>
+            {{ form.password }}
+            <br>
+            {{ form.submit }}
         </form>
     </div>
-<script>
-$(document).ready(function() {
-    $('form').submit(function() {
-        event.preventDefault()
-        window.location.href = "/patient/" + $('#name').val()
-    });
-})
-</script>
  {% endblock %}

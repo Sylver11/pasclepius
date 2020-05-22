@@ -6,6 +6,9 @@
             <img id="green-leaf-index" src="{{ url_for('static', filename='img/green-leaf.png') }}" alt="green-leaf">
         </div>
         <div id="inside_container">
+            {% if current_user.is_authenticated %}
+                Hi {{ current_user.id }}!
+            {% endif %}
             <h3 class="display-5">Welcome to Pasclepius Medical Software</h3>
             <p class="lead">Watch this space</p>
         </div>

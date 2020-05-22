@@ -23,5 +23,6 @@ def create_app():
         from . import views
         from . import url_generator
         from . import database_invoice
+        from . import models
         return application
 

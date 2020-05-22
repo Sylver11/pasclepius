@@ -58,14 +58,31 @@ def getTreatmentForm(tariff = None):
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', [validators.Length(min=4, max=25)])
-    email = StringField('Email Address', [validators.Length(min=6, max=35)])
+    email = StringField('Email', validators=[DataRequired(),
+                                             Email(message='Enter a valid email.')])
     password = PasswordField('New Password', [
         validators.DataRequired(),
         validators.EqualTo('confirm', message='Passwords must match')
     ])
     confirm = PasswordField('Repeat Password')
+    def validate_username(self, username):
+        #user = User.query.filter_by(username=username.data).first()
+        user = None
+        if user is not None:
+            raise ValidationError('Please use a different username.')
 
+    def validate_email(self, email):
+        #user = User.query.filter_by(email=email.data).first()
+        user = None
+        if user is not None:
+            raise ValidationError('Please use a different email address.')
 
+class LoginForm(FlaskForm):
+    """User Login Form."""
+    email = StringField('Email', validators=[DataRequired(),
+                                             Email(message='Enter a valid email.')])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Log In')
 
 class Patient_mva(FlaskForm):
     medical = StringField('Medical Aid')

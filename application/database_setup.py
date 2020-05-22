@@ -5,6 +5,7 @@ import os
 def setupTable():
     sql_drop_table = "DROP TABLE treatments"
     sql_drop_table_invoice = "DROP TABLE andrea_invoice"
+    sql_drop_table_users = "DROP TABLE users"
     sql_create_table = """CREATE TABLE treatments (
         id int(11) NOT NULL AUTO_INCREMENT,
         item int(11) NOT NULL,
@@ -34,11 +35,22 @@ def setupTable():
         PRIMARY KEY (id))
         AUTO_INCREMENT=1 ;"""
 
+    sql_create_table_users = """CREATE TABLE users (
+        id int(11) NOT NULL AUTO_INCREMENT,
+        user varchar(255) NOT NULL,
+        password varchar(255) NOT NULL,
+        email varchar(100) NOT NULL,
+        PRIMARY KEY (id))
+        AUTO_INCREMENT=1 ;"""
+
+
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql_drop_table)
+    cursor.execute(sql_drop_table_users)
     cursor.execute(sql_drop_table_invoice)
     cursor.execute(sql_create_table)
+    cursor.execute(sql_create_table_users)
     cursor.execute(sql_create_table_invoice)
     data = pd.read_csv (os.getenv("CSV_URL"), delimiter=';')
     df = pd.DataFrame(data, columns= ['item','description','units','value','category', 'tariff'])

@@ -1,12 +1,14 @@
 import os
 from flask import current_app as app
 from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file
-from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm, RegistrationForm
+from werkzeug.urls import url_parse
+from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm, RegistrationForm, LoginForm
 from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup
 from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch, getPatient
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
-from flask_login import LoginManager
+from application.models import User
+from flask_login import current_user, login_user, UserMixin
 from . import login_manager
 from datetime import datetime
 from jinja2 import Template
@@ -14,9 +16,19 @@ from decimal import *
 import subprocess 
 import simplejson as json
 
+
+#class User(UserMixin):
+#    pass
+
+
 @login_manager.user_loader
-def load_user(user_id):
-    return User.get(user_id)
+def load_user(email):
+    user = User()
+    user.id = email
+    return user
+
+#    return User.get(user_id)
+#    return User.query.get(user_id)
 
 @app.route('/', methods=('GET', 'POST'))
 def home():
@@ -25,14 +37,50 @@ def home():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        user = User(form.username.data, form.email.data,
-                    form.password.data)
+        user = User(user = form.username.data, email = form.email.data)
+        #            form.password.data)
+        #user = User(username=form.username.data, email=form.email.data)
+        #user.id = form.email.data
+        user.set_password(form.password.data)
+        login_user(user)
+        print(user)
        # db_session.add(user)
-        flash('Thanks for registering')
-        return redirect(url_for('home'))
+        #flash('Thanks for registering')
+        return redirect(url_for('login'))
+    print(form.errors.items())
     return render_template('register.html', form=form)
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm(request.form)
+    if form.validate_on_submit():
+       # user = User.query.filter_by(username=form.username.data).first()
+       # if user is None or not user.check_password(form.password.data):
+           # flash('Invalid username or password')
+       #     return redirect(url_for('login'))
+        user = User()
+        user.id = form.email.data
+        login_user(user)
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('home')
+        return redirect(next_page)
+    return render_template('login.html', form=form)
+
+
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
 
 
 @app.route('/patient', methods=('GET', 'POST'))
