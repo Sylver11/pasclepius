@@ -37,9 +37,23 @@ def setupTable():
 
     sql_create_table_users = """CREATE TABLE users (
         id int(11) NOT NULL AUTO_INCREMENT,
-        user varchar(255) NOT NULL,
-        password varchar(255) NOT NULL,
+        title varchar(255) NOT NULL,
+        name varchar(255) NOT NULL,
         email varchar(100) NOT NULL,
+        password varchar(255) NOT NULL,
+        phone varchar(255),
+        cell varchar(255) NOT NULL,
+        fax varchar(255),
+        address varchar(255) NOT NULL,
+        bank_holder varchar(255) NOT NULL,
+        bank_account varchar(255) NOT NULL,
+        bank varchar(255) NOT NULL,
+        bank_branch varchar(255) NOT NULL,
+        practice_number varchar(255) NOT NULL,
+        practice_name varchar(255) NOT NULL,
+        hpcna_number varchar(255) NOT NULL,
+        qualification varchar(255) NOT NULL,
+        specialisation varchar(255),
         PRIMARY KEY (id))
         AUTO_INCREMENT=1 ;"""
 

@@ -57,14 +57,34 @@ def getTreatmentForm(tariff = None):
 
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', [validators.Length(min=4, max=25)])
-    email = StringField('Email', validators=[DataRequired(),
-                                             Email(message='Enter a valid email.')])
+    title = SelectField(u'Title', choices =
+                        [('',''),("dr","Dr"),("prof","Prof")],
+                        default = '')
+    name =  StringField('Full name', validators=[DataRequired(Length(min=4,
+                                                                     max=35))])
+    email = StringField('Email', validators=[DataRequired(),Email(message='Enter a valid email.')])
     password = PasswordField('New Password', [
         validators.DataRequired(),
         validators.EqualTo('confirm', message='Passwords must match')
     ])
     confirm = PasswordField('Repeat Password')
+    phone = StringField('Landline number')
+    cell =  StringField('Cell number', validators=[DataRequired()])
+    fax = StringField('Fax number')
+    address = StringField('Full address')
+    bank = StringField('Bank', validators=[DataRequired()])
+    bank_branch = StringField('Branch number',
+                              validators=[DataRequired()])
+    bank_account = StringField('Account number', validators=[DataRequired()])
+    bank_holder =  StringField('Account holder', validators=[DataRequired()])
+    practice_number = StringField('Practice number', validators=[DataRequired()])
+    practice_name = StringField('Practice name', validators=[DataRequired()])
+    hpcna_number = StringField('HPCNA number', validators=[DataRequired()])
+    qualification = StringField('Qualification', validators=[DataRequired()])
+    specialisation = StringField('Specialisation')
+
+
+
     def validate_username(self, username):
         #user = User.query.filter_by(username=username.data).first()
         user = None

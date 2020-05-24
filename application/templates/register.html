@@ -1,24 +1,108 @@
 {% extends 'layout.html' %}
 {% block content %}
-{% from "_formhelpers.html" import render_field %}
 <div class=container>
-    Hi {{ current_user.name }}!
-  <form method=post>
+  <br>
+  <br>
+  <h3>Register at Pasclepius</h3>
+  <br>
+  
+  <form autocomplete="off" method=post>
     <dl>
-        {{ form.csrf_token() }}
+      <div class="border border-dark px-5">
+        <br>
+        <h4>Personal details:</h4>
         {{ form.hidden_tag() }}
-    {{ render_field(form.username) }}
-    {% for error in form.username.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
+          <div class="form-group">
+          {{ form.title.label(for="title") }}
+          {{ form.title(class_="required") }}
+          </div>
+          <div class="form-group">
+          {{ form.name.label(for="formGroupExampleInput", class_="required") }}
+          {{ form.name(class_="required form-control", id_="formGroupExampleInput", placeholder="Example: Andreas Voigt", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: Andreas Voigt'") }}
+          </div>
+          <div class="form-group">
+          {{ form.email.label(for="formGroupExampleInput2", class_="required") }}
+          {{ form.email(class_="required form-control", id_="formGroupExampleInput2", placeholder="Example: andreas.voigt@gmail.com", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: andreas.voigt@gmail.com'") }}
+          </div>
+            {% for error in form.email.errors %}
+              <span style="color: red;">{{ error }}</span>
+            {% endfor %}    
+            <div class="form-group">
+            {{ form.password.label(for="formGroupExampleInput4", class_="required") }}
+            {{ form.password(class_="required", id_="formGroupExampleInput4") }}
+            {% for error in form.password.errors %}
+              <span style="color: red;">{{ error }}</span>
+            {% endfor %} 
+            </div>
+            <div class="form-group">
+            {{ form.confirm.label(for="confirm", class_="required") }}
+            {{ form.confirm(class_="required", id_="confirm") }}
+            </div>
+        </div>
+        <br>
 
-    {{ render_field(form.email) }}
-    {% for error in form.email.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-            
-    {{ render_field(form.password) }}
-    {{ render_field(form.confirm) }}
+
+        <div class="border border-dark px-5">
+          <br>
+          <h4>Credentials:</h4>
+          <div class="form-group">
+          {{ form.qualification.label(for="formGroupExampleInput3", class_="required") }}
+          {{ form.qualification(id_="formGroupExampleInput3", class_="required", placeholder="Example: Dr. Med. (Germany), FCRS (Edingburgh)", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: Dr. Med. (Germany), FCRS (Edingburgh)'") }}
+          </div>
+          <div class="form-group">
+          {{ form.specialisation.label(for="specialisation") }}
+          {{ form.specialisation(id_="specialisation", class_="required", placeholder="Example: Specialist Orthopaedic and Spinal Surgoen", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: Specialist Orthopaedic and Spinal Surgoen'") }}
+          </div>
+          <div class="form-group">
+            {{ form.cell.label(for="cell", class_="required") }}
+            {{ form.cell(id_="cell", class_="required", placeholder="Example: +264814952057", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: +264814952057'") }}
+            </div>
+          <div class="form-group">
+          {{ form.phone.label(for="phone") }}
+          {{ form.phone(id_="phone", placeholder="Example: +26465220154", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: +26465220154'")}}
+          </div>
+          <div class="form-group">
+            {{ form.fax.label(for="fax") }}
+            {{ form.fax(placeholder="Example: +26465220154", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: +26465220154'")}}
+            </div>
+          <div class="form-group">
+          {{ form.address.label(for="address") }}
+          {{ form.address(id_="address", class_="required", placeholder="Example: Oshakati Pharmacy Medical Complex, Room 12", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: Oshakati Pharmacy Medical Complex, Room 12'") }}
+          </div>
+          <div class="form-group">
+          {{ form.practice_name.label(for="practice_name", class_="required") }}  
+          {{ form.practice_name(id_="practice_name", class_="required", placeholder="Example: Practice Dr. Voigt", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: Practice Dr. Voigt'") }}
+          </div>
+          <div class="form-group">
+          {{ form.practice_number.label(for="practice_number", class_="required") }}
+          {{ form.practice_number(id_="practice_number", class_="required", placeholder="Example: 0280000524972", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: 0280000524972'") }}
+          </div>
+          <div class="form-group">
+          {{ form.hpcna_number.label(for="hpcna_number", class_="required") }}
+          {{ form.hpcna_number(id_="hpcna_number", class_="required", placeholder="Example: MPR 00663", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: MPR 00663'") }}
+          </div>
+        </div>  
+        <br>
+        <div class="border border-dark px-5">
+          <br>
+          <h4>Banking details:</h4>
+          <div class="form-group">
+          {{ form.bank_holder.label(for="bank_holder", class_="required") }}
+          {{ form.bank_holder(id_="bank_holder", class_="required", placeholder="Example: Dr. A Voigt", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: Dr. A Voigt'") }}
+          </div>
+          <div class="form-group">
+          {{ form.bank_account.label(for="bank_account", class_="required") }}
+          {{ form.bank_account(id_="bank_account", class_="required", placeholder="Example: 64768767882", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: 64768767882'") }}
+          </div>
+          <div class="form-group">
+          {{ form.bank_branch.label(for="bank_branch", class_="required") }}
+          {{ form.bank_branch(id_="bank_branch", class_="required", placeholder="Example: 60022", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: 60022'") }}
+          </div>
+          <div class="form-group">
+          {{ form.bank.label(for="bank", class_="required") }}
+          {{ form.bank(id_="bank", class_="required", placeholder="Example: TrustMeBank Oshakati", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: TrustMeBank Oshakati'") }}
+          </div>
+      </div>
     </dl>
     <p><input type=submit value=Register>
   </form>

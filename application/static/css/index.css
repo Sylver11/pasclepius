@@ -1,14 +1,14 @@
 #green-leaf-index{
     height: 100px;
     width: 100px;
-    
 }
-
 #inside_container{
     display:inline-block
 }
-
 #second_inside{
     display:inline-block
-
 }
+.required::after {
+    content: "*";
+    color: red;
+}   

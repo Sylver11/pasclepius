@@ -5,6 +5,7 @@ from werkzeug.urls import url_parse
 from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm, RegistrationForm, LoginForm
 from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup
 from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch, getPatient
+from application.database_users import addUser
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 from application.models import User
@@ -15,10 +16,6 @@ from jinja2 import Template
 from decimal import *
 import subprocess 
 import simplejson as json
-
-
-#class User(UserMixin):
-#    pass
 
 
 @login_manager.user_loader
@@ -39,20 +36,21 @@ def home():
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
-
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        user = User(user = form.username.data, email = form.email.data)
-        #            form.password.data)
-        #user = User(username=form.username.data, email=form.email.data)
-        #user.id = form.email.data
-        user.set_password(form.password.data)
-        login_user(user)
-        print(user)
-       # db_session.add(user)
-        #flash('Thanks for registering')
-        return redirect(url_for('login'))
-    print(form.errors.items())
+        user = User()
+        password = user.set_password(form.password.data)
+        status = addUser(form.title.data, form.name.data,
+                         form.email.data, password,
+                         form.phone.data, form.cell.data,
+                         form.fax.data,
+                         form.address.data,form.bank_holder.data,
+                         form.bank_account.data, form.bank.data,
+                         form.bank_branch.data, form.practice_number.data,
+                         form.practice_name.data, form.hpcna_number.data,
+                         form.qualification.data, form.specialisation.data)
+        if status:
+            return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
 
