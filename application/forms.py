@@ -1,9 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField, DecimalField
+from wtforms import StringField, PasswordField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField, DecimalField, TextAreaField
 from wtforms.fields.html5 import DecimalField
 from wtforms_components.fields import SelectField
 from wtforms.validators import DataRequired, Length, Email, Required, NumberRange, ValidationError
 from wtforms.widgets.html5 import NumberInput
+from wtforms.widgets import TextArea
 from wtforms import Form as NoCsrfForm
 from application.database_io import getTreatments
 from application.database_users import checkDuplicateEmail
@@ -72,7 +73,8 @@ class RegistrationForm(FlaskForm):
     phone = StringField('Landline number')
     cell =  StringField('Cell number', validators=[DataRequired()])
     fax = StringField('Fax number')
-    address = StringField('Full address')
+    #address = TextAreaField('Full address', widget=TextArea(row=10, cols=11))
+    address = TextField('Full address', widget=TextArea())
     bank = StringField('Bank', validators=[DataRequired()])
     bank_branch = StringField('Branch number',
                               validators=[DataRequired()])
@@ -94,7 +96,7 @@ class RegistrationForm(FlaskForm):
 class LoginForm(FlaskForm):
     """User Login Form."""
     email = StringField('Email', validators=[DataRequired(),
-                                             Email(message='Enter a valid email.')])
+                                             Email(message='Enter a valid email')])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Log In')
 
