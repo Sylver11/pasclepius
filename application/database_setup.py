@@ -36,7 +36,17 @@ def setupTable():
         AUTO_INCREMENT=1 ;"""
 
     sql_create_table_users = """CREATE TABLE users (
-        id int(11) NOT NULL AUTO_INCREMENT,
+        id MEDIUMINT NOT NULL AUTO_INCREMENT,
+        uuid_bin binary(16),
+        uuid_text varchar(36) generated always as
+            (insert(
+                insert(
+                    insert(
+                        insert(hex(uuid_bin),9,0,'-'),
+                        14,0,'-'),
+                    19,0,'-'),
+                24,0,'-')
+            ) virtual,
         title varchar(255) NOT NULL,
         name varchar(255) NOT NULL,
         email varchar(100) NOT NULL,
@@ -54,8 +64,9 @@ def setupTable():
         hpcna_number varchar(255) NOT NULL,
         qualification varchar(255) NOT NULL,
         specialisation varchar(255),
-        PRIMARY KEY (id))
-        AUTO_INCREMENT=1 ;"""
+        premium BOOLEAN NOT NULL DEFAULT false,
+        created_on DATETIME NOT NULL DEFAULT NOW(),
+        PRIMARY KEY (id));"""
 
 
     conn = pool.connection()

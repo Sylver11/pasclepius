@@ -2,10 +2,11 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField, DecimalField
 from wtforms.fields.html5 import DecimalField
 from wtforms_components.fields import SelectField
-from wtforms.validators import DataRequired, Length, Email, Required, NumberRange
+from wtforms.validators import DataRequired, Length, Email, Required, NumberRange, ValidationError
 from wtforms.widgets.html5 import NumberInput
 from wtforms import Form as NoCsrfForm
 from application.database_io import getTreatments
+from application.database_users import checkDuplicateEmail
 
 def getTreatmentForm(tariff = None):
     class Treatment(FlaskForm):
@@ -83,19 +84,12 @@ class RegistrationForm(FlaskForm):
     qualification = StringField('Qualification', validators=[DataRequired()])
     specialisation = StringField('Specialisation')
 
-
-
-    def validate_username(self, username):
-        #user = User.query.filter_by(username=username.data).first()
-        user = None
-        if user is not None:
-            raise ValidationError('Please use a different username.')
-
-    def validate_email(self, email):
-        #user = User.query.filter_by(email=email.data).first()
-        user = None
-        if user is not None:
+    def validate_email(self, field):
+        status = checkDuplicateEmail(field.data)
+        print("the validation process in the form class runs")
+        if status:
             raise ValidationError('Please use a different email address.')
+
 
 class LoginForm(FlaskForm):
     """User Login Form."""
