@@ -1,12 +1,17 @@
 #green-leaf-index{
+    /* top: 0; */
     height: 100px;
     width: 100px;
 }
 #inside_container{
+    /* float: right; */
     display:inline-block
 }
 #second_inside{
-    display:inline-block
+    
+    /* top: 0; */
+    display:inline-block;
+    /* float: left; */
 }
 .required::after {
     content: "*";

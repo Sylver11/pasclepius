@@ -9,7 +9,7 @@ from application.database_users import addUser, checkUser
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 from application.models import User
-from flask_login import current_user, login_user, logout_user, UserMixin
+from flask_login import current_user, login_user, logout_user, UserMixin, login_required
 from . import login_manager
 from datetime import datetime
 from jinja2 import Template
@@ -19,10 +19,11 @@ import simplejson as json
 
 
 @login_manager.user_loader
-def load_user(email):
-    user = User()
-    user.id = email
-    return user
+def load_user(id):
+    data = checkUser(id)
+    return User(data['name'], id)
+    #user.id = email
+    #return user
 
 #    return User.get(user_id)
 #    return User.query.get(user_id)
@@ -62,12 +63,14 @@ def login():
         return redirect(url_for('home'))
     if form.validate_on_submit():
         data = checkUser(form.email.data)
-        user = User()
+        user = User(data['name'], form.email.data)
         if data is None or not user.check_password(data['password'], form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
-        user.id = form.email.data
-        login_user(user)
+        #user.id = form.email.data
+        #user.name = data["name"]
+        #user.details(data["name"], form.email.data)
+        login_user(user, remember=True)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('home')
@@ -85,6 +88,7 @@ def logout():
 
 
 @app.route('/patient', methods=('GET', 'POST'))
+@login_required
 def findPatient():
     form_mva = Patient_mva()
     form_psemas = Patient_psemas()
@@ -92,6 +96,7 @@ def findPatient():
     return render_template('create.html',form_mva=form_mva, form_psemas = form_psemas, form_other = form_other)
 
 @app.route('/patient/<patient>')
+@login_required
 def invoiceOption(patient):
     form_mva = Patient_mva()
     form_psemas = Patient_psemas()
@@ -102,6 +107,7 @@ def invoiceOption(patient):
 
 
 @app.route('/patient/<patient>/new-invoice')
+@login_required
 def newInvoice(patient):
     medical = (session.get('PATIENT')["medical"])
     tariff = (session.get('PATIENT')["tariff"])
@@ -125,6 +131,7 @@ def newInvoice(patient):
 
 
 @app.route('/patient/<patient>/continue-invoice')
+@login_required
 def continueInvoice(patient):
     medical = (session.get('PATIENT')["medical"])
     tariff = (session.get('PATIENT')["tariff"])
@@ -148,6 +155,7 @@ def continueInvoice(patient):
         return render_template('invoice.html', dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
 
 @app.route('/patient/select', methods=('GET', 'POST'))
+@login_required
 def selectPatient():
     form_mva = Patient_mva()
     form_psemas = Patient_psemas()
@@ -160,6 +168,7 @@ def selectPatient():
 
 
 @app.route('/generate-invoice', methods=['POST'])
+@login_required
 def generateInvoice():
     dates = request.form.getlist('date')
     treatments = request.form.getlist('treatments')
@@ -199,6 +208,7 @@ def generateInvoice():
     return jsonify(result='error')
 
 @app.route('/live-search',methods=['GET','POST'])
+@login_required
 def liveSearchPatient():
     name = request.args.get('username')
     data = liveSearch(name)
@@ -206,6 +216,7 @@ def liveSearchPatient():
     return value_json
 
 @app.route('/set-known-invoice',methods=['GET','POST'])
+@login_required
 def knownInvoice():
     patient = request.args.get('patient')
     date = request.args.get('date')
@@ -218,6 +229,7 @@ def knownInvoice():
 
 
 @app.route('/get-value',methods=['GET','POST'])
+@login_required
 def getValue():
     tariff = session.get('PATIENT')["tariff"]
     item = request.args.get('item', 0, type=int)
@@ -226,6 +238,7 @@ def getValue():
     return value_json
 
 @app.route('/get-treatment-name',methods=['GET','POST'])
+@login_required
 def getTreatmentName():
     items = request.args.get('items')
     tariff = request.args.get('tariff')
@@ -234,6 +247,7 @@ def getTreatmentName():
     return value_json
 
 @app.route('/download-invoice/<random>')
+@login_required
 def downloadInvoice(random):
     name = session.get('PATIENT')['name']
     date = session.get('PATIENT')['date']

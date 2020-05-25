@@ -3,10 +3,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(UserMixin):
 
-    def details(self, name, username, email):
+    def __init__(self, name, id, active=True):
         self.name = name
-        self.username = username
-        self.email = email
+        self.id = id
+        self.active = active
 
     def set_password(self, password):
         """Create hashed password."""

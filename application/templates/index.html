@@ -2,12 +2,12 @@
 {% block content %}
 <div class="jumbotron jumbotron-fluid">
     <div class="container">
-        <div id="second_inside">
+        <div id="second_inside" class="align-middle">
             <img id="green-leaf-index" src="{{ url_for('static', filename='img/green-leaf.png') }}" alt="green-leaf">
         </div>
-        <div id="inside_container">
+        <div id="inside_container" class="align-middle">
             {% if current_user.is_authenticated %}
-                Hi {{ current_user.id }}!
+                Hi {{ current_user.name }}!
             {% endif %}
             <h3 class="display-5">Welcome to Pasclepius Medical Software</h3>
             <p class="lead">Watch this space</p>

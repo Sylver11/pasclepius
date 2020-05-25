@@ -2,7 +2,7 @@ from application.db_utils import pool
 from datetime import datetime
 
 def checkUser(email):
-    sql = """SELECT password FROM users WHERE email = '{}'
+    sql = """SELECT name, uuid_text, password FROM users WHERE email = '{}'
     """.format(email)
     conn = pool.connection()
     cursor = conn.cursor()
