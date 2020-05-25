@@ -1,9 +1,9 @@
 from application.db_utils import pool
 from datetime import datetime
 
-def get_user(user):
-    sql = """SELECT * FROM users WHERE name = '{}' AND date = '{}'
-    """.format(user)
+def checkUser(email):
+    sql = """SELECT password FROM users WHERE email = '{}'
+    """.format(email)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)

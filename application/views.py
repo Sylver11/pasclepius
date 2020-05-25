@@ -1,15 +1,15 @@
 import os
 from flask import current_app as app
-from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file
+from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file, flash
 from werkzeug.urls import url_parse
 from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm, RegistrationForm, LoginForm
 from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup
 from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch, getPatient
-from application.database_users import addUser
+from application.database_users import addUser, checkUser
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 from application.models import User
-from flask_login import current_user, login_user, UserMixin
+from flask_login import current_user, login_user, logout_user, UserMixin
 from . import login_manager
 from datetime import datetime
 from jinja2 import Template
@@ -58,12 +58,14 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     if form.validate_on_submit():
-       # user = User.query.filter_by(username=form.username.data).first()
-       # if user is None or not user.check_password(form.password.data):
-           # flash('Invalid username or password')
-       #     return redirect(url_for('login'))
+        data = checkUser(form.email.data)
         user = User()
+        if data is None or not user.check_password(data['password'], form.password.data):
+            flash('Invalid username or password')
+            return redirect(url_for('login'))
         user.id = form.email.data
         login_user(user)
         next_page = request.args.get('next')
@@ -78,7 +80,8 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('home'))
+    flash('You have been successfully logged out.')
+    return redirect(url_for('login'))
 
 
 @app.route('/patient', methods=('GET', 'POST'))

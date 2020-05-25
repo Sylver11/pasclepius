@@ -1,6 +1,13 @@
 {% extends 'layout.html' %}
 {% block content %}
     <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         Hi {{ current_user.name }}!
         <form method="post" class="form">
             {{ form.hidden_tag() }}
