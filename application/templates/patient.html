@@ -2,10 +2,12 @@
 
 {% block content %}
 <div class="container">
+    <br>
+    <br>
     <h2>{{patient}}</h2>
-    <br><br>
+    <br>
 
-    <h2>Patients</h2>  
+    <h4>Patients</h4>  
     <div class="list-group">
         {% for i in patient_data %} 
         <a href="#!" class="list-group-item list-group-item-action flex-column align-items-start">
@@ -20,22 +22,21 @@
             <form autocomplete="off" id="continue_mva_{{loop.index}}" class="mva" >  
                     {{ form_mva.hidden_tag() }}
                     {{ form_mva.medical(style='display:none', value=i['medical']) }}
-                    {{ form_mva.tariff(style="display: none;", id='tariff_' ~ loop.index) }}
+                    {{ form_mva.tariff(class_="tariff", style="display: none;", id='tariff_' ~ loop.index) }}
                     {{ form_mva.name(value=i['name'], style="display: none") }}
                     {{ form_mva.case(style="display: none;", value=i['case']) }}
-                    {{ form_mva.po.label }} {{ form_mva.po }}
+                    {{ form_mva.po.label(class_="required") }} {{ form_mva.po(class_="form-control w-25 p-3") }}
+                    {{ form_mva.date.label(for="date_mva_" ~ loop.index, class_="required") }} {{ form_mva.date(id='date_mva_' ~ loop.index, class_="form-control w-25 p-3" ) }}
                     <br>
-                    {{ form_mva.date.label }} {{ form_mva.date(id='date_mva_' ~ loop.index) }}
-                    <br>
-                    {{ form_mva.submit }}
+                    {{ form_mva.submit(class_="btn btn-success") }}
             </form>  
             <small>Tariff: {{i['tariff']}} <br> Case Number: {{i['case']}}</small>
         </a>
+        <br>
     <script>
          $('#continue_mva_{{loop.index}}').submit(function (e) {
             e.preventDefault(); 
             var url = "{{ url_for('selectPatient') }}";
-            // console.log($('.mva').serialize()) 
             $.ajax({
                 type: "POST",
                 url: url,
@@ -57,12 +58,13 @@
             {{ form_psemas.main(value=i['main'], style="display: none") }}
             {{ form_psemas.dob(value=i['dob'], style="display: none") }}
             {{ form_psemas.number(value=i['number'], style="display: none") }}
-            {{ form_psemas.date.label }} {{ form_psemas.date(id='date_psemas_' ~ loop.index) }}
+            {{ form_psemas.date.label(class_="required") }} {{ form_psemas.date(id='date_psemas_' ~ loop.index, class_="form-control w-25 p-3") }}
         <br>
-        {{ form_mva.submit }}
+        {{ form_mva.submit(class_="btn btn-success") }}
         </form>
         <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['number']}} <br>Main Member: {{i['main']}} <br>Date of Birth: {{i['dob']}}</small>
     </a>
+    <br>
     <script>
          $('#continue_psemas_{{loop.index}}').submit(function (e) {
             e.preventDefault();
@@ -88,12 +90,13 @@
             {{ form_other.main(value=i['main'], style="display: none") }}
             {{ form_other.dob(value=i['dob'], style="display: none") }}
             {{ form_other.number(value=i['number'], style="display: none") }}
-            {{ form_other.date.label }} {{ form_other.date(id='date_other_' ~ loop.index) }}
+            {{ form_other.date.label(class_="required") }} {{ form_other.date(id='date_other_' ~ loop.index, class_="form-control w-25 p-3") }}
         <br>
-        {{ form_other.submit }}
+        {{ form_other.submit(class_="btn btn-success") }}
         </form>  
         <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['number']}} <br>Main Member: {{i['main']}} <br>Date of Birth: {{i['dob']}}</small>
     </a>
+    <br>
     <script>
         $('#continue_other_{{loop.index}}').submit(function (e) {
             e.preventDefault();
@@ -110,6 +113,7 @@
 
         {% endif %}
         <script>
+            
             selectElement('tariff_{{ loop.index }}', '{{ i["tariff"] }}')
             function selectElement(id, valueToSelect) {    
             let element = document.getElementById(id);
@@ -122,7 +126,7 @@
     {% endfor %}
     </div>    
     <br><br>
-    <h2>Past invoice</h2>  
+    <h4>Past invoice</h4>  
     <ul class="list-group">
         {% for i in data %} 
         <li class="invoice_list list-group-item" ><span id="patient_name-{{loop.index}}">{{i['name']}}</span> {{i['medical']}} {{i['date'].strftime('%d.%m.%Y')}} <span style="display:none;" id="patient_date-{{loop.index}}">{{ i['date'] }}</span></li>
@@ -167,7 +171,6 @@
 
     $(document).ready(function() {
         $('.continue').click(function(){
-            console.log("this runns")
             console.log($(this).parent().siblings('li'));
         })
         $('.invoice_list').click(function() {
@@ -183,8 +186,5 @@
     });
 
 </script>
-
-
-
 
  {% endblock %}

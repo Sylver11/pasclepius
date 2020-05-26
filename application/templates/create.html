@@ -1,8 +1,10 @@
 {% extends 'layout.html' %}
 {% block content %}
 <div class="container"> 
+    <br>
+    <br>
     <h3>Create new patient</h3>  
-    <select class="medical">
+    <select class="medical custom-select w-25">
         <option value="0">Select medical aid</option>
         <option value="psemas">PSEMAS</option>
         <option value="mva">MVA</option>
@@ -12,168 +14,49 @@
         {{ form_mva.hidden_tag() }}
         {{ form_mva.medical(style='display:none') }}
         <br>
-        {{ form_mva.tariff.label }} {{ form_mva.tariff }}
+        {{ form_mva.tariff.label }} {{ form_mva.tariff(class_="tariff custom-select w-25") }}
         <br>
-        {{ form_mva.name.label }} {{ form_mva.name }}
+        {{ form_mva.name.label(for="name") }} {{ form_mva.name(class_="form-control w-25 p-3") }}
+        {{ form_mva.case.label(for="case") }} {{ form_mva.case(class_="form-control w-25 p-3") }}
+        {{ form_mva.po.label }} {{ form_mva.po(class_="form-control w-25 p-3") }}
+        {{ form_mva.date.label }} {{ form_mva.date(id='date_mva', class_="form-control w-25 p-3") }}
         <br>
-        {{ form_mva.case.label }} {{ form_mva.case }}
-        <br>
-        {{ form_mva.po.label }} {{ form_mva.po }}
-        <br>
-        {{ form_mva.date.label }} {{ form_mva.date(id='date_mva') }}
-        <br>
-        {{ form_mva.submit }}
+        {{ form_mva.submit(class_="btn btn-success") }}
     </form>  
     <form autocomplete="off" id="newInvoice_psemas" class="psemas" style="display:none"> 
         {{ form_psemas.hidden_tag() }}
         {{ form_psemas.medical(style='display:none') }}
         <br>
-        {{ form_psemas.tariff.label }} {{ form_psemas.tariff }}
+        {{ form_psemas.tariff.label }} {{ form_psemas.tariff(class_="tariff custom-select w-25") }}
         <br>
-        {{ form_psemas.name.label }} {{ form_psemas.name }}
+        {{ form_psemas.name.label }} {{ form_psemas.name(class_="form-control w-25 p-3") }}
+        {{ form_psemas.main.label }} {{ form_psemas.main(class_="form-control w-25 p-3") }}
+        {{ form_psemas.dob.label }} {{ form_psemas.dob(class_="form-control w-25 p-3") }}
+        {{ form_psemas.number.label }} {{ form_psemas.number(class_="form-control w-25 p-3") }}
+        {{ form_psemas.date.label }} {{ form_psemas.date(id='date_psemas', class_="form-control w-25 p-3") }}
         <br>
-        {{ form_psemas.main.label }} {{ form_psemas.main }}
-        <br>
-        {{ form_psemas.dob.label }} {{ form_psemas.dob }}
-        <br>
-        {{ form_psemas.number.label }} {{ form_psemas.number }}
-        <br>
-        {{ form_psemas.date.label }} {{ form_psemas.date(id='date_psemas') }}
-        <br>
-        {{ form_mva.submit }}
+        {{ form_mva.submit(class_="btn btn-success") }}
     </form>  
     <form  autocomplete="off" id="newInvoice_other" class="other" style="display:none">  
         {{ form_other.hidden_tag() }}
         <br>     
-        {{form_other.medical.label}}  {{ form_other.medical }}
-        <br>    
-        {{ form_other.tariff.label }} {{ form_other.tariff }}
+        {{form_other.medical.label}}  {{ form_other.medical(class_="form-control w-25 p-3") }}
+        <br> 
+        {{ form_other.tariff.label }} {{ form_other.tariff(class_="tariff custom-select w-25") }}
         <br>
-        {{ form_other.name.label }} {{ form_other.name }}
+        {{ form_other.name.label }} {{ form_other.name(class_="form-control w-25 p-3") }}
+        {{ form_other.main.label }} {{ form_other.main(class_="form-control w-25 p-3") }}
+        {{ form_other.dob.label }} {{ form_other.dob(class_="form-control w-25 p-3") }}
+        {{ form_other.number.label }} {{ form_other.number(class_="form-control w-25 p-3") }}
+        {{ form_other.date.label }} {{ form_other.date(id='date_other', class_="form-control w-25 p-3") }}
         <br>
-        {{ form_other.main.label }} {{ form_other.main }}
-        <br>
-        {{ form_other.dob.label }} {{ form_other.dob }}
-        <br>
-        {{ form_other.number.label }} {{ form_other.number }}
-        <br>
-        {{ form_other.date.label }} {{ form_other.date(id='date_other') }}
-        <br>
-        {{ form_other.submit }}
+        {{ form_other.submit(class_="btn btn-success") }}
     </form>  
-    <br><br><br>
-    <h3>Search patient</h3>
-    <form autocomplete="off" class="search" action="" >
-        <label for="name">Name:</label>
-        <div class="autocomplete" style="width:300px;">
-        <input type="text" id="patient_name" name="user_name">
-        </div>
-        <button type="submit">Continue</button>
-    </form>	
 </div>
 <script>
 
     $(document).ready(function() {
-        $('.search').on("submit", function(e) {
-        e.preventDefault()
-        var data = $(".search :input").serializeArray();
-        var name = data[0]['value']
-         window.location.href = "/patient/" + name
-        });
-
-
-        function removeActive(x) {
-            for (var i = 0; i < x.length; i++) {
-                x[i].classList.remove("autocomplete-active");
-            }
-        }
-        
-        function addActive(x) {
-            if (!x) return false;
-            removeActive(x);
-            if (currentFocus >= x.length) currentFocus = 0;
-            if (currentFocus < 0) currentFocus = (x.length - 1);
-            x[currentFocus].classList.add("autocomplete-active");
-        }
-
-        function uniq_fast(a) {
-            var seen = {};
-            var out = [];
-            var len = a.length;
-            var j = 0;
-            for(var i = 0; i < len; i++) {
-                var item = a[i];
-                if(seen[item] !== 1) {
-                    seen[item] = 1;
-                    out[j++] = item;
-                    }
-                }
-            return out;
-        }
-
-        $(document).on("keyup", ".search", function (e) {
-            e.preventDefault();
-            var currentFocus;
-            var input_element = document.getElementById("patient_name")
-            var url = "{{ url_for('liveSearchPatient') }}";
-            var a, b, i, val = input_element.value;
-            var name = input_element.value
-                $.ajax({
-                type: "GET",
-                url: url,
-                data: {username: name}, 
-                dataType: 'json',
-                success: function (returnData) {
-                    var arr = returnData
-                    var names = new Array(arr.length)
-                    for (i = 0; i < arr.length; i++) {
-                        names.fill(arr[i]['name'])
-                    }
-                    names = uniq_fast(names)
-                    closeAllLists();
-                    if (!val) { return false;}
-                    currentFocus = -1;
-                    var a = document.createElement("DIV");
-                    a.setAttribute("id", "autocomplete-list");
-                    a.setAttribute("class", "autocomplete-items");
-                    input_element.parentNode.appendChild(a);
-                    for (i = 0; i < names.length; i++) {
-                        if (names[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-                            var b = document.createElement("DIV");
-                            b.innerHTML = "<strong>" + names[i].substr(0, val.length) + "</strong>";
-                            b.innerHTML += names[i].substr(val.length);
-                            b.innerHTML += "<input type='hidden' value='" + names[i] + "'>";
-                            b.addEventListener("click", function(e) {
-                                input_element.value = this.getElementsByTagName("input")[0].value;
-                                closeAllLists();
-                            });
-                            a.appendChild(b);
-                        }
-                    }
-
-            function closeAllLists(elmnt) {
-                var x = document.getElementsByClassName("autocomplete-items");
-                for (var i = 0; i < x.length; i++) {
-                    if (elmnt != x[i] && elmnt != input_element) {
-                    x[i].parentNode.removeChild(x[i]);
-                    }
-                }
-            }
-            document.addEventListener("click", function (e) {
-                closeAllLists(e.target);
-            });
-
-                }
-            });
-        });
-
-        $('.continue').click(function(){
-            console.log("this runns")
-            console.log($(this).parent().siblings('li'));
-        })
-        $('.invoice_list').click(function() {
-            $(this).next().css("display", "block");
-        });
+        $('.tariff').prepend($('<option value="" disabled hidden selected>Choose tariff</option>'));
         $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
         $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
         $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})

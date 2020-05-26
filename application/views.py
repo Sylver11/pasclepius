@@ -87,7 +87,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/patient', methods=('GET', 'POST'))
+@app.route('/new-patient', methods=('GET', 'POST'))
 @login_required
 def findPatient():
     form_mva = Patient_mva()

@@ -12,7 +12,7 @@
         </li>
         {% if current_user.is_authenticated %}
         <li class="nav-item patient">
-          <a class="nav-link" href="/patient">Patient</a>
+          <a class="nav-link" href="/new-patient">New Patient</a>
         </li>
         <li class="nav-item files">
           <a class="nav-link" href="/files">Files</a>
@@ -32,15 +32,17 @@
         </li>
         {% endif %}
       </ul>
-      <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search not working">
+      {% if current_user.is_authenticated %}
+      <form class="search form-inline my-2 my-lg-0" autocomplete="off">
+        <input id="patient_name" class="form-control mr-sm-2" name="user_name" type="search" placeholder="Search patients">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
       </form>
+      {% endif %}
     </div>
   </nav>
   <script>
     $(document).ready(function(){
-      if(window.location.href.match('patient')){
+      if(window.location.href.match('new-patient')){
         $('.patient').addClass('active');
       }
       else if (window.location.href.match('account')){
@@ -56,9 +58,109 @@
       else if (window.location.href.match('login')){
         $('.login').addClass('active');
       }
-      else {
+      else if(window.location.href.match('home')) {
         $('.home').addClass('active');
       }
+
+
+      $('.search').on("submit", function(e) {
+        e.preventDefault()
+        var data = $(".search :input").serializeArray();
+        var name = data[0]['value']
+         window.location.href = "/patient/" + name
+        });
+
+
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+        
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+
+        function uniq_fast(a) {
+            var seen = {};
+            var out = [];
+            var len = a.length;
+            var j = 0;
+            for(var i = 0; i < len; i++) {
+                var item = a[i];
+                if(seen[item] !== 1) {
+                    seen[item] = 1;
+                    out[j++] = item;
+                    }
+                }
+            return out;
+        }
+
+        $(document).on("keyup", ".search", function (e) {
+            e.preventDefault();
+            var currentFocus;
+            var input_element = document.getElementById("patient_name")
+            var url = "{{ url_for('liveSearchPatient') }}";
+            var a, b, i, val = input_element.value;
+            var name = input_element.value
+                $.ajax({
+                type: "GET",
+                url: url,
+                data: {username: name}, 
+                dataType: 'json',
+                success: function (returnData) {
+                    var arr = returnData
+                    var names = new Array(arr.length)
+                    for (i = 0; i < arr.length; i++) {
+                        names.fill(arr[i]['name'])
+                    }
+                    names = uniq_fast(names)
+                    closeAllLists();
+                    if (!val) { return false;}
+                    currentFocus = -1;
+                    var a = document.createElement("DIV");
+                    a.setAttribute("id", "autocomplete-list");
+                    a.setAttribute("class", "autocomplete-items");
+                    input_element.parentNode.appendChild(a);
+                    for (i = 0; i < names.length; i++) {
+                        if (names[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                            var b = document.createElement("DIV");
+                            b.innerHTML = "<strong>" + names[i].substr(0, val.length) + "</strong>";
+                            b.innerHTML += names[i].substr(val.length);
+                            b.innerHTML += "<input type='hidden' value='" + names[i] + "'>";
+                            b.addEventListener("click", function(e) {
+                                input_element.value = this.getElementsByTagName("input")[0].value;
+                                closeAllLists();
+                            });
+                            a.appendChild(b);
+                        }
+                    }
+
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != input_element) {
+                    x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+
+                }
+            });
+        });
+
+
+
+
+
+
     })
   </script>
 </header>

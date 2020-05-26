@@ -116,7 +116,13 @@ class Patient_psemas(FlaskForm):
     main = StringField(u'Main Member', validators=[DataRequired()])
     number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
     dob = StringField(u'Date of Birth', validators=[DataRequired()])
-    tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
+    tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014",
+                                                "Namaf Physio 2014"),
+                                               ("namaf_physio_2019",
+                                                "Namaf Physio 2019"),
+                                               ("namaf_physio_2020",
+                                                "Namaf Physio 2020")],
+                         validators=[DataRequired()] )
     date =  StringField(u'Invoice Date', validators=[DataRequired()])
     submit = SubmitField('Continue')
 
