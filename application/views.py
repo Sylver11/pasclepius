@@ -39,7 +39,7 @@ def register():
         return redirect(url_for('home'))
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        user = User()
+        user = User(form.name.data, form.email.data)
         password = user.set_password(form.password.data)
         status = addUser(form.title.data, form.name.data,
                          form.email.data, password,
