@@ -14,17 +14,14 @@ def checkUser(email):
 
 
 def checkDuplicateEmail(email):
-    print(email)
     sql_check_duplicate = """SELECT * FROM users WHERE
     email='{}'""".format(email)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql_check_duplicate)
     rows = cursor.fetchall()
-    print(rows)
     if not rows:
         status = False
-        print("no rows runs")
     else:
         status = True
     cursor.close()
