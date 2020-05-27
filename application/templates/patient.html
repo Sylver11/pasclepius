@@ -19,7 +19,7 @@
                     {% if i['medical'] == 'mva'%}
                 </small>
             </div>
-            <form autocomplete="off" id="continue_mva_{{loop.index}}" class="mva" >  
+            <form method=post autocomplete="off" id="continue_mva_{{loop.index}}" class="mva" >  
                     {{ form_mva.hidden_tag() }}
                     {{ form_mva.medical(style='display:none', value=i['medical']) }}
                     {{ form_mva.tariff(class_="tariff", style="display: none;", id='tariff_' ~ loop.index) }}
@@ -33,24 +33,11 @@
             <small>Tariff: {{i['tariff']}} <br> Case Number: {{i['case']}}</small>
         </a>
         <br>
-    <script>
-         $('#continue_mva_{{loop.index}}').submit(function (e) {
-            e.preventDefault(); 
-            var url = "{{ url_for('selectPatient') }}";
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: $('#continue_mva_{{loop.index}}').serialize(), 
-                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-                }
-            });
-        });
-    </script>
 
     {% elif i['medical'] == 'psemas'%}
             </small>
         </div>
-        <form autocomplete="off" id="continue_psemas_{{loop.index}}" class="psemas" >  
+        <form method=post autocomplete="off" id="continue_psemas_{{loop.index}}" class="psemas" >  
             {{ form_psemas.hidden_tag() }}
             {{ form_psemas.medical(value=i['medical'], style="display: none;") }}
             {{ form_psemas.tariff(id='tariff_' ~ loop.index, style="display: none;") }}
@@ -65,24 +52,11 @@
         <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['number']}} <br>Main Member: {{i['main']}} <br>Date of Birth: {{i['dob']}}</small>
     </a>
     <br>
-    <script>
-         $('#continue_psemas_{{loop.index}}').submit(function (e) {
-            e.preventDefault();
-            var url = "{{ url_for('selectPatient') }}";
-                $.ajax({
-                type: "POST",
-                url: url,
-                data: $('#continue_psemas_{{loop.index}}').serialize(), 
-                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-                }
-            });
-        })
-    </script>
 
         {% else %}
             </small>
         </div>
-        <form  autocomplete="off" id="continue_other_{{loop.index}}" class="other" >  
+        <form  method=post autocomplete="off" id="continue_other_{{loop.index}}" class="other" >  
             {{ form_other.hidden_tag() }}
             {{ form_other.medical(value=i['medical'], style="display: none") }}  
             {{ form_other.tariff(id='tariff_' ~ loop.index, style="display: none") }}
@@ -97,19 +71,6 @@
         <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['number']}} <br>Main Member: {{i['main']}} <br>Date of Birth: {{i['dob']}}</small>
     </a>
     <br>
-    <script>
-        $('#continue_other_{{loop.index}}').submit(function (e) {
-            e.preventDefault();
-            var url = "{{ url_for('selectPatient') }}";
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: $('#continue_other_{{loop.index}}').serialize(), 
-                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-                }
-            });
-        })
-    </script>
 
         {% endif %}
         <script>

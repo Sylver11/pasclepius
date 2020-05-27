@@ -81,18 +81,37 @@ def logout():
 
 @app.route('/new-patient', methods=('GET', 'POST'))
 @login_required
-def findPatient():
+def newPatient():
     form_mva = Patient_mva()
     form_psemas = Patient_psemas()
     form_other = Patient_other()
+    if request.method == 'POST' and form_mva.validate_on_submit():
+        session["PATIENT"] = form_mva.data
+        return redirect('/patient/' + form_mva.name.data + '/new-invoice')
+    elif request.method == 'POST' and form_psemas.validate_on_submit():
+        session["PATIENT"] = form_psemas.data
+        return redirect('/patient/' + form_psemas.name.data + '/new-invoice')
+    elif request.method == 'POST' and form_other.validate_on_submit():
+        session["PATIENT"] = form_other.data
+        return redirect('/patient/' + form_other.name.data + '/new-invoice')
     return render_template('create.html',form_mva=form_mva, form_psemas = form_psemas, form_other = form_other)
 
-@app.route('/patient/<patient>')
+
+@app.route('/patient/<patient>', methods=('GET','POST'))
 @login_required
 def invoiceOption(patient):
     form_mva = Patient_mva()
     form_psemas = Patient_psemas()
     form_other = Patient_other()
+    if request.method == 'POST' and form_mva.validate_on_submit():
+        session["PATIENT"] = form_mva.data
+        return redirect('/patient/' + form_mva.name.data + '/new-invoice')
+    elif request.method == 'POST' and form_psemas.validate_on_submit():
+        session["PATIENT"] = form_psemas.data
+        return redirect('/patient/' + form_psemas.name.data + '/new-invoice')
+    elif request.method == 'POST' and form_other.validate_on_submit():
+        session["PATIENT"] = form_other.data
+        return redirect('/patient/' + form_other.name.data + '/new-invoice')
     data = queryInvoice(patient)
     patient_data = getPatient(patient)
     return  render_template('patient.html', patient_data=patient_data, data=data, patient=patient, form_mva=form_mva, form_psemas = form_psemas, form_other = form_other)
@@ -145,16 +164,16 @@ def continueInvoice(patient):
         dob = session.get('PATIENT')['dob']
         return render_template('invoice.html', dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
 
-@app.route('/patient/select', methods=('GET', 'POST'))
-@login_required
-def selectPatient():
-    form_mva = Patient_mva()
-    form_psemas = Patient_psemas()
-    form_other = Patient_other()
-    if form_mva.validate_on_submit() or form_psemas.validate_on_submit() or form_other.validate_on_submit():
-        session["PATIENT"] = request.values
-        jsonData = jsonify(data={'name': str(form_mva.name.data)})
-        return jsonData
+#@app.route('/set-patient', methods=('GET', 'POST'))
+#@login_required
+#def setPatient():
+#    form_mva = Patient_mva()
+#    form_psemas = Patient_psemas()
+#    form_other = Patient_other()
+#    if form_mva.validate_on_submit() or form_psemas.validate_on_submit() or form_other.validate_on_submit():
+#        session["PATIENT"] = request.values
+#        jsonData = jsonify(data={'name': str(form_mva.name.data)})
+#        return jsonData
 
 
 @app.route('/generate-invoice', methods=['POST'])
@@ -164,6 +183,7 @@ def generateInvoice():
     treatments = request.form.getlist('treatments')
     modifier = request.form.getlist('modifier')
     price = request.form.getlist('price')
+    date_invoice = request.form.getlist('date_invoice')
     tariff = session.get('PATIENT')["tariff"]
     patient = session.get('PATIENT')
     medical = session.get('PATIENT')['medical']

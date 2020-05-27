@@ -15,6 +15,7 @@ def getTreatmentForm(tariff = None):
         date = TextField('Date', validators=[DataRequired()])
         price = DecimalField(u'Value')
         modifier = SelectField(u'Modifier', choices= [(0, 'None'), (14,'Rendered hospital'),(13, 'Travelling cost')], default=0)
+        date_invoice = TextField('Invoice date', validators=[DataRequired()])
         submit = SubmitField('Submit')
         def initialise_SelectOption(self,list_ordered_by_category = None, featured_ordered_by_category = None,  *args, **kwargs):
             super(Treatment, self).__init__(*args, **kwargs)
@@ -107,7 +108,7 @@ class Patient_mva(FlaskForm):
     po = IntegerField(u'PO', widget=NumberInput(min=111111,max=999999))
     tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
     date =  StringField(u'Invoice Date', validators=[DataRequired()])
-    submit = SubmitField('Continue')
+    submit = SubmitField('Create invoice')
 
 
 class Patient_psemas(FlaskForm):
@@ -124,7 +125,7 @@ class Patient_psemas(FlaskForm):
                                                 "Namaf Physio 2020")],
                          validators=[DataRequired()] )
     date =  StringField(u'Invoice Date', validators=[DataRequired()])
-    submit = SubmitField('Continue')
+    submit = SubmitField('Create invoice')
 
 class Patient_other(FlaskForm):
     medical = StringField('Medical Aid', validators=[DataRequired()])
@@ -134,4 +135,4 @@ class Patient_other(FlaskForm):
     dob = StringField(u'Date of Birth', validators=[DataRequired()])
     tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
     date =  StringField(u'Invoice Date', validators=[DataRequired()])
-    submit = SubmitField('Continue')
+    submit = SubmitField('Create invoice')

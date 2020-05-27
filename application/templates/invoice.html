@@ -8,25 +8,28 @@
             Tariff: {{tariff}}<br>
             Case Number: {{case}}<br>
             PO: {{po}}<br>
-            Date of invoice: {{date}}</p>    
+            Date patient submitted: {{date}}</p>    
         {% elif medical =='psemas' %}
             <p>Medical Aid: {{medical}}<br>
             Tariff: {{tariff}}<br>
             Main Member: {{main}}<br>
             Medical Aid Number: {{number}}<br>
             Date of Birth: {{dob}}<br>
-            Date of invoice: {{date}}</p>
+            Date patient submitted: {{date}}</p>
         {% else %}
             <p>Medical Aid: {{medical}}<br>
             Tariff: {{tariff}}<br>
             Main Member: {{main}}<br>
             Medical Aid Number: {{number}}<br>
             Date of Birth: {{dob}}<br>
-            Date of invoice: {{date}}</p>
+            Date patient submitted: {{date}}</p>
         {% endif %}    
     <br>
     <form autocomplete="off" id="NewOrderForm" class="form">   
         {{ form.hidden_tag() }}
+        {{ form.date_invoice.label }}
+        {{ form.date_invoice }}
+                <br><br>
         <table class="table table-striped">
             <tbody class="tbodyClone">
                 <tr id="clonedInput0" class="clonedInput form-inline col-md-6">

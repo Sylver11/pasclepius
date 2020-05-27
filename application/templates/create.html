@@ -10,7 +10,7 @@
         <option value="mva">MVA</option>
         <option value="other">OTHER</option>
     </select>
-    <form autocomplete="off" id="newInvoice_mva" class="mva" style="display:none">     
+    <form method=post autocomplete="off" id="newInvoice_mva" class="mva" style="display:none">     
         {{ form_mva.hidden_tag() }}
         {{ form_mva.medical(style='display:none') }}
         <br>
@@ -23,7 +23,7 @@
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
     </form>  
-    <form autocomplete="off" id="newInvoice_psemas" class="psemas" style="display:none"> 
+    <form method=post autocomplete="off" id="newInvoice_psemas" class="psemas" style="display:none"> 
         {{ form_psemas.hidden_tag() }}
         {{ form_psemas.medical(style='display:none') }}
         <br>
@@ -37,7 +37,7 @@
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
     </form>  
-    <form  autocomplete="off" id="newInvoice_other" class="other" style="display:none">  
+    <form  method=post autocomplete="off" id="newInvoice_other" class="other" style="display:none">  
         {{ form_other.hidden_tag() }}
         <br>     
         {{form_other.medical.label}}  {{ form_other.medical(class_="form-control w-25 p-3") }}
@@ -82,42 +82,42 @@
                 console.log("nothing selected")}
         })
 
-        $('.psemas').submit(function (e) {
-            e.preventDefault();
-            var url = "{{ url_for('selectPatient') }}";
-                $.ajax({
-                type: "POST",
-                url: url,
-                data: $('.psemas').serialize(), 
-                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-                }
-            });
-        })           
+        // $('.psemas').submit(function (e) {
+        //     e.preventDefault();
+        //     var url = "";
+        //         $.ajax({
+        //         type: "POST",
+        //         url: url,
+        //         data: $('.psemas').serialize(), 
+        //         success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+        //         }
+        //     });
+        // })           
 
-        $('.other').submit(function (e) {
-            e.preventDefault();
-            var url = "{{ url_for('selectPatient') }}";
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: $('.other').serialize(), 
-                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-                }
-            });
-        })
+        // $('.other').submit(function (e) {
+        //     e.preventDefault();
+        //     var url = "";
+        //     $.ajax({
+        //         type: "POST",
+        //         url: url,
+        //         data: $('.other').serialize(), 
+        //         success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+        //         }
+        //     });
+        // })
 
-        $('.mva').submit(function (e) {
-            e.preventDefault(); 
-            var url = "{{ url_for('selectPatient') }}";
-            console.log($('.mva').serialize()) 
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: $('.mva').serialize(), 
-                success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-                }
-            });
-        });
+        // $('.mva').submit(function (e) {
+        //     e.preventDefault(); 
+        //     var url = "";
+        //     console.log($('.mva').serialize()) 
+        //     $.ajax({
+        //         type: "POST",
+        //         url: url,
+        //         data: $('.mva').serialize(), 
+        //         success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
+        //         }
+        //     });
+        // });
 
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {

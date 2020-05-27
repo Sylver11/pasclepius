@@ -17,10 +17,21 @@ def setupTable():
         PRIMARY KEY (id)
         )AUTO_INCREMENT=1 ;"""
 
-    sql_create_table_invoice = """CREATE TABLE andrea_invoice (
-        id int(11) NOT NULL AUTO_INCREMENT,
+    sql_create_table_invoice = """CREATE TABLE invoices (
+        id MEDUIMINT NOT NULL AUTO_INCREMENT,
+        uuid_bin binary(16) NOT NULL,
+        uuid_text varchar(36) generated always as
+            (insert(
+                insert(
+                    insert(
+                        insert(hex(uuid_bin),9,0,'-'),
+                        14,0,'-'),
+                    19,0,'-'),
+                24,0,'-')
+            ) virtual,
         name varchar(255) NOT NULL,
-        date DATETIME NOT NULL,
+        date_created DATETIME NOT NULL,
+        date_invoice DATETIME NOT NULL,
         medical varchar(255) NOT NULL,
         invoice varchar(255) NOT NULL,
         url varchar(255) NOT NULL,
@@ -32,8 +43,10 @@ def setupTable():
         number varchar(255),
         `case`varchar(255),
         po int(11),
-        PRIMARY KEY (id))
-        AUTO_INCREMENT=1 ;"""
+        submitted_on DATETIME,
+        paid BOOLEAN NOT NULL DEFAULT false,
+        remind_me DATETIME,
+        PRIMARY KEY (id));"""
 
     sql_create_table_users = """CREATE TABLE users (
         id MEDIUMINT NOT NULL AUTO_INCREMENT,

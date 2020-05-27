@@ -77,14 +77,14 @@ def getSingleInvoice(patient, date):
 
 
 
-def updateInvoice(treatments, dates, patient):
+def updateInvoice(treatments, dates, patient, date_invoice):
     name = patient['name']
     date = patient['date']
     treatments = ','.join(map(str, treatments))
     dates = ','.join(map(str, dates))
     date = datetime.strptime(date, '%d.%m.%Y')
-    print(treatments)
-    print(dates)
+    #print(treatments)
+    print(date_invoice)
     sql = """UPDATE andrea_invoice SET treatments = '{}', dates = '{}' WHERE
     name = '{}' AND date = '{}'""".format(treatments, dates, name, date)
     conn = pool.connection()
@@ -97,9 +97,10 @@ def updateInvoice(treatments, dates, patient):
 
 
 
-def add_invoice(patient, invoice, url, treatments, dates):
+def add_invoice(patient, invoice, url, treatments, dates, date_invoice):
     name = patient['name']
     date = patient['date']
+    print(date_invoice)
     medical = patient['medical']
     tariff = patient['tariff']
     main = None
@@ -117,6 +118,7 @@ def add_invoice(patient, invoice, url, treatments, dates):
         number = patient['number']
 
     date = datetime.strptime(date, '%d.%m.%Y')
+    print(date)
     treatments = ','.join(map(str, treatments))
     dates = ','.join(map(str, dates))
     sql = """INSERT INTO andrea_invoice (name, date, medical, invoice, url,
