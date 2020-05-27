@@ -77,7 +77,7 @@ def configureBorders(doc, text, items):
     get_bottom_table.TableBorder = table_bottom_border
     return doc, text
 
-def populateBottomTable(doc, text):
+def populateBottomTable(doc, text, data):
     bottom_table = doc.createInstance( "com.sun.star.text.TextTable" )
     bottom_table.initialize(5,3)
     bottom_table.setName('bottom_table')
@@ -99,23 +99,23 @@ def populateBottomTable(doc, text):
     first_bottom_table_text = bottom_table.getCellByName("A5")
     first_bottom_table_text.setString(" Branch Code:" )
     first_bottom_table_text = bottom_table.getCellByName("B2")
-    first_bottom_table_text.setString("A.Pickel-Voigt" )
+    first_bottom_table_text.setString(data["bank_holder"])
     first_bottom_table_text = bottom_table.getCellByName("B3")
-    first_bottom_table_text.setString("Standard Bank" )
+    first_bottom_table_text.setString(data["bank"])
     first_bottom_table_text = bottom_table.getCellByName("B4")
-    first_bottom_table_text.setString("241710812" )
+    first_bottom_table_text.setString(data["bank_account"])
     first_bottom_table_text = bottom_table.getCellByName("B5")
-    first_bottom_table_text.setString("084873 (Oshakati Branch)" )
+    first_bottom_table_text.setString(data["bank_branch"])
     first_bottom_table_text = bottom_table.getCellByName("C1")
     first_bottom_table_text.setString("Postal:" )
     first_bottom_table_text = bottom_table.getCellByName("C2")
-    first_bottom_table_text.setString("A. Pickel-Voigt" )
+    first_bottom_table_text.setString(data["name"])
     first_bottom_table_text = bottom_table.getCellByName("C3")
-    first_bottom_table_text.setString("PO Box 37" )
+    first_bottom_table_text.setString(data["pob"])
     first_bottom_table_text = bottom_table.getCellByName("C4")
-    first_bottom_table_text.setString("Oshakati" )
+    first_bottom_table_text.setString(data["city"])
     first_bottom_table_text = bottom_table.getCellByName("C5")
-    first_bottom_table_text.setString("Namibia" )
+    first_bottom_table_text.setString(data["country"])
     range = bottom_table.getCellRangeByName("A1:C5")
     range.setPropertyValue( "CharFontName", "Liberation Serif" )
     range.setPropertyValue( "CharHeight", 7.5 )
@@ -244,38 +244,39 @@ def populateMiddleTable(doc, text, patient, invoice_name):
         text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
     return doc, text
 
-def populateTopTable(doc, text, patient):
+def populateTopTable(doc, text, patient, data):
     global cursor
     top_table = doc.createInstance( "com.sun.star.text.TextTable" )
     top_table.initialize(1,2)
     top_table.setName('top_Table')
     text.insertTextContent( cursor, top_table, 1 )
     first_top_table_text = top_table.getCellByName("A1")
-    first_top_table_text.setString("Practice No: 072 0000 637653 \nHPCNA No: PHY 00194" )
+    first_top_table_text.setString("Practice No: " + data["practice_number"] +
+                                   "\nHPCNA No: " + data["hpcna_number"] )
     cursor_top_right = top_table.createCursorByCellName("B1")
     cursor_top_right.setPropertyValue( "ParaAdjust", RIGHT )
     second_top_table_text = top_table.getCellByName("B1")
-    second_top_table_text.setString("anpickel@gmail.com\nCell: 081 648 11 82")
+    second_top_table_text.setString(data["email"] + "\nCell: " + data["cell"])
     eText = top_table.getCellByName("B1").getText()
     eCursor = eText.createTextCursor()
     eText.insertString(eCursor, "", False)
-    eCursor.goRight(len("anpickel@gmail.com"), True)
-    eCursor.HyperLinkURL = "mailto:anpickel@gmail.com"
+    eCursor.goRight(len(data["email"]), True)
+    eCursor.HyperLinkURL = "mailto:" + data["email"]
     range = top_table.getCellRangeByName("A1:B1")
     range.setPropertyValue( "CharFontName", "Liberation Serif" )
     range.setPropertyValue( "CharHeight", 10.0 )
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
     return doc, text
 
-def populateTopText(doc, text):
+def populateTopText(doc, text, data):
     global cursor
     cursor = text.createTextCursor()
     cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
     cursor.setPropertyValue( "CharHeight", 10.0 )
     cursor.setPropertyValue( "ParaAdjust", CENTER )
-    text.insertString( cursor, "A. Pickel-Voigt", 0 )
+    text.insertString( cursor, data["practice_name"], 0 )
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
-    text.insertString( cursor, "MSc Physiotherapy (UWC)" , 0 )
+    text.insertString( cursor, data["qualification"], 0 )
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
@@ -292,14 +293,15 @@ def setupConnection():
     return doc, text
 
 def createTextInvoice(items, treatments, price, dates, patient, modifier,
-                      url, invoice_name):
+                      url, invoice_name, data):
     doc, text = setupConnection()
-    doc, text = populateTopText(doc, text)
-    doc, text = populateTopTable(doc, text, patient)
+    doc, text = populateTopText(doc, text, data)
+    doc, text = populateTopTable(doc, text, patient, data)
     doc, text = populateMiddleTable(doc, text, patient, invoice_name)
     doc, text = populateTable(doc, text, items, treatments, price, dates, modifier)
-    doc, text = populateBottomTable(doc, text)
+    doc, text = populateBottomTable(doc, text, data)
     doc, text = configureBorders(doc, text, items)
+    print(data)
     saveDocument(doc, url)
 
 
@@ -327,7 +329,9 @@ if __name__ == '__main__':
     parser.add_argument('modifier', type=json.loads, help='this should be a modifier list')
     parser.add_argument('url', type=json.loads, help='this should be a modifier list')
     parser.add_argument('invoice_name', type=json.loads, help='this should be a modifier list')
+    parser.add_argument('data', type=json.loads, help='the general data stuff')
     args = parser.parse_args()
     createTextInvoice(args.items, args.treatments, args.price, args.dates,
-                      args.patient, args.modifier, args.url, args.invoice_name)
+                      args.patient, args.modifier, args.url, args.invoice_name,
+                     args.data)
    # testing()

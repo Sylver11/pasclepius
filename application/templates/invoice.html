@@ -101,17 +101,12 @@ $(document).ready(function(){
     }
     function clone() {
         $(".clonedInput").last().clone()
-            .appendTo(".tbodyClone") // copied table row is added <tbody>
-            .attr("id", "clonedInput" + cloneIndex) // for each table row, id is incremented
-            .find("*") // return all descendant elements of selected element.
+            .appendTo(".tbodyClone")
+            .attr("id", "clonedInput" + cloneIndex)
+            .find("*")
             .each(function () { 
-                // console.log("T`his is the clone index of inside each funtin: " + cloneIndex)
-                 // execute function for each matched element
-                 var id = this.id || ""; // I'm guessing this makes id a string?
-                 var match = id.match(regex) || []; // searches a string against a regular,         
-                                                //expression and assigns results to var match as 
-                                               //list. Example result 
-                                              //["clonedInputNN","clonedInput","NN"]
+                 var id = this.id || "";
+                 var match = id.match(regex) || [];        
                  if (match.length == 3) {
                      this.id = match[1] + (cloneIndex);
                  }

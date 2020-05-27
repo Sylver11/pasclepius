@@ -2,7 +2,9 @@ from application.db_utils import pool
 from datetime import datetime
 
 def checkUser(email):
-    sql = """SELECT name, uuid_text, password FROM users WHERE email = '{}'
+    sql = """SELECT password, email, title, name, phone, cell, fax, pob, city, country, bank_holder,
+    bank_account, bank_branch, bank, practice_name, practice_number,
+    hpcna_number, qualification FROM users WHERE email = '{}'
     """.format(email)
     conn = pool.connection()
     cursor = conn.cursor()
@@ -35,8 +37,6 @@ def updateUser(treatments, dates, patient):
     treatments = ','.join(map(str, treatments))
     dates = ','.join(map(str, dates))
     date = datetime.strptime(date, '%d.%m.%Y')
-    print(treatments)
-    print(dates)
     sql = """UPDATE andrea_invoice SET treatments = '{}', dates = '{}' WHERE
     name = '{}' AND date = '{}'""".format(treatments, dates, name, date)
     conn = pool.connection()
@@ -48,14 +48,18 @@ def updateUser(treatments, dates, patient):
     return status
 
 
-def addUser(title, name, email, password, phone, cell, fax, address, bank_holder, bank_account, bank,
+def addUser(title, name, email, password, phone, cell, fax, pob, city, country, bank_holder, bank_account, bank,
             bank_branch, practice_number, practice_name, hpcna_number,
             qualification, specialisation):
-    sql = """INSERT INTO users (uuid_bin, title, name, email, password, phone, cell, fax, address,
-    bank_holder, bank_account, bank, bank_branch, practice_number, practice_name,
+    sql = """INSERT INTO users (uuid_bin, title, name, email, password, phone,
+    cell, fax, pob, city, country,
+    bank_holder, bank_account, bank,
+    bank_branch, practice_number, practice_name,
     hpcna_number, qualification, specialisation)
-    VALUES(unhex(replace(uuid(),'-','')), '{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}')
-    """.format(title, name, email, password, phone, cell, fax, address, bank_holder, bank_account,
+    VALUES(unhex(replace(uuid(),'-','')),
+    '{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}','{18}')
+    """.format(title, name, email, password, phone, cell, fax, pob, city,
+               country, bank_holder, bank_account,
                bank, bank_branch, practice_number, practice_name, hpcna_number,
               qualification, specialisation)
     conn = pool.connection()

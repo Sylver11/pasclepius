@@ -73,8 +73,9 @@ class RegistrationForm(FlaskForm):
     phone = StringField('Landline number')
     cell =  StringField('Cell number', validators=[DataRequired()])
     fax = StringField('Fax number')
-    #address = TextAreaField('Full address', widget=TextArea(row=10, cols=11))
-    address = TextField('Full address', widget=TextArea())
+    pob = StringField('PO Box', validators=[DataRequired()])
+    city = StringField('City', validators=[DataRequired()])
+    country = StringField('Country', validators=[DataRequired()])
     bank = StringField('Bank', validators=[DataRequired()])
     bank_branch = StringField('Branch number',
                               validators=[DataRequired()])
@@ -88,7 +89,6 @@ class RegistrationForm(FlaskForm):
 
     def validate_email(self, field):
         status = checkDuplicateEmail(field.data)
-        print("the validation process in the form class runs")
         if status:
             raise ValidationError('Please use a different email address.')
 

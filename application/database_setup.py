@@ -54,7 +54,9 @@ def setupTable():
         phone varchar(255),
         cell varchar(255) NOT NULL,
         fax varchar(255),
-        address varchar(255) NOT NULL,
+        pob varchar(255) NOT NULL,
+        city varchar(255) NOT NULL,
+        country varchar(255) NOT NULL,
         bank_holder varchar(255) NOT NULL,
         bank_account varchar(255) NOT NULL,
         bank varchar(255) NOT NULL,
@@ -71,12 +73,12 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute(sql_drop_table)
+    #cursor.execute(sql_drop_table)
     cursor.execute(sql_drop_table_users)
-    cursor.execute(sql_drop_table_invoice)
-    cursor.execute(sql_create_table)
+    #cursor.execute(sql_drop_table_invoice)
+    #cursor.execute(sql_create_table)
     cursor.execute(sql_create_table_users)
-    cursor.execute(sql_create_table_invoice)
+    #cursor.execute(sql_create_table_invoice)
     data = pd.read_csv (os.getenv("CSV_URL"), delimiter=';')
     df = pd.DataFrame(data, columns= ['item','description','units','value','category', 'tariff'])
     sql_insert =  """INSERT INTO treatments (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""

@@ -2,10 +2,8 @@
 {% block content %}
 <div class=container>
   <br>
-  <br>
   <h3>Register at Pasclepius</h3>
   <br>
-  
   <form autocomplete="off" method=post>
     <dl>
       <div class="border border-dark px-5">
@@ -40,8 +38,6 @@
             </div>
         </div>
         <br>
-
-
         <div class="border border-dark px-5">
           <br>
           <h4>Credentials:</h4>
@@ -77,13 +73,26 @@
             {{ form.fax.label(for="fax") }}
             {{ form.fax(class_="form-control w-25 p-3", placeholder="Example: +26465220154", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: +26465220154'")}}
             </div>
-          <div class="form-group">
-          {{ form.address.label(for="address") }}
-          {{ form.address(class_="form-control w-75 p-3", cols="10", rows="5", placeholder="Example: Oshakati Pharmacy Medical Complex, Room 12", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: Oshakati Pharmacy Medical Complex, Room 12'") }}
-          </div>
-         
           <br>
         </div>  
+        <br>
+        <div class="border border-dark px-5">
+          <br>
+          <h4>Postal address:</h4>
+          <div class="form-group">
+            {{ form.pob.label(for="pob", class_="required") }}
+            {{ form.pob(class_="form-control w-75 p-3", cols="10", rows="5", placeholder="Example: PO Box 3737", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: PO Box 3737'") }}
+          </div>
+          <div class="form-group">
+            {{ form.city.label(for="city", class_="required") }}
+            {{ form.city(class_="form-control w-75 p-3", cols="10", rows="5", placeholder="Example: Oshakati", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: Oshakati'") }}
+          </div>
+          <div class="form-group">
+            {{ form.country.label(for="country", class_="required") }}
+            {{ form.country(class_="form-control w-75 p-3", cols="10", rows="5", placeholder="Example: Namibia", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: Namibia'") }}
+          </div> 
+          <br>   
+        </div>
         <br>
         <div class="border border-dark px-5">
           <br>

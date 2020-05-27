@@ -21,12 +21,8 @@ import simplejson as json
 @login_manager.user_loader
 def load_user(id):
     data = checkUser(id)
-    return User(data['name'], id)
-    #user.id = email
-    #return user
+    return User(id, data['name'])
 
-#    return User.get(user_id)
-#    return User.query.get(user_id)
 
 @app.route('/', methods=('GET', 'POST'))
 def home():
@@ -39,21 +35,21 @@ def register():
         return redirect(url_for('home'))
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        user = User(form.name.data, form.email.data)
+        user = User(form.email.data, form.name.data)
         password = user.set_password(form.password.data)
         status = addUser(form.title.data, form.name.data,
                          form.email.data, password,
                          form.phone.data, form.cell.data,
-                         form.fax.data,
-                         form.address.data,form.bank_holder.data,
-                         form.bank_account.data, form.bank.data,
-                         form.bank_branch.data, form.practice_number.data,
-                         form.practice_name.data, form.hpcna_number.data,
-                         form.qualification.data, form.specialisation.data)
+                         form.fax.data, form.pob.data,
+                         form.city.data, form.country.data,
+                         form.bank_holder.data, form.bank_account.data,
+                         form.bank.data, form.bank_branch.data,
+                         form.practice_number.data, form.practice_name.data,
+                         form.hpcna_number.data, form.qualification.data,
+                         form.specialisation.data)
         if status:
             return redirect(url_for('login'))
     return render_template('register.html', form=form)
-
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -63,21 +59,16 @@ def login():
         return redirect(url_for('home'))
     if form.validate_on_submit():
         data = checkUser(form.email.data)
-        user = User(data['name'], form.email.data)
+        user = User(form.email.data)
         if data is None or not user.check_password(data['password'], form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
-        #user.id = form.email.data
-        #user.name = data["name"]
-        #user.details(data["name"], form.email.data)
         login_user(user, remember=True)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('home')
         return redirect(next_page)
     return render_template('login.html', form=form)
-
-
 
 
 @app.route('/logout')
@@ -129,7 +120,6 @@ def newInvoice(patient):
         return render_template('invoice.html', dates=None, treatments=None,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
 
 
-
 @app.route('/patient/<patient>/continue-invoice')
 @login_required
 def continueInvoice(patient):
@@ -166,7 +156,6 @@ def selectPatient():
         return jsonData
 
 
-
 @app.route('/generate-invoice', methods=['POST'])
 @login_required
 def generateInvoice():
@@ -183,6 +172,11 @@ def generateInvoice():
     form = getTreatmentForm(tariff)
     if form.treatments.data:
         treatment_list = getTreatmentByItem(treatments, tariff)
+        #json_data=[]
+        data = checkUser(current_user.id)
+        #for result in data:
+        #    json_data.append(dict(result))
+        #print(json_data)
         if 'url' in session['PATIENT']:
             url = session.get('PATIENT')['url']
             invoice_name = session.get('PATIENT')['invoice']
@@ -201,11 +195,12 @@ def generateInvoice():
                             json.dumps(treatment_list), json.dumps(price),
                             json.dumps(dates), json.dumps(patient),
                             json.dumps(modifier), json.dumps(url),
-                            json.dumps(invoice_name)])
+                            json.dumps(invoice_name), json.dumps(data)])
             return jsonify(result='success')
         else:
             return jsonify(result='Error: Entry already exists')
     return jsonify(result='error')
+
 
 @app.route('/live-search',methods=['GET','POST'])
 @login_required
@@ -214,6 +209,7 @@ def liveSearchPatient():
     data = liveSearch(name)
     value_json = json.dumps(data)
     return value_json
+
 
 @app.route('/set-known-invoice',methods=['GET','POST'])
 @login_required
@@ -237,6 +233,7 @@ def getValue():
     value_json = json.dumps({'value' : Decimal(value['value'])}, use_decimal=True)
     return value_json
 
+
 @app.route('/get-treatment-name',methods=['GET','POST'])
 @login_required
 def getTreatmentName():
@@ -246,6 +243,7 @@ def getTreatmentName():
     value_json = json.dumps({'treatments':treatment_list})
     return value_json
 
+
 @app.route('/download-invoice/<random>')
 @login_required
 def downloadInvoice(random):
@@ -254,6 +252,7 @@ def downloadInvoice(random):
     url = getInvoiceURL(name, date)
     path = str(url['url']) + ".odt"
     return send_file(path, as_attachment=True)
+
 
 @app.route('/session')
 def sessionValues():
