@@ -21,7 +21,8 @@ import simplejson as json
 @login_manager.user_loader
 def load_user(id):
     data = checkUser(id)
-    return User(id, data['name'])
+    if data:
+        return User(id, data["name"])
 
 
 @app.route('/', methods=('GET', 'POST'))
@@ -172,11 +173,7 @@ def generateInvoice():
     form = getTreatmentForm(tariff)
     if form.treatments.data:
         treatment_list = getTreatmentByItem(treatments, tariff)
-        #json_data=[]
         data = checkUser(current_user.id)
-        #for result in data:
-        #    json_data.append(dict(result))
-        #print(json_data)
         if 'url' in session['PATIENT']:
             url = session.get('PATIENT')['url']
             invoice_name = session.get('PATIENT')['invoice']

@@ -73,10 +73,10 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-    #cursor.execute(sql_drop_table)
+    cursor.execute(sql_drop_table)
     cursor.execute(sql_drop_table_users)
     #cursor.execute(sql_drop_table_invoice)
-    #cursor.execute(sql_create_table)
+    cursor.execute(sql_create_table)
     cursor.execute(sql_create_table_users)
     #cursor.execute(sql_create_table_invoice)
     data = pd.read_csv (os.getenv("CSV_URL"), delimiter=';')

@@ -1,5 +1,4 @@
 {% extends 'layout.html' %}
-
 {% block content %}
 <div class="container personal_style" id="container_id">
     <br>
@@ -24,10 +23,8 @@
             Medical Aid Number: {{number}}<br>
             Date of Birth: {{dob}}<br>
             Date of invoice: {{date}}</p>
-        {% endif %}
-        
+        {% endif %}    
     <br>
-
     <form autocomplete="off" id="NewOrderForm" class="form">   
         {{ form.hidden_tag() }}
         <table class="table table-striped">
@@ -43,6 +40,7 @@
                     <td>{{  form.date(id='date-0', class='datepicker form-control', placeholder="DD/MM/YYYY")  }}</td>
                     <td>
                         <input id="btnDel_0" value="Delete" type="button" style="width:100px" class="remove">
+                        <input id="btnDel_0" value="Clone" type="button" style="width:100px" class="clone">
                     </td>
                 </tr>
             </tbody>
@@ -92,29 +90,52 @@ $(document).ready(function(){
                 }
             }
         })
-    var regex = /^(.*)(\d)+$/i; 
+
+    var regex = /^((?=\S*['-])([a-zA-Z'-]+))([0-9][0-9]?)+$/i;
     var cloneIndex = $(".clonedInput").length;
     if ($(".clonedInput").length == 1) {
         $('.remove').hide();
     } else {
         $('.remove').show();
     }
+
+
     function clone() {
+        var clicked_item = $(this).parents(".clonedInput")
+        if (clicked_item.length == 1){
+            clicked_item.clone(true)
+            .appendTo(".tbodyClone")
+            .attr("id", "clonedInput" + cloneIndex)
+            .find("*")
+            .each(function () { 
+                 var id = this.id || "";
+                 var match = id.match(regex) || [];    
+                 if (match.length == 4) {
+                     this.id = match[1] + (cloneIndex);
+                 }
+                 if (this.className.includes("datepicker")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("thirty") || (this.className.includes("fourty"))){
+                    this.style.backgroundColor = "white";
+                 } 
+            }            
+            )        
+        }
+        else{
         $(".clonedInput").last().clone()
             .appendTo(".tbodyClone")
             .attr("id", "clonedInput" + cloneIndex)
             .find("*")
             .each(function () { 
                  var id = this.id || "";
-                 var match = id.match(regex) || [];        
-                 if (match.length == 3) {
+                 var match = id.match(regex) || [];    
+                 if (match.length == 4) {
                      this.id = match[1] + (cloneIndex);
                  }
-                 var name = this.name || ""; 
-                 var match2 = name.match(regex) || []; 
-                 if (match2.length == 3) {
-                     this.name = match2[1] + (cloneIndex);
-                 }
+                 if (this.className.includes("treatment")){
+                    this.value = ''
+                 } 
                  if (this.className.includes("value")){
                     this.value = ''
                  } 
@@ -126,9 +147,7 @@ $(document).ready(function(){
                  } 
             }            
             )
-            .on('click', 'clone', clone)
-            .on('click', 'remove', remove);
-
+        }
         cloneIndex++;
 
         if ($(".clonedInput").length == 1) {
@@ -138,6 +157,8 @@ $(document).ready(function(){
         }
         $(document).scrollTop($(document).height());
     }
+
+
     function remove() {        
         $(this).parents(".clonedInput").remove();
 
@@ -146,8 +167,8 @@ $(document).ready(function(){
         } else {
             $('.remove').show();
         }
-
     }
+
 
     function addPremium(object, id, percent){
         var current_value = parseFloat(object.parent().parent().children().children(".value").val());
@@ -258,16 +279,14 @@ $(document).ready(function(){
     $(document).on("click", ".datepicker", function() {
         $(this).removeClass('hasDatepicker');
         $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" );
-});
+    });
 
-if('{{treatments}}' !== 'None'){
-    console.log("the continue section runs")
+    if('{{treatments}}'){
         var treatments = '{{treatments}}'
         var t = treatments.split(",")
         var d = '{{dates}}'.split(",")
         var cloneIndex = 0
         $.each(t, function(index, value) {       
-             console.log(d[index]) 
             $.ajax({
                 url: '/get-value',
                 type: "GET",
@@ -279,7 +298,7 @@ if('{{treatments}}' !== 'None'){
                 return data;
                 }
             });
-            cloneIndex = index + 1 
+            cloneIndex = index + 1
             clone()
             var date = parseDate(d[index])
             function parseDate(str) {
@@ -297,5 +316,4 @@ if('{{treatments}}' !== 'None'){
    });
 
 </script>
-
 {% endblock %}
