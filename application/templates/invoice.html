@@ -65,7 +65,6 @@ $(document).ready(function(){
     function addSubmit(ev) {
         ev.preventDefault();   
         if ($('form').data('submitted') === true) {
-            console.log("form is submitted ")
             ev.preventDefault();
         } else {
             $.ajax({
@@ -115,7 +114,7 @@ $(document).ready(function(){
     function clone() {
         var clicked_item = $(this).parents(".clonedInput")
         if (clicked_item.length == 1){
-            clicked_item.clone(true)
+            clicked_item.clone(true, true)
             .appendTo(".tbodyClone")
             .attr("id", "clonedInput" + cloneIndex)
             .find("*")
@@ -127,12 +126,11 @@ $(document).ready(function(){
                  }
                  if (this.className.includes("datepicker")){
                     this.value = ''
-                 } 
-                 if (this.className.includes("thirty") || (this.className.includes("fourty"))){
-                    this.style.backgroundColor = "white";
-                 }   
+                 }  
             }            
-            )        
+            )
+            var select_value = $(this).parent().parent().find('.treatment').children().children("option:selected").val()
+            $('#treatment-' + cloneIndex).val(select_value);      
         }
         else{
         $(".clonedInput").last().clone()
@@ -176,6 +174,7 @@ $(document).ready(function(){
             }            
             )
         }
+        
         cloneIndex++;
 
         if ($(".clonedInput").length == 1) {
@@ -185,15 +184,9 @@ $(document).ready(function(){
         }
         $(document).scrollTop($(document).height());
         var row_number =  $(".clonedInput").length;
-        // console.log(typeof row_number)
-        // row_number.toString()
         var n = row_number.toString();
-        // console.log(typeof n)
-        // console.log("row-" + cloneIndex)
         var row_index = cloneIndex - 1
-        console.log("#clonedInput" + row_index)
         $("#clonedInput" + row_index ).prepend('<th class="row" scope="row">' + cloneIndex + '</th>')
-        // $('#thirty-' + cloneIndex).hide()
     }
 
 
