@@ -90,7 +90,7 @@
     <h4>Past invoice</h4>  
     <ul class="list-group">
         {% for i in data %} 
-        <li class="invoice_list list-group-item" ><span id="patient_name-{{loop.index}}">{{i['name']}}</span> {{i['medical']}} {{i['date'].strftime('%d.%m.%Y')}} <span style="display:none;" id="patient_date-{{loop.index}}">{{ i['date'] }}</span></li>
+        <li class="invoice_list list-group-item" ><span id="patient_name-{{loop.index}}">{{i['name']}}</span> {{i['medical']}} {{i['date_created'].strftime('%d.%m.%Y')}} <span style="display:none;" id="patient_date-{{loop.index}}">{{ i['date_created'] }}</span></li>
         <ul class="treatment_list list-group-item" id="treatment-list-{{loop.index}}" style="display:none;">
                 <script>
                     $.getJSON('/get-treatment-name', {
@@ -131,9 +131,9 @@
 <script>
 
     $(document).ready(function() {
-        $('.continue').click(function(){
-            console.log($(this).parent().siblings('li'));
-        })
+        // $('.continue').click(function(){
+        //     console.log($(this).parent().siblings('li'));
+        // })
         $('.invoice_list').click(function() {
             $(this).next().css("display", "block");
         });

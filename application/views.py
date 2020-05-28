@@ -105,6 +105,7 @@ def invoiceOption(patient):
     form_other = Patient_other()
     if request.method == 'POST' and form_mva.validate_on_submit():
         session["PATIENT"] = form_mva.data
+        print(form_mva.data)
         return redirect('/patient/' + form_mva.name.data + '/new-invoice')
     elif request.method == 'POST' and form_psemas.validate_on_submit():
         session["PATIENT"] = form_psemas.data
@@ -112,8 +113,8 @@ def invoiceOption(patient):
     elif request.method == 'POST' and form_other.validate_on_submit():
         session["PATIENT"] = form_other.data
         return redirect('/patient/' + form_other.name.data + '/new-invoice')
-    data = queryInvoice(patient)
-    patient_data = getPatient(patient)
+    data = queryInvoice(current_user.uuid, patient)
+    patient_data = getPatient(current_user.uuid, patient)
     return  render_template('patient.html', patient_data=patient_data, data=data, patient=patient, form_mva=form_mva, form_psemas = form_psemas, form_other = form_other)
 
 
@@ -205,16 +206,17 @@ def generateInvoice():
             url = url.generate()
             invoice_name = InvoiceName(patient, index, modifier)
             invoice_name = invoice_name.generate()
-            print(date_invoice)
             status = add_invoice(patient, invoice_name, url, treatments, dates,
                                 date_invoice, current_user.uuid)
         if status:
+            #print(patient)
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/application/swriter.py', json.dumps(treatments),
                             json.dumps(treatment_list), json.dumps(price),
                             json.dumps(dates), json.dumps(patient),
                             json.dumps(modifier), json.dumps(url),
-                            json.dumps(invoice_name), json.dumps(data)])
+                            json.dumps(invoice_name), json.dumps(date_invoice),
+                             json.dumps(data)])
             return jsonify(result='success')
         else:
             return jsonify(result='Error: Entry already exists')
@@ -225,7 +227,7 @@ def generateInvoice():
 @login_required
 def liveSearchPatient():
     name = request.args.get('username')
-    data = liveSearch(name)
+    data = liveSearch(current_user.uuid, name)
     value_json = json.dumps(data)
     return value_json
 
@@ -235,9 +237,12 @@ def liveSearchPatient():
 def knownInvoice():
     patient = request.args.get('patient')
     date = request.args.get('date')
-    data =  getSingleInvoice(patient, date)
+    #print(date)
+    data =  getSingleInvoice(current_user.uuid, patient, date)
     d = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
     date_deutsch = d.strftime('%d.%m.%Y')
+    #print(date)
+    #print(date_deutsch)
     session["PATIENT"] = data
     session["PATIENT"]["date"]= date_deutsch
     return data

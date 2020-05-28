@@ -31,21 +31,21 @@ def checkDuplicateEmail(email):
     return status
 
 
-def updateUser(treatments, dates, patient):
-    name = patient['name']
-    date = patient['date']
-    treatments = ','.join(map(str, treatments))
-    dates = ','.join(map(str, dates))
-    date = datetime.strptime(date, '%d.%m.%Y')
-    sql = """UPDATE andrea_invoice SET treatments = '{}', dates = '{}' WHERE
-    name = '{}' AND date = '{}'""".format(treatments, dates, name, date)
-    conn = pool.connection()
-    cursor = conn.cursor()
-    cursor.execute(sql)
-    cursor.close()
-    conn.close()
-    status = True
-    return status
+#def updateUser(treatments, dates, patient):
+#    name = patient['name']
+#    date = patient['date']
+#    treatments = ','.join(map(str, treatments))
+#    dates = ','.join(map(str, dates))
+#    date = datetime.strptime(date, '%d.%m.%Y')
+#    sql = """UPDATE andrea_invoice SET treatments = '{}', dates = '{}' WHERE
+#    name = '{}' AND date = '{}'""".format(treatments, dates, name, date)
+#    conn = pool.connection()
+#    cursor = conn.cursor()
+#    cursor.execute(sql)
+#    cursor.close()
+#    conn.close()
+#    status = True
+#    return status
 
 
 def addUser(title, name, email, password, phone, cell, fax, pob, city, country, bank_holder, bank_account, bank,

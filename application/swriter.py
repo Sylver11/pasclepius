@@ -188,7 +188,7 @@ def populateTable(doc, text, items, treatments, price, dates, modifier):
    # cell_sum.NumberFormat = DateKey
     return doc, text
 
-def populateMiddleTable(doc, text, patient, invoice_name):
+def populateMiddleTable(doc, text, patient, invoice_name, date_invoice):
     global cursor
     middle_table = doc.createInstance( "com.sun.star.text.TextTable" )
     if (patient['medical'] == 'mva'):
@@ -204,7 +204,7 @@ def populateMiddleTable(doc, text, patient, invoice_name):
         cursor_middle_right = middle_table.createCursorByCellName("C1")
         cursor_middle_right.setPropertyValue( "ParaAdjust", RIGHT )
         cursor_middle_table_c1 = middle_table.getCellByName("C1")
-        cursor_middle_table_c1.setString("Date: " + str(patient['date']))
+        cursor_middle_table_c1.setString("Date: " + date_invoice[0])
         fourth_middle_table_text = middle_table.getCellByName("C2")
         fourth_middle_table_text.setString("Insurance: " + str(patient['medical']).upper())
         seventh_middle_table_text = middle_table.getCellByName("B1")
@@ -293,11 +293,13 @@ def setupConnection():
     return doc, text
 
 def createTextInvoice(items, treatments, price, dates, patient, modifier,
-                      url, invoice_name, data):
+                      url, invoice_name, date_invoice, data):
     doc, text = setupConnection()
     doc, text = populateTopText(doc, text, data)
     doc, text = populateTopTable(doc, text, patient, data)
-    doc, text = populateMiddleTable(doc, text, patient, invoice_name)
+    print(date_invoice)
+    doc, text = populateMiddleTable(doc, text, patient, invoice_name,
+                                    date_invoice)
     doc, text = populateTable(doc, text, items, treatments, price, dates, modifier)
     doc, text = populateBottomTable(doc, text, data)
     doc, text = configureBorders(doc, text, items)
@@ -329,9 +331,10 @@ if __name__ == '__main__':
     parser.add_argument('modifier', type=json.loads, help='this should be a modifier list')
     parser.add_argument('url', type=json.loads, help='this should be a modifier list')
     parser.add_argument('invoice_name', type=json.loads, help='this should be a modifier list')
+    parser.add_argument('date_invoice',type=json.loads)
     parser.add_argument('data', type=json.loads, help='the general data stuff')
     args = parser.parse_args()
     createTextInvoice(args.items, args.treatments, args.price, args.dates,
                       args.patient, args.modifier, args.url, args.invoice_name,
-                     args.data)
+                      args.date_invoice, args.data)
    # testing()

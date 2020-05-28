@@ -1,6 +1,7 @@
 from application.db_utils import pool
 from datetime import datetime
 
+
 def get_index(uuid, medical, date):
     date = datetime.strptime(date, '%d.%m.%Y')
     month = date.month
@@ -16,9 +17,9 @@ def get_index(uuid, medical, date):
     return index['COUNT(*)'] + 1
 
 
-def liveSearch(name):
-    sql = """SELECT name FROM andrea_invoice WHERE name LIKE '{}%'
-    """.format(name)
+def liveSearch(uuid, name):
+    sql = """SELECT name FROM invoices WHERE uuid_text = '{}' AND name LIKE '{}%'
+    """.format(uuid, name)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -27,11 +28,13 @@ def liveSearch(name):
     conn.close()
     return data
 
-def getPatient(name):
+
+def getPatient(uuid, name):
     sql = """ SELECT any_value(tariff) AS tariff, any_value(dob) AS dob,
     any_value(number) AS number, any_value(medical) AS medical,
     any_value(`case`) AS `case`, any_value(main) AS main, name FROM
-    andrea_invoice WHERE name = '{}' GROUP BY CASE WHEN medical = 'mva' THEN `case` ELSE number END;""".format(name)
+    invoices WHERE uuid_text = '{}' AND name = '{}' GROUP BY CASE WHEN
+    medical = 'mva' THEN `case` ELSE number END;""".format(uuid, name)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -39,6 +42,7 @@ def getPatient(name):
     cursor.close()
     conn.close()
     return patient_data
+
 
 def getInvoiceURL(uuid, name, date):
     date = datetime.strptime(date, '%d.%m.%Y')
@@ -53,8 +57,9 @@ def getInvoiceURL(uuid, name, date):
     return url
 
 
-def queryInvoice(patient):
-    sql = """SELECT * FROM andrea_invoice WHERE name = '{}' """.format(patient)
+def queryInvoice(uuid, patient):
+    sql = """SELECT * FROM invoices WHERE uuid_text = '{}' AND name = '{}'
+    """.format(uuid, patient)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -63,9 +68,13 @@ def queryInvoice(patient):
     conn.close()
     return data
 
-def getSingleInvoice(patient, date):
-    sql = """SELECT * FROM andrea_invoice WHERE name = '{}' AND date = '{}'
-    """.format(patient, date)
+
+def getSingleInvoice(uuid, patient, date):
+    sql = """SELECT name, number, `case`, po, url, invoice,
+    tariff, medical, dates, main, dob, treatments
+    FROM invoices WHERE uuid_text = '{}' AND name = '{}' AND
+    date_created = '{}'
+    """.format(uuid, patient, date)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -73,8 +82,6 @@ def getSingleInvoice(patient, date):
     cursor.close()
     conn.close()
     return data
-
-
 
 
 def updateInvoice(uuid, treatments, dates, patient, date_invoice):
@@ -96,11 +103,9 @@ def updateInvoice(uuid, treatments, dates, patient, date_invoice):
     return status
 
 
-
 def add_invoice(patient, invoice, url, treatments, dates, date_invoice, uuid):
     name = patient['name']
     date = patient['date']
-    print(date_invoice)
     medical = patient['medical']
     tariff = patient['tariff']
     main = None
@@ -120,7 +125,6 @@ def add_invoice(patient, invoice, url, treatments, dates, date_invoice, uuid):
     date_invoice = datetime.strptime(date_invoice[0], '%d.%m.%Y')
     treatments = ','.join(map(str, treatments))
     dates = ','.join(map(str, dates))
-    print(uuid)
     sql = """INSERT INTO invoices (uuid_text, name, date_created, date_invoice, medical, invoice, url,
     treatments, dates, tariff, main, dob, number, `case`, po)
     VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}')
@@ -139,6 +143,7 @@ def add_invoice(patient, invoice, url, treatments, dates, date_invoice, uuid):
     cursor.close()
     conn.close()
     return status
+
 
 if __name__ == '__main__':
     from dotenv import load_dotenv
