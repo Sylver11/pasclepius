@@ -4,19 +4,18 @@
 <div class="container">
     <br>
     <br>
-    <h2>{{patient}}</h2>
+    <h3>{{patient}}</h3>
     <br>
 
     <h4>Patients</h4>  
     <div class="list-group">
         {% for i in patient_data %} 
-        <a href="#!" class="list-group-item list-group-item-action flex-column align-items-start">
+        {% if i['medical'] == 'mva'%}
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1">{{i['name']}}</h5>
                 <small>
                     <span style="text-transform: uppercase;">{{i['medical']}}</span>
-                    
-                    {% if i['medical'] == 'mva'%}
                 </small>
             </div>
             <form method=post autocomplete="off" id="continue_mva_{{loop.index}}" class="mva" >  
@@ -25,16 +24,21 @@
                     {{ form_mva.tariff(class_="tariff", style="display: none;", id='tariff_' ~ loop.index) }}
                     {{ form_mva.name(value=i['name'], style="display: none") }}
                     {{ form_mva.case(style="display: none;", value=i['case']) }}
-                    {{ form_mva.po.label(class_="required") }} {{ form_mva.po(class_="form-control w-25 p-3") }}
+                    {{ form_mva.po.label(class_="required") }} {{ form_mva.po(class_="form-control w-25") }}
                     {{ form_mva.date.label(for="date_mva_" ~ loop.index, class_="required") }} {{ form_mva.date(id='date_mva_' ~ loop.index, class_="form-control w-25 p-3" ) }}
                     <br>
                     {{ form_mva.submit(class_="btn btn-success") }}
             </form>  
             <small>Tariff: {{i['tariff']}} <br> Case Number: {{i['case']}}</small>
-        </a>
+        </div>
         <br>
 
     {% elif i['medical'] == 'psemas'%}
+    <div  class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{i['name']}}</h5>
+            <small>
+                <span style="text-transform: uppercase;">{{i['medical']}}</span>
             </small>
         </div>
         <form method=post autocomplete="off" id="continue_psemas_{{loop.index}}" class="psemas" >  
@@ -50,10 +54,15 @@
         {{ form_mva.submit(class_="btn btn-success") }}
         </form>
         <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['number']}} <br>Main Member: {{i['main']}} <br>Date of Birth: {{i['dob']}}</small>
-    </a>
+    </div>
     <br>
 
         {% else %}
+        <div  class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{i['name']}}</h5>
+                <small>
+                    <span style="text-transform: uppercase;">{{i['medical']}}</span>
             </small>
         </div>
         <form  method=post autocomplete="off" id="continue_other_{{loop.index}}" class="other" >  
@@ -69,7 +78,7 @@
         {{ form_other.submit(class_="btn btn-success") }}
         </form>  
         <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['number']}} <br>Main Member: {{i['main']}} <br>Date of Birth: {{i['dob']}}</small>
-    </a>
+    </div>
     <br>
 
         {% endif %}
@@ -80,8 +89,11 @@
             let element = document.getElementById(id);
             element.value = valueToSelect;
             $('.other').children('#date_other_{{loop.index}}').datepicker({dateFormat: 'dd.mm.yy'})
+            $('.other').children('#date_other_{{loop.index}}').datepicker("setDate", new Date());
             $('.mva').children('#date_mva_{{loop.index}}').datepicker({dateFormat: 'dd.mm.yy'})
+            $('.mva').children('#date_mva_{{loop.index}}').datepicker("setDate", new Date());
             $('.psemas').children('#date_psemas_{{loop.index}}').datepicker({dateFormat: 'dd.mm.yy'})
+            $('.psemas').children('#date_psemas_{{loop.index}}').datepicker("setDate", new Date());
             }
         </script>
     {% endfor %}

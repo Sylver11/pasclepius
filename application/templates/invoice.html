@@ -31,27 +31,26 @@
         {{ form.date_invoice.label(for="date_invoice") }}
         {{ form.date_invoice(class_="form-control") }}
         </div>
-        <!-- <div class="table-responsive"> -->
             <table class="table table-striped">
                 <tbody class="tbodyClone">
                     <tr id="clonedInput0" class="clonedInput form-inline col-md-6">
-                        <th scope="row">1</th>
+                        <!-- <th id="row-0" scope="row">1</th> -->
                         <td class= 'col-md-6'>{{  form.treatments(id='treatment-0', class='treatment form-control')  }}</td>
                         <td>{{  form.price(id='value-0', class='value form-control w-75')  }}</td>
                         <td>
-                            <input value = "30%" type="button" class="thirty">
-                            <input value = "40%" type="button" class="fourty inline"> 
+                            <input id="thirty-0" value = "30%" type="button" class="thirty">
+                            <input id="fourty-0" value = "40%" type="button" class="fourty inline"> 
                         </td>
-                        <td>{{  form.modifier(id='modifier-0', class='form-control w-75')  }}</td>
-                        <td>{{  form.date(id='date-0', class='datepicker form-control', placeholder="DD/MM/YYYY")  }}</td>
+                        <td>{{  form.modifier(id='modifier-0', class='modifier form-control w-75')  }}</td>
+                        <td>{{  form.date(id='date-0', class='date datepicker form-control', placeholder="DD/MM/YYYY")  }}</td>
                         <td>
-                            <input id="btnDel_0" value="Delete" type="button" style="width:100px" class="remove">
-                            <input id="btnDel_0" value="Clone" type="button" style="width:100px" class="clone">
+                            <input id="delete-0" value="Delete" type="button" style="width:100px" class="remove">
+                            <input id="clone-0" value="Clone" type="button" style="width:100px" class="clone">
                         </td>
                     </tr>
                 </tbody>
             </table>
-        <!-- </div> -->
+            <br>
         <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
         <br><br>
         <div>{{ form.submit }}</div>
@@ -81,6 +80,8 @@ $(document).ready(function(){
     $(document).on("click", "#download_invoice", function(){
         $('head').append('<meta http-equiv="refresh" content="1;url=/download-invoice/' + Math.floor(Math.random() * 10000) + '"/>');
         })
+
+
     function addShow(data) {
       $('#result').text(data.result);
       if(data.result =='success'){
@@ -88,7 +89,9 @@ $(document).ready(function(){
       }
     }
 
+
     $('#NewOrderForm').on('submit', addSubmit);
+
 
     $.ajaxSetup({
             beforeSend: function(xhr, settings) {
@@ -97,6 +100,7 @@ $(document).ready(function(){
                 }
             }
         })
+
 
     var regex = /^((?=\S*['-])([a-zA-Z'-]+))([0-9][0-9]?)+$/i;
     var regex_2 = /^(.*)(\d)+$/i;
@@ -126,7 +130,7 @@ $(document).ready(function(){
                  } 
                  if (this.className.includes("thirty") || (this.className.includes("fourty"))){
                     this.style.backgroundColor = "white";
-                 } 
+                 }   
             }            
             )        
         }
@@ -152,6 +156,22 @@ $(document).ready(function(){
                  } 
                  if (this.className.includes("thirty") || (this.className.includes("fourty"))){
                     this.style.backgroundColor = "white";
+                    this.style.display = "none";
+                 } 
+                 if (this.className.includes("modifier")){
+                    this.style.display = "none";
+                 } 
+                 if (this.className.includes("value")){
+                    this.style.display = "none";
+                 } 
+                 if (this.className.includes("date")){
+                    this.style.display = "none";
+                 } 
+                 if (this.className.includes("clone")){
+                    this.style.display = "none";
+                 } 
+                 if (this.className.includes("row")){
+                    this.remove();
                  } 
             }            
             )
@@ -164,6 +184,16 @@ $(document).ready(function(){
             $('.remove').show();
         }
         $(document).scrollTop($(document).height());
+        var row_number =  $(".clonedInput").length;
+        // console.log(typeof row_number)
+        // row_number.toString()
+        var n = row_number.toString();
+        // console.log(typeof n)
+        // console.log("row-" + cloneIndex)
+        var row_index = cloneIndex - 1
+        console.log("#clonedInput" + row_index)
+        $("#clonedInput" + row_index ).prepend('<th class="row" scope="row">' + cloneIndex + '</th>')
+        // $('#thirty-' + cloneIndex).hide()
     }
 
 
@@ -190,8 +220,8 @@ $(document).ready(function(){
             edit: true,
             last: percent
             };
-        console.log(value_edit);
     }
+
 
     function subtractPremium(object, id){
         current_value = value_edit[id].value;
@@ -203,8 +233,8 @@ $(document).ready(function(){
             value: current_value,
             edit: false,
         }
-        console.log(value_edit);
     }
+
 
     function replacePremium(object, id, percent){
         original_value = value_edit[id].value;
@@ -218,8 +248,8 @@ $(document).ready(function(){
             edit: true,
             last: percent
             };
-        console.log(value_edit);
     }
+
 
     function checkState(object, id, percent){    
 	    if (typeof value_edit[id] !== 'undefined'){
@@ -248,7 +278,6 @@ $(document).ready(function(){
         checkState(object, id, percent)
     })
 
-    
 
     $(document).on('click', '.fourty', function(){
         var percent = 1.4;
@@ -259,30 +288,39 @@ $(document).ready(function(){
     })
 
 
-    $('.thirty').hide();
-	$('.fourty').hide();
     var sibling_of_value = null; 
+
+
     $(document).on('change', '.treatment',function() {
         $('.datepicker' ).datepicker({dateFormat: 'dd.mm.yy'});
-	    	$('.thirty').show()
-	    	$('.fourty').show()
-		    sibling_of_value = $(this);
-            if($(this).val()!= 0){
-                $.getJSON('/get-value', {
-        	        item: $(this).val()			
-                }, function(data) {
-                        $(sibling_of_value).parent().parent().children().children(".value").val(data.value.toFixed(2));
-                    });
+        $(this).parent().siblings().find('.value').show()
+        $(this).parent().siblings().find('.thirty').show()
+        $(this).parent().siblings().find('.fourty').show()
+        $(this).parent().siblings().find('.date').show()
+        $(this).parent().siblings().find('.modifier').show()
+        $(this).parent().siblings().find('.clone').show()
+		sibling_of_value = $(this);
+        if($(this).val()!= 0){
+            $.getJSON('/get-value', {
+                item: $(this).val()			
+            }, function(data) {
+                $(sibling_of_value).parent().parent().children().children(".value").val(data.value.toFixed(2));
+                });
             }
             else{
                 $(sibling_of_value).parent().parent().children().children(".value").val("");
             }
-      		
-      return false;
+        return false;
     });
-
+    $("#clonedInput0").prepend('<th class="row" scope="row">1</th>')
+    $('#date-0').hide();
+    $('#value-0').hide();
+    $('#modifier-0').hide();
+    $('#clone-0').hide();
+    $('#thirty-0').hide();
+    $('#fourty-0').hide();
     $('#date_invoice').datepicker({dateFormat: 'dd.mm.yy'})
-     $('#date_invoice').datepicker("setDate", new Date());
+    $('#date_invoice').datepicker("setDate", new Date());
     $(document).on("click", ".clone", clone);
     $(document).on("click", ".remove", remove);
     $(document).on("click", ".datepicker", function() {
@@ -290,7 +328,7 @@ $(document).ready(function(){
         $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" );
     });
 
-    if('{{treatments}}'){
+    if('{{treatments}}' !== 'None'){
         var treatments = '{{treatments}}'
         var t = treatments.split(",")
         var d = '{{dates}}'.split(",")
@@ -318,8 +356,13 @@ $(document).ready(function(){
             $('#date-' + index).datepicker("setDate", date);
             $('select#treatment-'+ (cloneIndex -1)).prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
             $('select#treatment-'+ (cloneIndex -2) + ' option[value='+t[index]+']').attr("selected",true);
-            $('.thirty').show()
-	    	$('.fourty').show()
+            $('#thirty-' + index).show()
+	    	$('#fourty-' + index).show()
+            $('#modifier-' + index).show()
+            $('#value-' + index).show()
+            $('#clone-' + index).show()
+            $('#date-' + index).show()
+
         })
     }
    });

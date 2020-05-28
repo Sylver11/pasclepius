@@ -78,18 +78,18 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-   # cursor.execute(sql_drop_table)
-   # cursor.execute(sql_drop_table_users)
+    cursor.execute(sql_drop_table)
+    cursor.execute(sql_drop_table_users)
     cursor.execute(sql_drop_table_invoice)
-   # cursor.execute(sql_create_table)
-   # cursor.execute(sql_create_table_users)
+    cursor.execute(sql_create_table)
+    cursor.execute(sql_create_table_users)
     cursor.execute(sql_create_table_invoice)
     data = pd.read_csv (os.getenv("CSV_URL"), delimiter=';')
     df = pd.DataFrame(data, columns= ['item','description','units','value','category', 'tariff'])
-   # sql_insert =  """INSERT INTO treatments (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
-   # for row in df.itertuples():
-   #     value = row.item, row.description, row.units, row.value, row.category, row.tariff
-   #     cursor.execute(sql_insert, value)
+    sql_insert =  """INSERT INTO treatments (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
+    for row in df.itertuples():
+        value = row.item, row.description, row.units, row.value, row.category, row.tariff
+        cursor.execute(sql_insert, value)
     cursor.close()
     conn.close()
 

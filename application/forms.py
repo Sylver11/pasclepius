@@ -105,7 +105,7 @@ class Patient_mva(FlaskForm):
     medical = StringField('Medical Aid')
     name = StringField(u'Full Name', validators=[DataRequired()])
     case = StringField(u'Case Number', validators=[DataRequired()])
-    po = IntegerField(u'PO', widget=NumberInput(min=111111,max=999999))
+    po = IntegerField(u'PO', validators=[DataRequired()]) #widget=NumberInput(min=111111,max=999999))
     tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
     date =  StringField(u'Invoice created', validators=[DataRequired()])
     submit = SubmitField('Create invoice')
