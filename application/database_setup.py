@@ -4,7 +4,7 @@ import os
 
 def setupTable():
     sql_drop_table = "DROP TABLE treatments"
-    sql_drop_table_invoice = "DROP TABLE andrea_invoice"
+    sql_drop_table_invoice = "DROP TABLE invoices"
     sql_drop_table_users = "DROP TABLE users"
     sql_create_table = """CREATE TABLE treatments (
         id int(11) NOT NULL AUTO_INCREMENT,
@@ -18,17 +18,8 @@ def setupTable():
         )AUTO_INCREMENT=1 ;"""
 
     sql_create_table_invoice = """CREATE TABLE invoices (
-        id MEDUIMINT NOT NULL AUTO_INCREMENT,
-        uuid_bin binary(16) NOT NULL,
-        uuid_text varchar(36) generated always as
-            (insert(
-                insert(
-                    insert(
-                        insert(hex(uuid_bin),9,0,'-'),
-                        14,0,'-'),
-                    19,0,'-'),
-                24,0,'-')
-            ) virtual,
+        id MEDIUMINT NOT NULL AUTO_INCREMENT,
+        uuid_text varchar(36) NOT NULL,
         name varchar(255) NOT NULL,
         date_created DATETIME NOT NULL,
         date_invoice DATETIME NOT NULL,
@@ -45,6 +36,7 @@ def setupTable():
         po int(11),
         submitted_on DATETIME,
         paid BOOLEAN NOT NULL DEFAULT false,
+        balance int(11),
         remind_me DATETIME,
         PRIMARY KEY (id));"""
 
@@ -86,18 +78,18 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute(sql_drop_table)
-    cursor.execute(sql_drop_table_users)
-    #cursor.execute(sql_drop_table_invoice)
-    cursor.execute(sql_create_table)
-    cursor.execute(sql_create_table_users)
-    #cursor.execute(sql_create_table_invoice)
+   # cursor.execute(sql_drop_table)
+   # cursor.execute(sql_drop_table_users)
+    cursor.execute(sql_drop_table_invoice)
+   # cursor.execute(sql_create_table)
+   # cursor.execute(sql_create_table_users)
+    cursor.execute(sql_create_table_invoice)
     data = pd.read_csv (os.getenv("CSV_URL"), delimiter=';')
     df = pd.DataFrame(data, columns= ['item','description','units','value','category', 'tariff'])
-    sql_insert =  """INSERT INTO treatments (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
-    for row in df.itertuples():
-        value = row.item, row.description, row.units, row.value, row.category, row.tariff
-        cursor.execute(sql_insert, value)
+   # sql_insert =  """INSERT INTO treatments (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
+   # for row in df.itertuples():
+   #     value = row.item, row.description, row.units, row.value, row.category, row.tariff
+   #     cursor.execute(sql_insert, value)
     cursor.close()
     conn.close()
 

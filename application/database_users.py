@@ -2,7 +2,7 @@ from application.db_utils import pool
 from datetime import datetime
 
 def checkUser(email):
-    sql = """SELECT password, email, title, name, phone, cell, fax, pob, city, country, bank_holder,
+    sql = """SELECT password, uuid_text, email, title, name, phone, cell, fax, pob, city, country, bank_holder,
     bank_account, bank_branch, bank, practice_name, practice_number,
     hpcna_number, qualification FROM users WHERE email = '{}'
     """.format(email)

@@ -3,7 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(UserMixin):
 
-    def __init__(self, id, name='', active=True):
+    def __init__(self, id, name='', uuid='', active=True):
+        self.uuid = uuid
         self.name = name
         self.id = id
         self.active = active

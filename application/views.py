@@ -22,7 +22,7 @@ import simplejson as json
 def load_user(id):
     data = checkUser(id)
     if data:
-        return User(id, data["name"])
+        return User(id, data["name"], data["uuid_text"])
 
 
 @app.route('/', methods=('GET', 'POST'))
@@ -75,7 +75,7 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
-    flash('You have been successfully logged out.')
+    flash('You have been logged out.')
     return redirect(url_for('login'))
 
 
@@ -123,7 +123,7 @@ def newInvoice(patient):
     medical = (session.get('PATIENT')["medical"])
     tariff = (session.get('PATIENT')["tariff"])
     date = session.get('PATIENT')['date']
-    form = getTreatmentForm(tariff) 
+    form = getTreatmentForm(tariff)
     if (medical == 'mva'):
         po = session.get('PATIENT')['po']
         case = session.get('PATIENT')["case"]
@@ -197,15 +197,17 @@ def generateInvoice():
         if 'url' in session['PATIENT']:
             url = session.get('PATIENT')['url']
             invoice_name = session.get('PATIENT')['invoice']
-            status = updateInvoice(treatments, dates, patient)
+            status = updateInvoice(current_user.uuid, treatments, dates, patient, date_invoice)
         else:
             date = session.get('PATIENT')['date']
-            index = get_index(medical, date)
+            index = get_index(current_user.uuid, medical, date)
             url = InvoicePath(patient, index)
             url = url.generate()
             invoice_name = InvoiceName(patient, index, modifier)
             invoice_name = invoice_name.generate()
-            status = add_invoice(patient, invoice_name, url, treatments, dates)
+            print(date_invoice)
+            status = add_invoice(patient, invoice_name, url, treatments, dates,
+                                date_invoice, current_user.uuid)
         if status:
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/application/swriter.py', json.dumps(treatments),
@@ -266,7 +268,7 @@ def getTreatmentName():
 def downloadInvoice(random):
     name = session.get('PATIENT')['name']
     date = session.get('PATIENT')['date']
-    url = getInvoiceURL(name, date)
+    url = getInvoiceURL(current_user.uuid, name, date)
     path = str(url['url']) + ".odt"
     return send_file(path, as_attachment=True)
 

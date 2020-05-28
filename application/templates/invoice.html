@@ -276,7 +276,8 @@ $(document).ready(function(){
       return false;
     });
 
-
+    $('#date_invoice').datepicker({dateFormat: 'dd.mm.yy'})
+            // $('#date-' + index).datepicker("setDate", date);
     $(document).on("click", ".clone", clone);
     $(document).on("click", ".remove", remove);
     $(document).on("click", ".datepicker", function() {

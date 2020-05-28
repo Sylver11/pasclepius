@@ -1,12 +1,12 @@
 from application.db_utils import pool
 from datetime import datetime
 
-def get_index(medical, date):
+def get_index(uuid, medical, date):
     date = datetime.strptime(date, '%d.%m.%Y')
     month = date.month
     year = date.year
-    sql = """SELECT COUNT(*) FROM andrea_invoice WHERE medical = '{}' AND YEAR
-    (date) = '{}' AND MONTH(date) = '{}'""".format(medical, year, month)
+    sql = """SELECT COUNT(*) FROM invoices WHERE uuid_text = '{}' AND  medical = '{}' AND YEAR
+    (date_created) = '{}' AND MONTH(date_created) = '{}'""".format(uuid, medical, year, month)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -40,10 +40,10 @@ def getPatient(name):
     conn.close()
     return patient_data
 
-def getInvoiceURL(name, date):
+def getInvoiceURL(uuid, name, date):
     date = datetime.strptime(date, '%d.%m.%Y')
-    sql = """SELECT url FROM andrea_invoice WHERE name = '{}' AND date =
-    '{}'""".format(name, date)
+    sql = """SELECT url FROM invoices WHERE uuid_text = '{}' AND name = '{}'
+    AND date_created = '{}'""".format(uuid, name, date)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -77,16 +77,16 @@ def getSingleInvoice(patient, date):
 
 
 
-def updateInvoice(treatments, dates, patient, date_invoice):
+def updateInvoice(uuid, treatments, dates, patient, date_invoice):
     name = patient['name']
     date = patient['date']
     treatments = ','.join(map(str, treatments))
     dates = ','.join(map(str, dates))
     date = datetime.strptime(date, '%d.%m.%Y')
-    #print(treatments)
-    print(date_invoice)
-    sql = """UPDATE andrea_invoice SET treatments = '{}', dates = '{}' WHERE
-    name = '{}' AND date = '{}'""".format(treatments, dates, name, date)
+    date_invoice = datetime.strptime(date_invoice[0], '%d.%m.%Y')
+    sql = """UPDATE invoices SET date_invoice = '{}', treatments = '{}', dates = '{}' WHERE
+    uuid_text = '{}' AND name = '{}' AND date_created =
+    '{}'""".format(date_invoice, treatments, dates, uuid, name, date)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -97,7 +97,7 @@ def updateInvoice(treatments, dates, patient, date_invoice):
 
 
 
-def add_invoice(patient, invoice, url, treatments, dates, date_invoice):
+def add_invoice(patient, invoice, url, treatments, dates, date_invoice, uuid):
     name = patient['name']
     date = patient['date']
     print(date_invoice)
@@ -116,16 +116,17 @@ def add_invoice(patient, invoice, url, treatments, dates, date_invoice):
         main = patient['main']
         dob = patient['dob']
         number = patient['number']
-
     date = datetime.strptime(date, '%d.%m.%Y')
-    print(date)
+    date_invoice = datetime.strptime(date_invoice[0], '%d.%m.%Y')
     treatments = ','.join(map(str, treatments))
     dates = ','.join(map(str, dates))
-    sql = """INSERT INTO andrea_invoice (name, date, medical, invoice, url,
+    print(uuid)
+    sql = """INSERT INTO invoices (uuid_text, name, date_created, date_invoice, medical, invoice, url,
     treatments, dates, tariff, main, dob, number, `case`, po)
-    VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}')
-    """.format(name, date, medical, invoice, url, treatments, dates, tariff, main, dob, number, case, po)
-    sql_check_duplicate = """ SELECT * FROM andrea_invoice WHERE name='{}' AND date='{}'""".format(name, date)
+    VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}')
+    """.format(uuid, name, date, date_invoice, medical, invoice, url, treatments, dates, tariff, main, dob, number, case, po)
+    sql_check_duplicate = """ SELECT * FROM invoices WHERE uuid_text='{}' AND
+    name='{}' AND date_created='{}'""".format(uuid, name, date)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql_check_duplicate)
