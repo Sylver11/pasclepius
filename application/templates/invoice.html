@@ -112,9 +112,8 @@ $(document).ready(function(){
 
 
     function clone() {
-        var clicked_item = $(this).parents(".clonedInput")
-        if (clicked_item.length == 1){
-            clicked_item.clone(true, true)
+        if ($(this).parents(".clonedInput").length == 1){
+            $(this).parents(".clonedInput").clone()
             .appendTo(".tbodyClone")
             .attr("id", "clonedInput" + cloneIndex)
             .find("*")
@@ -127,10 +126,26 @@ $(document).ready(function(){
                  if (this.className.includes("datepicker")){
                     this.value = ''
                  }  
+                 if (this.className.includes("value")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("thirty")){
+                    this.style.backgroundColor = "white";
+                 } 
+                 if (this.className.includes("fourty")){
+                    this.style.backgroundColor = "white";
+                 } 
             }            
             )
             var select_value = $(this).parent().parent().find('.treatment').children().children("option:selected").val()
-            $('#treatment-' + cloneIndex).val(select_value);      
+            $('#treatment-' + cloneIndex).val(select_value);  
+
+            $.getJSON('/get-value', {
+                item: select_value			
+            }, function(data) {
+                cloneIndex2 = cloneIndex - 1 
+                $('#value-' + cloneIndex2).val(data.value.toFixed(2));
+                });
         }
         else{
         $(".clonedInput").last().clone()
@@ -288,7 +303,10 @@ $(document).ready(function(){
     var sibling_of_value = null; 
 
 
-    $(document).on('change', '.treatment',function() {
+    $(document).on('change', '.treatment', newTreatment);
+
+
+    function newTreatment(event){
         $('.datepicker' ).datepicker({dateFormat: 'dd.mm.yy'});
         $(this).parent().siblings().find('.value').show()
         $(this).parent().siblings().find('.thirty').show()
@@ -308,8 +326,7 @@ $(document).ready(function(){
                 $(sibling_of_value).parent().parent().children().children(".value").val("");
             }
         return false;
-    });
-    // $("#clonedInput0").prepend('<th class="row" scope="row">1</th>')
+    };
     $('#date-0').hide();
     $('#value-0').hide();
     $('#modifier-0').hide();
