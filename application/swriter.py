@@ -297,13 +297,11 @@ def createTextInvoice(items, treatments, price, dates, patient, modifier,
     doc, text = setupConnection()
     doc, text = populateTopText(doc, text, data)
     doc, text = populateTopTable(doc, text, patient, data)
-    print(date_invoice)
     doc, text = populateMiddleTable(doc, text, patient, invoice_name,
                                     date_invoice)
     doc, text = populateTable(doc, text, items, treatments, price, dates, modifier)
     doc, text = populateBottomTable(doc, text, data)
     doc, text = configureBorders(doc, text, items)
-    print(data)
     saveDocument(doc, url)
 
 

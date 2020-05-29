@@ -89,7 +89,6 @@ def newPatient():
         session["PATIENT"] = form_mva.data
         return redirect('/patient/' + form_mva.name.data + '/new-invoice')
     elif request.method == 'POST' and form_psemas.validate_on_submit():
-        print("psemas runs")
         session["PATIENT"] = form_psemas.data
         return redirect('/patient/' + form_psemas.name.data + '/new-invoice')
     elif request.method == 'POST' and form_other.validate_on_submit():
@@ -106,7 +105,6 @@ def invoiceOption(patient):
     form_other = Patient_other()
     if request.method == 'POST' and form_mva.validate_on_submit():
         session["PATIENT"] = form_mva.data
-        print(form_mva.data)
         return redirect('/patient/' + form_mva.name.data + '/new-invoice')
     elif request.method == 'POST' and form_psemas.validate_on_submit():
         session["PATIENT"] = form_psemas.data
@@ -210,7 +208,6 @@ def generateInvoice():
             status = add_invoice(patient, invoice_name, url, treatments, dates,
                                 date_invoice, current_user.uuid)
         if status:
-            #print(patient)
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/application/swriter.py', json.dumps(treatments),
                             json.dumps(treatment_list), json.dumps(price),
