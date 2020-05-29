@@ -18,7 +18,7 @@ def get_index(uuid, medical, date):
 
 
 def liveSearch(uuid, name):
-    sql = """SELECT name FROM invoices WHERE uuid_text = '{}' AND name LIKE '{}%'
+    sql = """SELECT DISTINCT name FROM invoices WHERE uuid_text = '{}' AND name LIKE '{}%'
     """.format(uuid, name)
     conn = pool.connection()
     cursor = conn.cursor()

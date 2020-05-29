@@ -89,6 +89,7 @@ def newPatient():
         session["PATIENT"] = form_mva.data
         return redirect('/patient/' + form_mva.name.data + '/new-invoice')
     elif request.method == 'POST' and form_psemas.validate_on_submit():
+        print("psemas runs")
         session["PATIENT"] = form_psemas.data
         return redirect('/patient/' + form_psemas.name.data + '/new-invoice')
     elif request.method == 'POST' and form_other.validate_on_submit():
@@ -237,12 +238,9 @@ def liveSearchPatient():
 def knownInvoice():
     patient = request.args.get('patient')
     date = request.args.get('date')
-    #print(date)
     data =  getSingleInvoice(current_user.uuid, patient, date)
     d = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
     date_deutsch = d.strftime('%d.%m.%Y')
-    #print(date)
-    #print(date_deutsch)
     session["PATIENT"] = data
     session["PATIENT"]["date"]= date_deutsch
     return data

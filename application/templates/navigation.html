@@ -77,6 +77,7 @@
             }
         }
         
+        
         function addActive(x) {
             if (!x) return false;
             removeActive(x);
@@ -113,12 +114,15 @@
                 data: {username: name}, 
                 dataType: 'json',
                 success: function (returnData) {
-                    var arr = returnData
-                    var names = new Array(arr.length)
-                    for (i = 0; i < arr.length; i++) {
-                        names.fill(arr[i]['name'])
+                    if (returnData.length <= 5){
+                      var names = [], range = returnData.length;
                     }
-                    names = uniq_fast(names)
+                    else{
+                     var names = [], range = 5
+                    }
+                    for (i = 0; i < range; i++) {
+                        names[i] = returnData[i]['name']
+                    }
                     closeAllLists();
                     if (!val) { return false;}
                     currentFocus = -1;
@@ -139,6 +143,7 @@
                             a.appendChild(b);
                         }
                     }
+
 
             function closeAllLists(elmnt) {
                 var x = document.getElementsByClassName("autocomplete-items");
