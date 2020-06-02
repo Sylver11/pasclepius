@@ -229,7 +229,7 @@ def populateMiddleTable(doc, text, patient, invoice_name, date_invoice):
         cursor_middle_right = middle_table.createCursorByCellName("C1")
         cursor_middle_right.setPropertyValue( "ParaAdjust", RIGHT )
         cursor_middle_table_c1 = middle_table.getCellByName("C1")
-        cursor_middle_table_c1.setString("Date: " + str(patient['date']))
+        cursor_middle_table_c1.setString("Date: " + date_invoice[0])
         fourth_middle_table_text = middle_table.getCellByName("C2")
         fourth_middle_table_text.setString("Insurance: " + str(patient['medical']).upper())
         fifth_middle_table_text = middle_table.getCellByName("A3")
