@@ -35,6 +35,20 @@ def getTreatments(tariff, featured=None):
         return featured_result
 
 
+def searchTreatments(tariff, search):
+    sql = """SELECT * FROM treatments
+    WHERE tariff = '{}' AND (description LIKE '{}%' OR procedure LIKE
+    '{}%') GROUP BY(item)""".format(tariff, search, search)
+    connection = pool.connection()
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    print(result)
+    return result
+
+
 def getTreatmentByGroup(items, tariff):
     treatment_list=[]
     connection = pool.connection()
