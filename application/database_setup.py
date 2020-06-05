@@ -4,6 +4,7 @@ import os
 
 def setupTable():
     sql_drop_table = "DROP TABLE treatments"
+    sql_drop_table_namaf_orthopaedic_surgeons = "DROP TABLE namaf_orthopaedic_surgoens"
     sql_drop_table_invoice = "DROP TABLE invoices"
     sql_drop_table_users = "DROP TABLE users"
     sql_create_table = """CREATE TABLE treatments (
@@ -16,6 +17,25 @@ def setupTable():
         tariff varchar(255) NOT NULL,
         PRIMARY KEY (id)
         )AUTO_INCREMENT=1 ;"""
+
+
+    sql_create_table_namaf_orthopaedic_surgoens = """CREATE TABLE namaf_orthopaedic_surgoens  (
+        id int(11) NOT NULL AUTO_INCREMENT,
+        item int(11) NOT NULL,
+        description VARCHAR(255) NOT NULL,
+        procedure VARCHAR(255),
+        specialist_units int(11),
+        specialist_units_specification VARCHAR(255),
+        specialist_value decimal(10,2),
+        anaesthetic_units int(11),
+        anaesthetic_units_specification VARCHAR(255),
+        anaesthetic_value int(11),
+        category varchar(255),
+        sub_category varchar(255),
+        sub_sub_category varchar(255),
+        sub_sub_sub_category varchar(255)
+        tariff varchar(255) NOT NULL,
+        PRIMARY KEY (id));"""
 
     sql_create_table_invoice = """CREATE TABLE invoices (
         id MEDIUMINT NOT NULL AUTO_INCREMENT,
@@ -78,15 +98,32 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute(sql_drop_table)
-    cursor.execute(sql_drop_table_users)
-    cursor.execute(sql_drop_table_invoice)
-    cursor.execute(sql_create_table)
-    cursor.execute(sql_create_table_users)
-    cursor.execute(sql_create_table_invoice)
+    #cursor.execute(sql_drop_table)
+    #cursor.execute(sql_drop_table_users)
+    #cursor.execute(sql_drop_table_invoice)
+    #cursor.execute(sql_drop_table_namaf_prthopaedic_surgeons)
+    #cursor.execute(sql_create_table)
+    cursor.execute(sql_create_table_namaf_orthopaedic_surgoens)
+    #cursor.execute(sql_create_table_users)
+    #cursor.execute(sql_create_table_invoice)
     data = pd.read_csv (os.getenv("CSV_URL"), delimiter=';')
     df = pd.DataFrame(data, columns= ['item','description','units','value','category', 'tariff'])
     sql_insert =  """INSERT INTO treatments (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
+    df_namaf_orthopaedic_surgoens = pd.DataFrame(data, columns=
+                                                 ['item','description',
+                                                  'procedure','specialist_units',
+                                                  'specialist_value',
+                                                  'anaesthetic_units',
+                                                  'anaesthetic_units_specification',
+                                                  'anaesthetic_value', 'category',
+                                                  'sub_category', 'sub_sub_category',
+                                                  'sub_sub_sub_category',
+                                                  'note', 'tariff'])
+    sql_insert_namaf_orthopaedic_surgoens =  """INSERT INTO
+    namaf_orthopaedic_surgoens (item, description, procedure, specialist_units,
+    specialist_value, anaesthetic_units, anaesthetic_units_specification,
+    anaesthetic_value, category, sub_category, sub_sub_category,
+    sub_sub_sub_category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
     for row in df.itertuples():
         value = row.item, row.description, row.units, row.value, row.category, row.tariff
         cursor.execute(sql_insert, value)
