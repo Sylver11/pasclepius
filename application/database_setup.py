@@ -4,7 +4,7 @@ import os
 
 def setupTable():
     sql_drop_table = "DROP TABLE treatments"
-    sql_drop_table_namaf_orthopaedic_surgeons = "DROP TABLE namaf_orthopaedic_surgoens"
+    sql_drop_table_namaf_orthopaedic_surgeons = "DROP TABLE namaf_orthopaedic_surgeons"
     sql_drop_table_invoice = "DROP TABLE invoices"
     sql_drop_table_users = "DROP TABLE users"
     sql_create_table = """CREATE TABLE treatments (
@@ -19,7 +19,7 @@ def setupTable():
         )AUTO_INCREMENT=1 ;"""
 
 
-    sql_create_table_namaf_orthopaedic_surgoens = """CREATE TABLE namaf_orthopaedic_surgoens  (
+    sql_create_table_namaf_orthopaedic_surgeons = """CREATE TABLE namaf_orthopaedic_surgeons  (
         id MEDIUMINT NOT NULL AUTO_INCREMENT,
         item int(11) NOT NULL,
         description VARCHAR(500) NOT NULL,
@@ -103,17 +103,17 @@ def setupTable():
     #cursor.execute(sql_drop_table_invoice)
     cursor.execute(sql_drop_table_namaf_orthopaedic_surgeons)
     #cursor.execute(sql_create_table)
-    cursor.execute(sql_create_table_namaf_orthopaedic_surgoens)
+    cursor.execute(sql_create_table_namaf_orthopaedic_surgeons)
     #cursor.execute(sql_create_table_users)
     print(os.getenv("CSV_URL_NAMAF_ORTHOPAEDIC_SURGOENS"))
     #cursor.execute(sql_create_table_invoice)
     data = pd.read_csv (os.getenv("CSV_URL_NAMAF_ORTHOPAEDIC_SURGOENS"),
                         delimiter=';', skipinitialspace = True)
-    print(data)
+    #print(data)
 
     #df = pd.DataFrame(data, columns= ['item','description','units','value','category', 'tariff'])
     #sql_insert =  """INSERT INTO treatments (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
-    df_namaf_orthopaedic_surgoens = pd.DataFrame(data, columns=
+    df_namaf_orthopaedic_surgeons = pd.DataFrame(data, columns=
                                                  ['item','description',
                                                   'procedure','specialist_units',
                                                   'specialist_units_specification',
@@ -123,9 +123,9 @@ def setupTable():
                                                   'sub_category', 'sub_sub_category',
                                                   'sub_sub_sub_category',
                                                   'note', 'tariff'])
-    df_namaf_orthopaedic_surgoens = df_namaf_orthopaedic_surgoens.where(pd.notnull(df_namaf_orthopaedic_surgoens), None)
-    sql_insert_namaf_orthopaedic_surgoens =  """INSERT INTO
-    namaf_orthopaedic_surgoens (item, description, `procedure`, specialist_units,
+    df_namaf_orthopaedic_surgeons = df_namaf_orthopaedic_surgeons.where(pd.notnull(df_namaf_orthopaedic_surgeons), None)
+    sql_insert_namaf_orthopaedic_surgeons =  """INSERT INTO
+    namaf_orthopaedic_surgeons (item, description, `procedure`, specialist_units,
     specialist_units_specification, specialist_value, anaesthetic_units,
     anaesthetic_value, category, sub_category, sub_sub_category,
     sub_sub_sub_category, note, tariff)
@@ -135,13 +135,13 @@ def setupTable():
     #    value = row.item, row.description, row.units, row.value, row.category, row.tariff
     #    cursor.execute(sql_insert, value)
 
-    for row in df_namaf_orthopaedic_surgoens.itertuples():
+    for row in df_namaf_orthopaedic_surgeons.itertuples():
         value = row.item, row.description, row.procedure, row.specialist_units, row.specialist_units_specification, row.specialist_value, row.anaesthetic_units, row.anaesthetic_value, row.category, row.sub_category, row.sub_sub_category, row.sub_sub_sub_category, row.note, row.tariff
-        print(type(row.specialist_units))
+       # print(type(row.specialist_units))
         #print(row.specialist_value)
         #print(row.anaesthetic_units)
         #print(row.specialist_value)
-        cursor.execute(sql_insert_namaf_orthopaedic_surgoens, value)
+        cursor.execute(sql_insert_namaf_orthopaedic_surgeons, value)
          #   """INSERT INTO namaf_orthopaedic_surgoens (item,
          #              description, `procedure`, specialist_units,
          #              specialist_value, anaesthetic_units,

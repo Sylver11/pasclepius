@@ -4,10 +4,14 @@ import os
 
 def getValueTreatments(item, tariff):
     sql = """SELECT value FROM treatments WHERE item = {} AND tariff = '{}'""".format(item, tariff)
+    if 'namaf_orthopaedic_surgeons' in tariff:
+        sql = """SELECT specialist_value FROM namaf_orthopaedic_surgeons WHERE
+        description = '{}' AND tariff = '{}' """.format(item, tariff)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
     filtered_result = cursor.fetchone()
+    #print(filtered_result)
     cursor.close()
     conn.close()
     return filtered_result
@@ -35,10 +39,12 @@ def getTreatments(tariff, featured=None):
         return featured_result
 
 
-def searchTreatments(tariff, search):
-    sql = """SELECT * FROM treatments
-    WHERE tariff = '{}' AND (description LIKE '{}%' OR procedure LIKE
-    '{}%') GROUP BY(item)""".format(tariff, search, search)
+def liveSearchTreatments(search, tariff):
+    print(search)
+    print(tariff)
+    sql = """SELECT * FROM namaf_orthopaedic_surgeons
+    WHERE tariff = '{}' AND (description LIKE '{}%' OR `procedure` LIKE
+    '{}%')""".format(tariff, search, search)
     connection = pool.connection()
     cursor = connection.cursor()
     cursor.execute(sql)

@@ -3,7 +3,7 @@ from flask import current_app as app
 from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file, flash
 from werkzeug.urls import url_parse
 from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm, RegistrationForm, LoginForm
-from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup
+from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup, liveSearchTreatments
 from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch, getPatient
 from application.database_users import addUser, checkUser
 from application.url_generator import InvoicePath
@@ -229,6 +229,17 @@ def liveSearchPatient():
     value_json = json.dumps(data)
     return value_json
 
+@app.route('/live-search-treatment',methods=['GET','POST'])
+@login_required
+def liveSearchTreatment():
+    treatment = request.args.get('treatment')
+    tariff = session.get('PATIENT')['tariff']
+    data = liveSearchTreatments(treatment, tariff)
+    value_json = json.dumps(data)
+    return value_json
+
+
+
 
 @app.route('/set-known-invoice',methods=['GET','POST'])
 @login_required
@@ -247,10 +258,17 @@ def knownInvoice():
 @login_required
 def getValue():
     tariff = session.get('PATIENT')["tariff"]
-    item = request.args.get('item', 0, type=int)
-    value = getValueTreatments(item, tariff)
-    value_json = json.dumps({'value' : Decimal(value['value'])}, use_decimal=True)
-    return value_json
+    if 'namaf_orthopaedic_surgeons' in tariff:
+        item = request.args.get('item')
+        value = getValueTreatments(item, tariff)
+        value_json = json.dumps({'value' :
+                                 Decimal(value['specialist_value'])}, use_decimal=True)
+        return value_json
+    else:
+        item = request.args.get('item', 0, type=int)
+        value = getValueTreatments(item, tariff)
+        value_json = json.dumps({'value' : Decimal(value['value'])}, use_decimal=True)
+        return value_json
 
 
 @app.route('/get-treatment-name',methods=['GET','POST'])

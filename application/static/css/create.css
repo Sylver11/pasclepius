@@ -3,6 +3,13 @@
     position: relative;
     display: inline-block;
   }
+
+  .autocomplete2 {
+    /*the container must be positioned relative:*/
+    position: relative;
+    display: inline-block;
+  }
+
   input {
     border: 1px solid transparent;
     background-color: #f1f1f1;
@@ -28,7 +35,24 @@
     left: 0;
     right: 0;
   }
+  .autocomplete-items2 {
+    /* position: absolute; */
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    /*position the autocomplete items to be the same width as the container:*/
+    top: 100%;
+    left: 0;
+    right: 0;
+  }
   .autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+  }
+  .autocomplete-items2 div {
     padding: 10px;
     cursor: pointer;
     background-color: #fff;
