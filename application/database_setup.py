@@ -22,18 +22,18 @@ def setupTable():
     sql_create_table_namaf_orthopaedic_surgoens = """CREATE TABLE namaf_orthopaedic_surgoens  (
         id MEDIUMINT NOT NULL AUTO_INCREMENT,
         item int(11) NOT NULL,
-        description VARCHAR(255) NOT NULL,
-        `procedure` VARCHAR(255),
-        specialist_units int(11),
+        description VARCHAR(500) NOT NULL,
+        `procedure` VARCHAR(500),
+        specialist_units decimal(10,2),
         specialist_units_specification VARCHAR(255),
         specialist_value decimal(10,2),
-        anaesthetic_units int(11),
-        anaesthetic_units_specification VARCHAR(255),
-        anaesthetic_value int(11),
+        anaesthetic_units decimal(10,2),
+        anaesthetic_value decimal(10,2),
         category varchar(255),
         sub_category varchar(255),
         sub_sub_category varchar(255),
         sub_sub_sub_category varchar(255),
+        note varchar(255),
         tariff varchar(255) NOT NULL,
         PRIMARY KEY (id));"""
 
@@ -101,30 +101,32 @@ def setupTable():
     #cursor.execute(sql_drop_table)
     #cursor.execute(sql_drop_table_users)
     #cursor.execute(sql_drop_table_invoice)
-    #cursor.execute(sql_drop_table_namaf_prthopaedic_surgeons)
+    cursor.execute(sql_drop_table_namaf_orthopaedic_surgeons)
     #cursor.execute(sql_create_table)
-    #cursor.execute(sql_create_table_namaf_orthopaedic_surgoens)
+    cursor.execute(sql_create_table_namaf_orthopaedic_surgoens)
     #cursor.execute(sql_create_table_users)
     print(os.getenv("CSV_URL_NAMAF_ORTHOPAEDIC_SURGOENS"))
     #cursor.execute(sql_create_table_invoice)
     data = pd.read_csv (os.getenv("CSV_URL_NAMAF_ORTHOPAEDIC_SURGOENS"),
                         delimiter=';', skipinitialspace = True)
     print(data)
+
     #df = pd.DataFrame(data, columns= ['item','description','units','value','category', 'tariff'])
     #sql_insert =  """INSERT INTO treatments (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
     df_namaf_orthopaedic_surgoens = pd.DataFrame(data, columns=
                                                  ['item','description',
                                                   'procedure','specialist_units',
+                                                  'specialist_units_specification',
                                                   'specialist_value',
                                                   'anaesthetic_units',
-                                                  'anaesthetic_units_specification',
                                                   'anaesthetic_value', 'category',
                                                   'sub_category', 'sub_sub_category',
                                                   'sub_sub_sub_category',
                                                   'note', 'tariff'])
+    df_namaf_orthopaedic_surgoens = df_namaf_orthopaedic_surgoens.where(pd.notnull(df_namaf_orthopaedic_surgoens), None)
     sql_insert_namaf_orthopaedic_surgoens =  """INSERT INTO
-    namaf_orthopaedic_surgoens (item, description, procedure, specialist_units,
-    specialist_value, anaesthetic_units, anaesthetic_units_specification,
+    namaf_orthopaedic_surgoens (item, description, `procedure`, specialist_units,
+    specialist_units_specification, specialist_value, anaesthetic_units,
     anaesthetic_value, category, sub_category, sub_sub_category,
     sub_sub_sub_category, note, tariff)
     VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
@@ -134,14 +136,25 @@ def setupTable():
     #    cursor.execute(sql_insert, value)
 
     for row in df_namaf_orthopaedic_surgoens.itertuples():
-        value = row.item, row.description, row.procedure,
-        row.specialist_units, row.specialist_value,
-        row.anaesthetic_units, row.anaesthetic_units_specification,
-        row.anaesthetic_value, row.category, row.sub_category,
-        row.sub_sub_category, row.sub_sub_sub_category, row.note, row.tariff
-        print(row.item, row.description, row.procedure, row.specialist_units,
-              row.specialist_value, row.category, row.tariff)
+        value = row.item, row.description, row.procedure, row.specialist_units, row.specialist_units_specification, row.specialist_value, row.anaesthetic_units, row.anaesthetic_value, row.category, row.sub_category, row.sub_sub_category, row.sub_sub_sub_category, row.note, row.tariff
+        print(type(row.specialist_units))
+        #print(row.specialist_value)
+        #print(row.anaesthetic_units)
+        #print(row.specialist_value)
         cursor.execute(sql_insert_namaf_orthopaedic_surgoens, value)
+         #   """INSERT INTO namaf_orthopaedic_surgoens (item,
+         #              description, `procedure`, specialist_units,
+         #              specialist_value, anaesthetic_units,
+         #              anaesthetic_units_specification, anaesthetic_value,
+         #              category, sub_category, sub_sub_category,
+         #              sub_sub_sub_category, note, tariff)
+         #              VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}')""".format(row.item,
+         #              row.description, row.procedure, row.specialist_units,
+         #              row.specialist_value, row.anaesthetic_units,
+         #              row.anaesthetic_units_specification,
+         #              row.anaesthetic_value, row.category, row.sub_category,
+         #              row.sub_sub_category, row.sub_sub_sub_category,
+         #              row.note, row.tariff))
     cursor.close()
     conn.close()
 

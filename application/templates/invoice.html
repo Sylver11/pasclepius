@@ -25,6 +25,40 @@
             Invoice created: {{date}}</p>
         {% endif %}    
     <br>
+    {% if 'namaf_orthopaedic_surgeons' in tariff %}
+    <form autocomplete="off" id="namaf_orthopaedic_surgoens" class="form">   
+        {{ form.hidden_tag() }}
+        <div class="form-group float-right">
+        {{ form.date_invoice.label(for="date_invoice") }}
+        {{ form.date_invoice(class_="form-control") }}
+        </div>
+        <div class="treatmentsearch form-inline" autocomplete="off">
+            <input id="something" class="form-control mr-sm-2" name="treatment" type="search" placeholder="Search treatments">
+            <!-- <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> -->
+        </div>
+          <br><br>
+            <table class="table table-striped">
+                <tbody class="tbodyClone">
+                    <tr id="clonedInput0" class="clonedInput form-inline col-md-6">
+                        <th id="row-0" scope="row"><span class="num">1</span></th>
+                        <td class= 'col-md-6'>{{  form.treatments(id='treatment-0', class='treatment_orthopaedic_surgeons form-control')  }}</td>
+                        <td>{{  form.price(id='value-0', class='value form-control w-75')  }}</td>
+                        <td>{{  form.date(id='date-0', class='date datepicker form-control', placeholder="DD/MM/YYYY")  }}</td>
+                        <td>
+                            <input id="delete-0" value="Delete" type="button" style="width:100px" class="remove">
+                            <input id="clone-0" value="Clone" type="button" style="width:100px" class="clone">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+        <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
+        <br><br>
+        <div>{{ form.submit }}</div>
+        <span>Result: <span id="result"></span></span><span><input id="download_invoice" value="Download invoice" type="button" style="display:none;"></span>
+    </form> 
+    {% else %}
+    {{ tariff }}
     <form autocomplete="off" id="NewOrderForm" class="form">   
         {{ form.hidden_tag() }}
         <div class="form-group float-right">
@@ -55,12 +89,107 @@
         <br><br>
         <div>{{ form.submit }}</div>
         <span>Result: <span id="result"></span></span><span><input id="download_invoice" value="Download invoice" type="button" style="display:none;"></span>
-    </form>  
+    </form> 
+    {% endif%} 
     <br><br><br><br>
 </div>
 
 <script>
 $(document).ready(function(){
+
+    // function removeActive(x) {
+    //         for (var i = 0; i < x.length; i++) {
+    //             x[i].classList.remove("autocomplete-active");
+    //         }
+    //     }       
+        
+    //     function addActive(x) {
+    //         if (!x) return false;
+    //         removeActive(x);
+    //         if (currentFocus >= x.length) currentFocus = 0;
+    //         if (currentFocus < 0) currentFocus = (x.length - 1);
+    //         x[currentFocus].classList.add("autocomplete-active");
+    //     }
+
+
+    $(document).on("keyup", ".treatmentsearch", function (e) {
+        console.log("the keyup for treatments is runing")
+            e.preventDefault();
+            var currentFocus;
+            var input_element = document.getElementById("patient_name")
+            var url = "{{ url_for('liveSearchPatient') }}";
+            var a, b, i, val = input_element.value;
+            var name = input_element.value
+                $.ajax({
+                type: "GET",
+                url: url,
+                data: {username: name}, 
+                dataType: 'json',
+                success: function (returnData) {
+                    if (returnData.length <= 5){
+                      var names = [], range = returnData.length;
+                    }
+                    else{
+                     var names = [], range = 5
+                    }
+                    for (i = 0; i < range; i++) {
+                        names[i] = returnData[i]['name']
+                    }
+                    closeAllLists();
+                    if (!val) { return false;}
+                    currentFocus = -1;
+                    var a = document.createElement("DIV");
+                    a.setAttribute("id", "autocomplete-list");
+                    a.setAttribute("class", "autocomplete-items");
+                    input_element.parentNode.appendChild(a);
+                    for (i = 0; i < names.length; i++) {
+                        if (names[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                            var b = document.createElement("DIV");
+                            b.innerHTML = "<strong>" + names[i].substr(0, val.length) + "</strong>";
+                            b.innerHTML += names[i].substr(val.length);
+                            b.innerHTML += "<input type='hidden' value='" + names[i] + "'>";
+                            b.addEventListener("click", function(e) {
+                                input_element.value = this.getElementsByTagName("input")[0].value;
+                                closeAllLists();
+                            });
+                            a.appendChild(b);
+                        }
+                    }
+
+
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != input_element) {
+                    x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+
+                }
+            });
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     $('.treatment').prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
     function addSubmit(ev) {
         ev.preventDefault();   

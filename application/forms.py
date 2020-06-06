@@ -11,17 +11,28 @@ from application.database_users import checkDuplicateEmail
 
 def getTreatmentForm(tariff = None):
     class Treatment(FlaskForm):
-        treatments = SelectField(u'Treatments',coerce=int, validators=[DataRequired()] )
-        date = TextField('Date', validators=[DataRequired()])
-        price = DecimalField(u'Value')
-        modifier = SelectField(u'Modifier', choices= [(0, 'None'), (14,'Rendered hospital'),(13, 'Travelling cost')], default=0)
-        date_invoice = TextField('Invoice date', validators=[DataRequired()])
-        submit = SubmitField('Submit')
+        print(tariff)
+        if ('namaf_physio' in tariff):
+            treatments = SelectField(u'Treatments',coerce=int, validators=[DataRequired()] )
+            date = TextField('Date', validators=[DataRequired()])
+            price = DecimalField(u'Value')
+            modifier = SelectField(u'Modifier', choices= [(0, 'None'), (14,'Rendered hospital'),(13, 'Travelling cost')], default=0)
+            date_invoice = TextField('Invoice date', validators=[DataRequired()])
+            submit = SubmitField('Submit')
+        else:
+            print("in gettreatmentForm the surgeon thing is running")
+            treatments = TextField('Treatments')
+            date = TextField('Date', validators=[DataRequired()])
+            price = DecimalField(u'Value')
+            date_invoice =  TextField('Invoice date', validators=[DataRequired()])
+            submit = SubmitField('Submit')
+
         def initialise_SelectOption(self,list_ordered_by_category = None, featured_ordered_by_category = None,  *args, **kwargs):
             super(Treatment, self).__init__(*args, **kwargs)
-            self.treatments.choices = featured_ordered_by_category + list_ordered_by_category
+            if ('namaf_physio' in tariff):
+                self.treatments.choices = featured_ordered_by_category + list_ordered_by_category
 
-        def nestedObjects(something, filtered_result, featured_result):
+        def nestedObjects(self, filtered_result, featured_result):
             list_of_categories = []
             list_ordered_by_category = []
             featured_ordered_by_category = []
@@ -50,12 +61,14 @@ def getTreatmentForm(tariff = None):
             return list_ordered_by_category, featured_ordered_by_category
 
         def __init__(self, *args, **kwargs):
-            if(tariff is not None):
+            if('namaf_physio' in tariff):
                 featured = [501, 303, 314, 703, 702, 401, 405, 317, 503, 107, 901]
                 filtered_result = getTreatments(tariff)
                 featured_result = getTreatments(tariff, featured)
                 list_ordered_by_category, featured_ordered_by_category = self.nestedObjects(filtered_result, featured_result)
                 self.initialise_SelectOption(list_ordered_by_category = list_ordered_by_category, featured_ordered_by_category = featured_ordered_by_category)
+            else:
+                self.initialise_SelectOption()
     return Treatment()
 
 
@@ -111,7 +124,9 @@ class Patient_mva(FlaskForm):
                                                ("namaf_physio_2019",
                                                 "Namaf Physio 2019"),
                                                ("namaf_physio_2020",
-                                                "Namaf Physio 2020")],
+                                                "Namaf Physio 2020"),
+                                               ("namaf_orthopaedic_surgeons_2020",
+                                                "Namaf Orthopaedic Surgeons 2020")],
                          validators=[DataRequired()])
     date =  StringField(u'Invoice created', validators=[DataRequired()])
     submit = SubmitField('Create invoice')

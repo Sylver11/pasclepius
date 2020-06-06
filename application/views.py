@@ -27,7 +27,7 @@ def load_user(id):
 
 @app.route('/', methods=('GET', 'POST'))
 def home():
-    return render_template('index.html')
+    return render_template('index.html', title = 'PANAM - Medical Software')
 
 
 @app.route('/register', methods=['GET', 'POST'])
