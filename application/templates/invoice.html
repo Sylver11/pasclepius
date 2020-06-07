@@ -143,7 +143,6 @@ $(document).ready(function(){
                     var a = document.createElement("DIV");
                     a.setAttribute("id", "autocomplete-list2");
                     a.setAttribute("class", "autocomplete-items2");
-                    // input_element.parentNode.appendChild(a);
                     input_element.parentNode.insertBefore(a, input_element.nextSibling);
                     console.log(input_element.parentNode.nextSibling)
                     for (i = 0; i < names.length; i++) {
@@ -153,7 +152,8 @@ $(document).ready(function(){
                             b.innerHTML += names[i].substr(val.length);
                             b.innerHTML += "<input type='hidden' value='" + names[i] + "'>";
                             b.addEventListener("click", function(e) {
-                                next_empty_treatment_input = document.getElementById("treatment-0")
+                                cloneIndex_orthopaedic_surgeon = cloneIndex - 1 ;
+                                next_empty_treatment_input = document.getElementById("treatment-" + cloneIndex_orthopaedic_surgeon)
                                 input_element.value = '';
                                 next_empty_treatment_input.value = this.getElementsByTagName("input")[0].value;
                                 newTreatmentLiveSearch(next_empty_treatment_input)
