@@ -6,7 +6,7 @@ def getValueTreatments(item, tariff):
     sql = """SELECT value FROM treatments WHERE item = {} AND tariff = '{}'""".format(item, tariff)
     if 'namaf_orthopaedic_surgeons' in tariff:
         sql = """SELECT specialist_value FROM namaf_orthopaedic_surgeons WHERE
-        description = '{}' AND tariff = '{}' """.format(item, tariff)
+        item = '{}' AND tariff = '{}' """.format(item, tariff)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)

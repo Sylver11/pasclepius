@@ -30,23 +30,41 @@
         <form autocomplete="off" class="treatmentsearch">
             <input id="treatmentsearch" class="form-control mr-sm-2" name="treatment" type="search" placeholder="Search treatments">
         </form>
-    <form autocomplete="off" id="namaf_orthopaedic_surgoens" class="form ">   
+    <form autocomplete="off" id="namaf_orthopaedic_surgoens" >   
         {{ form.hidden_tag() }}
         <div class="form-group float-right">
         {{ form.date_invoice.label(for="date_invoice") }}
         {{ form.date_invoice(class_="form-control") }}
         </div>
           <br><br>
-            <table class="table table-striped">
+            <table style="width:100%">
+                <colgroup>
+                    <col span="1" style="width: 5%;">
+                    <col span="1" style="width: 10%;">
+                    <col span="1" style="width: 65%;">
+                    <col span="1" style="width: 5%;">
+                    <col span="1" style="width: 20%;">
+                    <col span="1" style="width: 10%;">
+                 </colgroup>
+                 <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Item</th>
+                      <th>Description</th>
+                      <th>Price</th>
+                      <th>Date</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
                 <tbody class="tbodyClone">
-                    <tr id="clonedInput0" class="clonedInput form-inline col-md-6">
+                    <tr id="clonedInput0" class="clonedInput">
                         <th id="row-0" scope="row"><span class="num">1</span></th>
-                        <td class= 'col-md-6'>{{  form.treatments(id='treatment-0', class='treatment_orthopaedic_surgeons form-control')  }}</td>
-                        <td>{{  form.price(id='value-0', class='value form-control w-75')  }}</td>
-                        <td>{{  form.date(id='date-0', class='date datepicker form-control', placeholder="DD/MM/YYYY")  }}</td>
+                        <td>{{  form.treatments(id='treatment-0', class='treatment_orthopaedic_surgeons')  }}</td>
+                        <td>{{  form.description(id='description-0', class='description')  }}</td>
+                        <td>{{  form.price(id='value-0', class='value')  }}</td>
+                        <td>{{  form.date(id='date-0', class='date datepicker', placeholder="DD/MM/YYYY")  }}</td>
                         <td>
                             <input id="delete-0" value="Delete" type="button" style="width:100px" class="remove">
-                            <input id="clone-0" value="Clone" type="button" style="width:100px" class="clone">
                         </td>
                     </tr>
                 </tbody>
@@ -161,7 +179,6 @@ $(document).ready(function(){
                         var middle_div = document.createElement("DIV");
                         var treatments_from_procedures = [], range = procedures_length;
                         var procedures_from_procedures = [], range = procedures_length;
-                        var y = document.createElement("DIV");
                         var arr_unique = [];
                         for(i = 0; i < procedures_length; i++){
                             procedures_from_procedures[i] = returnData.procedures[i]['procedure']
@@ -172,12 +189,63 @@ $(document).ready(function(){
                             found[i] = returnData.procedures.filter(function(single) {
 	                            return single.procedure == arr_unique[i];})
                             }
+                        let index_treatment_procedure = 0;
                         for (i = 0; i < arr_unique.length; i++){
                             var y = document.createElement("DIV");
-                            y.innerHTML += "<p>" + arr_unique[i] + "</p>"
+                            var category = returnData.procedures[i]['category'];
+                            var sub_category = returnData.procedures[i]['sub_category'];
+                            var sub_sub_category = returnData.procedures[i]['sub_sub_category']
+                            var sub_sub_sub_category = returnData.procedures[i]['sub_sub_sub_category']
+                            var procedure = returnData.procedures[i]['procedure']
+                            var item = returnData.procedures[i]['item']
+                            if(sub_category) {
+                                if(sub_sub_category) {
+                                    if(sub_sub_sub_category) {
+                                        y.innerHTML = category + "<ul><li>" + sub_category + "<ul><li>" + sub_sub_category + "<ul><li>" + sub_sub_category + "</li></ul></li></ul></li></ul>";
+                                    }
+                                    else {
+                                    y.innerHTML = category + "<ul><li>" + sub_category + "<ul><li>" + sub_sub_category + "</li></ul></li></ul>";
+                                    }
+                                }
+                                else {
+                                    y.innerHTML = category + "<ul><li>" + sub_category + "</li></ul>";
+                                }
+                            }
+                            else {
+                                y.innerHTML = category + "<br>";
+                            }
+
+                            y.innerHTML += "<strong>" + arr_unique[i].substr(0, val.length) + "</strong>";
+                            y.innerHTML += arr_unique[i].substr(val.length) + "<br>";
                             for(x=0; x < found[i].length; x++){
-                                y.innerHTML += "<input id='treatment-list-input-procedure" + x + "' value='" + found[i][x]['description'] + "'>";
-                                console.log(found[i][x]['description'])
+                                var input_field = document.createElement("INPUT");
+                                var paragraph_field = document.createElement("P");
+                                index_treatment_procedure++;
+                                paragraph_field.setAttribute("id", "procedure-list-description" + index_treatment_procedure)
+                                input_field.setAttribute("id", "treatment-list-input-procedure" + index_treatment_procedure)
+                                input_field.setAttribute("type", "hidden")
+                                input_field.value = found[i][x]['item']
+                                paragraph_field.textContent = found[i][x]['description']
+                                paragraph_field.setAttribute('class','input-fields-procedures')
+                                cloneIndex_orthopaedic_surgeon2 = cloneIndex - 1 ;
+                                next_empty_treatment_input = document.getElementById("treatment-" + cloneIndex_orthopaedic_surgeon2);
+
+                                (function(index){
+                                        paragraph_field.addEventListener("click", function() {
+                                            next_empty_treatment_input = document.getElementById("treatment-" + cloneIndex_orthopaedic_surgeon)
+                                            item_num = document.getElementById("treatment-list-input-procedure" + index).value
+                                            next_empty_treatment_input.value = item_num
+                                            description_procedures = document.getElementById("procedure-list-description" + index).textContent;
+                                            next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_procedures
+                                            input_element.value = '';
+                                            newTreatmentLiveSearch(next_empty_treatment_input)
+                                            closeAllLists();
+                                            clone()
+                                        })
+                                    })(index_treatment_procedure)
+
+                                y.appendChild(paragraph_field)
+                                y.appendChild(input_field)
                             }
                             middle_div.appendChild(y);
                         }
@@ -186,11 +254,13 @@ $(document).ready(function(){
                     for (i = 0; i < names.length; i++) {
                         if (names[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
                             var b = document.createElement("DIV");
+                            b.setAttribute('class','treatment-divs')
                             var category = returnData.treatments[i]['category'];
                             var sub_category = returnData.treatments[i]['sub_category'];
                             var sub_sub_category = returnData.treatments[i]['sub_sub_category']
                             var sub_sub_sub_category = returnData.treatments[i]['sub_sub_sub_category']
                             var procedure = returnData.treatments[i]['procedure']
+                            var item = returnData.treatments[i]['item']
                             if(sub_category) {
                                 if(sub_sub_category) {
                                     if(sub_sub_sub_category) {
@@ -210,19 +280,19 @@ $(document).ready(function(){
                             if (procedure){
                                 b.innerHTML += "<p style='font-style: italic;'>" + procedure + "</p>";
                             }
-                            b.innerHTML += "<strong>" + names[i].substr(0, val.length) + "</strong>";
-                            b.innerHTML += names[i].substr(val.length);
-                            b.innerHTML += "<input id='treatment-list-input" + i + "' type='hidden' value='" + names[i] + "'>";
-
+                            b.innerHTML += "<p id='treatment-list-description"+ i +"'><strong>" + names[i].substr(0, val.length) + "</strong>" + names[i].substr(val.length) + "</p>";
+                            b.innerHTML += "<input id='treatment-list-input" + i + "' type='hidden' value='" + item + "'>";
+                            cloneIndex_orthopaedic_surgeon = cloneIndex - 1 ;
+                            next_empty_treatment_input = document.getElementById("treatment-" + cloneIndex_orthopaedic_surgeon)
                             b.addEventListener("click", function(e) {
-                                cloneIndex_orthopaedic_surgeon = cloneIndex - 1 ;
-                                next_empty_treatment_input = document.getElementById("treatment-" + cloneIndex_orthopaedic_surgeon)
                                 input_element.value = '';
+                                description_text = document.getElementById("treatment-list-description"+ cloneIndex_orthopaedic_surgeon).textContent;
                                 next_empty_treatment_input.value = this.getElementsByTagName("input")[0].value;
+                                next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_text
                                 newTreatmentLiveSearch(next_empty_treatment_input)
                                 closeAllLists();
                                 clone()
-                            });
+                            }, false);
                             a.appendChild(b);
                         }
                     }
@@ -345,6 +415,9 @@ $(document).ready(function(){
                  if (this.className.includes("treatment")){
                     this.value = ''
                  } 
+                 if (this.className.includes("description")){
+                    this.value = ''
+                 } 
                  if (this.className.includes("value")){
                     this.value = ''
                  } 
@@ -388,7 +461,11 @@ $(document).ready(function(){
 
     function re_number(){
         $('table').find('tr').each(function(i, v) {
+            '{% if "namaf_orthopaedic_surgeons" in tariff %}'
+            $(v).find('span.num').text(i);
+            '{% else %}'
             $(v).find('span.num').text(i + 1);
+            '{% endif %}'
         });
     }
 
@@ -489,14 +566,14 @@ $(document).ready(function(){
         // console.log(element.parentNode.parentNode.childNodes)
         element.parentNode.parentNode.childNodes[5].childNodes[0].style.display = "block";
         element.parentNode.parentNode.childNodes[7].childNodes[0].style.display = "block";
-        element.parentNode.parentNode.childNodes[9].childNodes[1].style.display = "block";
+        element.parentNode.parentNode.childNodes[9].childNodes[0].style.display = "block";
         // console.log(element.value)
         if(element.value!= 0){
             $.getJSON('/get-value', {
                 item: element.value			
             }, function(data) {
-                // console.log(data)
-                element.parentNode.parentNode.childNodes[5].childNodes[0].value = data.value.toFixed(2)
+                //  console.log(element.parentNode.parentNode.childNodes)
+                element.parentNode.parentNode.childNodes[7].childNodes[0].value = data.value.toFixed(2)
                 // $(sibling_of_value).parent().parent().children().children(".value").val(data.value.toFixed(2));    
                 });
              }
