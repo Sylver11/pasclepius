@@ -113,14 +113,12 @@ $(document).ready(function(){
 
 
     $(document).on("keyup", ".treatmentsearch", function (e) {
-        console.log("the keyup for treatments is runing")
             e.preventDefault();
             var currentFocus;
             var input_element = document.getElementById("treatmentsearch")
             var url = "{{ url_for('liveSearchTreatment') }}";
             var a, b, i, val = input_element.value;
             var search_item = input_element.value
-            console.log(search_item)
                 $.ajax({
                 type: "GET",
                 url: url,
@@ -144,13 +142,36 @@ $(document).ready(function(){
                     a.setAttribute("id", "autocomplete-list2");
                     a.setAttribute("class", "autocomplete-items2");
                     input_element.parentNode.insertBefore(a, input_element.nextSibling);
-                    console.log(input_element.parentNode.nextSibling)
                     for (i = 0; i < names.length; i++) {
                         if (names[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
                             var b = document.createElement("DIV");
-                            b.innerHTML = "<strong>" + names[i].substr(0, val.length) + "</strong>";
+                            var category = returnData[i]['category'];
+                            var sub_category = returnData[i]['sub_category'];
+                            var sub_sub_category = returnData[i]['sub_sub_category']
+                            var sub_sub_sub_category = returnData[i]['sub_sub_sub_category']
+                            var procedure = returnData[i]['procedure']
+                            if(sub_category) {
+                                if(sub_sub_category) {
+                                    if(sub_sub_sub_category) {
+                                        b.innerHTML = category + "<ul><li>" + sub_category + "<ul><li>" + sub_sub_category + "<ul><li>" + sub_sub_category + "</li></ul></li></ul></li></ul>";
+                                    }
+                                    else {
+                                    b.innerHTML = category + "<ul><li>" + sub_category + "<ul><li>" + sub_sub_category + "</li></ul></li></ul>";
+                                    }
+                                }
+                                else {
+                                    b.innerHTML = category + "<ul><li>" + sub_category + "</li></ul>";
+                                }
+                            }
+                            else {
+                                b.innerHTML = category + "<br>";
+                            }
+                            if (procedure){
+                                b.innerHTML += "<p style='font-style: italic;'>" + procedure + "</p>";
+                            }
+                            b.innerHTML += "<strong>" + names[i].substr(0, val.length) + "</strong>";
                             b.innerHTML += names[i].substr(val.length);
-                            b.innerHTML += "<input type='hidden' value='" + names[i] + "'>";
+                            b.innerHTML += "<input id='treatment-list-input" + i + "' type='hidden' value='" + names[i] + "'>";
                             b.addEventListener("click", function(e) {
                                 cloneIndex_orthopaedic_surgeon = cloneIndex - 1 ;
                                 next_empty_treatment_input = document.getElementById("treatment-" + cloneIndex_orthopaedic_surgeon)
