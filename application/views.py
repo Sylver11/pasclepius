@@ -234,8 +234,11 @@ def liveSearchPatient():
 def liveSearchTreatment():
     treatment = request.args.get('treatment')
     tariff = session.get('PATIENT')['tariff']
-    data = liveSearchTreatments(treatment, tariff)
-    value_json = json.dumps(data)
+    data, data2 = liveSearchTreatments(treatment, tariff)
+    #print(data2)
+    value_json = json.dumps({'treatments' : data, 'procedures': data2})
+    #value_json_procedure = json.dumps(data2)
+    #print(value_json_procedure)
     return value_json
 
 

@@ -11,7 +11,6 @@ from application.database_users import checkDuplicateEmail
 
 def getTreatmentForm(tariff = None):
     class Treatment(FlaskForm):
-        print(tariff)
         if ('namaf_physio' in tariff):
             treatments = SelectField(u'Treatments',coerce=int, validators=[DataRequired()] )
             date = TextField('Date', validators=[DataRequired()])

@@ -40,19 +40,22 @@ def getTreatments(tariff, featured=None):
 
 
 def liveSearchTreatments(search, tariff):
-    print(search)
-    print(tariff)
+    #print(search)
+    #print(tariff)
     sql = """SELECT * FROM namaf_orthopaedic_surgeons
-    WHERE tariff = '{}' AND (description LIKE '{}%' OR `procedure` LIKE
-    '{}%')""".format(tariff, search, search)
+    WHERE tariff = '{}' AND description LIKE '{}%'""".format(tariff, search)
+    sql2 = """SELECT * FROM namaf_orthopaedic_surgeons
+    WHERE tariff = '{}' AND `procedure` LIKE '{}%'""".format(tariff, search)
     connection = pool.connection()
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchall()
+    cursor.execute(sql2)
+    result2 = cursor.fetchall()
     cursor.close()
     connection.close()
-    print(result)
-    return result
+   # print(result)
+    return result, result2
 
 
 def getTreatmentByGroup(items, tariff):

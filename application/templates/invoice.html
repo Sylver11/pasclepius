@@ -111,6 +111,21 @@ $(document).ready(function(){
             x[currentFocus].classList.add("autocomplete-active");
         }
 
+         function uniq_fast(a) {
+            var seen = {};
+            var out = [];
+            var len = a.length;
+            var j = 0;
+            for(var i = 0; i < len; i++) {
+                var item = a[i];
+                if(seen[item] !== 1) {
+                    seen[item] = 1;
+                    out[j++] = item;
+                    }
+                }
+            return out;
+        }
+
 
     $(document).on("keyup", ".treatmentsearch", function (e) {
             e.preventDefault();
@@ -125,15 +140,14 @@ $(document).ready(function(){
                 data: {treatment: search_item}, 
                 dataType: 'json',
                 success: function (returnData) {
-                    console.log(returnData)
-                    if (returnData.length <= 20){
-                      var names = [], range = returnData.length;
+                    if (returnData.treatments.length <= 20){
+                      var names = [], range = returnData.treatments.length;
                     }
                     else{
-                     var names = [], range = 5
+                     var names = [], range = 10
                     }
                     for (i = 0; i < range; i++) {
-                        names[i] = returnData[i]['description']
+                        names[i] = returnData.treatments[i]['description']
                     }
                     closeAllLists();
                     if (!val) { return false;}
@@ -142,14 +156,41 @@ $(document).ready(function(){
                     a.setAttribute("id", "autocomplete-list2");
                     a.setAttribute("class", "autocomplete-items2");
                     input_element.parentNode.insertBefore(a, input_element.nextSibling);
+                    procedures_length = returnData.procedures.length;
+                    if(procedures_length > 0){
+                        var middle_div = document.createElement("DIV");
+                        var treatments_from_procedures = [], range = procedures_length;
+                        var procedures_from_procedures = [], range = procedures_length;
+                        var y = document.createElement("DIV");
+                        var arr_unique = [];
+                        for(i = 0; i < procedures_length; i++){
+                            procedures_from_procedures[i] = returnData.procedures[i]['procedure']
+                            arr_unique = uniq_fast(procedures_from_procedures)
+                        }
+                        var found = [], range = arr_unique.length;
+                        for(i = 0; i < arr_unique.length; i++){
+                            found[i] = returnData.procedures.filter(function(single) {
+	                            return single.procedure == arr_unique[i];})
+                            }
+                        for (i = 0; i < arr_unique.length; i++){
+                            var y = document.createElement("DIV");
+                            y.innerHTML += "<p>" + arr_unique[i] + "</p>"
+                            for(x=0; x < found[i].length; x++){
+                                y.innerHTML += "<input id='treatment-list-input-procedure" + x + "' value='" + found[i][x]['description'] + "'>";
+                                console.log(found[i][x]['description'])
+                            }
+                            middle_div.appendChild(y);
+                        }
+                        a.appendChild(middle_div);    
+                    }
                     for (i = 0; i < names.length; i++) {
                         if (names[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
                             var b = document.createElement("DIV");
-                            var category = returnData[i]['category'];
-                            var sub_category = returnData[i]['sub_category'];
-                            var sub_sub_category = returnData[i]['sub_sub_category']
-                            var sub_sub_sub_category = returnData[i]['sub_sub_sub_category']
-                            var procedure = returnData[i]['procedure']
+                            var category = returnData.treatments[i]['category'];
+                            var sub_category = returnData.treatments[i]['sub_category'];
+                            var sub_sub_category = returnData.treatments[i]['sub_sub_category']
+                            var sub_sub_sub_category = returnData.treatments[i]['sub_sub_sub_category']
+                            var procedure = returnData.treatments[i]['procedure']
                             if(sub_category) {
                                 if(sub_sub_category) {
                                     if(sub_sub_sub_category) {
@@ -172,6 +213,7 @@ $(document).ready(function(){
                             b.innerHTML += "<strong>" + names[i].substr(0, val.length) + "</strong>";
                             b.innerHTML += names[i].substr(val.length);
                             b.innerHTML += "<input id='treatment-list-input" + i + "' type='hidden' value='" + names[i] + "'>";
+
                             b.addEventListener("click", function(e) {
                                 cloneIndex_orthopaedic_surgeon = cloneIndex - 1 ;
                                 next_empty_treatment_input = document.getElementById("treatment-" + cloneIndex_orthopaedic_surgeon)
@@ -201,22 +243,6 @@ $(document).ready(function(){
                 }
             });
         });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     $('.treatment').prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
@@ -460,16 +486,16 @@ $(document).ready(function(){
 
      
     function newTreatmentLiveSearch(element){
-        console.log(element.parentNode.parentNode.childNodes)
+        // console.log(element.parentNode.parentNode.childNodes)
         element.parentNode.parentNode.childNodes[5].childNodes[0].style.display = "block";
         element.parentNode.parentNode.childNodes[7].childNodes[0].style.display = "block";
         element.parentNode.parentNode.childNodes[9].childNodes[1].style.display = "block";
-        console.log(element.value)
+        // console.log(element.value)
         if(element.value!= 0){
             $.getJSON('/get-value', {
                 item: element.value			
             }, function(data) {
-                console.log(data)
+                // console.log(data)
                 element.parentNode.parentNode.childNodes[5].childNodes[0].value = data.value.toFixed(2)
                 // $(sibling_of_value).parent().parent().children().children(".value").val(data.value.toFixed(2));    
                 });
