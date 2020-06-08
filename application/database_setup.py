@@ -143,7 +143,6 @@ def populateTreatment():
     anaesthetic_value, category, sub_category, sub_sub_category,
     sub_sub_sub_category, note, tariff)
     VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-
     for row in df_namaf_physio.itertuples():
         value = row.item, row.description, row.units, row.value, row.category, row.tariff
         cursor.execute(sql_insert_namaf_physio, value)
