@@ -3,11 +3,11 @@ import pandas as pd
 import os
 
 def setupTable():
-    sql_drop_table = "DROP TABLE treatments"
+    sql_drop_table_namaf_physio = "DROP TABLE namaf_physio"
     sql_drop_table_namaf_orthopaedic_surgeons = "DROP TABLE namaf_orthopaedic_surgeons"
     sql_drop_table_invoice = "DROP TABLE invoices"
     sql_drop_table_users = "DROP TABLE users"
-    sql_create_table = """CREATE TABLE treatments (
+    sql_create_table_namaf_physio = """CREATE TABLE namaf_physio (
         id int(11) NOT NULL AUTO_INCREMENT,
         item int(11) NOT NULL,
         description LONGTEXT COLLATE utf8_bin NOT NULL,
@@ -16,7 +16,7 @@ def setupTable():
         category varchar(255) COLLATE utf8_bin NOT NULL,
         tariff varchar(255) NOT NULL,
         PRIMARY KEY (id)
-        )AUTO_INCREMENT=1 ;"""
+        ) ;"""
 
 
     sql_create_table_namaf_orthopaedic_surgeons = """CREATE TABLE namaf_orthopaedic_surgeons  (
@@ -98,26 +98,30 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-    #cursor.execute(sql_drop_table)
+    cursor.execute(sql_drop_table_namaf_physio)
     #cursor.execute(sql_drop_table_users)
     #cursor.execute(sql_drop_table_invoice)
-    #cursor.execute(sql_drop_table_namaf_orthopaedic_surgeons)
-    cursor.execute(sql_create_table)
+    cursor.execute(sql_drop_table_namaf_orthopaedic_surgeons)
+    cursor.execute(sql_create_table_namaf_physio)
     cursor.execute(sql_create_table_namaf_orthopaedic_surgeons)
-    cursor.execute(sql_create_table_users)
-    cursor.execute(sql_create_table_invoice)
+    #cursor.execute(sql_create_table_users)
+    #cursor.execute(sql_create_table_invoice)
     
     cursor.close()
     conn.close()
 
 
 def populateTreatment():
-    
+    conn = pool.connection()
+    cursor = conn.cursor()
+
     data = pd.read_csv (os.getenv("CSV_URL_NAMAF_ORTHOPAEDIC_SURGOENS"),
                         delimiter=';', skipinitialspace = True)
 
-    #df = pd.DataFrame(data, columns= ['item','description','units','value','category', 'tariff'])
-    #sql_insert =  """INSERT INTO treatments (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
+    data_physio = pd.read_csv (os.getenv("CSV_URL_NAMAF_PHYSIO"),
+                        delimiter=';', skipinitialspace = True)
+
+    df_namaf_physio = pd.DataFrame(data_physio, columns= ['item','description','units','value','category', 'tariff'])
     df_namaf_orthopaedic_surgeons = pd.DataFrame(data, columns=
                                                  ['item','description',
                                                   'procedure','specialist_units',
@@ -128,7 +132,11 @@ def populateTreatment():
                                                   'sub_category', 'sub_sub_category',
                                                   'sub_sub_sub_category',
                                                   'note', 'tariff'])
+    
     df_namaf_orthopaedic_surgeons = df_namaf_orthopaedic_surgeons.where(pd.notnull(df_namaf_orthopaedic_surgeons), None)
+    df_namaf_pyhsio = df_namaf_physio.where(pd.notnull(df_namaf_physio), None)
+
+    sql_insert_namaf_physio =  """INSERT INTO namaf_physio (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
     sql_insert_namaf_orthopaedic_surgeons =  """INSERT INTO
     namaf_orthopaedic_surgeons (item, description, `procedure`, specialist_units,
     specialist_units_specification, specialist_value, anaesthetic_units,
@@ -136,16 +144,12 @@ def populateTreatment():
     sub_sub_sub_category, note, tariff)
     VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-    #for row in df.itertuples():
-    #    value = row.item, row.description, row.units, row.value, row.category, row.tariff
-    #    cursor.execute(sql_insert, value)
+    for row in df_namaf_physio.itertuples():
+        value = row.item, row.description, row.units, row.value, row.category, row.tariff
+        cursor.execute(sql_insert_namaf_physio, value)
 
     for row in df_namaf_orthopaedic_surgeons.itertuples():
         value = row.item, row.description, row.procedure, row.specialist_units, row.specialist_units_specification, row.specialist_value, row.anaesthetic_units, row.anaesthetic_value, row.category, row.sub_category, row.sub_sub_category, row.sub_sub_sub_category, row.note, row.tariff
-       # print(type(row.specialist_units))
-        #print(row.specialist_value)
-        #print(row.anaesthetic_units)
-        #print(row.specialist_value)
         cursor.execute(sql_insert_namaf_orthopaedic_surgeons, value)
     cursor.close()
     conn.close()
@@ -154,5 +158,6 @@ if __name__ == '__main__':
     load_dotenv()
     from db_utils import pool
     setupTable()
+    populateTreatment()
 
 #mysqlimport --ignore-lines=1 --fields-terminated-by=\; --columns='item,description,units,value,category,tariff' --local -u root -p pasclepius /Users/justusvoigt/Documents/treatments.csv
