@@ -3,6 +3,7 @@ import os
 
 application = create_app()
 
+
 if __name__ == '__main__':
     application.secret_key = os.getenv("SECRET_KEY")
     application.config['SESSION_TYPE'] = 'filesystem'
