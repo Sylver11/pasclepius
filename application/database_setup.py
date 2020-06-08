@@ -101,15 +101,20 @@ def setupTable():
     #cursor.execute(sql_drop_table)
     #cursor.execute(sql_drop_table_users)
     #cursor.execute(sql_drop_table_invoice)
-    cursor.execute(sql_drop_table_namaf_orthopaedic_surgeons)
-    #cursor.execute(sql_create_table)
+    #cursor.execute(sql_drop_table_namaf_orthopaedic_surgeons)
+    cursor.execute(sql_create_table)
     cursor.execute(sql_create_table_namaf_orthopaedic_surgeons)
-    #cursor.execute(sql_create_table_users)
-    print(os.getenv("CSV_URL_NAMAF_ORTHOPAEDIC_SURGOENS"))
-    #cursor.execute(sql_create_table_invoice)
+    cursor.execute(sql_create_table_users)
+    cursor.execute(sql_create_table_invoice)
+    
+    cursor.close()
+    conn.close()
+
+
+def populateTreatment():
+    
     data = pd.read_csv (os.getenv("CSV_URL_NAMAF_ORTHOPAEDIC_SURGOENS"),
                         delimiter=';', skipinitialspace = True)
-    #print(data)
 
     #df = pd.DataFrame(data, columns= ['item','description','units','value','category', 'tariff'])
     #sql_insert =  """INSERT INTO treatments (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
@@ -142,19 +147,6 @@ def setupTable():
         #print(row.anaesthetic_units)
         #print(row.specialist_value)
         cursor.execute(sql_insert_namaf_orthopaedic_surgeons, value)
-         #   """INSERT INTO namaf_orthopaedic_surgoens (item,
-         #              description, `procedure`, specialist_units,
-         #              specialist_value, anaesthetic_units,
-         #              anaesthetic_units_specification, anaesthetic_value,
-         #              category, sub_category, sub_sub_category,
-         #              sub_sub_sub_category, note, tariff)
-         #              VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}')""".format(row.item,
-         #              row.description, row.procedure, row.specialist_units,
-         #              row.specialist_value, row.anaesthetic_units,
-         #              row.anaesthetic_units_specification,
-         #              row.anaesthetic_value, row.category, row.sub_category,
-         #              row.sub_sub_category, row.sub_sub_sub_category,
-         #              row.note, row.tariff))
     cursor.close()
     conn.close()
 
