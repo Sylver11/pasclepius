@@ -179,6 +179,7 @@ def continueInvoice(patient):
 @app.route('/generate-invoice', methods=['POST'])
 @login_required
 def generateInvoice():
+    print("/generate-invoice and function generateInvoice are being called") 
     dates = request.form.getlist('date')
     treatments = request.form.getlist('treatments')
     modifier = request.form.getlist('modifier')
@@ -191,8 +192,13 @@ def generateInvoice():
     url = ''
     invoice_name = ''
     form = getTreatmentForm(tariff)
+    print(form)
+    print("generate invoice is being called")
     if form.treatments.data:
+        print("form.treatment.data evaluates to true")
         treatment_list = getTreatmentByItem(treatments, tariff)
+        print("this should be the output of the treatment list:")
+        print(treatment_list)
         data = checkUser(current_user.id)
         if 'url' in session['PATIENT']:
             url = session.get('PATIENT')['url']

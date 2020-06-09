@@ -316,6 +316,7 @@ $(document).ready(function(){
 
 
     $('.treatment').prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
+    
     function addSubmit(ev) {
         ev.preventDefault();   
         if ($('form').data('submitted') === true) {
@@ -344,6 +345,7 @@ $(document).ready(function(){
 
 
     $('#NewOrderForm').on('submit', addSubmit);
+    $('#namaf_orthopaedic_surgoens').on('submit', addSubmit);
 
 
     $.ajaxSetup({
@@ -563,18 +565,14 @@ $(document).ready(function(){
 
      
     function newTreatmentLiveSearch(element){
-        // console.log(element.parentNode.parentNode.childNodes)
         element.parentNode.parentNode.childNodes[5].childNodes[0].style.display = "block";
         element.parentNode.parentNode.childNodes[7].childNodes[0].style.display = "block";
         element.parentNode.parentNode.childNodes[9].childNodes[0].style.display = "block";
-        // console.log(element.value)
         if(element.value!= 0){
             $.getJSON('/get-value', {
                 item: element.value			
             }, function(data) {
-                //  console.log(element.parentNode.parentNode.childNodes)
-                element.parentNode.parentNode.childNodes[7].childNodes[0].value = data.value.toFixed(2)
-                // $(sibling_of_value).parent().parent().children().children(".value").val(data.value.toFixed(2));    
+                element.parentNode.parentNode.childNodes[7].childNodes[0].value = data.value.toFixed(2)    
                 });
              }
             // else{
