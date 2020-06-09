@@ -270,15 +270,10 @@ def knownInvoice():
 @login_required
 def getValue():
     tariff = session.get('PATIENT')["tariff"]
-    # if 'namaf_orthopaedic_surgeons' in tariff:
-    #    item = request.args.get('item')
-    #    value = getValueTreatments(item, tariff)
-    #    value_json = json.dumps({'value' :
-    #                             Decimal(value['value'])}, use_decimal=True)
-    #    return value_json
     item = request.args.get('item', 0, type=int)
     value = getValueTreatments(item, tariff)
-    value_json = json.dumps({'value' : Decimal(value['value'])}, use_decimal=True)
+    value_json = json.dumps({'value' : Decimal(value['value']), 'description' :
+        value['description']}, use_decimal=True)
     return value_json
 
 

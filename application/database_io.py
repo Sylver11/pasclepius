@@ -3,7 +3,7 @@ import os
 
 
 def getValueTreatments(item, tariff):
-    sql = """SELECT value FROM namaf_tariffs WHERE item = {} AND tariff = '{}'""".format(item, tariff)
+    sql = """SELECT description, value FROM namaf_tariffs WHERE item = {} AND tariff = '{}'""".format(item, tariff)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)

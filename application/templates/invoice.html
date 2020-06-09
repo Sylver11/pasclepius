@@ -633,27 +633,34 @@ $(document).ready(function(){
             success: function(data) {
                 var data = $.parseJSON(data)
                 $('#value-' + index).val(data['value'].toFixed(2))
+                cloneIndex = index + 1
+                clone()
+                var date = parseDate(d[index])
+                function parseDate(str) {
+                    var m = str.match(/^(\d{1,2}).(\d{1,2}).(\d{4})$/);
+                    return (m) ? new Date(m[3], m[2]-1, m[1]) : null;
+                    }
+                $('#date-' + index).datepicker({dateFormat: 'dd.mm.yy'})
+                $('#date-' + index).datepicker("setDate", date);
+                '{% if "namaf_orthopaedic_surgeons" in tariff %}'
+                    treatment_input = document.getElementById("treatment-" + (cloneIndex -2))
+                    description_input = document.getElementById("description-" + (cloneIndex -2))
+                    treatment_input.value = t[index]
+                    description_input.value = data['description']
+                '{% else %}'
+                    $('select#treatment-'+ (cloneIndex -1)).prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
+                    $('select#treatment-'+ (cloneIndex -2) + ' option[value='+t[index]+']').attr("selected",true);
+                    $('#thirty-' + index).show()
+                    $('#fourty-' + index).show()
+                    $('#modifier-' + index).show()
+                '{% endif %}'
+                $('#value-' + index).show()
+                $('#clone-' + index).show()
+                $('#date-' + index).show()
+
                 return data;
                 }
             });
-            cloneIndex = index + 1
-            clone()
-            var date = parseDate(d[index])
-            function parseDate(str) {
-                var m = str.match(/^(\d{1,2}).(\d{1,2}).(\d{4})$/);
-                return (m) ? new Date(m[3], m[2]-1, m[1]) : null;
-                }
-            $('#date-' + index).datepicker({dateFormat: 'dd.mm.yy'})
-            $('#date-' + index).datepicker("setDate", date);
-            $('select#treatment-'+ (cloneIndex -1)).prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
-            $('select#treatment-'+ (cloneIndex -2) + ' option[value='+t[index]+']').attr("selected",true);
-            $('#thirty-' + index).show()
-	    	$('#fourty-' + index).show()
-            $('#modifier-' + index).show()
-            $('#value-' + index).show()
-            $('#clone-' + index).show()
-            $('#date-' + index).show()
-
         })
     }
    });
