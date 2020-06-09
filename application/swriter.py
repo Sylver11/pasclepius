@@ -162,8 +162,12 @@ def insertTextIntoCell( table, cellName, text, color = None ):
         cursor.setPropertyValue( "CharColor", color )
     tableText.setString( text )
 
-def populateTable(doc, text, items, treatments, price, dates, modifier):
+def populateTable(doc, text, items, treatments, price, dates, modifier=None):
     table, unitCount = createTable(doc, text, len(treatments))
+    if not modifier:
+        modifier=[]
+        for x in range(len(treatments)):
+            modifier.append('')
     for a, b, c, d, e in zip(enumerate(treatments), dates, items, price, modifier):
         if e == '14':
             insertTextIntoCell(table, "B" + str(a[0] + 2), str(c + " (0" + e + ")"))

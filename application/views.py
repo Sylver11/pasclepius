@@ -192,13 +192,13 @@ def generateInvoice():
     url = ''
     invoice_name = ''
     form = getTreatmentForm(tariff)
-    print(form)
-    print("generate invoice is being called")
+   # print(form)
+   # print("generate invoice is being called")
     if form.treatments.data:
-        print("form.treatment.data evaluates to true")
+       # print("form.treatment.data evaluates to true")
         treatment_list = getTreatmentByItem(treatments, tariff)
-        print("this should be the output of the treatment list:")
-        print(treatment_list)
+       # print("this should be the output of the treatment list:")
+       # print(treatment_list)
         data = checkUser(current_user.id)
         if 'url' in session['PATIENT']:
             url = session.get('PATIENT')['url']
@@ -206,6 +206,7 @@ def generateInvoice():
             status = updateInvoice(current_user.uuid, treatments, dates, patient, date_invoice)
         else:
             date = session.get('PATIENT')['date']
+           # print("the else statement is running")
             index = get_index(current_user.uuid, medical, date)
             url = InvoicePath(patient, index)
             url = url.generate()
@@ -213,6 +214,8 @@ def generateInvoice():
             invoice_name = invoice_name.generate()
             status = add_invoice(patient, invoice_name, url, treatments, dates,
                                 date_invoice, current_user.uuid)
+           # print(status)
+           # print(treatments, treatment_list, dates, price)
         if status:
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/application/swriter.py', json.dumps(treatments),
@@ -267,17 +270,16 @@ def knownInvoice():
 @login_required
 def getValue():
     tariff = session.get('PATIENT')["tariff"]
-    if 'namaf_orthopaedic_surgeons' in tariff:
-        item = request.args.get('item')
-        value = getValueTreatments(item, tariff)
-        value_json = json.dumps({'value' :
-                                 Decimal(value['specialist_value'])}, use_decimal=True)
-        return value_json
-    else:
-        item = request.args.get('item', 0, type=int)
-        value = getValueTreatments(item, tariff)
-        value_json = json.dumps({'value' : Decimal(value['value'])}, use_decimal=True)
-        return value_json
+    # if 'namaf_orthopaedic_surgeons' in tariff:
+    #    item = request.args.get('item')
+    #    value = getValueTreatments(item, tariff)
+    #    value_json = json.dumps({'value' :
+    #                             Decimal(value['value'])}, use_decimal=True)
+    #    return value_json
+    item = request.args.get('item', 0, type=int)
+    value = getValueTreatments(item, tariff)
+    value_json = json.dumps({'value' : Decimal(value['value'])}, use_decimal=True)
+    return value_json
 
 
 @app.route('/get-treatment-name',methods=['GET','POST'])

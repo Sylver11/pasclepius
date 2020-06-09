@@ -19,7 +19,7 @@ def getTreatmentForm(tariff = None):
             date_invoice = TextField('Invoice date', validators=[DataRequired()])
             submit = SubmitField('Submit')
         else:
-            print("in gettreatmentForm the surgeon thing is running")
+            #print("in gettreatmentForm the surgeon thing is running")
             treatments = TextField('Treatment')
             description = TextField('Description')
             date = TextField('Date', validators=[DataRequired()])

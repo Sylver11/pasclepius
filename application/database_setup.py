@@ -3,20 +3,9 @@ import pandas as pd
 import os
 
 def setupTable():
-    sql_drop_table_namaf_physio = "DROP TABLE namaf_physio"
     sql_drop_table_namaf_tariffs = "DROP TABLE namaf_tariffs"
     sql_drop_table_invoice = "DROP TABLE invoices"
     sql_drop_table_users = "DROP TABLE users"
-   # sql_create_table_namaf_physio = """CREATE TABLE namaf_physio (
-   #     id int(11) NOT NULL AUTO_INCREMENT,
-   #     item int(11) NOT NULL,
-   #     description LONGTEXT COLLATE utf8_bin NOT NULL,
-   #     units int(11) NOT NULL,
-   #     value decimal(10,2) NOT NULL,
-   #     category varchar(255) COLLATE utf8_bin NOT NULL,
-   #     tariff varchar(255) NOT NULL,
-   #     PRIMARY KEY (id)
-   #     ) ;"""
 
 
     sql_create_table_namaf_tariffs = """CREATE TABLE namaf_tariffs  (
@@ -36,6 +25,7 @@ def setupTable():
         note varchar(255),
         tariff varchar(255) NOT NULL,
         PRIMARY KEY (id));"""
+
 
     sql_create_table_invoice = """CREATE TABLE invoices (
         id MEDIUMINT NOT NULL AUTO_INCREMENT,
@@ -59,6 +49,7 @@ def setupTable():
         balance int(11),
         remind_me DATETIME,
         PRIMARY KEY (id));"""
+
 
     sql_create_table_users = """CREATE TABLE users (
         id MEDIUMINT NOT NULL AUTO_INCREMENT,
@@ -98,11 +89,9 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-    #cursor.execute(sql_drop_table_namaf_physio)
     #cursor.execute(sql_drop_table_users)
     #cursor.execute(sql_drop_table_invoice)
     cursor.execute(sql_drop_table_namaf_tariffs)
-    #cursor.execute(sql_create_table_namaf_physio)
     cursor.execute(sql_create_table_namaf_tariffs)
     #cursor.execute(sql_create_table_users)
     #cursor.execute(sql_create_table_invoice)
@@ -118,10 +107,6 @@ def populateTreatment():
     data = pd.read_csv (os.getenv("CSV_URL_NAMAF_TARIFFS"),
                         delimiter=';', skipinitialspace = True)
 
-   # data_physio = pd.read_csv (os.getenv("CSV_URL_NAMAF_PHYSIO"),
-   #                     delimiter=';', skipinitialspace = True)
-
-   # df_namaf_physio = pd.DataFrame(data_physio, columns= ['item','description','units','value','category', 'tariff'])
     df_namaf_tariffs = pd.DataFrame(data, columns=
                                                  ['item','description',
                                                   'procedure','units',
@@ -134,18 +119,13 @@ def populateTreatment():
                                                   'note', 'tariff'])
 
     df_namaf_tariffs = df_namaf_tariffs.where(pd.notnull(df_namaf_tariffs), None)
-   # df_namaf_pyhsio = df_namaf_physio.where(pd.notnull(df_namaf_physio), None)
 
-   # sql_insert_namaf_physio =  """INSERT INTO namaf_physio (item, description, units, value,category, tariff)  VALUES(%s,%s,%s,%s,%s,%s)"""
     sql_insert_namaf_tariffs =  """INSERT INTO
     namaf_tariffs (item, description, `procedure`, units,
     units_specification, value, anaesthetic_units,
     anaesthetic_value, category, sub_category, sub_sub_category,
     sub_sub_sub_category, note, tariff)
     VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-   # for row in df_namaf_physio.itertuples():
-  #      value = row.item, row.description, row.units, row.value, row.category, row.tariff
-   #     cursor.execute(sql_insert_namaf_physio, value)
 
     for row in df_namaf_tariffs.itertuples():
         value = row.item, row.description, row.procedure, row.units, row.units_specification, row.value, row.anaesthetic_units, row.anaesthetic_value, row.category, row.sub_category, row.sub_sub_category, row.sub_sub_sub_category, row.note, row.tariff
@@ -158,5 +138,3 @@ if __name__ == '__main__':
     from db_utils import pool
     setupTable()
     populateTreatment()
-
-#mysqlimport --ignore-lines=1 --fields-terminated-by=\; --columns='item,description,units,value,category,tariff' --local -u root -p pasclepius /Users/justusvoigt/Documents/treatments.csv
