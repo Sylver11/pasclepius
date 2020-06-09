@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired, Length, Email, Required, NumberRang
 from wtforms.widgets.html5 import NumberInput
 from wtforms.widgets import TextArea
 from wtforms import Form as NoCsrfForm
-from application.database_io import getTreatments
+from application.database_io import getTreatments, getAllTariffs
 from application.database_users import checkDuplicateEmail
 
 def getTreatmentForm(tariff = None):
@@ -19,7 +19,6 @@ def getTreatmentForm(tariff = None):
             date_invoice = TextField('Invoice date', validators=[DataRequired()])
             submit = SubmitField('Submit')
         else:
-            #print("in gettreatmentForm the surgeon thing is running")
             treatments = TextField('Treatment')
             description = TextField('Description')
             date = TextField('Date', validators=[DataRequired()])
@@ -116,18 +115,17 @@ class LoginForm(FlaskForm):
 
 class Patient_mva(FlaskForm):
     medical = StringField('Medical Aid')
+    tariffs = getAllTariffs()
+    choices = []
+    for x in tariffs:
+        _tariff = x['tariff']
+        tariff_ = _tariff.replace('_', ' ')
+        _tariff_ = tariff_.upper()
+        choices.append((_tariff, _tariff_))
     name = StringField(u'Full Name', validators=[DataRequired()])
     case = StringField(u'Case Number', validators=[DataRequired()])
     po = IntegerField(u'PO', validators=[DataRequired()]) #widget=NumberInput(min=111111,max=999999))
-    tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014",
-                                                "Namaf Physio 2014"),
-                                               ("namaf_physio_2019",
-                                                "Namaf Physio 2019"),
-                                               ("namaf_physio_2020",
-                                                "Namaf Physio 2020"),
-                                               ("namaf_orthopaedic_surgeons_2020",
-                                                "Namaf Orthopaedic Surgeons 2020")],
-                         validators=[DataRequired()])
+    tariff = SelectField(u'Tariff', choices = choices, validators=[DataRequired()])
     date =  StringField(u'Invoice created', validators=[DataRequired()])
     submit = SubmitField('Create invoice')
 
@@ -138,12 +136,14 @@ class Patient_psemas(FlaskForm):
     main = StringField(u'Main Member', validators=[DataRequired()])
     number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
     dob = StringField(u'Date of Birth', validators=[DataRequired()])
-    tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014",
-                                                "Namaf Physio 2014"),
-                                               ("namaf_physio_2019",
-                                                "Namaf Physio 2019"),
-                                               ("namaf_physio_2020",
-                                                "Namaf Physio 2020")],
+    tariffs = getAllTariffs()
+    choices = []
+    for x in tariffs:
+        _tariff = x['tariff']
+        tariff_ = _tariff.replace('_', ' ')
+        _tariff_ = tariff_.upper()
+        choices.append((_tariff, _tariff_))
+    tariff = SelectField(u'Tariff', choices = choices,
                          validators=[DataRequired()] )
     date =  StringField(u'Invoice created', validators=[DataRequired()])
     submit = SubmitField('Create invoice')
@@ -154,6 +154,14 @@ class Patient_other(FlaskForm):
     main = StringField(u'Main Member', validators=[DataRequired()])
     number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
     dob = StringField(u'Date of Birth', validators=[DataRequired()])
-    tariff = SelectField(u'Tariff', choices = [("namaf_physio_2014","Namaf Physio 2014"),("namaf_physio_2019", "Namaf Physio 2019"),("namaf_physio_2020", "Namaf Physio 2020")])
     date =  StringField(u'Invoice created', validators=[DataRequired()])
+    tariffs = getAllTariffs()
+    choices = []
+    for x in tariffs:
+        _tariff = x['tariff']
+        tariff_ = _tariff.replace('_', ' ')
+        _tariff_ = tariff_.upper()
+        choices.append((_tariff, _tariff_))
+    tariff = SelectField(u'Tariff', choices = choices,
+                         validators=[DataRequired()] )
     submit = SubmitField('Create invoice')

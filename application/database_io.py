@@ -1,6 +1,16 @@
 from application.db_utils import pool
 import os
 
+def getAllTariffs():
+    sql = """ SELECT tariff FROM namaf_tariffs GROUP BY tariff"""
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    tariffs = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return tariffs
+
 
 def getValueTreatments(item, tariff):
     sql = """SELECT description, value FROM namaf_tariffs WHERE item = {} AND tariff = '{}'""".format(item, tariff)

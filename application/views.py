@@ -164,22 +164,10 @@ def continueInvoice(patient):
         dob = session.get('PATIENT')['dob']
         return render_template('invoice.html', dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
 
-#@app.route('/set-patient', methods=('GET', 'POST'))
-#@login_required
-#def setPatient():
-#    form_mva = Patient_mva()
-#    form_psemas = Patient_psemas()
-#    form_other = Patient_other()
-#    if form_mva.validate_on_submit() or form_psemas.validate_on_submit() or form_other.validate_on_submit():
-#        session["PATIENT"] = request.values
-#        jsonData = jsonify(data={'name': str(form_mva.name.data)})
-#        return jsonData
-
 
 @app.route('/generate-invoice', methods=['POST'])
 @login_required
 def generateInvoice():
-    print("/generate-invoice and function generateInvoice are being called") 
     dates = request.form.getlist('date')
     treatments = request.form.getlist('treatments')
     modifier = request.form.getlist('modifier')
@@ -192,13 +180,8 @@ def generateInvoice():
     url = ''
     invoice_name = ''
     form = getTreatmentForm(tariff)
-   # print(form)
-   # print("generate invoice is being called")
     if form.treatments.data:
-       # print("form.treatment.data evaluates to true")
         treatment_list = getTreatmentByItem(treatments, tariff)
-       # print("this should be the output of the treatment list:")
-       # print(treatment_list)
         data = checkUser(current_user.id)
         if 'url' in session['PATIENT']:
             url = session.get('PATIENT')['url']
@@ -206,7 +189,6 @@ def generateInvoice():
             status = updateInvoice(current_user.uuid, treatments, dates, patient, date_invoice)
         else:
             date = session.get('PATIENT')['date']
-           # print("the else statement is running")
             index = get_index(current_user.uuid, medical, date)
             url = InvoicePath(patient, index)
             url = url.generate()
@@ -214,8 +196,6 @@ def generateInvoice():
             invoice_name = invoice_name.generate()
             status = add_invoice(patient, invoice_name, url, treatments, dates,
                                 date_invoice, current_user.uuid)
-           # print(status)
-           # print(treatments, treatment_list, dates, price)
         if status:
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/application/swriter.py', json.dumps(treatments),
@@ -238,19 +218,15 @@ def liveSearchPatient():
     value_json = json.dumps(data)
     return value_json
 
+
 @app.route('/live-search-treatment',methods=['GET','POST'])
 @login_required
 def liveSearchTreatment():
     treatment = request.args.get('treatment')
     tariff = session.get('PATIENT')['tariff']
     data, data2 = liveSearchTreatments(treatment, tariff)
-    #print(data2)
     value_json = json.dumps({'treatments' : data, 'procedures': data2})
-    #value_json_procedure = json.dumps(data2)
-    #print(value_json_procedure)
     return value_json
-
-
 
 
 @app.route('/set-known-invoice',methods=['GET','POST'])
