@@ -43,9 +43,35 @@ def updateUserPassword(email, password):
     return status
 
 
+def updateUserPractice(email, practice_name, practice_number, hpcna_number):
+    sql = """ UPDATE users SET practice_name = '{}', practice_number = '{}',
+    hpcna_number = '{}' WHERE email = '{}'""".format(practice_name,
+            practice_number, hpcna_number, email)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    cursor.close()
+    conn.close()
+    status = True
+    return status
+
+
+def updateUserBanking(email, bank_holder, bank_account, bank_branch, bank):
+    sql = """ UPDATE users SET bank_holder = '{}', bank_account = '{}',
+    bank_branch = '{}', bank = '{}' WHERE email = '{}'""".format(bank_holder,
+            bank_account, bank_branch, bank, email)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    cursor.close()
+    conn.close()
+    status = True
+    return status
+
+
+
 def updateUserPersonal(email, first_name, second_name, cell, pob, city,
         country,qualification,title=None,phone=None,fax=None,specialisation=None):
-    print(first_name)
     sql = """UPDATE users SET first_name = '{}', second_name = '{}', cell =
     '{}', pob = '{}', city = '{}', country = '{}', qualification = '{}', title
     = '{}', phone = '{}', fax = '{}', specialisation = '{}' WHERE

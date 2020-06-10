@@ -1,5 +1,12 @@
 {% include 'profile.html' %}
 {% block content %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
             <div class="tab-pane" id="personal">
                 <form method="post">

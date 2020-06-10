@@ -140,7 +140,7 @@ class updateBankingForm(FlaskForm):
                               validators=[DataRequired()])
     bank_account = StringField('Account number', validators=[DataRequired()])
     bank_holder =  StringField('Account holder', validators=[DataRequired()])
-
+    submit = SubmitField('Change Banking details')
 
 class updatePasswordForm(FlaskForm):
     password = PasswordField('New Password', [

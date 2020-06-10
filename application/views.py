@@ -5,7 +5,7 @@ from werkzeug.urls import url_parse
 from application.forms import updateBankingForm, updatePracticeForm,Patient_mva, Patient_psemas, Patient_other,getTreatmentForm, RegistrationForm, LoginForm, updatePasswordForm, updatePersonalForm
 from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup, liveSearchTreatments
 from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch, getPatient
-from application.database_users import addUser, checkUser, updateUserPassword, updateUserPersonal, updateUserPractice
+from application.database_users import addUser, checkUser, updateUserPassword, updateUserPersonal, updateUserPractice, updateUserBanking
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 from application.models import User, Password
@@ -148,8 +148,17 @@ def resetBanking():
     data = checkUser(current_user.id)
     form_banking = updateBankingForm()
     if request.method == 'POST' and form_banking.validate():
-        flash('Banking data  updated')
-    return render_template('reset_banking.html', form_banking=form_banking)
+        status = updateUserBanking(current_user.id,
+                form_banking.bank_holder.data,
+                form_banking.bank_account.data,
+                form_banking.bank_branch.data,
+                form_banking.bank.data)
+        if status:
+            flash('Banking data  updated')
+    return render_template('reset_banking.html', form_banking=form_banking,
+            bank_holder=data['bank_holder'], bank_account =
+            data['bank_account'], bank_branch = data['bank_branch'], bank =
+            data['bank'])
 
 
 
