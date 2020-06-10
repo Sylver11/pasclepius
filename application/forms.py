@@ -116,6 +116,9 @@ class updatePracticeForm(FlaskForm):
     submit = SubmitField('Change Practice Data')
 
 class updatePersonalForm(FlaskForm):
+    title = SelectField(u'Title', choices =
+                        [('',''),("dr","Dr"),("prof","Prof")],
+                        default = '')
     first_name = StringField('First name', validators=[DataRequired(Length(min=4,
                                                                      max=35))])
     second_name = StringField('Second name', validators=[DataRequired(Length(min=4,

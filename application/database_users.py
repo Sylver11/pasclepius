@@ -31,21 +31,34 @@ def checkDuplicateEmail(email):
     return status
 
 
-#def updateUser(treatments, dates, patient):
-#    name = patient['name']
-#    date = patient['date']
-#    treatments = ','.join(map(str, treatments))
-#    dates = ','.join(map(str, dates))
-#    date = datetime.strptime(date, '%d.%m.%Y')
-#    sql = """UPDATE andrea_invoice SET treatments = '{}', dates = '{}' WHERE
-#    name = '{}' AND date = '{}'""".format(treatments, dates, name, date)
-#    conn = pool.connection()
-#    cursor = conn.cursor()
-#    cursor.execute(sql)
-#    cursor.close()
-#    conn.close()
-#    status = True
-#    return status
+def updateUserPassword(email, password):
+    sql = """UPDATE users SET password = '{}' WHERE
+    email = '{}'""".format(password, email)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    cursor.close()
+    conn.close()
+    status = True
+    return status
+
+
+def updateUserPersonal(email, first_name, second_name, cell, pob, city,
+        country,qualification,title=None,phone=None,fax=None,specialisation=None):
+    print(first_name)
+    sql = """UPDATE users SET first_name = '{}', second_name = '{}', cell =
+    '{}', pob = '{}', city = '{}', country = '{}', qualification = '{}', title
+    = '{}', phone = '{}', fax = '{}', specialisation = '{}' WHERE
+    email = '{}'""".format(first_name, second_name, cell, pob, city, country,
+            qualification, title, phone, fax, specialisation,  email)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    cursor.close()
+    conn.close()
+    status = True
+    return status
+
 
 
 def addUser(title, first_name, second_name, email, password, phone, cell, fax, pob, city, country, bank_holder, bank_account, bank,
