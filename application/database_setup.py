@@ -64,7 +64,8 @@ def setupTable():
                 24,0,'-')
             ) virtual,
         title varchar(255) NOT NULL,
-        name varchar(255) NOT NULL,
+        first_name varchar(255) NOT NULL,
+        second_name varchar(255) NOT NULL,
         email varchar(100) NOT NULL,
         password varchar(255) NOT NULL,
         phone varchar(255),
@@ -89,13 +90,13 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-    #cursor.execute(sql_drop_table_users)
+    cursor.execute(sql_drop_table_users)
     #cursor.execute(sql_drop_table_invoice)
     cursor.execute(sql_drop_table_namaf_tariffs)
     cursor.execute(sql_create_table_namaf_tariffs)
-    #cursor.execute(sql_create_table_users)
+    cursor.execute(sql_create_table_users)
     #cursor.execute(sql_create_table_invoice)
-    
+
     cursor.close()
     conn.close()
 

@@ -1,15 +1,54 @@
 {% include 'profile.html' %}
 {% block content %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
             <div class="tab-pane" id="personal">
                 <form method="post">
                     {{ form_personal.hidden_tag() }}
                     <div class="form-group">
                         {{ form_personal.first_name.label }}
-                        {{ form_personal.first_name(class="form-control w-25 p-3") }}
+                        {{ form_personal.first_name(value=first_name, class="form-control w-25 p-3") }}
                     <div class="form-group">
                         {{ form_personal.second_name.label }}
-                        {{ form_personal.second_name(class="form-control w-25 p-3") }}
+                        {{ form_personal.second_name(value=second_name, class="form-control w-25 p-3") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_personal.phone.label }}
+                        {{ form_personal.phone(value=phone,class="form-control w-25 p-3") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_personal.cell.label }}
+                        {{ form_personal.cell(value=cell, class="form-control w-25 p-3") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_personal.fax.label }}
+                        {{ form_personal.fax(value=fax, class="form-control w-25 p-3") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_personal.pob.label }}
+                        {{ form_personal.pob(value=pob, class="form-control w-25 p-3") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_personal.city.label }}
+                        {{ form_personal.city(value= city, class="form-control w-25 p-3") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_personal.country.label }}
+                        {{ form_personal.country(value=country, class="form-control w-25 p-3") }}
+                    </div> 
+                    <div class="form-group">
+                        {{ form_personal.qualification.label }}
+                        {{ form_personal.qualification(value=qualification, class="form-control w-25 p-3") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_personal.specialisation.label }}
+                        {{ form_personal.specialisation(value=specialisation, class="form-control w-25 p-3") }}
                     </div>
                     {{ form_personal.submit }}
                 </form> 

@@ -21,7 +21,7 @@
           <a class="nav-link" href="/account">Account</a>
         </li>
         <li class="nav-item prfile">
-          <a class="nav-link" href="/profile">Profile</a>
+          <a class="nav-link" href="/profile/reset-personal">Profile</a>
         </li>
         <li class="nav-item logout">
           <a class="nav-link" href="/logout">Logout</a>
@@ -85,7 +85,7 @@
             if (currentFocus < 0) currentFocus = (x.length - 1);
             x[currentFocus].classList.add("autocomplete-active");
         }
-        
+
 
         $(document).on("keyup", ".search", function (e) {
             e.preventDefault();

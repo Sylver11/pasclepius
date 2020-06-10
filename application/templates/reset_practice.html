@@ -1,23 +1,23 @@
 {% include 'profile.html' %}
 {% block content %}
 
-             <div class="tab-pane" id="personal">
-                   <form method="post">
+            <div class="tab-pane" id="personal">
+                <form method="post">
                     {{ form_practice.hidden_tag() }}
                     <div class="form-group">
                         {{ form_practice.practice_name.label }}
-                        {{ form_practice.practice_name(class="form-control w-25 p-3") }}
+                        {{ form_practice.practice_name(value=practice_name, class="form-control w-25 p-3") }}
                     <div class="form-group">
                         {{ form_practice.practice_number.label }}
-                        {{ form_practice.practice_number(class="form-control w-25 p-3") }}
+                        {{ form_practice.practice_number(value=practice_number, class="form-control w-25 p-3") }}
                     </div>
                     <div class="form-group">
-                            {{ form_practice.hpcna_number.label }}
-                            {{ form_practice.hpcna_number(class="form-control w-25 p-3") }}
+                        {{ form_practice.hpcna_number.label }}
+                        {{ form_practice.hpcna_number(value=hpcna_number, class="form-control w-25 p-3") }}
                     </div>
                     {{ form_practice.submit }}
-                   </form> 
-              </div>
+                </form> 
+            </div>
         </div>
     </div>
 </div>

@@ -15,9 +15,13 @@
           {{ form.title(class_="required") }}
           </div>
           <div class="form-group">
-          {{ form.name.label(for="formGroupExampleInput", class_="required") }}
-          {{ form.name(class_="required form-control w-50 p-3", id_="formGroupExampleInput", placeholder="Example: Andreas Voigt", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: Andreas Voigt'") }}
+          {{ form.first_name.label(for="formGroupExampleInput", class_="required") }}
+          {{ form.first_name(class_="required form-control w-50 p-3", id_="formGroupExampleInput", placeholder="Example: Andreas", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: Andreas'") }}
           </div>
+          <div class="form-group">
+            {{ form.second_name.label(class_="required") }}
+            {{ form.second_name(class_="required form-control w-50 p-3", placeholder="Example: Voigt", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: Voigt'") }}
+            </div>
           <div class="form-group">
           {{ form.email.label(for="formGroupExampleInput2", class_="required") }}
           {{ form.email(class_="required form-control w-50 p-3", id_="formGroupExampleInput2", placeholder="Example: andreas.voigt@gmail.com", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Example: andreas.voigt@gmail.com'") }}

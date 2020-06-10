@@ -2,9 +2,9 @@ from application.db_utils import pool
 from datetime import datetime
 
 def checkUser(email):
-    sql = """SELECT password, uuid_text, email, title, name, phone, cell, fax, pob, city, country, bank_holder,
+    sql = """SELECT password, uuid_text, email, title, first_name, second_name, phone, cell, fax, pob, city, country, bank_holder,
     bank_account, bank_branch, bank, practice_name, practice_number,
-    hpcna_number, qualification FROM users WHERE email = '{}'
+    hpcna_number, qualification, specialisation FROM users WHERE email = '{}'
     """.format(email)
     conn = pool.connection()
     cursor = conn.cursor()
@@ -48,17 +48,17 @@ def checkDuplicateEmail(email):
 #    return status
 
 
-def addUser(title, name, email, password, phone, cell, fax, pob, city, country, bank_holder, bank_account, bank,
+def addUser(title, first_name, second_name, email, password, phone, cell, fax, pob, city, country, bank_holder, bank_account, bank,
             bank_branch, practice_number, practice_name, hpcna_number,
             qualification, specialisation):
-    sql = """INSERT INTO users (uuid_bin, title, name, email, password, phone,
+    sql = """INSERT INTO users (uuid_bin, title, first_name, second_name, email, password, phone,
     cell, fax, pob, city, country,
     bank_holder, bank_account, bank,
     bank_branch, practice_number, practice_name,
     hpcna_number, qualification, specialisation)
     VALUES(unhex(replace(uuid(),'-','')),
-    '{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}','{18}')
-    """.format(title, name, email, password, phone, cell, fax, pob, city,
+    '{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}','{18}','{19}')
+    """.format(title, first_name, second_name, email, password, phone, cell, fax, pob, city,
                country, bank_holder, bank_account,
                bank, bank_branch, practice_number, practice_name, hpcna_number,
               qualification, specialisation)

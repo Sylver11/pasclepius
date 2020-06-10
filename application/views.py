@@ -2,7 +2,7 @@ import os
 from flask import current_app as app
 from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file, flash
 from werkzeug.urls import url_parse
-from application.forms import Patient_mva, Patient_psemas, Patient_other,getTreatmentForm, RegistrationForm, LoginForm, updatePasswordForm, updatePersonalForm
+from application.forms import updateBankingForm, updatePracticeForm,Patient_mva, Patient_psemas, Patient_other,getTreatmentForm, RegistrationForm, LoginForm, updatePasswordForm, updatePersonalForm
 from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup, liveSearchTreatments
 from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch, getPatient
 from application.database_users import addUser, checkUser
@@ -22,7 +22,7 @@ import simplejson as json
 def load_user(id):
     data = checkUser(id)
     if data:
-        return User(id, data["name"], data["uuid_text"])
+        return User(id, data["first_name"], data["uuid_text"])
 
 
 @app.route('/', methods=('GET', 'POST'))
@@ -36,9 +36,10 @@ def register():
         return redirect(url_for('home'))
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        user = User(form.email.data, form.name.data)
+        user = User(form.email.data, form.first_name.data)
         password = user.set_password(form.password.data)
-        status = addUser(form.title.data, form.name.data,
+        status = addUser(form.title.data, form.first_name.data,
+                         form.second_name.data,
                          form.email.data, password,
                          form.phone.data, form.cell.data,
                          form.fax.data, form.pob.data,
@@ -108,13 +109,32 @@ def resetPassword():
 
 @app.route('/profile/reset-personal', methods=('GET', 'POST'))
 def resetPersonal():
+    data = checkUser(current_user.id)
     form_personal = updatePersonalForm()
     if request.method == 'POST' and form_personal.validate():
-        print("reset personal true")
         flash('Personal data updated')
-        #password = Password()
-        #hashed_password = password.set_password(form_password.password.data)
-    return render_template('reset_personal.html', form_personal=form_personal)
+    return render_template('reset_personal.html', form_personal=form_personal,
+            first_name=data['first_name'],second_name=data['second_name'], phone=data['phone'],cell=data['cell'],fax=data['fax'],pob=data['pob'],city=data['city'],country=data['country'],
+            qualification=data['qualification'],
+            specialisation=data['specialisation'])
+
+@app.route('/profile/reset-practice', methods=('GET', 'POST'))
+def resetPractice():
+    data = checkUser(current_user.id)
+    form_practice = updatePracticeForm()
+    if request.method == 'POST' and form_practice.validate():
+        flash('Practice data updated')
+    return render_template('reset_practice.html', form_practice=form_practice,
+            practice_name=data['practice_name'],practice_number=data['practice_number'],
+            hpcna_number=data['hpcna_number'])
+
+@app.route('/profile/reset-banking', methods=('GET', 'POST'))
+def resetBanking():
+    data = checkUser(current_user.id)
+    form_banking = updateBankingForm()
+    if request.method == 'POST' and form_banking.validate():
+        flash('Banking data  updated')
+    return render_template('reset_banking.html', form_banking=form_banking)
 
 
 

@@ -75,7 +75,9 @@ class RegistrationForm(FlaskForm):
     title = SelectField(u'Title', choices =
                         [('',''),("dr","Dr"),("prof","Prof")],
                         default = '')
-    name =  StringField('Full name', validators=[DataRequired(Length(min=4,
+    first_name =  StringField('First name', validators=[DataRequired(Length(min=4,
+                                                                     max=35))])
+    second_name =  StringField('Second name', validators=[DataRequired(Length(min=4,
                                                                      max=35))])
     email = StringField('Email', validators=[DataRequired(),Email(message='Enter a valid email.')])
     password = PasswordField('New Password', [
@@ -106,12 +108,36 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 
+
+class updatePracticeForm(FlaskForm):
+    practice_number = StringField('Practice number', validators=[DataRequired()])
+    practice_name = StringField('Practice name', validators=[DataRequired()])
+    hpcna_number = StringField('HPCNA number', validators=[DataRequired()])
+    submit = SubmitField('Change Practice Data')
+
 class updatePersonalForm(FlaskForm):
     first_name = StringField('First name', validators=[DataRequired(Length(min=4,
                                                                      max=35))])
     second_name = StringField('Second name', validators=[DataRequired(Length(min=4,
                                                                      max=35))])
+    phone = StringField('Landline number')
+    cell =  StringField('Cell number', validators=[DataRequired()])
+    fax = StringField('Fax number')
+    pob = StringField('PO Box', validators=[DataRequired()])
+    city = StringField('City', validators=[DataRequired()])
+    country = StringField('Country', validators=[DataRequired()])
+    qualification = StringField('Qualification', validators=[DataRequired()])
+    specialisation = StringField('Specialisation') 
     submit = SubmitField('Change Personal Data')
+
+
+class updateBankingForm(FlaskForm):
+    bank = StringField('Bank', validators=[DataRequired()])
+    bank_branch = StringField('Branch number',
+                              validators=[DataRequired()])
+    bank_account = StringField('Account number', validators=[DataRequired()])
+    bank_holder =  StringField('Account holder', validators=[DataRequired()])
+
 
 class updatePasswordForm(FlaskForm):
     password = PasswordField('New Password', [
