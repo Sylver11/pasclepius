@@ -2,14 +2,14 @@ import os
 from flask import current_app as app
 from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file, flash
 from werkzeug.urls import url_parse
-from application.forms import Patient_mva, Patient_psemas, Patient_other, getTreatmentForm, RegistrationForm, LoginForm
+from application.forms import Patient_mva, Patient_psemas, Patient_other,getTreatmentForm, RegistrationForm, LoginForm, updatePasswordForm, updatePersonalForm
 from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup, liveSearchTreatments
 from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch, getPatient
 from application.database_users import addUser, checkUser
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
-from application.models import User
-from flask_login import current_user, login_user, logout_user, UserMixin, login_required
+from application.models import User, Password
+from flask_login import current_user, login_user, logout_user, UserMixin, login_required, fresh_login_required
 from . import login_manager
 from datetime import datetime
 from jinja2 import Template
@@ -72,11 +72,50 @@ def login():
     return render_template('login.html', form=form)
 
 
+@app.route('/fresh-login', methods=['GET', 'POST'])
+def freshLogin():
+    form = LoginForm(request.form)
+    if form.validate_on_submit():
+        data = checkUser(form.email.data)
+        user = User(form.email.data)
+        if data is None or not user.check_password(data['password'], form.password.data):
+            flash('Invalid username or password')
+            return redirect(url_for('login'))
+        login_user(user, remember=True)
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('home')
+        return redirect(next_page)
+    return render_template('login.html', form=form)
+
+
 @app.route('/logout')
 def logout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('login'))
+
+
+@app.route('/profile/reset-password', methods=('GET', 'POST'))
+@fresh_login_required
+def resetPassword():
+    form_password = updatePasswordForm()
+    if request.method == 'POST' and form_password.validate():
+        password = Password()
+        hashed_password = password.set_password(form_password.password.data)
+        flash('Password changed succesfully')
+    return render_template('reset_password.html', form_password=form_password)
+
+@app.route('/profile/reset-personal', methods=('GET', 'POST'))
+def resetPersonal():
+    form_personal = updatePersonalForm()
+    if request.method == 'POST' and form_personal.validate():
+        print("reset personal true")
+        flash('Personal data updated')
+        #password = Password()
+        #hashed_password = password.set_password(form_password.password.data)
+    return render_template('reset_personal.html', form_personal=form_personal)
+
 
 
 @app.route('/new-patient', methods=('GET', 'POST'))

@@ -106,6 +106,22 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 
+class updatePersonalForm(FlaskForm):
+    first_name = StringField('First name', validators=[DataRequired(Length(min=4,
+                                                                     max=35))])
+    second_name = StringField('Second name', validators=[DataRequired(Length(min=4,
+                                                                     max=35))])
+    submit = SubmitField('Change Personal Data')
+
+class updatePasswordForm(FlaskForm):
+    password = PasswordField('New Password', [
+        validators.DataRequired(),
+        validators.EqualTo('confirm', message='Passwords must match')
+    ])
+    confirm = PasswordField('Repeat Password')
+    submit = SubmitField('Change Password')
+
+
 class LoginForm(FlaskForm):
     """User Login Form."""
     email = StringField('Email', validators=[DataRequired(),

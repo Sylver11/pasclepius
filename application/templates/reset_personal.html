@@ -1,0 +1,21 @@
+{% include 'profile.html' %}
+{% block content %}
+
+            <div class="tab-pane" id="personal">
+                <form method="post">
+                    {{ form_personal.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form_personal.first_name.label }}
+                        {{ form_personal.first_name(class="form-control w-25 p-3") }}
+                    <div class="form-group">
+                        {{ form_personal.second_name.label }}
+                        {{ form_personal.second_name(class="form-control w-25 p-3") }}
+                    </div>
+                    {{ form_personal.submit }}
+                </form> 
+            </div>
+        </div>
+    </div>
+</div>
+
+ {% endblock %}

@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 import os
 
 login_manager = LoginManager()
+login_manager.login_view = 'login'
+login_manager.refresh_view = 'freshLogin'
 
 def create_app():
     """Initialize the core application."""
