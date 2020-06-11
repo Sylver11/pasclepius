@@ -36,8 +36,10 @@ def setupTable():
         medical varchar(255) NOT NULL,
         invoice varchar(255) NOT NULL,
         url varchar(255) NOT NULL,
-        treatments varchar(255) NOT NULL,
-        dates varchar(255) NOT NULL,
+        modifiers varchar(500),
+        `values` varchar(500) NOT NULL,
+        treatments varchar(500) NOT NULL,
+        dates varchar(500) NOT NULL,
         tariff varchar(255) NOT NULL,
         main varchar(255),
         dob varchar(255),
@@ -90,12 +92,12 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute(sql_drop_table_users)
-    #cursor.execute(sql_drop_table_invoice)
-    cursor.execute(sql_drop_table_namaf_tariffs)
-    cursor.execute(sql_create_table_namaf_tariffs)
-    cursor.execute(sql_create_table_users)
-    #cursor.execute(sql_create_table_invoice)
+    #cursor.execute(sql_drop_table_users)
+#    cursor.execute(sql_drop_table_invoice)
+    #cursor.execute(sql_drop_table_namaf_tariffs)
+    #cursor.execute(sql_create_table_namaf_tariffs)
+    #cursor.execute(sql_create_table_users)
+    cursor.execute(sql_create_table_invoice)
 
     cursor.close()
     conn.close()

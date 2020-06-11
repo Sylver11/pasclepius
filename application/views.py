@@ -3,7 +3,7 @@ from flask import current_app as app
 from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file, flash
 from werkzeug.urls import url_parse
 from application.forms import updateBankingForm, updatePracticeForm,Patient_mva, Patient_psemas, Patient_other,getTreatmentForm, RegistrationForm, LoginForm, updatePasswordForm, updatePersonalForm
-from application.database_io import getTreatmentByItem, getValueTreatments, getTreatmentByGroup, liveSearchTreatments
+from application.database_io import getTreatmentByItem, getValueTreatments, getMultipleValues, getTreatmentByGroup, liveSearchTreatments
 from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch, getPatient
 from application.database_users import addUser, checkUser, updateUserPassword, updateUserPersonal, updateUserPractice, updateUserBanking
 from application.url_generator import InvoicePath
@@ -96,7 +96,7 @@ def logout():
     flash('You have been logged out.')
     return redirect(url_for('login'))
 
-
+####TODO: Reset data queries need to be fitted with MASTER_POS_WAIT######
 @app.route('/profile/reset-password', methods=('GET', 'POST'))
 @fresh_login_required
 def resetPassword():
@@ -229,23 +229,28 @@ def continueInvoice(patient):
     medical = (session.get('PATIENT')["medical"])
     tariff = (session.get('PATIENT')["tariff"])
     date = session.get('PATIENT')['date']
+    modifiers = session.get('PATIENT')['modifiers']
     treatments = session.get('PATIENT')['treatments']
+    prices = session.get('PATIENT')['values']
     dates = session.get('PATIENT')['dates']
     form = getTreatmentForm(tariff) 
     if (medical == 'mva'):
         po = session.get('PATIENT')['po']
         case = session.get('PATIENT')["case"]
-        return render_template('invoice.html', dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, po = po, case = case, date = date, medical = medical)
+        return render_template('invoice.html', modifiers=modifiers,
+                prices=prices, dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, po = po, case = case, date = date, medical = medical)
     elif(medical == 'psemas'):
         number = session.get('PATIENT')['number']
         main = session.get('PATIENT')['main']
         dob = session.get('PATIENT')['dob']
-        return render_template('invoice.html',dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
+        return render_template('invoice.html',modifiers=modifiers,
+                prices=prices, dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
     else:
         number = session.get('PATIENT')['number']
         main = session.get('PATIENT')['main']
         dob = session.get('PATIENT')['dob']
-        return render_template('invoice.html', dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
+        return render_template('invoice.html', modifiers=modifiers,
+                prices=prices, dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
 
 
 @app.route('/generate-invoice', methods=['POST'])
@@ -253,8 +258,8 @@ def continueInvoice(patient):
 def generateInvoice():
     dates = request.form.getlist('date')
     treatments = request.form.getlist('treatments')
-    modifier = request.form.getlist('modifier')
-    price = request.form.getlist('price')
+    modifiers = request.form.getlist('modifier')
+    prices = request.form.getlist('price')
     date_invoice = request.form.getlist('date_invoice')
     tariff = session.get('PATIENT')["tariff"]
     patient = session.get('PATIENT')
@@ -269,22 +274,23 @@ def generateInvoice():
         if 'url' in session['PATIENT']:
             url = session.get('PATIENT')['url']
             invoice_name = session.get('PATIENT')['invoice']
-            status = updateInvoice(current_user.uuid, treatments, dates, patient, date_invoice)
+            status = updateInvoice(current_user.uuid, modifiers, treatments,
+                    prices, dates, patient, date_invoice)
         else:
             date = session.get('PATIENT')['date']
             index = get_index(current_user.uuid, medical, date)
             url = InvoicePath(patient, index)
             url = url.generate()
-            invoice_name = InvoiceName(patient, index, modifier)
+            invoice_name = InvoiceName(patient, index, modifiers)
             invoice_name = invoice_name.generate()
-            status = add_invoice(patient, invoice_name, url, treatments, dates,
-                                date_invoice, current_user.uuid)
+            status = add_invoice(patient, invoice_name, url, modifiers,
+                    treatments, prices, dates, date_invoice, current_user.uuid)
         if status:
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/application/swriter.py', json.dumps(treatments),
-                            json.dumps(treatment_list), json.dumps(price),
+                            json.dumps(treatment_list), json.dumps(prices),
                             json.dumps(dates), json.dumps(patient),
-                            json.dumps(modifier), json.dumps(url),
+                            json.dumps(modifiers), json.dumps(url),
                             json.dumps(invoice_name), json.dumps(date_invoice),
                              json.dumps(data)])
             return jsonify(result='success')
@@ -319,6 +325,7 @@ def knownInvoice():
     date = request.args.get('date')
     data =  getSingleInvoice(current_user.uuid, patient, date)
     d = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    print(data)
     date_deutsch = d.strftime('%d.%m.%Y')
     session["PATIENT"] = data
     session["PATIENT"]["date"]= date_deutsch
@@ -334,6 +341,20 @@ def getValue():
     value_json = json.dumps({'value' : Decimal(value['value']), 'description' :
         value['description']}, use_decimal=True)
     return value_json
+
+@app.route('/get-values',methods=['GET','POST'])
+@login_required
+def getValues():
+    tariff = session.get('PATIENT')["tariff"]
+    items = session.get('PATIENT')['treatments']
+    value_list = getMultipleValues(items, tariff)
+    value_list = json.dumps(value_list)
+   # item = request.args.get('item', 0, type=int)
+    #value = getValueTreatments(item, tariff)
+    #value_json = json.dumps({'value' : Decimal(value['value']), 'description' :
+     #   value['description']}, use_decimal=True)
+    print(value_list)
+    return value_list
 
 
 @app.route('/get-treatment-name',methods=['GET','POST'])

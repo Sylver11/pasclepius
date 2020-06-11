@@ -22,6 +22,20 @@ def getValueTreatments(item, tariff):
     conn.close()
     return filtered_result
 
+def getMultipleValues(items, tariff):
+    value_list=[]
+    connection = pool.connection()
+    cursor = connection.cursor()
+    for i in items.split(","):
+        sql = """SELECT description, value FROM namaf_tariffs WHERE item = {} AND tariff = '{}'""".format(i, tariff)
+        cursor.execute(sql)
+        q = cursor.fetchone()
+        value_list.append(q)
+    print(value_list)
+    return value_list
+
+
+
 def getTreatments(tariff, featured=None):
     if (featured is None):
         sql = """SELECT LPAD(item, 3, 0) AS item, description, category FROM

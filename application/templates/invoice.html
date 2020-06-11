@@ -76,7 +76,6 @@
         <span>Result: <span id="result"></span></span><span><input id="download_invoice" value="Download invoice" type="button" style="display:none;"></span>
     </form> 
     {% else %}
-    {{ tariff }}
     <form autocomplete="off" id="NewOrderForm" class="form">   
         {{ form.hidden_tag() }}
         <div class="form-group float-right">
@@ -291,7 +290,12 @@ $(document).ready(function(){
                                 next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_text
                                 newTreatmentLiveSearch(next_empty_treatment_input)
                                 closeAllLists();
-                                clone()
+                                var value_of_value = document.getElementById("value-0").value
+                                console.log(value_of_value)
+                                // console.log($(".clonedInput").length)
+                                //  if(value_of_value !== ''){
+                                    clone()
+                                // }
                             }, false);
                             a.appendChild(b);
                         }
@@ -410,7 +414,7 @@ $(document).ready(function(){
             .find("*")
             .each(function () { 
                  var id = this.id || "";
-                 var match = id.match(regex) || [];    
+                 var match = id.match(regex) || [];  
                  if (match.length == 4) {
                      this.id = match[1] + (cloneIndex);
                  }
@@ -526,6 +530,23 @@ $(document).ready(function(){
     }
 
 
+    function setPremium(id, percent, original_value){
+        original_value = parseFloat(original_value)
+        if (percent == 1.4){
+            $('#fourty-' + id).css('background-color', 'green');
+        }
+        else{
+            $('#thirty-' + id).css('background-color', 'green');
+        }
+        value_edit[id] = {
+            id: id,
+            value: original_value,
+            edit: true,
+            last: percent
+        };
+    }
+
+
     function checkState(object, id, percent){    
 	    if (typeof value_edit[id] !== 'undefined'){
 		    if(value_edit[id].edit == false){
@@ -620,50 +641,57 @@ $(document).ready(function(){
     });
 
     if('{{treatments}}' !== 'None'){
-        var treatments = '{{treatments}}'
-        var t = treatments.split(",")
-        var d = '{{dates}}'.split(",")
-        var cloneIndex = 0
-        $.each(t, function(index, value) {       
-            $.ajax({
-                url: '/get-value',
+        var prices = '{{prices}}';
+        var modifiers = '{{ modifiers }}';
+        var treatments = '{{treatments}}';
+        var mo = modifiers.split(",");
+        var t = treatments.split(",");
+        var p = prices.split(",");
+        var d = '{{dates}}'.split(",");
+        $.ajax({
+                url: '/get-values',
                 type: "GET",
-                cache: false,
-                data: { item: t[index] },
             success: function(data) {
-                var data = $.parseJSON(data)
-                $('#value-' + index).val(data['value'].toFixed(2))
-                cloneIndex = index + 1
-                clone()
-                var date = parseDate(d[index])
-                function parseDate(str) {
-                    var m = str.match(/^(\d{1,2}).(\d{1,2}).(\d{4})$/);
-                    return (m) ? new Date(m[3], m[2]-1, m[1]) : null;
+                data = $.parseJSON(data)
+                $.each(t, function(index, value) {  
+                    clone()   
+                    db_value = (parseFloat(p[index])).toFixed(2)
+                    value = (parseFloat(data[index]['value'])).toFixed(2)
+                    if (db_value !== value){
+                        percent = (db_value / value).toFixed(1)
+                        object =  '#clonedInput' + index 
+                        setPremium(index, percent, value)
                     }
-                $('#date-' + index).datepicker({dateFormat: 'dd.mm.yy'})
-                $('#date-' + index).datepicker("setDate", date);
-                '{% if "namaf_orthopaedic_surgeons" in tariff %}'
-                    treatment_input = document.getElementById("treatment-" + (cloneIndex -2))
-                    description_input = document.getElementById("description-" + (cloneIndex -2))
-                    treatment_input.value = t[index]
-                    description_input.value = data['description']
-                '{% else %}'
-                    $('select#treatment-'+ (cloneIndex -1)).prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
-                    $('select#treatment-'+ (cloneIndex -2) + ' option[value='+t[index]+']').attr("selected",true);
-                    $('#thirty-' + index).show()
-                    $('#fourty-' + index).show()
-                    $('#modifier-' + index).show()
-                '{% endif %}'
-                $('#value-' + index).show()
-                $('#clone-' + index).show()
-                $('#date-' + index).show()
+                    var date = parseDate(d[index])
+                    function parseDate(str) {
+                        var m = str.match(/^(\d{1,2}).(\d{1,2}).(\d{4})$/);
+                        return (m) ? new Date(m[3], m[2]-1, m[1]) : null;
+                    }
+                    $('#value-' + index).val(db_value)
+                    $('#date-' + index).datepicker({dateFormat: 'dd.mm.yy'})
+                    $('#date-' + index).datepicker("setDate", date);
+                    '{% if "namaf_orthopaedic_surgeons" in tariff %}'
+                        treatment_input = document.getElementById("treatment-" + (cloneIndex -2))
+                        description_input = document.getElementById("description-" + (cloneIndex -2))
+                        treatment_input.value = t[index]
+                        description_input.value = data[index]['description']
+                    '{% else %}'
+                        $('select#treatment-'+ index).prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
+                        $('select#treatment-'+ index + ' option[value='+t[index]+']').attr("selected",true);
+                        $('#thirty-' + index).show()
+                        $('#fourty-' + index).show()
+                        $('#modifier-' + index).show()
+                        $('#modifier-'+ index).val(mo[index]);
+                    '{% endif %}'
+                    $('#value-' + index).show()
+                    $('#clone-' + index).show()
+                    $('#date-' + index).show()
 
-                return data;
-                }
-            });
+                })
+            }
         })
     }
-   });
+});
 
 </script>
 {% endblock %}
