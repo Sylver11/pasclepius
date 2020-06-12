@@ -15,7 +15,13 @@ def getTreatmentForm(tariff = None):
             treatments = SelectField(u'Treatments',coerce=int, validators=[DataRequired()] )
             date = TextField('Date', validators=[DataRequired()])
             price = DecimalField(u'Value')
-            modifier = SelectField(u'Modifier', choices= [(0, 'None'), (14,'Rendered hospital'),(13, 'Travelling cost')], default=0)
+            modifier = SelectField(u'Modifier', choices= 
+                    [(0, 'None'),(6, '006 - Emergency treatment'),
+                        (8, '008 - More than one procedure'), 
+                        (9,'009 - Multpile conditions'),
+                        (10, '010 - Treatment time overlap'),
+                        (13, '013 - Travelling cost'),
+                        (14,'014 - Rendered hospital')], default=0)
             date_invoice = TextField('Invoice date', validators=[DataRequired()])
             submit = SubmitField('Submit')
         else:

@@ -169,8 +169,10 @@ def populateTable(doc, text, items, treatments, price, dates, modifier=None):
         for x in range(len(treatments)):
             modifier.append('')
     for a, b, c, d, e in zip(enumerate(treatments), dates, items, price, modifier):
-        if e == '14':
+        if e == '14' or e == '13' or e == '10':
             insertTextIntoCell(table, "B" + str(a[0] + 2), str(c + " (0" + e + ")"))
+        elif e == '6' or e == '8' or e == '9':
+            insertTextIntoCell(table, "B" + str(a[0] + 2), str(c + " (00" + e + ")"))
         else:
             insertTextIntoCell(table, "B" + str(a[0] + 2), c)
         insertTextIntoCell(table, "A" + str(a[0] + 2), b)

@@ -56,7 +56,7 @@
                       <th>Action</th>
                     </tr>
                   </thead>
-                <tbody class="tbodyClone">
+                <tbody class="tbodyClone" id="tbodyClone">
                     <tr id="clonedInput0" class="clonedInput">
                         <th id="row-0" scope="row"><span class="num">1</span></th>
                         <td>{{  form.treatments(id='treatment-0', class='treatment_orthopaedic_surgeons')  }}</td>
@@ -97,6 +97,7 @@
                         <td>
                             <input id="delete-0" value="Delete" type="button" style="width:100px" class="remove">
                             <input id="clone-0" value="Clone" type="button" style="width:100px" class="clone">
+                            <input id="below-0" value="Add below" type="button" style="width:100px" class="below">
                         </td>
                     </tr>
                 </tbody>
@@ -110,9 +111,9 @@
     {% endif%} 
     <br><br><br><br>
 </div>
-
 <script>
 $(document).ready(function(){
+    
 
     function removeActive(x) {
             for (var i = 0; i < x.length; i++) {
@@ -227,11 +228,14 @@ $(document).ready(function(){
                                 paragraph_field.textContent = found[i][x]['description']
                                 paragraph_field.setAttribute('class','input-fields-procedures')
                                 cloneIndex_orthopaedic_surgeon2 = cloneIndex - 1 ;
-                                next_empty_treatment_input = document.getElementById("treatment-" + cloneIndex_orthopaedic_surgeon2);
 
                                 (function(index){
                                         paragraph_field.addEventListener("click", function() {
-                                            next_empty_treatment_input = document.getElementById("treatment-" + cloneIndex_orthopaedic_surgeon)
+                                            var value_of_value = document.getElementById("value-0").value
+                                            if(value_of_value){
+                                                clone()
+                                            } 
+                                            next_empty_treatment_input = document.getElementById("tbodyClone").lastElementChild.childNodes[3].firstChild
                                             item_num = document.getElementById("treatment-list-input-procedure" + index).value
                                             next_empty_treatment_input.value = item_num
                                             description_procedures = document.getElementById("procedure-list-description" + index).textContent;
@@ -239,7 +243,6 @@ $(document).ready(function(){
                                             input_element.value = '';
                                             newTreatmentLiveSearch(next_empty_treatment_input)
                                             closeAllLists();
-                                            clone()
                                         })
                                     })(index_treatment_procedure)
 
@@ -281,22 +284,22 @@ $(document).ready(function(){
                             }
                             b.innerHTML += "<p id='treatment-list-description"+ i +"'><strong>" + names[i].substr(0, val.length) + "</strong>" + names[i].substr(val.length) + "</p>";
                             b.innerHTML += "<input id='treatment-list-input" + i + "' type='hidden' value='" + item + "'>";
-                            cloneIndex_orthopaedic_surgeon = cloneIndex - 1 ;
-                            next_empty_treatment_input = document.getElementById("treatment-" + cloneIndex_orthopaedic_surgeon)
-                            b.addEventListener("click", function(e) {
-                                input_element.value = '';
-                                description_text = document.getElementById("treatment-list-description"+ cloneIndex_orthopaedic_surgeon).textContent;
-                                next_empty_treatment_input.value = this.getElementsByTagName("input")[0].value;
-                                next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_text
-                                newTreatmentLiveSearch(next_empty_treatment_input)
-                                closeAllLists();
-                                var value_of_value = document.getElementById("value-0").value
-                                console.log(value_of_value)
-                                // console.log($(".clonedInput").length)
-                                //  if(value_of_value !== ''){
-                                    clone()
-                                // }
-                            }, false);
+
+                            (function(index){
+                                b.addEventListener("click", function() {
+                                    input_element.value = '';
+                                    var value_of_value = document.getElementById("value-0").value
+                                    if(value_of_value){
+                                        clone()
+                                    }      
+                                    next_empty_treatment_input = document.getElementById("tbodyClone").lastElementChild.childNodes[3].firstChild
+                                    description_text = document.getElementById("treatment-list-description"+ index).textContent;
+                                    next_empty_treatment_input.value = this.getElementsByTagName("input")[0].value;
+                                    next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_text
+                                    newTreatmentLiveSearch(next_empty_treatment_input)
+                                    closeAllLists();
+                                })
+                            })(i)
                             a.appendChild(b);
                         }
                     }
@@ -370,7 +373,42 @@ $(document).ready(function(){
         $('.remove').show();
     }
 
+    function clone_insert_below(){
 
+        $(this).parents(".clonedInput").clone()
+            .insertAfter($(this).parents(".clonedInput"))
+            .attr("id", "clonedInput" + cloneIndex)
+            .find("*")
+            .each(function () { 
+                 var id = this.id || "";
+                 var match = id.match(regex) || [];    
+                 if (match.length == 4) {
+                     this.id = match[1] + (cloneIndex);
+                 }
+                 if (this.className.includes("treatment")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("description")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("datepicker")){
+                    this.value = ''
+                 }  
+                 if (this.className.includes("value")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("thirty")){
+                    this.style.backgroundColor = "white";
+                 } 
+                 if (this.className.includes("fourty")){
+                    this.style.backgroundColor = "white";
+                 } 
+            }            
+            )
+            cloneIndex++;
+            re_number()
+
+    }
     function clone() {
         if ($(this).parents(".clonedInput").length == 1){
             $(this).parents(".clonedInput").clone()
@@ -383,6 +421,7 @@ $(document).ready(function(){
                  if (match.length == 4) {
                      this.id = match[1] + (cloneIndex);
                  }
+                 
                  if (this.className.includes("datepicker")){
                     this.value = ''
                  }  
@@ -560,7 +599,7 @@ $(document).ready(function(){
             }
 		}
 	    else{
-                addPremium(object, id, percent)
+            addPremium(object, id, percent)
 	   }
     }
 
@@ -570,6 +609,7 @@ $(document).ready(function(){
         var percent = 1.3;
         var get_id_from_html = $(this).parent().parent().attr('id');
         var id = get_id_from_html.match(regex_2)[2]
+        id = parseInt(id)
         var object = $(this)
         checkState(object, id, percent)
     })
@@ -579,6 +619,7 @@ $(document).ready(function(){
         var percent = 1.4;
         var get_id_from_html = $(this).parent().parent().attr('id');
         var id = get_id_from_html.match(regex_2)[2]
+        id = parseInt(id)
         var object = $(this)
         checkState(object, id, percent)
     })
@@ -595,16 +636,16 @@ $(document).ready(function(){
             }, function(data) {
                 element.parentNode.parentNode.childNodes[7].childNodes[0].value = data.value.toFixed(2)    
                 });
-             }
-            // else{
-            //     $(sibling_of_value).parent().parent().children().children(".value").val("");
-            // }
-        
+        }
     }
 
     var sibling_of_value = null;
     $(document).on('change', '.treatment', newTreatment);
     function newTreatment(event){
+        var id_ = this.id || "";
+        var match_ = id_.match(regex) || [];
+        match_ = parseInt(match_[3])  
+        value_edit.splice(match_, 1);
         $('.datepicker' ).datepicker({dateFormat: 'dd.mm.yy'});
         $(this).parent().siblings().find('.value').show()
         $(this).parent().siblings().find('.thirty').show()
@@ -612,6 +653,8 @@ $(document).ready(function(){
         $(this).parent().siblings().find('.date').show()
         $(this).parent().siblings().find('.modifier').show()
         $(this).parent().siblings().find('.clone').show()
+        $(this).parent().siblings().find('.thirty').css('background-color', 'white');
+        $(this).parent().siblings().find('.fourty').css('background-color', 'white');
 		sibling_of_value = $(this);
         if($(this).val()!= 0){
             $.getJSON('/get-value', {
@@ -634,6 +677,7 @@ $(document).ready(function(){
     $('#date_invoice').datepicker({dateFormat: 'dd.mm.yy'})
     $('#date_invoice').datepicker("setDate", new Date());
     $(document).on("click", ".clone", clone);
+    $(document).on("click", ".below", clone_insert_below);
     $(document).on("click", ".remove", remove);
     $(document).on("click", ".datepicker", function() {
         $(this).removeClass('hasDatepicker');
@@ -654,7 +698,10 @@ $(document).ready(function(){
             success: function(data) {
                 data = $.parseJSON(data)
                 $.each(t, function(index, value) {  
-                    clone()   
+                     var t_ = t.length - 1
+                     if(index !== t_){
+                        clone()
+                     }  
                     db_value = (parseFloat(p[index])).toFixed(2)
                     value = (parseFloat(data[index]['value'])).toFixed(2)
                     if (db_value !== value){
@@ -671,12 +718,11 @@ $(document).ready(function(){
                     $('#date-' + index).datepicker({dateFormat: 'dd.mm.yy'})
                     $('#date-' + index).datepicker("setDate", date);
                     '{% if "namaf_orthopaedic_surgeons" in tariff %}'
-                        treatment_input = document.getElementById("treatment-" + (cloneIndex -2))
-                        description_input = document.getElementById("description-" + (cloneIndex -2))
+                        treatment_input = document.getElementById("treatment-" + index);
+                        description_input = document.getElementById("description-" + index);
                         treatment_input.value = t[index]
                         description_input.value = data[index]['description']
                     '{% else %}'
-                        $('select#treatment-'+ index).prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
                         $('select#treatment-'+ index + ' option[value='+t[index]+']').attr("selected",true);
                         $('#thirty-' + index).show()
                         $('#fourty-' + index).show()
