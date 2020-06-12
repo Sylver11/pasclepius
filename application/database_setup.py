@@ -86,6 +86,7 @@ def setupTable():
         qualification varchar(255) NOT NULL,
         specialisation varchar(255),
         premium BOOLEAN NOT NULL DEFAULT false,
+        invoice_layout int(11),
         created_on DATETIME NOT NULL DEFAULT NOW(),
         PRIMARY KEY (id));"""
 
@@ -93,11 +94,11 @@ def setupTable():
     conn = pool.connection()
     cursor = conn.cursor()
     #cursor.execute(sql_drop_table_users)
-#    cursor.execute(sql_drop_table_invoice)
+    #cursor.execute(sql_drop_table_invoice)
     #cursor.execute(sql_drop_table_namaf_tariffs)
-    #cursor.execute(sql_create_table_namaf_tariffs)
+    cursor.execute(sql_create_table_namaf_tariffs)
     #cursor.execute(sql_create_table_users)
-    cursor.execute(sql_create_table_invoice)
+    #cursor.execute(sql_create_table_invoice)
 
     cursor.close()
     conn.close()
