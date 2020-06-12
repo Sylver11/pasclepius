@@ -279,7 +279,7 @@ def generateInvoice():
         else:
             date = session.get('PATIENT')['date']
             index = get_index(current_user.uuid, medical, date)
-            url = InvoicePath(patient, index)
+            url = InvoicePath(patient, index, data)
             url = url.generate()
             invoice_name = InvoiceName(patient, index, modifiers)
             invoice_name = invoice_name.generate()
@@ -349,11 +349,6 @@ def getValues():
     items = session.get('PATIENT')['treatments']
     value_list = getMultipleValues(items, tariff)
     value_list = json.dumps(value_list)
-   # item = request.args.get('item', 0, type=int)
-    #value = getValueTreatments(item, tariff)
-    #value_json = json.dumps({'value' : Decimal(value['value']), 'description' :
-     #   value['description']}, use_decimal=True)
-    print(value_list)
     return value_list
 
 

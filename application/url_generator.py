@@ -8,11 +8,13 @@ import os
 
 class InvoicePath(object):
 
-    def __init__(self, patient, index):
+    def __init__(self, patient, index, data):
         self.date = patient['date']
         self.medical = patient['medical']
         self.name = patient['name']
         self.index = index
+        self.first_name = data['first_name']
+        self.practice_name = data['practice_name']
 
     def convert(self):
         self.date  =  datetime.strptime(self.date, '%d.%m.%Y')
@@ -28,7 +30,7 @@ class InvoicePath(object):
 
     def generate(self):
         self.date = self.convert()
-        self.path = os.getenv("OWNCLOUD_URL") +'/' + str(self.medical).upper() + '_' + os.getenv("PA_USERNAME") + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + calendar.month_name[self.date_digits('month')] + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + '_' + str(self.index) + self.name
+        self.path = os.getenv("INVOICE_URL") +'/'+ self.practice_name + '/' + str(self.medical).upper() + '_' + self.first_name + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + calendar.month_name[self.date_digits('month')] + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + '_' + str(self.index) + self.name
         return self.path
 
 
