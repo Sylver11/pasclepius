@@ -9,10 +9,8 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 ```
 LibreOffice 6+
-OwnCloud 10.4.1 (production)
 MySql Server 8
 python3 
-pip3
 ```
 
 ### Installing
@@ -25,26 +23,32 @@ pip3
     * SECRET_KEY (for the flask server)
     * APP_URL (URL to root directory of project)
     * LIBPYTHON (Path to LibreOffice python binary)
-    * OWNCLOUD_URL (if no Owncloud just use SYSTEM_URL)
-    * CSV_URL_NAMAF_ORTHOPAEDIC_SURGOENS (this is a sample CSV data to be found in the data direcotry)
+    * INVOICE_URL (path to save odt invoices)
+    * CSV_URL_NAMAF_TARIFFS (path to project/pasclepius/data/namaf_tariffs.csv)
 
 &nbsp;
 &nbsp;
 2. Install dependencies: 
 ```
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 &nbsp;
 &nbsp;
-3. Run LibreOffice socket:
+3. Create database and run database_setup.py
+```
+python application/database_setup.py
+```
+&nbsp;
+&nbsp;
+4. Run LibreOffice socket:
 ```
 /Applications/LibreOffice.app/Contents/MacOS/soffice "--accept=socket,host=localhost,port=2002;urp;"
 ```
 &nbsp;
 &nbsp;
-4. Start flask server (when on Ubuntu no need to use the LibreOffice python):
+5. Start core application:
 ```
-/Applications/LibreOffice.app/Contents/MacOS/python start.py
+python start.py
 ```
 
 Now you can register at [localhost:4003/register](localhost:4003/register)
