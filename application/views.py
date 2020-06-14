@@ -287,7 +287,7 @@ def generateInvoice():
                     treatments, prices, dates, date_invoice, current_user.uuid)
         if status:
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
-                            '/application/swriter.py', json.dumps(treatments),
+                            '/swriter/main.py', json.dumps(treatments),
                             json.dumps(treatment_list), json.dumps(prices),
                             json.dumps(dates), json.dumps(patient),
                             json.dumps(modifiers), json.dumps(url),
