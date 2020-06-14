@@ -1,0 +1,16 @@
+WSGIApplicationGroup %{GLOBAL}
+WSGIDaemonProcess pasclepius user=www-data group=www-data threads=5 python-home=/var/www/pasclepius.com/env
+WSGIProcessGroup pasclepius
+
+
+<VirtualHost *:80>
+    	ServerName pasclepius.com
+    	ErrorLog /var/www/pasclepius.com/logs/error.log
+    	CustomLog /var/www/pasclepius.com/logs/access.log combined
+    	WSGIScriptAlias / /var/www/pasclepius.com/run.wsgi
+    	Alias /static /var/www/pasclepius.com/application/static
+    	<Directory /var/www/pasclepius.com/application/static>
+        	Order allow,deny
+        	Allow from all
+    	</Directory>
+</VirtualHost>
