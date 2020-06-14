@@ -35,6 +35,5 @@ class InvoiceName(object):
 #          '423423423#'}
 #date = InvoiceName(patient, 3, ['14','0'])
 #date_convert = date.generate()
-#print(date_convert)
 
 

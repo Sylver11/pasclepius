@@ -46,17 +46,28 @@ if __name__ == '__main__':
     import argparse
     import json
     parser = argparse.ArgumentParser(description='Creating an invoice')
-    parser.add_argument('items',type=json.loads, help='this is a item list')
-    parser.add_argument('treatments', type=json.loads, help='This should be a treatment list')
-    parser.add_argument('price', type=json.loads, help='this should be a price list')
-    parser.add_argument('dates', type=json.loads, help='this should be a dates list')
-    parser.add_argument('patient', type=json.loads)
-    parser.add_argument('modifier', type=json.loads, help='this should be a modifier list')
-    parser.add_argument('url', type=json.loads, help='this should be a modifier list')
-    parser.add_argument('invoice_name', type=json.loads, help='this should be a modifier list')
-    parser.add_argument('date_invoice',type=json.loads)
-    parser.add_argument('data', type=json.loads, help='the general data stuff')
+   # print(parser)
+   # parser.add_argument('items',type=json.loads, help='this is a item list')
+    
+   # parser.add_argument('treatments', type=json.loads, help='This should be a treatment list')
+   # parser.add_argument('price', type=json.loads, help='this should be a price list')
+   # parser.add_argument('dates', type=json.loads, help='this should be a dates list')
+   # parser.add_argument('patient', type=json.loads)
+   # parser.add_argument('modifier', type=json.loads, help='this should be a modifier list')
+   # parser.add_argument('url', type=json.loads, help='this should be a modifier list')
+   # parser.add_argument('invoice_name', type=json.loads, help='this should be a modifier list')
+   # parser.add_argument('date_invoice',type=json.loads)
+   # parser.add_argument('data', type=json.loads, help='the general data stuff')
+    parser.add_argument('to_json', type=json.loads)
     args = parser.parse_args()
-    createTextInvoice(args.items, args.treatments, args.price, args.dates,
-                      args.patient, args.modifier, args.url, args.invoice_name,
-                      args.date_invoice, args.data)
+    print(args.to_json)
+    createTextInvoice(args.to_json['treatments'],
+            args.to_json["treatment_list"],
+            args.to_json["prices"],
+            args.to_json["dates"],
+            args.to_json["patient"],
+            args.to_json["modifiers"],
+            args.to_json["url"],
+            args.to_json["invoice_name"],
+            args.to_json["date_invoice"],
+            args.to_json["data"])

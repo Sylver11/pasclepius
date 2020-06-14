@@ -31,7 +31,6 @@ def getMultipleValues(items, tariff):
         cursor.execute(sql)
         q = cursor.fetchone()
         value_list.append(q)
-    print(value_list)
     return value_list
 
 

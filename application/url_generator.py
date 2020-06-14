@@ -38,6 +38,4 @@ class InvoicePath(object):
        #    'csrf_token':'ImU5NjFiYWEwN2Y1MGUyMmFiZDBkY2ZiYTQ5NDgxYzdiN2NlODQ2MDQi.XpVy6A.zOXe-xkr0gUZJroWUQHqVEoGxu0','date':
        #    '14.04.2020', 'medical': 'mva', 'name': 'lotharrrr hoo', 'po': '423423423'}
 #date = InvoicePath(patient, 3)
-#print(date)
 #date_convert = date.generate()
-#print(date_convert)

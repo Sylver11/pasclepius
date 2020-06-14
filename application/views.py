@@ -286,13 +286,25 @@ def generateInvoice():
             status = add_invoice(patient, invoice_name, url, modifiers,
                     treatments, prices, dates, date_invoice, current_user.uuid)
         if status:
+            res_dict = {"treatments" : treatments,
+                    "treatment_list" : treatment_list,
+                    "prices" : prices,
+                    "dates" : dates,
+                    "patient" : patient,
+                    "modifiers" : modifiers,
+                    "url" : url,
+                    "invoice_name" : invoice_name,
+                    "date_invoice" : date_invoice,
+                    "data" : data}
+            to_json = json.dumps(res_dict)
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
-                            '/swriter/main.py', json.dumps(treatments),
-                            json.dumps(treatment_list), json.dumps(prices),
-                            json.dumps(dates), json.dumps(patient),
-                            json.dumps(modifiers), json.dumps(url),
-                            json.dumps(invoice_name), json.dumps(date_invoice),
-                             json.dumps(data)])
+                            '/swriter/main.py', to_json])
+                            # json.dumps(treatments),
+                            #json.dumps(treatment_list), json.dumps(prices),
+                            #json.dumps(dates), json.dumps(patient),
+                            #json.dumps(modifiers), json.dumps(url),
+                            #json.dumps(invoice_name), json.dumps(date_invoice),
+                            # json.dumps(data), to_json])
             return jsonify(result='success')
         else:
             return jsonify(result='Error: Entry already exists')
@@ -325,7 +337,6 @@ def knownInvoice():
     date = request.args.get('date')
     data =  getSingleInvoice(current_user.uuid, patient, date)
     d = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-    print(data)
     date_deutsch = d.strftime('%d.%m.%Y')
     session["PATIENT"] = data
     session["PATIENT"]["date"]= date_deutsch
