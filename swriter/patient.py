@@ -3,7 +3,7 @@ from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK, APPEND_PARAGRAPH
 
 
 
-def populateMiddleTable(doc, text, cursor, patient, invoice_name, date_invoice):
+def patientTable(doc, text, cursor, patient, invoice_name, date_invoice):
     middle_table = doc.createInstance( "com.sun.star.text.TextTable" )
     if (patient['medical'] == 'mva'):
         middle_table.initialize(2,3)
