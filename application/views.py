@@ -96,6 +96,7 @@ def logout():
     flash('You have been logged out.')
     return redirect(url_for('login'))
 
+
 ####TODO: Reset data queries need to be fitted with MASTER_POS_WAIT######
 @app.route('/profile/reset-password', methods=('GET', 'POST'))
 @fresh_login_required
@@ -108,6 +109,7 @@ def resetPassword():
         if status:
             flash('Password changed succesfully')
     return render_template('reset_password.html', form_password=form_password)
+
 
 @app.route('/profile/reset-personal', methods=('GET', 'POST'))
 def resetPersonal():
@@ -128,6 +130,7 @@ def resetPersonal():
             qualification=data['qualification'],
             specialisation=data['specialisation'])
 
+
 @app.route('/profile/reset-practice', methods=('GET', 'POST'))
 def resetPractice():
     data = checkUser(current_user.id)
@@ -142,6 +145,7 @@ def resetPractice():
     return render_template('reset_practice.html', form_practice=form_practice,
             practice_name=data['practice_name'],practice_number=data['practice_number'],
             hpcna_number=data['hpcna_number'])
+
 
 @app.route('/profile/reset-banking', methods=('GET', 'POST'))
 def resetBanking():
@@ -299,12 +303,6 @@ def generateInvoice():
             to_json = json.dumps(res_dict)
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/swriter/main.py', to_json])
-                            # json.dumps(treatments),
-                            #json.dumps(treatment_list), json.dumps(prices),
-                            #json.dumps(dates), json.dumps(patient),
-                            #json.dumps(modifiers), json.dumps(url),
-                            #json.dumps(invoice_name), json.dumps(date_invoice),
-                            # json.dumps(data), to_json])
             return jsonify(result='success')
         else:
             return jsonify(result='Error: Entry already exists')
