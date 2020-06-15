@@ -37,6 +37,6 @@ def identityTable(doc, text, cursor, layout, patient, data):
     range = top_table.getCellRangeByName("A1:B1")
     range.setPropertyValue( "CharFontName", "Liberation Serif" )
     range.setPropertyValue( "CharHeight", 10.0 )
-    text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
+#    text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False );
     return doc, text, cursor
 

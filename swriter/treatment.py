@@ -1,6 +1,8 @@
 from com.sun.star.style.ParagraphAdjust import CENTER, LEFT, RIGHT, BLOCK, STRETCH
 from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK, APPEND_PARAGRAPH, LINE_BREAK
 from com.sun.star.lang import Locale
+from com.sun.star.awt.FontWeight import BOLD as FW_BOLD
+
 
 def createTable(doc, text, cursor, unitCount):
     table = doc.createInstance( "com.sun.star.text.TextTable" )
@@ -24,6 +26,9 @@ def createTable(doc, text, cursor, unitCount):
     insertTextIntoCell( table, "C" + str(2 + unitCount), "Total N$: ")
     cursor_right = table.createCursorByCellName("C" + str(2 + unitCount))
     cursor_right.setPropertyValue( "ParaAdjust", RIGHT )
+    bottom_range = table.getCellRangeByName("A" + str(2 + unitCount)
+        + ":D" + str(2+ unitCount))
+    bottom_range.setPropertyValue("CharWeight", FW_BOLD)
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
     return table, unitCount
 
