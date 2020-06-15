@@ -6,6 +6,7 @@ def createTable(doc, text, cursor, unitCount):
     table = doc.createInstance( "com.sun.star.text.TextTable" )
     table.initialize(unitCount + 2, 4)
     text.insertTextContent( cursor, table, 1 )
+    table.setName('treatment_table')
     otabseps = table.TableColumnSeparators
     relativeTableWidth = table.getPropertyValue( "TableColumnRelativeSum" )
     otabseps[0].Position = relativeTableWidth * 0.12

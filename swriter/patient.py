@@ -7,7 +7,7 @@ def patientTable(doc, text, cursor, patient, invoice_name, date_invoice):
     middle_table = doc.createInstance( "com.sun.star.text.TextTable" )
     if (patient['medical'] == 'mva'):
         middle_table.initialize(2,3)
-        middle_table.setName('middle_table')
+        middle_table.setName('patient_table')
         text.insertTextContent( cursor, middle_table, 1 )
         first_middle_table_text = middle_table.getCellByName("A1")
         range_top = middle_table.getCellRangeByName("A1:A2")
@@ -30,7 +30,7 @@ def patientTable(doc, text, cursor, patient, invoice_name, date_invoice):
 
     else:
         middle_table.initialize(3,3)
-        middle_table.setName('middle_table')
+        middle_table.setName('patient_table')
         text.insertTextContent( cursor, middle_table, 1 )
         first_middle_table_text = middle_table.getCellByName("A1")
         first_middle_table_text.setString("Invoice No: " + str(invoice_name))

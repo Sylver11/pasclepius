@@ -1,0 +1,12 @@
+1 = cell
+2 = cell + phone
+3 = cell + phone + fax
+4 = cell + hospital 
+5 = cell + phone + hospital
+6 = cell + phone + fax + hospital
+7 = cell + hospital + dianosis
+8 = cell + phone + hospital + diagnosis
+9 = cell + phone + fax + hospital + diagnosis
+10 = cell + diagnosis
+11 = cell + phone + diagnosis
+12 = cell + phone + fax + diagnosis

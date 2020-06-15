@@ -3,7 +3,7 @@ from com.sun.star.style.ParagraphAdjust import CENTER, LEFT, RIGHT, BLOCK, STRET
 def populateBottomTable(doc, text, data):
     bottom_table = doc.createInstance( "com.sun.star.text.TextTable" )
     bottom_table.initialize(5,3)
-    bottom_table.setName('bottom_table')
+    bottom_table.setName('footer_table')
     styles = doc.StyleFamilies
     page_styles = styles.getByName("PageStyles")
     oDefaultStyle = page_styles.getByName("Standard")
