@@ -27,7 +27,7 @@ def load_user(id):
 
 @app.route('/', methods=('GET', 'POST'))
 def home():
-    return render_template('index.html', title = 'PANAM - Medical Software')
+    return render_template('index.html', page_title = 'PANAM - Medical Software')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -51,7 +51,7 @@ def register():
                          form.specialisation.data)
         if status:
             return redirect(url_for('login'))
-    return render_template('register.html', form=form)
+    return render_template('register.html', form=form, page_title = 'Register')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -70,7 +70,7 @@ def login():
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('home')
         return redirect(next_page)
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, page_title = 'Login')
 
 
 @app.route('/fresh-login', methods=['GET', 'POST'])
@@ -87,7 +87,7 @@ def freshLogin():
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('home')
         return redirect(next_page)
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, page_title = 'Fresh login')
 
 
 @app.route('/logout')
@@ -108,7 +108,8 @@ def resetPassword():
         status =  updateUserPassword(current_user.id, hashed_password)
         if status:
             flash('Password changed succesfully')
-    return render_template('reset_password.html', form_password=form_password)
+    return render_template('reset_password.html', form_password=form_password,
+            page_title = 'Change password')
 
 
 @app.route('/profile/reset-personal', methods=('GET', 'POST'))
@@ -125,10 +126,19 @@ def resetPersonal():
         if status:
             flash('Personal data updated')
     return render_template('reset_personal.html',
-            form_personal=form_personal,title=data['title'],
-            first_name=data['first_name'],second_name=data['second_name'], phone=data['phone'],cell=data['cell'],fax=data['fax'],pob=data['pob'],city=data['city'],country=data['country'],
-            qualification=data['qualification'],
-            specialisation=data['specialisation'])
+            form_personal = form_personal,
+            title = data['title'],
+            first_name = data['first_name'],
+            second_name = data['second_name'],
+            phone = data['phone'],
+            cell = data['cell'],
+            fax = data['fax'],
+            pob = data['pob'],
+            city = data['city'],
+            country = data['country'],
+            qualification = data['qualification'],
+            specialisation = data['specialisation'],
+            page_title = 'Change personal')
 
 
 @app.route('/profile/reset-practice', methods=('GET', 'POST'))
@@ -142,9 +152,12 @@ def resetPractice():
                 form_practice.hpcna_number.data)
         if status:
             flash('Practice data updated')
-    return render_template('reset_practice.html', form_practice=form_practice,
-            practice_name=data['practice_name'],practice_number=data['practice_number'],
-            hpcna_number=data['hpcna_number'])
+    return render_template('reset_practice.html',
+            form_practice = form_practice,
+            practice_name = data['practice_name'],
+            practice_number = data['practice_number'],
+            hpcna_number = data['hpcna_number'],
+            page_title = 'Change practice info')
 
 
 @app.route('/profile/reset-banking', methods=('GET', 'POST'))
@@ -159,10 +172,13 @@ def resetBanking():
                 form_banking.bank.data)
         if status:
             flash('Banking data  updated')
-    return render_template('reset_banking.html', form_banking=form_banking,
-            bank_holder=data['bank_holder'], bank_account =
-            data['bank_account'], bank_branch = data['bank_branch'], bank =
-            data['bank'])
+    return render_template('reset_banking.html',
+            form_banking = form_banking,
+            bank_holder = data['bank_holder'],
+            bank_account = data['bank_account'],
+            bank_branch = data['bank_branch'],
+            bank = data['bank'],
+            page_title = 'Change banking info')
 
 
 
@@ -181,7 +197,11 @@ def newPatient():
     elif request.method == 'POST' and form_other.validate_on_submit():
         session["PATIENT"] = form_other.data
         return redirect('/patient/' + form_other.name.data + '/new-invoice')
-    return render_template('create.html',form_mva=form_mva, form_psemas = form_psemas, form_other = form_other)
+    return render_template('create.html',
+            form_mva=form_mva,
+            form_psemas = form_psemas,
+            form_other = form_other,
+            page_title = 'Create new patient')
 
 
 @app.route('/patient/<patient>', methods=('GET','POST'))
@@ -201,7 +221,14 @@ def invoiceOption(patient):
         return redirect('/patient/' + form_other.name.data + '/new-invoice')
     data = queryInvoice(current_user.uuid, patient)
     patient_data = getPatient(current_user.uuid, patient)
-    return  render_template('patient.html', patient_data=patient_data, data=data, patient=patient, form_mva=form_mva, form_psemas = form_psemas, form_other = form_other)
+    return render_template('patient.html',
+            patient_data = patient_data,
+            data = data,
+            patient = patient,
+            form_mva = form_mva,
+            form_psemas = form_psemas,
+            form_other = form_other,
+            page_title = 'Continue previous')
 
 
 @app.route('/patient/<patient>/new-invoice')
@@ -214,17 +241,49 @@ def newInvoice(patient):
     if (medical == 'mva'):
         po = session.get('PATIENT')['po']
         case = session.get('PATIENT')["case"]
-        return render_template('invoice.html', dates=None, treatments=None, form=form, patient = patient, tariff = tariff, po = po, case = case, date = date, medical = medical)
+        return render_template('invoice.html',
+                dates = None,
+                treatments = None,
+                form = form,
+                patient = patient,
+                tariff = tariff,
+                po = po,
+                case = case,
+                date = date,
+                medical = medical,
+                page_title = 'New ' + medical + ' invoice')
     elif(medical == 'psemas'):
         number = session.get('PATIENT')['number']
         main = session.get('PATIENT')['main']
         dob = session.get('PATIENT')['dob']
-        return render_template('invoice.html', dates=None, treatments=None,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
+        return render_template('invoice.html',
+                dates = None,
+                treatments = None,
+                form = form,
+                patient = patient,
+                tariff = tariff,
+                main = main,
+                dob = dob,
+                date = date,
+                medical = medical,
+                number = number,
+                page_title = 'New ' + medical + ' invoice')
     else:
         number = session.get('PATIENT')['number']
         main = session.get('PATIENT')['main']
         dob = session.get('PATIENT')['dob']
-        return render_template('invoice.html', dates=None, treatments=None,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
+        return render_template('invoice.html',
+                dates = None,
+                treatments = None,
+                form = form,
+                patient = patient,
+                tariff = tariff,
+                main = main,
+                dob = dob,
+                date = date,
+                medical = medical,
+                number = number,
+                page_title = 'New ' + medical + ' invoice')
 
 
 @app.route('/patient/<patient>/continue-invoice')
@@ -241,20 +300,55 @@ def continueInvoice(patient):
     if (medical == 'mva'):
         po = session.get('PATIENT')['po']
         case = session.get('PATIENT')["case"]
-        return render_template('invoice.html', modifiers=modifiers,
-                prices=prices, dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, po = po, case = case, date = date, medical = medical)
+        return render_template('invoice.html',
+                modifiers = modifiers,
+                prices = prices,
+                dates = dates,
+                treatments = treatments,
+                form = form,
+                patient = patient,
+                tariff = tariff,
+                po = po,
+                case = case,
+                date = date,
+                medical = medical,
+                page_title = 'Continue ' + medical + ' invoice')
     elif(medical == 'psemas'):
         number = session.get('PATIENT')['number']
         main = session.get('PATIENT')['main']
         dob = session.get('PATIENT')['dob']
-        return render_template('invoice.html',modifiers=modifiers,
-                prices=prices, dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
+        return render_template('invoice.html',
+                modifiers = modifiers,
+                prices = prices,
+                dates = dates,
+                treatments = treatments,
+                form = form,
+                patient = patient,
+                tariff = tariff,
+                main = main,
+                dob = dob,
+                date = date,
+                medical = medical,
+                number = number,
+                page_title = 'Continue ' + medical + ' invoice')
     else:
         number = session.get('PATIENT')['number']
         main = session.get('PATIENT')['main']
         dob = session.get('PATIENT')['dob']
-        return render_template('invoice.html', modifiers=modifiers,
-                prices=prices, dates=dates,treatments=treatments,form=form, patient = patient, tariff = tariff, main = main, dob = dob, date = date, medical = medical, number = number)
+        return render_template('invoice.html',
+                modifiers = modifiers,
+                prices = prices,
+                dates = dates,
+                treatments = treatments,
+                form = form,
+                patient = patient,
+                tariff = tariff,
+                main = main,
+                dob = dob,
+                date = date,
+                medical = medical,
+                number = number,
+                page_title = 'Continue ' + medical + ' invoice')
 
 
 @app.route('/generate-invoice', methods=['POST'])
