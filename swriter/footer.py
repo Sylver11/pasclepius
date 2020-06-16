@@ -1,4 +1,6 @@
 from com.sun.star.style.ParagraphAdjust import CENTER, LEFT, RIGHT, BLOCK, STRETCH
+from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK, APPEND_PARAGRAPH, LINE_BREAK
+
 
 def populateBottomTable(doc, text, data):
     bottom_table = doc.createInstance( "com.sun.star.text.TextTable" )
@@ -6,8 +8,16 @@ def populateBottomTable(doc, text, data):
     bottom_table.setName('footer_table')
     styles = doc.StyleFamilies
     page_styles = styles.getByName("PageStyles")
+    #print(page_styles)
     oDefaultStyle = page_styles.getByName("Standard")
+    #print(oDefaultStyle)
     oDefaultStyle.FooterIsOn = True
+    oDefaultStyle.setPropertyValue("BottomMargin", 500)
+    #some_text = 1000
+
+    #oDefaultStyle.getPropertyValue("FooteText")
+    
+    #print(some_text)
     footer_text = oDefaultStyle.getPropertyValue("FooterText")
     footer_cursor = footer_text.createTextCursor()
     footer_text = footer_text.insertTextContent(footer_cursor, bottom_table, 1)

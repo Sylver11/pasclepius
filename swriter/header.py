@@ -7,6 +7,7 @@ def populateTopText(cursor, doc, text, data):
     page_styles = styles.getByName("PageStyles")
     oDefaultStyle = page_styles.getByName("Standard")
     oDefaultStyle.HeaderIsOn = True
+    oDefaultStyle.setPropertyValue("TopMargin", 500)
     header_text = oDefaultStyle.getPropertyValue("HeaderText")
     header_cursor = header_text.createTextCursor()
     header_cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
@@ -18,4 +19,5 @@ def populateTopText(cursor, doc, text, data):
     header_text.insertString( header_cursor, data["qualification"], 0 )
     header_text.insertControlCharacter( header_cursor, PARAGRAPH_BREAK, False )
     header_text.insertString( header_cursor, data["specialisation"], 0 )
+    header_text.insertControlCharacter( header_cursor, PARAGRAPH_BREAK, False )
     return doc, text, cursor

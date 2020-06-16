@@ -40,7 +40,9 @@ def configureBorders(doc, text, items):
     get_diagnosis_table = text_tables.getByName('diagnosis_table')
     otabseps = get_diagnosis_table.TableColumnSeparators
     relativeTableWidth = get_diagnosis_table.getPropertyValue( "TableColumnRelativeSum" )
-    otabseps[0].Position = relativeTableWidth * 0.667
+    otabseps[0].Position = 1675
+    otabseps[1].Position = 6670
+    otabseps[2].Position = 8330
     get_diagnosis_table.TableColumnSeparators = otabseps
     get_diagnosis_table.setPropertyValue("TableColumnSeparators", otabseps)
     table_diagnosis_border = get_diagnosis_table.TableBorder
@@ -55,7 +57,7 @@ def configureBorders(doc, text, items):
 
     get_main_table =  text_tables.getByName('treatment_table')
     count = 0
-    col = ['A', 'B', 'C', 'D']
+    col = ['A', 'B', 'C', 'D', 'E']
     for i in items:
         count = count + 1
     for i in range(len(col)):
@@ -65,10 +67,10 @@ def configureBorders(doc, text, items):
         left_border_a_cell.LineWidth = 0
         table_main_cell.LeftBorder = left_border_a_cell
 
-    cRange = get_main_table.getCellRangeByName("A" + str(count +2) + ":D" + str(count + 2))
+    cRange = get_main_table.getCellRangeByName("A" + str(count +2) + ":E" + str(count + 2))
     cRange.setPropertyValue( "CharFontName", "Liberation Serif" )
-    cRange.setPropertyValue( "CharHeight", 10.0 )
-    table_main_cell = get_main_table.getCellByName("D" + str(count+2))
+    #cRange.setPropertyValue( "CharHeight", 10.0 )
+    table_main_cell = get_main_table.getCellByName("E" + str(count+2))
     right_border_a_cell = table_main_cell.RightBorder
     right_border_a_cell.OuterLineWidth = 0
     right_border_a_cell.LineWidth = 0
@@ -76,8 +78,8 @@ def configureBorders(doc, text, items):
     table_main_border = get_main_table.TableBorder
     table_main_border.BottomLine = no_line
     get_main_table.TableBorder = table_main_border
-    
-    
+
+
     get_bottom_table =  text_tables.getByName('footer_table')
     table_bottom_border = get_bottom_table.TableBorder
     table_bottom_border.Distance = 50

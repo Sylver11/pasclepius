@@ -6,28 +6,30 @@ from com.sun.star.awt.FontWeight import BOLD as FW_BOLD
 
 def createTable(doc, text, cursor, unitCount):
     table = doc.createInstance( "com.sun.star.text.TextTable" )
-    table.initialize(unitCount + 2, 4)
+    table.initialize(unitCount + 2, 5)
     text.insertTextContent( cursor, table, 1 )
     table.setName('treatment_table')
     otabseps = table.TableColumnSeparators
     relativeTableWidth = table.getPropertyValue( "TableColumnRelativeSum" )
-    otabseps[0].Position = relativeTableWidth * 0.12
-    otabseps[1].Position = relativeTableWidth * 0.21
-    otabseps[2].Position = relativeTableWidth * 0.90
+    otabseps[0].Position = 1080
+    otabseps[1].Position = 6675
+    otabseps[2].Position = 7755
+    otabseps[3].Position = 8835
     table.TableColumnSeparators = otabseps
     table.setPropertyValue("TableColumnSeparators", otabseps)
-    cRange = table.getCellRangeByName("A1:D1")
+    cRange = table.getCellRangeByName("A1:E1")
     cRange.setPropertyValue( "CharFontName", "Liberation Serif" )
     cRange.setPropertyValue( "CharHeight", 10.0 )
-    insertTextIntoCell( table, "A1", "Date of Service" )
-    insertTextIntoCell( table, "B1", "Namaf Code" )
-    insertTextIntoCell( table, "C1", "Description")
-    insertTextIntoCell( table, "D1", "Amount")
-    insertTextIntoCell( table, "C" + str(2 + unitCount), "Total N$: ")
-    cursor_right = table.createCursorByCellName("C" + str(2 + unitCount))
+    insertTextIntoCell( table, "A1", "NAMAF Code" )
+    insertTextIntoCell( table, "B1", "Description" )
+    insertTextIntoCell( table, "C1", "Units")
+    insertTextIntoCell( table, "D1", "Date")
+    insertTextIntoCell( table, "E1", "Value")
+    insertTextIntoCell( table, "D" + str(2 + unitCount), "Total N$: ")
+    cursor_right = table.createCursorByCellName("D" + str(2 + unitCount))
     cursor_right.setPropertyValue( "ParaAdjust", RIGHT )
     bottom_range = table.getCellRangeByName("A" + str(2 + unitCount)
-        + ":D" + str(2+ unitCount))
+        + ":E" + str(2+ unitCount))
     bottom_range.setPropertyValue("CharWeight", FW_BOLD)
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
     return table, unitCount
@@ -49,17 +51,18 @@ def treatmentTable(doc, text, cursor, items, treatments, price, dates, modifier=
             modifier.append('')
     for a, b, c, d, e in zip(enumerate(treatments), dates, items, price, modifier):
         if e == '14' or e == '13' or e == '10':
-            insertTextIntoCell(table, "B" + str(a[0] + 2), str(c + " (0" + e + ")"))
+            insertTextIntoCell(table, "A" + str(a[0] + 2), str(c + " (0" + e + ")"))
         elif e == '6' or e == '8' or e == '9':
-            insertTextIntoCell(table, "B" + str(a[0] + 2), str(c + " (00" + e + ")"))
+            insertTextIntoCell(table, "A" + str(a[0] + 2), str(c + " (00" + e + ")"))
         else:
-            insertTextIntoCell(table, "B" + str(a[0] + 2), c)
-        insertTextIntoCell(table, "A" + str(a[0] + 2), b)
-        insertTextIntoCell(table, "C" + str(a[0] + 2), a[1]['description'])
-        insertTextIntoCell(table, "D" + str(a[0] + 2), d)
-    cell_sum = table.getCellByName("D" + str(2 + unitCount))
-    cell_sum.setFormula("=sum <D2:D" + str(1 + unitCount) + ">")
-    cRange = table.getCellRangeByName("D2:D" + str(2 + unitCount) )
+            insertTextIntoCell(table, "A" + str(a[0] + 2), c)
+        insertTextIntoCell(table, "D" + str(a[0] + 2), b)
+        insertTextIntoCell(table, "B" + str(a[0] + 2), a[1]['description'])
+        insertTextIntoCell(table, "C" + str(a[0] + 2), a[1]['units'])
+        insertTextIntoCell(table, "E" + str(a[0] + 2), d)
+    cell_sum = table.getCellByName("E" + str(2 + unitCount))
+    cell_sum.setFormula("=sum <E2:E" + str(1 + unitCount) + ">")
+    cRange = table.getCellRangeByName("E2:E" + str(2 + unitCount) )
     xNumberFormats = doc.NumberFormats
     xLocale = Locale('en', 'US', '')
     format_string = '#,##0.00#'#[$€-407];[RED]-#,##0.00 [$€-407]'
