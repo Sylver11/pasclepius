@@ -43,7 +43,6 @@ def updateUserPassword(email, password):
     return status
 
 def updateUserLayout(email, phone, fax, hospital, diagnosis):
-
     if phone and fax and hospital and diagnosis:
         layout_code = 9
     elif phone and fax and hospital:

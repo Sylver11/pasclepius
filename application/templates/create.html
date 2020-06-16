@@ -19,6 +19,20 @@
         {{ form_mva.name.label(for="name") }} {{ form_mva.name(class_="form-control w-25 p-3") }}
         {{ form_mva.case.label(for="case") }} {{ form_mva.case(class_="form-control w-25 p-3") }}
         {{ form_mva.po.label }} {{ form_mva.po(class_="form-control w-25 p-3") }}
+        {% if 4 <= layout_code <= 9 %}
+            {{ form_mva.hospital.label }} {{ form_mva.hospital(class_="form-control w-25 p-3") }}
+            {{ form_mva.admission.label }} {{ form_mva.admission(class_="form-control w-25 p-3") }}
+            {{ form_mva.discharge.label }} {{ form_mva.discharge(class_="form-control w-25 p-3") }}
+        {% endif %}
+        {% if 7 <= layout_code <= 12 %}
+            {{ form_mva.diagnosis.label }} {{ form_mva.diagnosis(class_="form-control w-25 p-3") }}
+            {{ form_mva.diagnosis_date.label }} {{ form_mva.diagnosis_date(class_="form-control w-25 p-3") }}
+            {{ form_mva.procedure.label }} {{ form_mva.procedure(class_="form-control w-25 p-3") }}
+            {{ form_mva.procedure_date.label }} {{ form_mva.procedure_date(class_="form-control w-25 p-3") }}
+            {{ form_mva.implants.label }} {{ form_mva.implants(class_="form-control w-25 p-3") }}
+            {{ form_mva.intra_op.label }} {{ form_mva.intra_op(class_="form-control w-25") }}
+            {{ form_mva.post_op.label }} {{ form_mva.post_op(class_="form-control w-25 p-3") }}
+        {% endif %}
         {{ form_mva.date.label }} {{ form_mva.date(id='date_mva', class_="form-control w-25 p-3") }}
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}

@@ -206,6 +206,8 @@ def resetLayout():
 @app.route('/new-patient', methods=('GET', 'POST'))
 @login_required
 def newPatient():
+    data = checkUser(current_user.id)
+    layout_code = data['invoice_layout']
     form_mva = Patient_mva()
     form_psemas = Patient_psemas()
     form_other = Patient_other()
@@ -219,9 +221,10 @@ def newPatient():
         session["PATIENT"] = form_other.data
         return redirect('/patient/' + form_other.name.data + '/new-invoice')
     return render_template('create.html',
-            form_mva=form_mva,
+            form_mva = form_mva,
             form_psemas = form_psemas,
             form_other = form_other,
+            layout_code = layout_code,
             page_title = 'Create new patient')
 
 

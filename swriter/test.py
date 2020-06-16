@@ -9,7 +9,7 @@ def testing():
                 '19.06.2020', '17.06.2020'], 'patient': {'diagnosis':
                     'Contracture Lt hand', 'diagnosis_date': '19.02.2020',
                     'procedure': 'Z-plasty + Exorticulation', 'procedure_date':
-                    '24.02.2020', 'implants': '', 'intra-op':'yes', 'post-op':
+                    '24.02.2020', 'implants': '', 'intra_op':'yes', 'post_op':
                     'X-ray', 'hospital': 'Oshakati State Hospital', 'admission': '19.02.2020',
                 'discharge':'28.02.2020', 'csrf_token': 'IjU0Mjk1NDA4M2NhN2U5ODljNmQ4MGI5NzBmYTYwNDhjYzBmM2IzNzMi.XuaAiw.zgZzXdzZranOAmHGoBd_9uXTt-c',
                 'date': '16.06.2020', 'dob': '04.04.1992', 'main': 'Andreas Voigt', 'medical': 'Momentum ', 'name': 'Justus Voigt',

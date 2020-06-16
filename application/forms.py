@@ -185,6 +185,16 @@ class Patient_mva(FlaskForm):
     po = IntegerField(u'PO', validators=[DataRequired()]) #widget=NumberInput(min=111111,max=999999))
     tariff = SelectField(u'Tariff', choices = choices, validators=[DataRequired()])
     date =  StringField(u'Invoice created', validators=[DataRequired()])
+    hospital = StringField('Hospital')
+    admission = StringField('Date of admission')
+    discharge = StringField('Date of discharge')
+    diagnosis = StringField('Diagnosis')
+    diagnosis_date = StringField('Date of diagnosis')
+    procedure = StringField('Procedure')
+    procedure_date = StringField('Date of procedure')
+    implants = StringField('Implants')
+    intra_op = SelectField('Intra-OP imaging', choices = [('yes','Yes'),('no','No')])
+    post_op =  StringField('Post-OP imaging')
     submit = SubmitField('Create invoice')
 
 

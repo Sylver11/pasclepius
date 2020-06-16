@@ -38,9 +38,9 @@ def diagnosisTable(doc, text, cursor, patient):
     sixth_table_text.setString("Intra-OP Imaging\nPost-OP Imaging")
     sixth_table_text.setPropertyValue( "CharWeight", FW_BOLD)
     sixth_sixth = table.getCellByName("D3")
-    sixth_sixth.setString(patient['intra-op']
+    sixth_sixth.setString(patient['intra_op']
                 + "\n"
-                + patient['post-op'])
+                + patient['post_op'])
     text.insertControlCharacter( cursor, PARAGRAPH_BREAK, False )
     return doc, text, cursor
 
