@@ -4,7 +4,7 @@ from datetime import datetime
 def checkUser(email):
     sql = """SELECT password, uuid_text, email, title, first_name, second_name, phone, cell, fax, pob, city, country, bank_holder,
     bank_account, bank_branch, bank, practice_name, practice_number,
-    hpcna_number, qualification, specialisation FROM users WHERE email = '{}'
+    hpcna_number, qualification, specialisation, invoice_layout FROM users WHERE email = '{}'
     """.format(email)
     conn = pool.connection()
     cursor = conn.cursor()
@@ -42,6 +42,41 @@ def updateUserPassword(email, password):
     status = True
     return status
 
+def updateUserLayout(email, phone, fax, hospital, diagnosis):
+
+    if phone and fax and hospital and diagnosis:
+        layout_code = 9
+    elif phone and fax and hospital:
+        layout_code = 6
+    elif phone and fax and diagnosis:
+        layout_code = 12
+    elif phone and hospital and diagnosis:
+        layout_code = 8
+    elif phone and fax:
+        layout_code = 3
+    elif phone and hospital:
+        layout_code = 5
+    elif phone and diagnosis:
+        layout_code = 11
+    elif hospital and diagnosis:
+        layout_code = 7
+    elif phone:
+        layout_code = 2
+    elif hospital:
+        layout_code = 4
+    elif diagnosis:
+        layout_code = 10
+    else:
+        layout_code = 1
+    sql = """UPDATE users SET invoice_layout = '{}' WHERE
+    email = '{}'""".format(layout_code, email)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    cursor.close()
+    conn.close()
+    status = True
+    return status
 
 def updateUserPractice(email, practice_name, practice_number, hpcna_number):
     sql = """ UPDATE users SET practice_name = '{}', practice_number = '{}',

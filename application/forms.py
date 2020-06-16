@@ -1,11 +1,11 @@
 from flask_wtf import FlaskForm
 import email_validator
-from wtforms import StringField, PasswordField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField, DecimalField, TextAreaField
+from wtforms import BooleanField, StringField, PasswordField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField, DecimalField, TextAreaField
 from wtforms.fields.html5 import DecimalField
 from wtforms_components.fields import SelectField
 from wtforms.validators import DataRequired, Length, Email, Required, NumberRange, ValidationError
 from wtforms.widgets.html5 import NumberInput
-from wtforms.widgets import TextArea
+from wtforms.widgets import TextArea, CheckboxInput
 from wtforms import Form as NoCsrfForm
 from application.database_io import getTreatments, getAllTariffs
 from application.database_users import checkDuplicateEmail
@@ -157,6 +157,12 @@ class updatePasswordForm(FlaskForm):
     confirm = PasswordField('Repeat Password')
     submit = SubmitField('Change Password')
 
+class updateLayoutForm(FlaskForm):
+    phone =  BooleanField('Landline')
+    fax = BooleanField('Fax')
+    hospital = BooleanField('Hospital & Admission Information')
+    diagnosis = BooleanField('Diagnosis & Procedure')
+    submit = SubmitField('Update Invoice Layout')
 
 class LoginForm(FlaskForm):
     """User Login Form."""

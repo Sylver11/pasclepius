@@ -1,0 +1,90 @@
+{% include 'profile.html' %}
+{% block content %}
+    {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+            <div class="tab-pane" id="layout">
+                <form method="post">
+                    {{ form_layout.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form_layout.phone.label(class_="required") }}
+                        {{ form_layout.phone(class="form-control w-25 p-3") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_layout.fax.label(class_="required") }}
+                        {{ form_layout.fax( class="form-control w-25 p-3") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_layout.hospital.label(class_="required") }}
+                        {{ form_layout.hospital(class="form-control w-25 p-3") }}
+                    </div>
+                        <div class="form-group">
+                        {{ form_layout.diagnosis.label(class_="required") }}
+                        {{ form_layout.diagnosis(class="form-control w-25 p-3") }}
+                    </div>
+                    {{ form_layout.submit }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        if ('{{layout_code}}' == 1){
+            console.log("it is one")
+        }
+        else if ('{{layout_code}}' == 2){
+            $("#phone").prop("checked", true);
+        }
+        else if ('{{layout_code}}' == 3){
+            $("#phone").prop("checked", true);
+            $("#fax").prop("checked", true);
+        }
+        else if ('{{layout_code}}' == 4){
+            $("#hospital").prop("checked", true);
+        }
+        else if ('{{layout_code}}' == 5){
+            $("#phone").prop("checked", true);
+            $("#hospital").prop("checked", true);
+        }
+        else if ('{{layout_code}}' == 6){
+            $("#phone").prop("checked", true);
+            $("#fax").prop("checked", true);
+            $("#hospital").prop("checked", true);
+        }
+        else if ('{{layout_code}}' == 7){
+            $("#diagnosis").prop("checked", true);
+            $("#hospital").prop("checked", true);
+        }
+        else if ('{{layout_code}}' == 8){
+            $("#phone").prop("checked", true);
+            $("#diagnosis").prop("checked", true);
+            $("#hospital").prop("checked", true);
+        }
+        else if ('{{layout_code}}' == 9){
+            $("#phone").prop("checked", true);
+            $("#fax").prop("checked", true);
+            $("#diagnosis").prop("checked", true);
+            $("#hospital").prop("checked", true);
+        }
+        else if ('{{layout_code}}' == 10){
+            $("#diagnosis").prop("checked", true);
+        }
+        else if ('{{layout_code}}' == 11){
+            $("#phone").prop("checked", true);
+            $("#diagnosis").prop("checked", true);
+        }
+        else if ('{{layout_code}}' == 12){
+            $("#phone").prop("checked", true);
+            $("#fax").prop("checked", true);
+            $("#diagnosis").prop("checked", true);
+        }
+    });
+    </script>
+
+ {% endblock %}

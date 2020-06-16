@@ -2,10 +2,10 @@ import os
 from flask import current_app as app
 from flask import render_template, Response, request, session, jsonify, redirect, url_for, send_file, flash
 from werkzeug.urls import url_parse
-from application.forms import updateBankingForm, updatePracticeForm,Patient_mva, Patient_psemas, Patient_other,getTreatmentForm, RegistrationForm, LoginForm, updatePasswordForm, updatePersonalForm
+from application.forms import updateBankingForm, updatePracticeForm,Patient_mva, Patient_psemas, Patient_other,getTreatmentForm, RegistrationForm, LoginForm, updatePasswordForm, updatePersonalForm,  updateLayoutForm
 from application.database_io import getTreatmentByItem, getValueTreatments, getMultipleValues, getTreatmentByGroup, liveSearchTreatments
 from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch, getPatient
-from application.database_users import addUser, checkUser, updateUserPassword, updateUserPersonal, updateUserPractice, updateUserBanking
+from application.database_users import addUser, checkUser, updateUserLayout, updateUserPassword, updateUserPersonal, updateUserPractice, updateUserBanking
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 from application.models import User, Password
@@ -180,6 +180,27 @@ def resetBanking():
             bank = data['bank'],
             page_title = 'Change banking info')
 
+
+
+@app.route('/profile/reset-layout', methods=('GET', 'POST'))
+def resetLayout():
+    data = checkUser(current_user.id)
+    layout_code = data['invoice_layout']
+    form_layout = updateLayoutForm()
+    if request.method == 'POST' and form_layout.validate():
+        print(form_layout.phone.data)
+        print(form_layout.hospital.data)
+        status = updateUserLayout(current_user.id,
+               form_layout.phone.data,
+               form_layout.fax.data,
+               form_layout.hospital.data,
+               form_layout.diagnosis.data)
+        if status:
+           flash('Invoice Layout updated')
+    return render_template('reset_layout.html',
+            form_layout = form_layout,
+            layout_code = layout_code,
+            page_title = 'Change Invoice Layout')
 
 
 @app.route('/new-patient', methods=('GET', 'POST'))
