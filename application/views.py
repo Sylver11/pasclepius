@@ -262,6 +262,8 @@ def newInvoice(patient):
     tariff = (session.get('PATIENT')["tariff"])
     date = session.get('PATIENT')['date']
     form = getTreatmentForm(tariff)
+    data = checkUser(current_user.id)
+    layout_code = data['invoice_layout']
     if (medical == 'mva'):
         po = session.get('PATIENT')['po']
         case = session.get('PATIENT')["case"]
@@ -275,6 +277,7 @@ def newInvoice(patient):
                 case = case,
                 date = date,
                 medical = medical,
+                layout_code = layout_code,
                 page_title = 'New ' + medical + ' invoice')
     elif(medical == 'psemas'):
         number = session.get('PATIENT')['number']
@@ -291,6 +294,7 @@ def newInvoice(patient):
                 date = date,
                 medical = medical,
                 number = number,
+                layout_code = layout_code,
                 page_title = 'New ' + medical + ' invoice')
     else:
         number = session.get('PATIENT')['number']
@@ -307,6 +311,7 @@ def newInvoice(patient):
                 date = date,
                 medical = medical,
                 number = number,
+                layout_code = layout_code,
                 page_title = 'New ' + medical + ' invoice')
 
 
@@ -497,6 +502,16 @@ def downloadInvoice(random):
     url = getInvoiceURL(current_user.uuid, name, date)
     path = str(url['url']) + ".odt"
     return send_file(path, as_attachment=True)
+
+@app.route('/update-session', methods=['GET'])
+def updateSession():
+    if 'GET' == request.method:
+        description = request.args.get('description')
+        item = request.args.get('item')
+        session['PATIENT'][description] = item
+        #session.pop('PATIENT', None)
+        print(session.get('PATIENT')['medical'])
+        return 'success'
 
 
 @app.route('/session')

@@ -17,6 +17,7 @@
         {{ form_mva.tariff.label }} {{ form_mva.tariff(class_="tariff custom-select w-25") }}
         <br>
         {{ form_mva.name.label(for="name") }} {{ form_mva.name(class_="form-control w-25 p-3") }}
+        
         {{ form_mva.case.label(for="case") }} {{ form_mva.case(class_="form-control w-25 p-3") }}
         {{ form_mva.po.label }} {{ form_mva.po(class_="form-control w-25 p-3") }}
         {% if 4 <= layout_code <= 9 %}
@@ -36,6 +37,11 @@
         {{ form_mva.date.label }} {{ form_mva.date(id='date_mva', class_="form-control w-25 p-3") }}
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
+        {% for field, errors in form_mva.errors.items() %}
+        <div class="alert alert-error">
+            {{ form_mva[field].label }}: {{ ', '.join(errors) }}
+        </div>
+        {% endfor %}
     </form>  
     <form method=post autocomplete="off" id="newInvoice_psemas" class="psemas" style="display:none"> 
         {{ form_psemas.hidden_tag() }}
@@ -47,6 +53,20 @@
         {{ form_psemas.main.label }} {{ form_psemas.main(class_="form-control w-25 p-3") }}
         {{ form_psemas.dob.label }} {{ form_psemas.dob(class_="form-control w-25 p-3") }}
         {{ form_psemas.number.label }} {{ form_psemas.number(class_="form-control w-25 p-3") }}
+        {% if 4 <= layout_code <= 9 %}
+            {{ form_psemas.hospital.label }} {{ form_psemas.hospital(class_="form-control w-25 p-3") }}
+            {{ form_psemas.admission.label }} {{ form_psemas.admission(class_="form-control w-25 p-3") }}
+            {{ form_psemas.discharge.label }} {{ form_psemas.discharge(class_="form-control w-25 p-3") }}
+        {% endif %}
+        {% if 7 <= layout_code <= 12 %}
+            {{ form_psemas.diagnosis.label }} {{ form_psemas.diagnosis(class_="form-control w-25 p-3") }}
+            {{ form_psemas.diagnosis_date.label }} {{ form_psemas.diagnosis_date(class_="form-control w-25 p-3") }}
+            {{ form_psemas.procedure.label }} {{ form_psemas.procedure(class_="form-control w-25 p-3") }}
+            {{ form_psemas.procedure_date.label }} {{ form_psemas.procedure_date(class_="form-control w-25 p-3") }}
+            {{ form_psemas.implants.label }} {{ form_psemas.implants(class_="form-control w-25 p-3") }}
+            {{ form_psemas.intra_op.label }} {{ form_psemas.intra_op(class_="form-control w-25") }}
+            {{ form_psemas.post_op.label }} {{ form_psemas.post_op(class_="form-control w-25 p-3") }}
+        {% endif %}
         {{ form_psemas.date.label }} {{ form_psemas.date(id='date_psemas', class_="form-control w-25 p-3") }}
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
@@ -62,6 +82,20 @@
         {{ form_other.main.label }} {{ form_other.main(class_="form-control w-25 p-3") }}
         {{ form_other.dob.label }} {{ form_other.dob(class_="form-control w-25 p-3") }}
         {{ form_other.number.label }} {{ form_other.number(class_="form-control w-25 p-3") }}
+        {% if 4 <= layout_code <= 9 %}
+            {{ form_other.hospital.label }} {{ form_other.hospital(class_="form-control w-25 p-3") }}
+            {{ form_other.admission.label }} {{ form_other.admission(class_="form-control w-25 p-3") }}
+            {{ form_other.discharge.label }} {{ form_other.discharge(class_="form-control w-25 p-3") }}
+        {% endif %}
+        {% if 7 <= layout_code <= 12 %}
+            {{ form_other.diagnosis.label }} {{ form_other.diagnosis(class_="form-control w-25 p-3") }}
+            {{ form_other.diagnosis_date.label }} {{ form_other.diagnosis_date(class_="form-control w-25 p-3") }}
+            {{ form_other.procedure.label }} {{ form_other.procedure(class_="form-control w-25 p-3") }}
+            {{ form_other.procedure_date.label }} {{ form_other.procedure_date(class_="form-control w-25 p-3") }}
+            {{ form_other.implants.label }} {{ form_other.implants(class_="form-control w-25 p-3") }}
+            {{ form_other.intra_op.label }} {{ form_other.intra_op(class_="form-control w-25") }}
+            {{ form_other.post_op.label }} {{ form_other.post_op(class_="form-control w-25 p-3") }}
+        {% endif %}
         {{ form_other.date.label }} {{ form_other.date(id='date_other', class_="form-control w-25 p-3") }}
         <br>
         {{ form_other.submit(class_="btn btn-success") }}

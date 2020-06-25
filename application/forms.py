@@ -193,7 +193,8 @@ class Patient_mva(FlaskForm):
     procedure = StringField('Procedure')
     procedure_date = StringField('Date of procedure')
     implants = StringField('Implants')
-    intra_op = SelectField('Intra-OP imaging', choices = [('yes','Yes'),('no','No')])
+    intra_op = SelectField('Intra-OP imaging', choices = [('',
+    'Select Intra-OP'),('yes','Yes'),('no','No')], default='')
     post_op =  StringField('Post-OP imaging')
     submit = SubmitField('Create invoice')
 
@@ -214,6 +215,16 @@ class Patient_psemas(FlaskForm):
     tariff = SelectField(u'Tariff', choices = choices,
                          validators=[DataRequired()] )
     date =  StringField(u'Invoice created', validators=[DataRequired()])
+    hospital = StringField('Hospital')
+    admission = StringField('Date of admission')
+    discharge = StringField('Date of discharge')
+    diagnosis = StringField('Diagnosis')
+    diagnosis_date = StringField('Date of diagnosis')
+    procedure = StringField('Procedure')
+    procedure_date = StringField('Date of procedure')
+    implants = StringField('Implants')
+    intra_op = SelectField('Intra-OP imaging', choices = [('yes','Yes'),('no','No')])
+    post_op =  StringField('Post-OP imaging')
     submit = SubmitField('Create invoice')
 
 class Patient_other(FlaskForm):
@@ -232,4 +243,14 @@ class Patient_other(FlaskForm):
         choices.append((_tariff, _tariff_))
     tariff = SelectField(u'Tariff', choices = choices,
                          validators=[DataRequired()] )
+    hospital = StringField('Hospital')
+    admission = StringField('Date of admission')
+    discharge = StringField('Date of discharge')
+    diagnosis = StringField('Diagnosis')
+    diagnosis_date = StringField('Date of diagnosis')
+    procedure = StringField('Procedure')
+    procedure_date = StringField('Date of procedure')
+    implants = StringField('Implants')
+    intra_op = SelectField('Intra-OP imaging', choices = [('yes','Yes'),('no','No')])
+    post_op =  StringField('Post-OP imaging')
     submit = SubmitField('Create invoice')

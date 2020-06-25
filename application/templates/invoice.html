@@ -4,11 +4,26 @@
     <br>
     <h3>Patient Name: {{patient}}</h3>
         {% if medical =='mva' %}
-            <p>Medical Aid: {{medical}}<br>
-            Tariff: {{tariff}}<br>
-            Case Number: {{case}}<br>
-            PO: {{po}}<br>
-            Invoice created: {{date}}</p>    
+        <form action="">
+            <p>Medical Aid: {{ session['PATIENT']['medical'] }}</p><input class="mva_input" style="display: none;" type="text" name="medical" value="{{ session['PATIENT']['medical'] }}"><button class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input style="display:none;" class="change_session" type="button" value="Change">
+            <p>Tariff: {{ session['PATIENT']['tariff'] }}</p><input class="mva_input" style="display: none;" type="text" name="tariff" value="{{ session['PATIENT']['tariff'] }}">
+            <p>Case Number: {{ session['PATIENT']['case'] }}</p><input class="mva_input" style="display: none;"  type="text" name="number" value="{{ session['PATIENT']['case'] }}">
+            <p>PO: {{ session['PATIENT']['po'] }}</p><input style="display: none;" type="text" name="po" value="{{ session['PATIENT']['po'] }}">
+            {% if 4 <= layout_code <= 9 %}
+            <p>Hopital: {{ session['PATIENT']['hopital'] }}</p><input class="mva_input" style="display: none;" type="text" name="hospital" value="{{ session['PATIENT']['hopital'] }}">
+            <p>Admission Date: {{ session['PATIENT']['admission'] }}</p><input class="mva_input" style="display: none;" type="text" name="admission" value="{{ session['PATIENT']['admission'] }}">
+            <p>Discharge Date: {{ session['PATIENT']['discharge'] }}</p><input class="mva_input" style="display: none;" type="text" name="discharge" value="{{ session['PATIENT']['discharge'] }}">
+            {% elif 7 <= layout_code <= 12  %}
+            <p>Diagnosis: {{ session['PATIENT']['diagnosis'] }}</p><input class="mva_input" style="display: none;"  type="text" name="diagnosis" value="{{ session['PATIENT']['diagnosis']}}">
+            <p>Diagnosis Date: {{ session['PATIENT']['diagnosis_date'] }}</p><input class="mva_input" style="display: none;" type="text" name="diagnosis_date" value="{{ session['PATIENT']['diagnosis_date'] }}">
+            <p>Procedure: {{ session['PATIENT']['procedure'] }}</p><input class="mva_input" style="display: none;" type="text" name="procedure" value="{{ session['PATIENT']['procedure']}}">
+            <p>Procedure Date: {{ session['PATIENT']['procedure_date'] }}</p><input class="mva_input" style="display: none;"  type="text" name="procedure_date" value="{{ session['PATIENT']['procedure_date'] }}">
+            <p>Implants: {{ session['PATIENT']['implants'] }}</p><input class="mva_input" style="display: none;"  type="text" name="implants" value="{{ session['PATIENT']['implants'] }}">
+            <p>Intra-OP Imaging: {{ session['PATIENT']['intra_op'] }}</p><input class="mva_input" style="display: none;" type="text" name="intra_op" value="{{ session['PATIENT']['intra_op'] }}">
+            <p>Post-OP Imaging: {{ session['PATIENT']['post_op'] }}</p><input class="mva_input" style="display: none;" type="text" name="post_op" value="{{ session['PATIENT']['post_op'] }}">
+        {% endif %}
+            <p>Invoice created: {{ session['PATIENT']['date'] }}</p><input class="mva_input" style="display: none;" type="text" name="date" value="{{ session['PATIENT']['date'] }}">  
+        </form>
         {% elif medical =='psemas' %}
             <p>Medical Aid: {{medical}}<br>
             Tariff: {{tariff}}<br>
@@ -682,6 +697,29 @@ $(document).ready(function(){
     $(document).on("click", ".datepicker", function() {
         $(this).removeClass('hasDatepicker');
         $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" );
+    });
+    $(document).on("click", ".unhide_change", function(event) {
+        event.preventDefault();
+        $(this).hide()
+        $(this).prev().show();
+        $(this).next().show()
+    });
+    $(document).on("click", ".change_session", function(e) {
+        e.preventDefault();
+        var description = $(this).prev().prev().attr("name")
+        var item = $(this).prev().prev().val()
+        $.ajax({
+                type: "GET",
+                url: '/update-session',
+                data: {description: description, item: item}, 
+                dataType: 'json',
+                success: function (returnData) {
+                    console.log(returnData)
+                }
+        })
+        // console.log($(this).prev().prev().attr("name"));
+        // console.log($(this).prev().prev().val())
+ 
     });
 
     if('{{treatments}}' !== 'None'){
