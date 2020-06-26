@@ -12,6 +12,7 @@ from application.models import User, Password
 from flask_login import current_user, login_user, logout_user, UserMixin, login_required, fresh_login_required
 from . import login_manager
 from datetime import datetime
+import datetime as datetime2
 from jinja2 import Template
 from decimal import *
 import subprocess 
@@ -181,7 +182,6 @@ def resetBanking():
             page_title = 'Change banking info')
 
 
-
 @app.route('/profile/reset-layout', methods=('GET', 'POST'))
 def resetLayout():
     data = checkUser(current_user.id)
@@ -260,57 +260,14 @@ def invoiceOption(patient):
 def newInvoice(patient):
     medical = (session.get('PATIENT')["medical"])
     tariff = (session.get('PATIENT')["tariff"])
-    date = session.get('PATIENT')['date']
     form = getTreatmentForm(tariff)
     data = checkUser(current_user.id)
     layout_code = data['invoice_layout']
-    if (medical == 'mva'):
-        po = session.get('PATIENT')['po']
-        case = session.get('PATIENT')["case"]
-        return render_template('invoice.html',
+    return render_template('invoice.html',
                 dates = None,
                 treatments = None,
                 form = form,
                 patient = patient,
-                tariff = tariff,
-                po = po,
-                case = case,
-                date = date,
-                medical = medical,
-                layout_code = layout_code,
-                page_title = 'New ' + medical + ' invoice')
-    elif(medical == 'psemas'):
-        number = session.get('PATIENT')['number']
-        main = session.get('PATIENT')['main']
-        dob = session.get('PATIENT')['dob']
-        return render_template('invoice.html',
-                dates = None,
-                treatments = None,
-                form = form,
-                patient = patient,
-                tariff = tariff,
-                main = main,
-                dob = dob,
-                date = date,
-                medical = medical,
-                number = number,
-                layout_code = layout_code,
-                page_title = 'New ' + medical + ' invoice')
-    else:
-        number = session.get('PATIENT')['number']
-        main = session.get('PATIENT')['main']
-        dob = session.get('PATIENT')['dob']
-        return render_template('invoice.html',
-                dates = None,
-                treatments = None,
-                form = form,
-                patient = patient,
-                tariff = tariff,
-                main = main,
-                dob = dob,
-                date = date,
-                medical = medical,
-                number = number,
                 layout_code = layout_code,
                 page_title = 'New ' + medical + ' invoice')
 
@@ -318,71 +275,31 @@ def newInvoice(patient):
 @app.route('/patient/<patient>/continue-invoice')
 @login_required
 def continueInvoice(patient):
+    data = checkUser(current_user.id)
+    layout_code = data['invoice_layout']
     medical = (session.get('PATIENT')["medical"])
     tariff = (session.get('PATIENT')["tariff"])
-    date = session.get('PATIENT')['date']
     modifiers = session.get('PATIENT')['modifiers']
     treatments = session.get('PATIENT')['treatments']
     prices = session.get('PATIENT')['values']
     dates = session.get('PATIENT')['dates']
     form = getTreatmentForm(tariff) 
-    if (medical == 'mva'):
-        po = session.get('PATIENT')['po']
-        case = session.get('PATIENT')["case"]
-        return render_template('invoice.html',
+    return render_template('invoice.html',
                 modifiers = modifiers,
                 prices = prices,
                 dates = dates,
                 treatments = treatments,
                 form = form,
                 patient = patient,
-                tariff = tariff,
-                po = po,
-                case = case,
-                date = date,
-                medical = medical,
-                page_title = 'Continue ' + medical + ' invoice')
-    elif(medical == 'psemas'):
-        number = session.get('PATIENT')['number']
-        main = session.get('PATIENT')['main']
-        dob = session.get('PATIENT')['dob']
-        return render_template('invoice.html',
-                modifiers = modifiers,
-                prices = prices,
-                dates = dates,
-                treatments = treatments,
-                form = form,
-                patient = patient,
-                tariff = tariff,
-                main = main,
-                dob = dob,
-                date = date,
-                medical = medical,
-                number = number,
-                page_title = 'Continue ' + medical + ' invoice')
-    else:
-        number = session.get('PATIENT')['number']
-        main = session.get('PATIENT')['main']
-        dob = session.get('PATIENT')['dob']
-        return render_template('invoice.html',
-                modifiers = modifiers,
-                prices = prices,
-                dates = dates,
-                treatments = treatments,
-                form = form,
-                patient = patient,
-                tariff = tariff,
-                main = main,
-                dob = dob,
-                date = date,
-                medical = medical,
-                number = number,
+                layout_code = layout_code,
                 page_title = 'Continue ' + medical + ' invoice')
 
 
 @app.route('/generate-invoice', methods=['POST'])
 @login_required
 def generateInvoice():
+    data = checkUser(current_user.id)
+    layout = data['invoice_layout']
     dates = request.form.getlist('date')
     treatments = request.form.getlist('treatments')
     modifiers = request.form.getlist('modifier')
@@ -401,8 +318,9 @@ def generateInvoice():
         if 'url' in session['PATIENT']:
             url = session.get('PATIENT')['url']
             invoice_name = session.get('PATIENT')['invoice']
-            status = updateInvoice(current_user.uuid, modifiers, treatments,
-                    prices, dates, patient, date_invoice)
+            status = updateInvoice(layout, current_user.uuid,
+                    modifiers, treatments, prices, dates,
+                    patient, date_invoice)
         else:
             date = session.get('PATIENT')['date']
             index = get_index(current_user.uuid, medical, date)
@@ -410,10 +328,11 @@ def generateInvoice():
             url = url.generate()
             invoice_name = InvoiceName(patient, index, modifiers)
             invoice_name = invoice_name.generate()
-            status = add_invoice(patient, invoice_name, url, modifiers,
+            status = add_invoice(layout, patient, invoice_name, url, modifiers,
                     treatments, prices, dates, date_invoice, current_user.uuid)
         if status:
-            res_dict = {"treatments" : treatments,
+            res_dict = {'layout' : layout,
+                    "treatments" : treatments,
                     "treatment_list" : treatment_list,
                     "prices" : prices,
                     "dates" : dates,
@@ -423,7 +342,11 @@ def generateInvoice():
                     "invoice_name" : invoice_name,
                     "date_invoice" : date_invoice,
                     "data" : data}
-            to_json = json.dumps(res_dict)
+            print(res_dict)
+            def myconverter(o):
+                if isinstance(o, datetime2.datetime):
+                    return o.__str__()
+            to_json = json.dumps(res_dict, default = myconverter)
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/swriter/main.py', to_json])
             return jsonify(result='success')

@@ -3,58 +3,86 @@
 <div class="container personal_style" id="container_id">
     <br>
     <h3>Patient Name: {{patient}}</h3>
-        {% if medical =='mva' %}
+        {% if  session['PATIENT']['medical'] =='mva' %}
         <form action="">
-            Medical Aid: <p style = "display: inline-block">{{ session['PATIENT']['medical'] }}</p>
+            <p>Medical Aid: {{ session['PATIENT']['medical'] }}</p>
             <p>Tariff: {{ session['PATIENT']['tariff'] }}</p>
             <p>Case Number: {{ session['PATIENT']['case'] }}</p>
             <p>PO: {{ session['PATIENT']['po'] }}</p><input style="display: none;" type="text" name="po" value="{{ session['PATIENT']['po'] }}">
             {% if 4 <= layout_code <= 9 %}
-            Hopital: <p>{{ session['PATIENT']['hopital'] }}</p><input class="mva_input" style="display: none;" type="text" name="hospital" value="{{ session['PATIENT']['hopital'] }}">
-            Admission Date: <p>{{ session['PATIENT']['admission'] }}</p><input class="mva_input" style="display: none;" type="text" name="admission" value="{{ session['PATIENT']['admission'] }}">
-            Discharge Date: <p>{{ session['PATIENT']['discharge'] }}</p><input class="mva_input" style="display: none;" type="text" name="discharge" value="{{ session['PATIENT']['discharge'] }}">
+
+            <div>Hopital: <p style = "display: inline-block">{{ session['PATIENT']['hopital'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="hospital" value="{{ session['PATIENT']['hopital'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Admission Date: <p style = "display: inline-block">{{ session['PATIENT']['admission'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="admission" value="{{ session['PATIENT']['admission'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Discharge Date: <p style = "display: inline-block">{{ session['PATIENT']['discharge'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="discharge" value="{{ session['PATIENT']['discharge'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+
             {% elif 7 <= layout_code <= 12  %}
 
             <div>Diagnosis: <p style = "display: inline-block">{{ session['PATIENT']['diagnosis'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;"  type="text" name="diagnosis" value="{{ session['PATIENT']['diagnosis']}}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
-
             <div>Diagnosis Date: <p style = "display: inline-block">{{ session['PATIENT']['diagnosis_date'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="diagnosis_date" value="{{ session['PATIENT']['diagnosis_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
-
             <div>Procedure: <p style = "display: inline-block">{{ session['PATIENT']['procedure'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="procedure" value="{{ session['PATIENT']['procedure']}}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
-
-
             <div>Procedure Date: <p style = "display: inline-block">{{ session['PATIENT']['procedure_date'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;"  type="text" name="procedure_date" value="{{ session['PATIENT']['procedure_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
-
-
             <div>Implants: <p style = "display: inline-block">{{ session['PATIENT']['implants'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;"  type="text" name="implants" value="{{ session['PATIENT']['implants'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
-
-
             <div>Intra-OP Imaging: <p style = "display: inline-block">{{ session['PATIENT']['intra_op'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="intra_op" value="{{ session['PATIENT']['intra_op'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Post-OP Imaging: <p style = "display: inline-block">{{ session['PATIENT']['post_op'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="post_op" value="{{ session['PATIENT']['post_op'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+        {% endif %}
 
 
+            <p>Invoice created: {{ session['PATIENT']['date'] }}</p><input class="mva_input" style="display: none;" type="text" name="date" value="{{ session['PATIENT']['date'] }}">  
+        </form>
+        {% elif session['PATIENT']['medical'] =='psemas' %}
+            <p>Medical Aid: {{ session['PATIENT']['medical'] }}<br>
+            Tariff: {{ session['PATIENT']['tariff'] }}<br>
+            Main Member: {{ session['PATIENT']['main'] }}<br>
+            Medical Aid Number: {{ session['PATIENT']['number'] }}<br>
+            Date of Birth: {{ session['PATIENT']['dob'] }}<br>
+            {% if 4 <= layout_code <= 9 %}
+
+            <div>Hopital: <p style = "display: inline-block">{{ session['PATIENT']['hopital'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="hospital" value="{{ session['PATIENT']['hopital'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Admission Date: <p style = "display: inline-block">{{ session['PATIENT']['admission'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="admission" value="{{ session['PATIENT']['admission'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Discharge Date: <p style = "display: inline-block">{{ session['PATIENT']['discharge'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="discharge" value="{{ session['PATIENT']['discharge'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+
+            {% elif 7 <= layout_code <= 12  %}
+
+            <div>Diagnosis: <p style = "display: inline-block">{{ session['PATIENT']['diagnosis'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;"  type="text" name="diagnosis" value="{{ session['PATIENT']['diagnosis']}}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Diagnosis Date: <p style = "display: inline-block">{{ session['PATIENT']['diagnosis_date'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="diagnosis_date" value="{{ session['PATIENT']['diagnosis_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Procedure: <p style = "display: inline-block">{{ session['PATIENT']['procedure'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="procedure" value="{{ session['PATIENT']['procedure']}}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Procedure Date: <p style = "display: inline-block">{{ session['PATIENT']['procedure_date'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;"  type="text" name="procedure_date" value="{{ session['PATIENT']['procedure_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Implants: <p style = "display: inline-block">{{ session['PATIENT']['implants'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;"  type="text" name="implants" value="{{ session['PATIENT']['implants'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Intra-OP Imaging: <p style = "display: inline-block">{{ session['PATIENT']['intra_op'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="intra_op" value="{{ session['PATIENT']['intra_op'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
             <div>Post-OP Imaging: <p style = "display: inline-block">{{ session['PATIENT']['post_op'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="post_op" value="{{ session['PATIENT']['post_op'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
 
 
         {% endif %}
-            <p>Invoice created: {{ session['PATIENT']['date'] }}</p><input class="mva_input" style="display: none;" type="text" name="date" value="{{ session['PATIENT']['date'] }}">  
-        </form>
-        {% elif medical =='psemas' %}
-            <p>Medical Aid: {{medical}}<br>
-            Tariff: {{tariff}}<br>
-            Main Member: {{main}}<br>
-            Medical Aid Number: {{number}}<br>
-            Date of Birth: {{dob}}<br>
-            Invoice created: {{date}}</p>
+            Invoice created: {{ session['PATIENT']['date'] }}</p>
         {% else %}
-            <p>Medical Aid: {{medical}}<br>
-            Tariff: {{tariff}}<br>
-            Main Member: {{main}}<br>
-            Medical Aid Number: {{number}}<br>
-            Date of Birth: {{dob}}<br>
-            Invoice created: {{date}}</p>
+            <p>Medical Aid:  {{ session['PATIENT']['medical'] }}<br>
+            Tariff: {{ session['PATIENT']['tariff'] }}<br>
+            Main Member: {{ session['PATIENT']['main'] }}<br>
+            Medical Aid Number: {{ session['PATIENT']['number'] }}<br>
+            Date of Birth: {{ session['PATIENT']['dob'] }}<br>
+            {% if 4 <= layout_code <= 9 %}
+
+            <div>Hopital: <p style = "display: inline-block">{{ session['PATIENT']['hopital'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="hospital" value="{{ session['PATIENT']['hopital'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Admission Date: <p style = "display: inline-block">{{ session['PATIENT']['admission'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="admission" value="{{ session['PATIENT']['admission'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Discharge Date: <p style = "display: inline-block">{{ session['PATIENT']['discharge'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="discharge" value="{{ session['PATIENT']['discharge'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+
+            {% elif 7 <= layout_code <= 12  %}
+
+            <div>Diagnosis: <p style = "display: inline-block">{{ session['PATIENT']['diagnosis'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;"  type="text" name="diagnosis" value="{{ session['PATIENT']['diagnosis']}}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Diagnosis Date: <p style = "display: inline-block">{{ session['PATIENT']['diagnosis_date'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="diagnosis_date" value="{{ session['PATIENT']['diagnosis_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Procedure: <p style = "display: inline-block">{{ session['PATIENT']['procedure'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="procedure" value="{{ session['PATIENT']['procedure']}}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Procedure Date: <p style = "display: inline-block">{{ session['PATIENT']['procedure_date'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;"  type="text" name="procedure_date" value="{{ session['PATIENT']['procedure_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Implants: <p style = "display: inline-block">{{ session['PATIENT']['implants'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;"  type="text" name="implants" value="{{ session['PATIENT']['implants'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Intra-OP Imaging: <p style = "display: inline-block">{{ session['PATIENT']['intra_op'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="intra_op" value="{{ session['PATIENT']['intra_op'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+            <div>Post-OP Imaging: <p style = "display: inline-block">{{ session['PATIENT']['post_op'] }}</p><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="post_op" value="{{ session['PATIENT']['post_op'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div>
+
+
+        {% endif %}
+            Invoice created: {{ session['PATIENT']['date'] }}</p>
         {% endif %}    
     <br>
    
-    {% if 'namaf_orthopaedic_surgeons' in tariff %}
+    {% if 'namaf_orthopaedic_surgeons' in session['PATIENT']['tariff'] %}
         <form autocomplete="off" class="treatmentsearch">
             <input id="treatmentsearch" class="form-control mr-sm-2" name="treatment" type="search" placeholder="Search treatments">
         </form>

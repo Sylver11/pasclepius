@@ -45,7 +45,7 @@ def createTextInvoice(layout, items, treatments, price, dates, patient, modifier
     doc, text = treatmentTable(doc, text, cursor, items, treatments, price, dates, modifier)
     doc, text = populateBottomTable(doc, text, data)
     doc, text = configureBorders(doc, text, items)
-  #  saveDocument(doc, url)
+    saveDocument(doc, url)
 
 
 if __name__ == '__main__':
@@ -54,7 +54,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Creating an invoice')
     parser.add_argument('to_json', type=json.loads)
     args = parser.parse_args()
-    createTextInvoice(args.to_json['treatments'],
+    createTextInvoice(args.to_json['layout'],
+            args.to_json['treatments'],
             args.to_json["treatment_list"],
             args.to_json["prices"],
             args.to_json["dates"],

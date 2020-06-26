@@ -1,18 +1,20 @@
 from main import createTextInvoice
 
 def testing():
-    data =  {'layout' : 9 , 'treatments': ['503', '901', '107'],
+    data =  {'layout' : 10 , 'treatments': ['503', '901', '107'],
             'treatment_list': [{'description': 'Rehabilitation for Central Nervous System disorders - condition to be clearly stated and fully documented (No other treatment modality may be charged in conjunction with this)', 'units': 55.0, 'value': 540.9},
             {'description': 'Treatment at a nursing home: Relevant fee plus (to be charged only once per day and not with every hospital visit', 'units': 10.04, 'value': 98.7},
             {'description':'Interferential Therapy15', 'units': 15.0, 'value': 147.5}],
             'prices': ['540.90', '98.70', '147.50'], 'dates': ['24.06.2020',
-                '19.06.2020', '17.06.2020'], 'patient': {'diagnosis':
-                    'Contracture Lt hand', 'diagnosis_date': '19.02.2020',
-                    'procedure': 'Z-plasty + Exorticulation', 'procedure_date':
+                '19.06.2020', '17.06.2020'], 'patient': {'case': 'MVA/23/20',
+                    'diagnosis': 'Contracture Lt hand', 'diagnosis_date': '19.02.2020',
+                    'po': '2423432', 'procedure': 'Z-plasty + Exorticulation',
+                    'procedure_date':
                     '24.02.2020', 'implants': '', 'intra_op':'yes', 'post_op':
                     'X-ray', 'hospital': 'Oshakati State Hospital', 'admission': '19.02.2020',
                 'discharge':'28.02.2020', 'csrf_token': 'IjU0Mjk1NDA4M2NhN2U5ODljNmQ4MGI5NzBmYTYwNDhjYzBmM2IzNzMi.XuaAiw.zgZzXdzZranOAmHGoBd_9uXTt-c',
-                'date': '16.06.2020', 'dob': '04.04.1992', 'main': 'Andreas Voigt', 'medical': 'Momentum ', 'name': 'Justus Voigt',
+                'date': '16.06.2020', 'dob': '04.04.1992', 'main': 
+                'Andreas Voigt', 'medical': 'mva', 'name': 'Justus Voigt',
                 'number': 23452354, 'submit': True, 'tariff': 'namaf_physio_2019'}, 'modifiers': ['9', '0', '0'],
                 'url': '/home/practice/Documents/Juschdus sei Praxissss/MOMENTUM _Justus2020/6June2020/6_1Justus Voigt',
                 'invoice_name': 'MOMENTUM /2020/6-1', 'date_invoice': ['14.06.2020'],

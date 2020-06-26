@@ -47,6 +47,11 @@
         
     </form>  
     <form method=post autocomplete="off" id="newInvoice_psemas" class="psemas" name="psemas" style="display:none"> 
+        {% for field, errors in form_psemas.errors.items() %}
+        <div class="alert alert-error">
+            {{ form_psemas[field].label }}: {{ ', '.join(errors) }}
+        </div>
+        {% endfor %}
         {{ form_psemas.hidden_tag() }}
         {{ form_psemas.medical(style='display:none') }}
         <br>
@@ -75,6 +80,11 @@
         {{ form_mva.submit(class_="btn btn-success") }}
     </form>  
     <form  method=post autocomplete="off" id="newInvoice_other" class="other" name="other" style="display:none">  
+        {% for field, errors in form_other.errors.items() %}
+        <div class="alert alert-error">
+            {{ form_other[field].label }}: {{ ', '.join(errors) }}
+        </div>
+        {% endfor %}
         {{ form_other.hidden_tag() }}
         <br>     
         {{form_other.medical.label}}  {{ form_other.medical(class_="form-control w-25 p-3") }}
@@ -107,7 +117,7 @@
 <script>
 
     $(document).ready(function() {
-        $('.tariff').prepend($('<option value="" disabled hidden selected>Choose tariff</option>'));
+        // $('.tariff').prepend($('<option value="" disabled hidden selected>Choose tariff</option>'));
         $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
         $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
         $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})
