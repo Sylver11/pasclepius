@@ -19,7 +19,8 @@ def testing():
                 'url': '/home/practice/Documents/Juschdus sei Praxissss/MOMENTUM _Justus2020/6June2020/6_1Justus Voigt',
                 'invoice_name': 'MOMENTUM /2020/6-1', 'date_invoice': ['14.06.2020'],
                 'data': {'password': 'sha256$VYUvIpBX$467e2d0d0300897743486c98bc639d3ea3c25d36bbb0efde4b7ce7dc5e4cd389',
-                    'uuid_text': '39D47121-AB31-11EA-B5C9-0AE0AFC200E9', 'email': 'justus@gmail.com', 'title': '', 'first_name': 'Justus',
+                    'uuid_text': '39D47121-AB31-11EA-B5C9-0AE0AFC200E9',
+                    'email': 'justus@gmail.com', 'title': 'Dr', 'first_name': 'Justus',
                     'second_name': 'Voigt', 'phone': '061234234', 'cell': '081342342', 'fax': '0613423', 'pob': 'POB 37 ', 'city': 'Oshakati',
                     'country': 'Namibia', 'bank_holder': 'Justus Voigt', 'bank_account': '3124123455555', 'bank_branch': '50000', 'bank': 'FNB Oshakati',
                     'practice_name': 'Dr A Voigt', 'practice_number':

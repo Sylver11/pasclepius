@@ -121,6 +121,10 @@
         $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
         $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
         $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})
+        $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
+        $('#diagnosis_date').datepicker({dateFormat: 'dd.mm.yy'})
+        $('#admission').datepicker({dateFormat: 'dd.mm.yy'})
+        $('#discharge').datepicker({dateFormat: 'dd.mm.yy'})
         $(document).on('change', '.medical',function() {
             var selection = $(this).val()
             if(selection == 'psemas'){

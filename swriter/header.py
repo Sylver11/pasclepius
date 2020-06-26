@@ -13,7 +13,12 @@ def populateTopText(cursor, doc, text, data):
     header_cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
     header_cursor.setPropertyValue( "CharHeight", 18.0 )
     header_cursor.setPropertyValue( "ParaAdjust", CENTER )
-    header_text.insertString(header_cursor, data["practice_name"], 0)
+
+    header_text.insertString(header_cursor, str(data["title"]
+        + " "
+        + data["first_name"][0]
+        + " "
+        + data["second_name"]), 0)
     header_text.insertControlCharacter( header_cursor, PARAGRAPH_BREAK, False )
     header_cursor.setPropertyValue( "CharHeight", 12.0 )
     header_text.insertString( header_cursor, data["qualification"], 0 )
