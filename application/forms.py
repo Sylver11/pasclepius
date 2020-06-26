@@ -183,7 +183,8 @@ class Patient_mva(FlaskForm):
     name = StringField(u'Full Name', validators=[DataRequired()])
     case = StringField(u'Case Number', validators=[DataRequired()])
     po = IntegerField(u'PO', validators=[DataRequired()]) #widget=NumberInput(min=111111,max=999999))
-    tariff = SelectField(u'Tariff', choices = choices, validators=[DataRequired()])
+    tariff = SelectField(u'Tariff', choices = choices,
+            validators=[DataRequired()])
     date =  StringField(u'Invoice created', validators=[DataRequired()])
     hospital = StringField('Hospital')
     admission = StringField('Date of admission')

@@ -3,14 +3,21 @@
 <div class="container"> 
     <br>
     <br>
-    <h3>Create new patient</h3>  
+    <h3>Create new patient</h3> 
+    
+ 
     <select class="medical custom-select w-25">
         <option value="0">Select medical aid</option>
         <option value="psemas">PSEMAS</option>
         <option value="mva">MVA</option>
         <option value="other">OTHER</option>
     </select>
-    <form method=post autocomplete="off" id="newInvoice_mva" class="mva" style="display:none">     
+    <form method=post autocomplete="off" id="newInvoice_mva" name="mva" class="mva" style="display:none">  
+        {% for field, errors in form_mva.errors.items() %}
+        <div class="alert alert-error">
+            {{ form_mva[field].label }}: {{ ', '.join(errors) }}
+        </div>
+        {% endfor %}    
         {{ form_mva.hidden_tag() }}
         {{ form_mva.medical(style='display:none') }}
         <br>
@@ -37,13 +44,9 @@
         {{ form_mva.date.label }} {{ form_mva.date(id='date_mva', class_="form-control w-25 p-3") }}
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
-        {% for field, errors in form_mva.errors.items() %}
-        <div class="alert alert-error">
-            {{ form_mva[field].label }}: {{ ', '.join(errors) }}
-        </div>
-        {% endfor %}
+        
     </form>  
-    <form method=post autocomplete="off" id="newInvoice_psemas" class="psemas" style="display:none"> 
+    <form method=post autocomplete="off" id="newInvoice_psemas" class="psemas" name="psemas" style="display:none"> 
         {{ form_psemas.hidden_tag() }}
         {{ form_psemas.medical(style='display:none') }}
         <br>
@@ -71,7 +74,7 @@
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
     </form>  
-    <form  method=post autocomplete="off" id="newInvoice_other" class="other" style="display:none">  
+    <form  method=post autocomplete="off" id="newInvoice_other" class="other" name="other" style="display:none">  
         {{ form_other.hidden_tag() }}
         <br>     
         {{form_other.medical.label}}  {{ form_other.medical(class_="form-control w-25 p-3") }}
@@ -130,42 +133,48 @@
                 console.log("nothing selected")}
         })
 
-        // $('.psemas').submit(function (e) {
-        //     e.preventDefault();
-        //     var url = "";
-        //         $.ajax({
-        //         type: "POST",
-        //         url: url,
-        //         data: $('.psemas').serialize(), 
-        //         success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-        //         }
-        //     });
-        // })           
+        $('.psemas').submit(function (e) {
+            e.preventDefault();
+            var x = document.forms["psemas"]["tariff"].value;
+            if (x == "") {
+                alert("Tariff must be chosen.");
+                $(this).off('submit');
+                return false;
+            }else{
+            $(this).off('submit');
+            $(this).submit();
+            return false;
+            } 
 
-        // $('.other').submit(function (e) {
-        //     e.preventDefault();
-        //     var url = "";
-        //     $.ajax({
-        //         type: "POST",
-        //         url: url,
-        //         data: $('.other').serialize(), 
-        //         success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-        //         }
-        //     });
-        // })
+        });
+        $('.other').submit(function (e) {
+            e.preventDefault();
+            var x = document.forms["other"]["tariff"].value;
+            if (x == "") {
+                alert("Tariff must be chosen.");
+                $(this).off('submit');
+                return false;
+            }else{
+            $(this).off('submit');
+            $(this).submit();
+            return false;
+            } 
 
-        // $('.mva').submit(function (e) {
-        //     e.preventDefault(); 
-        //     var url = "";
-        //     console.log($('.mva').serialize()) 
-        //     $.ajax({
-        //         type: "POST",
-        //         url: url,
-        //         data: $('.mva').serialize(), 
-        //         success: function (refData) {window.location.href = "/patient/" + refData.data.name.toString() +"/new-invoice";
-        //         }
-        //     });
-        // });
+        });
+        $('.mva').submit(function (e) {
+            e.preventDefault();
+            var x = document.forms["mva"]["tariff"].value;
+            if (x == "") {
+                alert("Tariff must be chosen.");
+                $(this).off('submit');
+                return false;
+            }else{
+            $(this).off('submit');
+            $(this).submit();
+            return false;
+            } 
+
+        });
 
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {

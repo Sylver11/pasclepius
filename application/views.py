@@ -474,6 +474,7 @@ def getValue():
         value['description']}, use_decimal=True)
     return value_json
 
+
 @app.route('/get-values',methods=['GET','POST'])
 @login_required
 def getValues():
@@ -503,15 +504,16 @@ def downloadInvoice(random):
     path = str(url['url']) + ".odt"
     return send_file(path, as_attachment=True)
 
+
 @app.route('/update-session', methods=['GET'])
 def updateSession():
     if 'GET' == request.method:
         description = request.args.get('description')
         item = request.args.get('item')
-        session['PATIENT'][description] = item
-        #session.pop('PATIENT', None)
-        print(session.get('PATIENT')['medical'])
-        return 'success'
+        session_data = session['PATIENT']
+        session_data[description] = item
+        session['PATIENT'] = session_data
+        return json.dumps('success')
 
 
 @app.route('/session')
