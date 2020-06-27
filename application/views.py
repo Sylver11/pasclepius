@@ -342,17 +342,7 @@ def generateInvoice():
                     "invoice_name" : invoice_name,
                     "date_invoice" : date_invoice,
                     "data" : data}
-            print(dates)
-            print("\n")
-            print(date_invoice)
-            print("\n")
-            print(data)
-            print("\n")
-            print(patient)
-            #def myconverter(o):
-            #    if isinstance(o, datetime2.datetime):
-            #        return o.__str__()
-            to_json = json.dumps(res_dict)#, default = myconverter)
+            to_json = json.dumps(res_dict)
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/swriter/main.py', to_json])
             return jsonify(result='success')
