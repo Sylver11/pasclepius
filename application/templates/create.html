@@ -41,7 +41,7 @@
             {{ form_mva.intra_op.label }} {{ form_mva.intra_op(class_="form-control w-25") }}
             {{ form_mva.post_op.label }} {{ form_mva.post_op(class_="form-control w-25 p-3") }}
         {% endif %}
-        {{ form_mva.date.label }} {{ form_mva.date(id='date_mva', class_="form-control w-25 p-3") }}
+        {{ form_mva.date_created.label }} {{ form_mva.date_created(id='date_mva', class_="form-control w-25 p-3") }}
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
         
@@ -75,7 +75,7 @@
             {{ form_psemas.intra_op.label }} {{ form_psemas.intra_op(class_="form-control w-25") }}
             {{ form_psemas.post_op.label }} {{ form_psemas.post_op(class_="form-control w-25 p-3") }}
         {% endif %}
-        {{ form_psemas.date.label }} {{ form_psemas.date(id='date_psemas', class_="form-control w-25 p-3") }}
+        {{ form_psemas.date_created.label }} {{ form_psemas.date_created(id='date_psemas', class_="form-control w-25 p-3") }}
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
     </form>  
@@ -109,7 +109,7 @@
             {{ form_other.intra_op.label }} {{ form_other.intra_op(class_="form-control w-25") }}
             {{ form_other.post_op.label }} {{ form_other.post_op(class_="form-control w-25 p-3") }}
         {% endif %}
-        {{ form_other.date.label }} {{ form_other.date(id='date_other', class_="form-control w-25 p-3") }}
+        {{ form_other.date_created.label }} {{ form_other.date_created(id='date_other', class_="form-control w-25 p-3") }}
         <br>
         {{ form_other.submit(class_="btn btn-success") }}
     </form>  

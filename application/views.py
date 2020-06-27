@@ -322,8 +322,8 @@ def generateInvoice():
                     modifiers, treatments, prices, dates,
                     patient, date_invoice)
         else:
-            date = session.get('PATIENT')['date']
-            index = get_index(current_user.uuid, medical, date)
+            date_created = session.get('PATIENT')['date_created']
+            index = get_index(current_user.uuid, medical, date_created)
             url = InvoicePath(patient, index, data)
             url = url.generate()
             invoice_name = InvoiceName(patient, index, modifiers)
@@ -342,16 +342,22 @@ def generateInvoice():
                     "invoice_name" : invoice_name,
                     "date_invoice" : date_invoice,
                     "data" : data}
-            print(res_dict)
-            def myconverter(o):
-                if isinstance(o, datetime2.datetime):
-                    return o.__str__()
-            to_json = json.dumps(res_dict, default = myconverter)
+            print(dates)
+            print("\n")
+            print(date_invoice)
+            print("\n")
+            print(data)
+            print("\n")
+            print(patient)
+            #def myconverter(o):
+            #    if isinstance(o, datetime2.datetime):
+            #        return o.__str__()
+            to_json = json.dumps(res_dict)#, default = myconverter)
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/swriter/main.py', to_json])
             return jsonify(result='success')
         else:
-            return jsonify(result='Error: Entry already exists')
+            return jsonify(result='Error: Entry already exists. Have a look at past invoices to continue this invoice.')
     return jsonify(result='error')
 
 
@@ -378,12 +384,14 @@ def liveSearchTreatment():
 @login_required
 def knownInvoice():
     patient = request.args.get('patient')
-    date = request.args.get('date')
-    data =  getSingleInvoice(current_user.uuid, patient, date)
-    d = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-    date_deutsch = d.strftime('%d.%m.%Y')
+    date_created = request.args.get('date_created')
+    data =  getSingleInvoice(current_user.uuid, patient, date_created)
+    for o, i in data.items():
+        if isinstance(i, datetime2.datetime):
+            d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
+            date = d.strftime('%d.%m.%Y')
+            data[o] = date
     session["PATIENT"] = data
-    session["PATIENT"]["date"]= date_deutsch
     return data
 
 

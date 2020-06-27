@@ -85,7 +85,7 @@ def getSingleInvoice(uuid, patient, date):
 
 def updateInvoice(layout, uuid, modifiers, treatments, prices, dates, patient, date_invoice):
     name = patient['name']
-    date = patient['date']
+    date = patient['date_created']
     hospital = admission = discharge = None
     procedure = procedure_date = diagnosis = diagnosis_date = None
     implants = intra_op = post_op = None 
@@ -129,7 +129,7 @@ def updateInvoice(layout, uuid, modifiers, treatments, prices, dates, patient, d
 
 def add_invoice(layout, patient, invoice, url, modifiers, treatments, prices, dates, date_invoice, uuid):
     name = patient['name']
-    date = patient['date']
+    date = patient['date_created']
     medical = patient['medical']
     tariff = patient['tariff']
     po = 0

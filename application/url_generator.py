@@ -9,7 +9,7 @@ import os
 class InvoicePath(object):
 
     def __init__(self, patient, index, data):
-        self.date = patient['date']
+        self.date = patient['date_created']
         self.medical = patient['medical']
         self.name = patient['name']
         self.index = index

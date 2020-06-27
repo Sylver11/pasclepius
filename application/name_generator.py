@@ -5,7 +5,7 @@ import os
 class InvoiceName(object):
 
     def __init__(self, patient, index, modifier):
-        self.date = patient['date']
+        self.date = patient['date_created']
         self.medical = patient['medical']
         self.index = index
         if '14' in modifier:

@@ -27,7 +27,7 @@
         {% endif %}
 
 
-            <p>Invoice created: {{ session['PATIENT']['date'] }}</p><input class="mva_input" style="display: none;" type="text" name="date" value="{{ session['PATIENT']['date'] }}">  
+            <p>Invoice created: {{ session['PATIENT']['date_created'] }}</p>
         </form>
         {% elif session['PATIENT']['medical'] =='psemas' %}
             <p>Medical Aid: {{ session['PATIENT']['medical'] }}<br>
@@ -53,7 +53,7 @@
 
 
         {% endif %}
-            Invoice created: {{ session['PATIENT']['date'] }}</p>
+            Invoice created: {{ session['PATIENT']['date_created'] }}</p>
         {% else %}
             <p>Medical Aid:  {{ session['PATIENT']['medical'] }}<br>
             Tariff: {{ session['PATIENT']['tariff'] }}<br>
@@ -78,7 +78,7 @@
 
 
         {% endif %}
-            Invoice created: {{ session['PATIENT']['date'] }}</p>
+            Invoice created: {{ session['PATIENT']['date_created'] }}</p>
         {% endif %}    
     <br>
    

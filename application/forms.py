@@ -186,7 +186,7 @@ class Patient_mva(FlaskForm):
     po = IntegerField(u'PO', validators=[DataRequired()]) #widget=NumberInput(min=111111,max=999999))
     tariff = SelectField(u'Tariff', choices = choices,
             validators=[DataRequired()], default='')
-    date =  StringField(u'Invoice created', validators=[DataRequired()])
+    date_created =  StringField(u'Invoice created', validators=[DataRequired()])
     hospital = StringField('Hospital')
     admission = StringField('Date of admission')
     discharge = StringField('Date of discharge')
@@ -217,7 +217,7 @@ class Patient_psemas(FlaskForm):
     choices.append(('', 'Choose Tariff'))
     tariff = SelectField(u'Tariff', choices = choices,
                          validators=[DataRequired()] , default='')
-    date =  StringField(u'Invoice created', validators=[DataRequired()])
+    date_created =  StringField(u'Invoice created', validators=[DataRequired()])
     hospital = StringField('Hospital')
     admission = StringField('Date of admission')
     discharge = StringField('Date of discharge')
@@ -236,7 +236,7 @@ class Patient_other(FlaskForm):
     main = StringField(u'Main Member', validators=[DataRequired()])
     number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
     dob = StringField(u'Date of Birth', validators=[DataRequired()])
-    date =  StringField(u'Invoice created', validators=[DataRequired()])
+    date_created =  StringField(u'Invoice created', validators=[DataRequired()])
     tariffs = getAllTariffs()
     choices = []
     for x in tariffs:
