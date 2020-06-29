@@ -188,8 +188,6 @@ def resetLayout():
     layout_code = data['invoice_layout']
     form_layout = updateLayoutForm()
     if request.method == 'POST' and form_layout.validate():
-        print(form_layout.phone.data)
-        print(form_layout.hospital.data)
         status = updateUserLayout(current_user.id,
                form_layout.phone.data,
                form_layout.fax.data,
