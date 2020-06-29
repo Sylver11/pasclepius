@@ -120,12 +120,11 @@ class updatePracticeForm(FlaskForm):
     practice_number = StringField('Practice number', validators=[DataRequired()])
     practice_name = StringField('Practice name', validators=[DataRequired()])
     hpcna_number = StringField('HPCNA number', validators=[DataRequired()])
-    submit = SubmitField('Change Practice Data')
+    submit = SubmitField('Update Practice Data')
 
 class updatePersonalForm(FlaskForm):
     title = SelectField(u'Title', choices =
-                        [('',''),("Dr","Dr"),("Prof Dr","Prof Dr")],
-                        default = '')
+                        [('',''),("Dr","Dr"),("Prof Dr","Prof Dr")])
     first_name = StringField('First name', validators=[DataRequired(Length(min=4,
                                                                      max=35))])
     second_name = StringField('Second name', validators=[DataRequired(Length(min=4,
@@ -138,7 +137,7 @@ class updatePersonalForm(FlaskForm):
     country = StringField('Country', validators=[DataRequired()])
     qualification = StringField('Qualification', validators=[DataRequired()])
     specialisation = StringField('Specialisation') 
-    submit = SubmitField('Change Personal Data')
+    submit = SubmitField('Update Personal Data')
 
 
 class updateBankingForm(FlaskForm):
@@ -147,7 +146,7 @@ class updateBankingForm(FlaskForm):
                               validators=[DataRequired()])
     bank_account = StringField('Account number', validators=[DataRequired()])
     bank_holder =  StringField('Account holder', validators=[DataRequired()])
-    submit = SubmitField('Change Banking details')
+    submit = SubmitField('Update Banking details')
 
 class updatePasswordForm(FlaskForm):
     password = PasswordField('New Password', [
@@ -155,7 +154,7 @@ class updatePasswordForm(FlaskForm):
         validators.EqualTo('confirm', message='Passwords must match')
     ])
     confirm = PasswordField('Repeat Password')
-    submit = SubmitField('Change Password')
+    submit = SubmitField('Update Password')
 
 class updateLayoutForm(FlaskForm):
     phone =  BooleanField('Landline')

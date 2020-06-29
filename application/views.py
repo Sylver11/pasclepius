@@ -369,6 +369,8 @@ def knownInvoice():
     date_created = request.args.get('date_created')
     data =  getSingleInvoice(current_user.uuid, patient, date_created)
     for o, i in data.items():
+        if i == 'None':
+           data[o] = ''
         if isinstance(i, datetime2.datetime):
             d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
             date = d.strftime('%d.%m.%Y')

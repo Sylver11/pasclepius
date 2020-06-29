@@ -1,10 +1,9 @@
 <header>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/">Nampas</a>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default">
+    <a class="navbar-brand" href="/">PANAM</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-  
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item home">
@@ -20,7 +19,7 @@
         <li class="nav-item account">
           <a class="nav-link" href="/account">Account</a>
         </li>
-        <li class="nav-item prfile">
+        <li class="nav-item profile">
           <a class="nav-link" href="/profile/reset-personal">{{ current_user.first_name }}</a>
         </li>
         <li class="nav-item logout">
@@ -52,13 +51,30 @@
         $('.files').addClass('active');
       }
       else if (window.location.href.match('profile')){
-        $('.profile').addClass('active');
-        
+        $('.profile').addClass('active');   
       }
       else if (window.location.href.match('login')){
         $('.login').addClass('active');
       }
       else if(window.location.href.match('home')) {
+        $('.home').addClass('active');
+      }
+      else if(window.location.href.match('profile/reset-personal')){
+        $('.profile').addClass('active');
+      }
+      else if (window.location.href.match('profile/reset-password')){
+        $('.profile').addClass('active');
+      }
+      else if (window.location.href.match('profile/reset-practice')){
+        $('.profile').addClass('active');
+      }
+      else if (window.location.href.match('profile/reset-layout')){
+        $('.profile').addClass('active');
+      }
+      else if (window.location.href.match('profile/reset-banking')){
+        $('.profile').addClass('active');
+      }
+      else{
         $('.home').addClass('active');
       }
 
@@ -119,6 +135,9 @@
                     for (i = 0; i < names.length; i++) {
                         if (names[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
                             var b = document.createElement("DIV");
+                            b.style.display = "flex";
+                            b.style.justifyContent = "flex-end";
+                            b.style.alignItems = "center";
                             b.innerHTML = "<strong>" + names[i].substr(0, val.length) + "</strong>";
                             b.innerHTML += names[i].substr(val.length);
                             b.innerHTML += "<input type='hidden' value='" + names[i] + "'>";

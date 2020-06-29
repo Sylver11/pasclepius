@@ -4,47 +4,83 @@
     <br>
     <br>
     <h3>Create new patient</h3> 
-    
- 
     <select class="medical custom-select w-25">
         <option value="0">Select medical aid</option>
         <option value="psemas">PSEMAS</option>
         <option value="mva">MVA</option>
         <option value="other">OTHER</option>
     </select>
+    <br>
+    <br>
     <form method=post autocomplete="off" id="newInvoice_mva" name="mva" class="mva" style="display:none">  
         {% for field, errors in form_mva.errors.items() %}
         <div class="alert alert-error">
             {{ form_mva[field].label }}: {{ ', '.join(errors) }}
         </div>
-        {% endfor %}    
-        {{ form_mva.hidden_tag() }}
-        {{ form_mva.medical(style='display:none') }}
-        <br>
-        {{ form_mva.tariff.label }} {{ form_mva.tariff(class_="tariff custom-select w-25") }}
-        <br>
-        {{ form_mva.name.label(for="name") }} {{ form_mva.name(class_="form-control w-25 p-3") }}
-        
-        {{ form_mva.case.label(for="case") }} {{ form_mva.case(class_="form-control w-25 p-3") }}
-        {{ form_mva.po.label }} {{ form_mva.po(class_="form-control w-25 p-3") }}
+        {% endfor %}  
+        <div class="form-row">
+            {{ form_mva.hidden_tag() }}
+            {{ form_mva.medical(style='display:none') }}
+            <div class="form-group col-md-4">
+                {{ form_mva.tariff.label(class="required") }} {{ form_mva.tariff(class_="tariff form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.name.label(class="required",  for="name") }} {{ form_mva.name(class_="form-control") }}
+            </div>
+        </div>  
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_mva.case.label(class="required",  for="case") }} {{ form_mva.case(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.po.label(class="required") }} {{ form_mva.po(class_="form-control") }}
+            </div>
+        </div>
         {% if 4 <= layout_code <= 9 %}
-            {{ form_mva.hospital.label }} {{ form_mva.hospital(class_="form-control w-25 p-3") }}
-            {{ form_mva.admission.label }} {{ form_mva.admission(class_="form-control w-25 p-3") }}
-            {{ form_mva.discharge.label }} {{ form_mva.discharge(class_="form-control w-25 p-3") }}
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_mva.hospital.label }} {{ form_mva.hospital(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.admission.label }} {{ form_mva.admission(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.discharge.label }} {{ form_mva.discharge(class_="form-control") }}
+            </div>
+        </div>
         {% endif %}
         {% if 7 <= layout_code <= 12 %}
-            {{ form_mva.diagnosis.label }} {{ form_mva.diagnosis(class_="form-control w-25 p-3") }}
-            {{ form_mva.diagnosis_date.label }} {{ form_mva.diagnosis_date(class_="form-control w-25 p-3") }}
-            {{ form_mva.procedure.label }} {{ form_mva.procedure(class_="form-control w-25 p-3") }}
-            {{ form_mva.procedure_date.label }} {{ form_mva.procedure_date(class_="form-control w-25 p-3") }}
-            {{ form_mva.implants.label }} {{ form_mva.implants(class_="form-control w-25 p-3") }}
-            {{ form_mva.intra_op.label }} {{ form_mva.intra_op(class_="form-control w-25") }}
-            {{ form_mva.post_op.label }} {{ form_mva.post_op(class_="form-control w-25 p-3") }}
+        <div class="form-row">
+            <div class="form-group col-md-8">
+                {{ form_mva.diagnosis.label }} {{ form_mva.diagnosis(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.diagnosis_date.label }} {{ form_mva.diagnosis_date(class_="form-control") }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-8">
+                {{ form_mva.procedure.label }} {{ form_mva.procedure(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.procedure_date.label }} {{ form_mva.procedure_date(class_="form-control") }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_mva.implants.label }} {{ form_mva.implants(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.intra_op.label }} {{ form_mva.intra_op(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.post_op.label }} {{ form_mva.post_op(class_="form-control") }}
+            </div>
+        </div>
         {% endif %}
-        {{ form_mva.date_created.label }} {{ form_mva.date_created(id='date_mva', class_="form-control w-25 p-3") }}
+        {{ form_mva.date_created.label(class="required") }} {{ form_mva.date_created(id='date_mva', class_="form-control w-25 p-3") }}
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
-        
     </form>  
     <form method=post autocomplete="off" id="newInvoice_psemas" class="psemas" name="psemas" style="display:none"> 
         {% for field, errors in form_psemas.errors.items() %}
@@ -54,28 +90,69 @@
         {% endfor %}
         {{ form_psemas.hidden_tag() }}
         {{ form_psemas.medical(style='display:none') }}
-        <br>
-        {{ form_psemas.tariff.label }} {{ form_psemas.tariff(class_="tariff custom-select w-25") }}
-        <br>
-        {{ form_psemas.name.label }} {{ form_psemas.name(class_="form-control w-25 p-3") }}
-        {{ form_psemas.main.label }} {{ form_psemas.main(class_="form-control w-25 p-3") }}
-        {{ form_psemas.dob.label }} {{ form_psemas.dob(class_="form-control w-25 p-3") }}
-        {{ form_psemas.number.label }} {{ form_psemas.number(class_="form-control w-25 p-3") }}
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_psemas.tariff.label(class='required') }} {{ form_psemas.tariff(class_="tariff") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_psemas.name.label(class='required') }} {{ form_psemas.name(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_psemas.main.label(class='required') }} {{ form_psemas.main(class_="form-control") }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_psemas.dob.label(class='required') }} {{ form_psemas.dob(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_psemas.number.label(class='required') }} {{ form_psemas.number(class_="form-control") }}
+            </div>
+        </div>
+       
         {% if 4 <= layout_code <= 9 %}
-            {{ form_psemas.hospital.label }} {{ form_psemas.hospital(class_="form-control w-25 p-3") }}
-            {{ form_psemas.admission.label }} {{ form_psemas.admission(class_="form-control w-25 p-3") }}
-            {{ form_psemas.discharge.label }} {{ form_psemas.discharge(class_="form-control w-25 p-3") }}
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_mva.hospital.label }} {{ form_mva.hospital(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.admission.label }} {{ form_mva.admission(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.discharge.label }} {{ form_mva.discharge(class_="form-control") }}
+            </div>
+        </div>
         {% endif %}
         {% if 7 <= layout_code <= 12 %}
-            {{ form_psemas.diagnosis.label }} {{ form_psemas.diagnosis(class_="form-control w-25 p-3") }}
-            {{ form_psemas.diagnosis_date.label }} {{ form_psemas.diagnosis_date(class_="form-control w-25 p-3") }}
-            {{ form_psemas.procedure.label }} {{ form_psemas.procedure(class_="form-control w-25 p-3") }}
-            {{ form_psemas.procedure_date.label }} {{ form_psemas.procedure_date(class_="form-control w-25 p-3") }}
-            {{ form_psemas.implants.label }} {{ form_psemas.implants(class_="form-control w-25 p-3") }}
-            {{ form_psemas.intra_op.label }} {{ form_psemas.intra_op(class_="form-control w-25") }}
-            {{ form_psemas.post_op.label }} {{ form_psemas.post_op(class_="form-control w-25 p-3") }}
+        <div class="form-row">
+            <div class="form-group col-md-8">
+                {{ form_mva.diagnosis.label }} {{ form_mva.diagnosis(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.diagnosis_date.label }} {{ form_mva.diagnosis_date(class_="form-control") }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-8">
+                {{ form_mva.procedure.label }} {{ form_mva.procedure(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.procedure_date.label }} {{ form_mva.procedure_date(class_="form-control") }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_mva.implants.label }} {{ form_mva.implants(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.intra_op.label }} {{ form_mva.intra_op(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.post_op.label }} {{ form_mva.post_op(class_="form-control") }}
+            </div>
+        </div>
         {% endif %}
-        {{ form_psemas.date_created.label }} {{ form_psemas.date_created(id='date_psemas', class_="form-control w-25 p-3") }}
+        {{ form_psemas.date_created.label(class="required") }} {{ form_psemas.date_created(id='date_psemas', class_="form-control w-25 p-3") }}
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
     </form>  
@@ -86,30 +163,73 @@
         </div>
         {% endfor %}
         {{ form_other.hidden_tag() }}
-        <br>     
-        {{form_other.medical.label}}  {{ form_other.medical(class_="form-control w-25 p-3") }}
-        <br> 
-        {{ form_other.tariff.label }} {{ form_other.tariff(class_="tariff custom-select w-25") }}
-        <br>
-        {{ form_other.name.label }} {{ form_other.name(class_="form-control w-25 p-3") }}
-        {{ form_other.main.label }} {{ form_other.main(class_="form-control w-25 p-3") }}
-        {{ form_other.dob.label }} {{ form_other.dob(class_="form-control w-25 p-3") }}
-        {{ form_other.number.label }} {{ form_other.number(class_="form-control w-25 p-3") }}
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{form_other.medical.label(class="required")}}  {{ form_other.medical(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_other.tariff.label(class="required") }} {{ form_other.tariff(class_="tariff") }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_other.name.label(class="required") }} {{ form_other.name(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_other.main.label(class="required") }} {{ form_other.main(class_="form-control") }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_other.dob.label(class="required") }} {{ form_other.dob(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_other.number.label(class="required") }} {{ form_other.number(class_="form-control") }}
+            </div>
+        </div>
         {% if 4 <= layout_code <= 9 %}
-            {{ form_other.hospital.label }} {{ form_other.hospital(class_="form-control w-25 p-3") }}
-            {{ form_other.admission.label }} {{ form_other.admission(class_="form-control w-25 p-3") }}
-            {{ form_other.discharge.label }} {{ form_other.discharge(class_="form-control w-25 p-3") }}
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_mva.hospital.label }} {{ form_mva.hospital(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.admission.label }} {{ form_mva.admission(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.discharge.label }} {{ form_mva.discharge(class_="form-control") }}
+            </div>
+        </div>
         {% endif %}
         {% if 7 <= layout_code <= 12 %}
-            {{ form_other.diagnosis.label }} {{ form_other.diagnosis(class_="form-control w-25 p-3") }}
-            {{ form_other.diagnosis_date.label }} {{ form_other.diagnosis_date(class_="form-control w-25 p-3") }}
-            {{ form_other.procedure.label }} {{ form_other.procedure(class_="form-control w-25 p-3") }}
-            {{ form_other.procedure_date.label }} {{ form_other.procedure_date(class_="form-control w-25 p-3") }}
-            {{ form_other.implants.label }} {{ form_other.implants(class_="form-control w-25 p-3") }}
-            {{ form_other.intra_op.label }} {{ form_other.intra_op(class_="form-control w-25") }}
-            {{ form_other.post_op.label }} {{ form_other.post_op(class_="form-control w-25 p-3") }}
+        <div class="form-row">
+            <div class="form-group col-md-8">
+                {{ form_mva.diagnosis.label }} {{ form_mva.diagnosis(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.diagnosis_date.label }} {{ form_mva.diagnosis_date(class_="form-control") }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-8">
+                {{ form_mva.procedure.label }} {{ form_mva.procedure(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.procedure_date.label }} {{ form_mva.procedure_date(class_="form-control") }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_mva.implants.label }} {{ form_mva.implants(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.intra_op.label }} {{ form_mva.intra_op(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.post_op.label }} {{ form_mva.post_op(class_="form-control") }}
+            </div>
+        </div>
         {% endif %}
-        {{ form_other.date_created.label }} {{ form_other.date_created(id='date_other', class_="form-control w-25 p-3") }}
+        {{ form_other.date_created.label(class="required")  }} {{ form_other.date_created(id='date_other', class_="form-control w-25 p-3") }}
         <br>
         {{ form_other.submit(class_="btn btn-success") }}
     </form>  

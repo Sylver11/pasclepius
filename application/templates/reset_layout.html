@@ -9,22 +9,31 @@
         {% endwith %}
             <div class="tab-pane" id="layout">
                 <form method="post">
-                    {{ form_layout.hidden_tag() }}
-                    <div class="form-group">
-                        {{ form_layout.phone.label(class_="required") }}
-                        {{ form_layout.phone(class="form-control w-25 p-3") }}
-                    </div>
-                    <div class="form-group">
-                        {{ form_layout.fax.label(class_="required") }}
-                        {{ form_layout.fax( class="form-control w-25 p-3") }}
-                    </div>
-                    <div class="form-group">
-                        {{ form_layout.hospital.label(class_="required") }}
-                        {{ form_layout.hospital(class="form-control w-25 p-3") }}
-                    </div>
-                        <div class="form-group">
-                        {{ form_layout.diagnosis.label(class_="required") }}
-                        {{ form_layout.diagnosis(class="form-control w-25 p-3") }}
+                    <div class="form-group row">
+                        <div class="col-sm-2">Choose Invoice Layout</div>
+                        <div class="col-sm-10">
+                            {{ form_layout.hidden_tag() }}
+                            <div class="form-check">
+                                {{ form_layout.phone(class="form-check-input") }}
+                                {{ form_layout.phone.label(class_="form-check-label") }}
+                                
+                            </div>
+                            <div class="form-check">
+                                {{ form_layout.fax( class="form-check-input") }}
+                                {{ form_layout.fax.label(class_="form-check-label") }}
+                                
+                            </div>
+                            <div class="form-check">
+                                {{ form_layout.hospital(class="form-check-input") }}
+                                {{ form_layout.hospital.label(class_="form-check-label") }}
+                                
+                            </div>
+                            <div class="form-check">
+                                {{ form_layout.diagnosis(class="form-check-input") }}
+                                {{ form_layout.diagnosis.label(class_="form-check-label") }}
+                            
+                            </div>
+                        </div>
                     </div>
                     {{ form_layout.submit }}
                 </form>
@@ -36,7 +45,6 @@
 <script>
     $(document).ready(function(){
         if ('{{layout_code}}' == 1){
-            console.log("it is one")
         }
         else if ('{{layout_code}}' == 2){
             $("#phone").prop("checked", true);
