@@ -67,15 +67,25 @@ def liveSearchTreatments(search, tariff):
     WHERE tariff = '{}' AND description LIKE '{}%'""".format(tariff, search)
     sql2 = """SELECT * FROM namaf_tariffs
     WHERE tariff = '{}' AND `procedure` LIKE '{}%'""".format(tariff, search)
+    sql3 = """SELECT * FROM namaf_tariffs
+    WHERE tariff = '{}' AND (category LIKE '%{}%'
+    OR sub_category LIKE '%{}%' OR  sub_sub_category LIKE
+    '%{}%')""".format(tariff, search, search, search)
+    sql4 = """SELECT * FROM namaf_tariffs
+    WHERE tariff = '{}' AND item LIKE '%{}%'""".format(tariff, search)
     connection = pool.connection()
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchall()
     cursor.execute(sql2)
     result2 = cursor.fetchall()
+    cursor.execute(sql3)
+    result3 = cursor.fetchall()
+    cursor.execute(sql4)
+    result4 = cursor.fetchall()
     cursor.close()
     connection.close()
-    return result, result2
+    return result, result2, result3, result4
 
 
 def getTreatmentByGroup(items, tariff):
