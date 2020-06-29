@@ -1001,8 +1001,8 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
         $(this).prev().prev().hide();
         $(this).prev().prev().prev().show()
     });
-
-    if("{{ session['PATIENT']['treatments'] }}" !== 'None'){
+console.log("{{ session['PATIENT']['treatments'] }}")
+    if("{{ session['PATIENT']['treatments'] }}"){
         var prices = "{{ session['PATIENT']['values'] }}";
         var modifiers = "{{ session['PATIENT']['modifiers'] }}";
         var treatments = "{{ session['PATIENT']['treatments'] }}";

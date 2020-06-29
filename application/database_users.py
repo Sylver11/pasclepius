@@ -131,10 +131,11 @@ def addUser(title, first_name, second_name, email, password, phone, cell, fax, p
     hpcna_number, qualification, specialisation)
     VALUES(unhex(replace(uuid(),'-','')),
     '{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}','{18}','{19}')
-    """.format(title, first_name, second_name, email, password, phone, cell, fax, pob, city,
-               country, bank_holder, bank_account,
-               bank, bank_branch, practice_number, practice_name, hpcna_number,
-              qualification, specialisation)
+    """.format(title, first_name, second_name,
+            email, password, phone, cell, fax,
+            pob, city, country, bank_holder, bank_account,
+            bank, bank_branch, practice_number, practice_name, hpcna_number,
+            qualification, specialisation)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)

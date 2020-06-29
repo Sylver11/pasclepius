@@ -20,7 +20,7 @@
         {% endfor %}  
         <div class="form-row">
             {{ form_mva.hidden_tag() }}
-            {{ form_mva.medical(style='display:none') }}
+            {{ form_mva.medical(value='mva', style='display:none') }}
             <div class="form-group col-md-4">
                 {{ form_mva.tariff.label(class="required") }} {{ form_mva.tariff(class_="tariff form-control") }}
             </div>
@@ -89,7 +89,7 @@
         </div>
         {% endfor %}
         {{ form_psemas.hidden_tag() }}
-        {{ form_psemas.medical(style='display:none') }}
+        {{ form_psemas.medical(value='psemas', style='display:none') }}
         <div class="form-row">
             <div class="form-group col-md-4">
                 {{ form_psemas.tariff.label(class='required') }} {{ form_psemas.tariff(class_="tariff") }}
@@ -250,20 +250,17 @@
                 $('.mva').css("display","none")
                 $('.other').css("display","none")
                 $('.psemas').css("display","block")
-                $( ".psemas" ).children('#medical').val(selection)
 
             }else if(selection == 'mva'){
                 $('.psemas').css("display","none")
                 $('.other').css("display","none")
                 $('.mva').css("display","block")
-                $( ".mva" ).children('#medical').val(selection)
 
-            }else if(selection =='other'){
+            }else{
                 $('.psemas').css("display","none")
                 $('.mva').css("display","none")
                 $('.other').css("display","block")
-            }else{
-                console.log("nothing selected")}
+            }
         })
 
         $('.psemas').submit(function (e) {

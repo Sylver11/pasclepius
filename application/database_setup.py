@@ -50,7 +50,7 @@ def setupTable():
         admission varchar(255),
         discharge varchar(255),
         `procedure` varchar(500),
-        procedure_date varchar(255)
+        procedure_date varchar(255),
         diagnosis varchar(500),
         diagnosis_date varchar(255),
         implants varchar(500),
@@ -96,19 +96,19 @@ def setupTable():
         qualification varchar(255) NOT NULL,
         specialisation varchar(255),
         premium BOOLEAN NOT NULL DEFAULT false,
-        invoice_layout int(11),
+        invoice_layout int(11) NOT NULL DEFAULT 1,
         created_on DATETIME NOT NULL DEFAULT NOW(),
         PRIMARY KEY (id));"""
 
 
     conn = pool.connection()
     cursor = conn.cursor()
-    #cursor.execute(sql_drop_table_users)
-    #cursor.execute(sql_drop_table_invoice)
+   # cursor.execute(sql_drop_table_users)
+   # cursor.execute(sql_drop_table_invoice)
     cursor.execute(sql_drop_table_namaf_tariffs)
     cursor.execute(sql_create_table_namaf_tariffs)
-    #cursor.execute(sql_create_table_users)
-    #cursor.execute(sql_create_table_invoice)
+   # cursor.execute(sql_create_table_users)
+   # cursor.execute(sql_create_table_invoice)
 
     cursor.close()
     conn.close()

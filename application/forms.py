@@ -225,7 +225,8 @@ class Patient_psemas(FlaskForm):
     procedure = StringField('Procedure')
     procedure_date = StringField('Date of procedure')
     implants = StringField('Implants')
-    intra_op = SelectField('Intra-OP imaging', choices = [('yes','Yes'),('no','No')])
+    intra_op = SelectField('Intra-OP imaging', choices =
+            [('',''),('yes','Yes'),('no','No')], default='')
     post_op =  StringField('Post-OP imaging')
     submit = SubmitField('Create invoice')
 
@@ -254,6 +255,8 @@ class Patient_other(FlaskForm):
     procedure = StringField('Procedure')
     procedure_date = StringField('Date of procedure')
     implants = StringField('Implants')
-    intra_op = SelectField('Intra-OP imaging', choices = [('yes','Yes'),('no','No')])
+    intra_op = SelectField('Intra-OP imaging',
+            choices = [('', 'Select Intra-op'),('yes','Yes'),
+                ('no','No')], default='')
     post_op =  StringField('Post-OP imaging')
     submit = SubmitField('Create invoice')
