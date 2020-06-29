@@ -31,6 +31,8 @@ def getMultipleValues(items, tariff):
         cursor.execute(sql)
         q = cursor.fetchone()
         value_list.append(q)
+    cursor.close()
+    connection.close()
     return value_list
 
 
@@ -61,7 +63,7 @@ def getTreatments(tariff, featured=None):
 
 
 def liveSearchTreatments(search, tariff):
-    sql = """SELECT * FROM namaf_tariffs
+    sql = """SELECT DISTINCT * FROM namaf_tariffs
     WHERE tariff = '{}' AND description LIKE '{}%'""".format(tariff, search)
     sql2 = """SELECT * FROM namaf_tariffs
     WHERE tariff = '{}' AND `procedure` LIKE '{}%'""".format(tariff, search)

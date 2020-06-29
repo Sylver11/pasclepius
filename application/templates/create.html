@@ -117,7 +117,6 @@
 <script>
 
     $(document).ready(function() {
-        // $('.tariff').prepend($('<option value="" disabled hidden selected>Choose tariff</option>'));
         $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
         $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
         $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})
@@ -148,44 +147,32 @@
         })
 
         $('.psemas').submit(function (e) {
-            e.preventDefault();
             var x = document.forms["psemas"]["tariff"].value;
             if (x == "") {
+                e.preventDefault();
                 alert("Tariff must be chosen.");
-                $(this).off('submit');
-                return false;
             }else{
-            $(this).off('submit');
             $(this).submit();
-            return false;
             } 
 
         });
         $('.other').submit(function (e) {
-            e.preventDefault();
             var x = document.forms["other"]["tariff"].value;
             if (x == "") {
+                e.preventDefault();
                 alert("Tariff must be chosen.");
-                $(this).off('submit');
-                return false;
             }else{
-            $(this).off('submit');
             $(this).submit();
-            return false;
             } 
 
         });
         $('.mva').submit(function (e) {
-            e.preventDefault();
             var x = document.forms["mva"]["tariff"].value;
             if (x == "") {
+                e.preventDefault();
                 alert("Tariff must be chosen.");
-                $(this).off('submit');
-                return false;
             }else{
-            $(this).off('submit');
             $(this).submit();
-            return false;
             } 
 
         });

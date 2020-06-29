@@ -172,7 +172,7 @@ def resetBanking():
                 form_banking.bank_branch.data,
                 form_banking.bank.data)
         if status:
-            flash('Banking data  updated')
+            flash('Banking data updated')
     return render_template('reset_banking.html',
             form_banking = form_banking,
             bank_holder = data['bank_holder'],
@@ -279,18 +279,9 @@ def continueInvoice(patient):
     layout_code = data['invoice_layout']
     medical = (session.get('PATIENT')["medical"])
     tariff = (session.get('PATIENT')["tariff"])
-    #modifiers = session.get('PATIENT')['modifiers']
-   # treatments = session.get('PATIENT')['treatments']
-   # prices = session.get('PATIENT')['values']
-   # dates = session.get('PATIENT')['dates']
     form = getTreatmentForm(tariff) 
     return render_template('invoice.html',
-    #            modifiers = modifiers,
-    #            prices = prices,
-    #            dates = dates,
-    #            treatments = treatments,
                 form = form,
-    #            patient = patient,
                 layout_code = layout_code,
                 page_title = 'Continue ' + medical + ' invoice')
 

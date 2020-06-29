@@ -45,7 +45,7 @@ def createTextInvoice(layout, items, treatments, price, dates, patient, modifier
     doc, text = treatmentTable(doc, text, cursor, items, treatments, price, dates, modifier)
     doc, text = populateBottomTable(doc, text, data)
     doc, text = configureBorders(doc, text, items)
-#    saveDocument(doc, url)
+    saveDocument(doc, url)
 
 
 if __name__ == '__main__':

@@ -105,7 +105,7 @@ def setupTable():
     cursor = conn.cursor()
     #cursor.execute(sql_drop_table_users)
     #cursor.execute(sql_drop_table_invoice)
-    #cursor.execute(sql_drop_table_namaf_tariffs)
+    cursor.execute(sql_drop_table_namaf_tariffs)
     cursor.execute(sql_create_table_namaf_tariffs)
     #cursor.execute(sql_create_table_users)
     #cursor.execute(sql_create_table_invoice)

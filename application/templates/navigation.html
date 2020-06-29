@@ -21,7 +21,7 @@
           <a class="nav-link" href="/account">Account</a>
         </li>
         <li class="nav-item prfile">
-          <a class="nav-link" href="/profile/reset-personal">Profile</a>
+          <a class="nav-link" href="/profile/reset-personal">{{ current_user.first_name }}</a>
         </li>
         <li class="nav-item logout">
           <a class="nav-link" href="/logout">Logout</a>
@@ -125,6 +125,7 @@
                             b.addEventListener("click", function(e) {
                                 input_element.value = this.getElementsByTagName("input")[0].value;
                                 closeAllLists();
+                                $('.search').submit();
                             });
                             a.appendChild(b);
                         }

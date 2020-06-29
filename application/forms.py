@@ -80,7 +80,7 @@ def getTreatmentForm(tariff = None):
 
 class RegistrationForm(FlaskForm):
     title = SelectField(u'Title', choices =
-                        [('',''),("dr","Dr"),("prof","Prof")],
+                        [('',''),("Dr","Dr"),("Prof Dr","Prof Dr")],
                         default = '')
     first_name =  StringField('First name', validators=[DataRequired(Length(min=4,
                                                                      max=35))])
@@ -124,7 +124,7 @@ class updatePracticeForm(FlaskForm):
 
 class updatePersonalForm(FlaskForm):
     title = SelectField(u'Title', choices =
-                        [('',''),("dr","Dr"),("prof","Prof")],
+                        [('',''),("Dr","Dr"),("Prof Dr","Prof Dr")],
                         default = '')
     first_name = StringField('First name', validators=[DataRequired(Length(min=4,
                                                                      max=35))])
