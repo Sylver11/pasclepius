@@ -55,7 +55,7 @@ def treatmentTable(doc, text, cursor, items, treatments, price, dates, modifier=
         elif e == '6' or e == '8' or e == '9':
             insertTextIntoCell(table, "A" + str(a[0] + 2), str(c + " (00" + e + ")"))
         else:
-            insertTextIntoCell(table, "A" + str(a[0] + 2), c)
+            insertTextIntoCell(table, "A" + str(a[0] + 2), c.zfill(4))
         insertTextIntoCell(table, "D" + str(a[0] + 2), b)
         insertTextIntoCell(table, "B" + str(a[0] + 2), a[1]['description'])
         insertTextIntoCell(table, "C" + str(a[0] + 2), a[1]['units'])
