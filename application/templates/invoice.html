@@ -282,8 +282,6 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
             a.setAttribute("id", "autocomplete-list2");
             a.setAttribute("class", "autocomplete-items2");
             input_element.parentNode.insertBefore(a, input_element.nextSibling);
-
-            console.log(items)
             for (i = 0; i < items.length; i++) {
                 if (items[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
                     var b = document.createElement("DIV");
@@ -1001,7 +999,6 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
         $(this).prev().prev().hide();
         $(this).prev().prev().prev().show()
     });
-console.log("{{ session['PATIENT']['treatments'] }}")
     if("{{ session['PATIENT']['treatments'] }}"){
         var prices = "{{ session['PATIENT']['values'] }}";
         var modifiers = "{{ session['PATIENT']['modifiers'] }}";

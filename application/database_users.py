@@ -2,13 +2,12 @@ from application.db_utils import pool
 from datetime import datetime
 
 def checkUser(email):
-    sql = """SELECT password, uuid_text, email, title, first_name, second_name, phone, cell, fax, pob, city, country, bank_holder,
-    bank_account, bank_branch, bank, practice_name, practice_number,
-    hpcna_number, qualification, specialisation, invoice_layout FROM users WHERE email = '{}'
-    """.format(email)
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute(sql)
+    cursor.execute("""SELECT password, uuid_text, email, title, first_name, second_name, phone, cell, fax, pob, city, country, bank_holder,
+    bank_account, bank_branch, bank, practice_name, practice_number,
+    hpcna_number, qualification, specialisation, invoice_layout FROM users
+    WHERE email =  %s""",(email))
     data = cursor.fetchone()
     cursor.close()
     conn.close()
@@ -124,21 +123,19 @@ def updateUserPersonal(email, first_name, second_name, cell, pob, city,
 def addUser(title, first_name, second_name, email, password, phone, cell, fax, pob, city, country, bank_holder, bank_account, bank,
             bank_branch, practice_number, practice_name, hpcna_number,
             qualification, specialisation):
-    sql = """INSERT INTO users (uuid_bin, title, first_name, second_name, email, password, phone,
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute("""INSERT INTO users (uuid_bin, title, first_name, second_name, email, password, phone,
     cell, fax, pob, city, country,
     bank_holder, bank_account, bank,
     bank_branch, practice_number, practice_name,
     hpcna_number, qualification, specialisation)
-    VALUES(unhex(replace(uuid(),'-','')),
-    '{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}','{18}','{19}')
-    """.format(title, first_name, second_name,
+    VALUES(unhex(replace(uuid(),'-','')),%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    """,(title, first_name, second_name,
             email, password, phone, cell, fax,
             pob, city, country, bank_holder, bank_account,
             bank, bank_branch, practice_number, practice_name, hpcna_number,
-            qualification, specialisation)
-    conn = pool.connection()
-    cursor = conn.cursor()
-    cursor.execute(sql)
+            qualification, specialisation))
     status = True
     cursor.close()
     conn.close()
