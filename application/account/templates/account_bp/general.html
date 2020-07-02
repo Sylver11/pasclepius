@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <div id="second_inside" class="align-middle">
+            <img id="green-leaf-index" src="{{ url_for('static', filename='img/green-leaf.png') }}" alt="green-leaf">
+        </div>
+        <div id="inside_container" class="align-middle">
+            {% if current_user.is_authenticated %}
+                Hi {{ current_user.first_name }}!
+            {% endif %}
+            <h3 class="display-5">This is inside the bp folder</h3>
+            <p class="lead">Watch this space</p>
+        </div>
+    </div>
+</div>
+ {% endblock %}

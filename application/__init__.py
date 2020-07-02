@@ -6,9 +6,17 @@ import os
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.refresh_view = 'freshLogin'
+#from application.models import User
+#from application.database_users import checkUser
+
+#@login_manager.user_loader
+#def load_user(id):
+#    data = checkUser(id)
+#    if data:
+#        return User(id, data["first_name"], data["uuid_text"])
+
 
 def create_app():
-    """Initialize the core application."""
     load_dotenv()
     application = Flask(__name__)
     login_manager.init_app(application)
@@ -19,13 +27,10 @@ def create_app():
 )
 
     with application.app_context():
-        from . import forms
-        from . import db_utils
-        from . import database_io
         from . import views
-        from . import url_generator
-        from . import database_invoice
-        from . import database_users
-        from . import models
+        from .account import views
+        application.register_blueprint(views.account_bp, url_prefix='/account')
+        from .profile import views
+        application.register_blueprint(views.profile_bp, url_prefix='/profile')
         return application
 

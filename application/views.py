@@ -5,7 +5,7 @@ from werkzeug.urls import url_parse
 from application.forms import updateBankingForm, updatePracticeForm,Patient_mva, Patient_psemas, Patient_other,getTreatmentForm, RegistrationForm, LoginForm, updatePasswordForm, updatePersonalForm,  updateLayoutForm
 from application.database_io import getTreatmentByItem, getValueTreatments, getMultipleValues, getTreatmentByGroup, liveSearchTreatments
 from application.database_invoice import get_index, add_invoice, getInvoiceURL, queryInvoice, getSingleInvoice, updateInvoice, liveSearch, getPatient
-from application.database_users import addUser, checkUser, updateUserLayout, updateUserPassword, updateUserPersonal, updateUserPractice, updateUserBanking
+from application.database_users import addUser,checkUser, updateUserLayout, updateUserPassword, updateUserPersonal, updateUserPractice, updateUserBanking
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 from application.models import User, Password
@@ -15,15 +15,14 @@ from datetime import datetime
 import datetime as datetime2
 from jinja2 import Template
 from decimal import *
-import subprocess 
+import subprocess
 import simplejson as json
-
 
 @login_manager.user_loader
 def load_user(id):
     data = checkUser(id)
     if data:
-        return User(id, data["first_name"], data["uuid_text"])
+        return User(id, data["first_name"], data["uuid_text"])                        
 
 
 @app.route('/', methods=('GET', 'POST'))
@@ -99,106 +98,6 @@ def logout():
 
 
 ####TODO: Reset data queries need to be fitted with MASTER_POS_WAIT######
-@app.route('/profile/reset-password', methods=('GET', 'POST'))
-@fresh_login_required
-def resetPassword():
-    form_password = updatePasswordForm()
-    if request.method == 'POST' and form_password.validate():
-        password = Password()
-        hashed_password = password.set_password(form_password.password.data)
-        status =  updateUserPassword(current_user.id, hashed_password)
-        if status:
-            flash('Password changed succesfully')
-    return render_template('reset_password.html', form_password=form_password,
-            page_title = 'Change password')
-
-
-@app.route('/profile/reset-personal', methods=('GET', 'POST'))
-def resetPersonal():
-    data = checkUser(current_user.id)
-    form_personal = updatePersonalForm()
-    if request.method == 'POST' and form_personal.validate():
-        status = updateUserPersonal(current_user.id, form_personal.first_name.data,
-                form_personal.second_name.data, form_personal.cell.data,
-                form_personal.pob.data, form_personal.city.data,
-                form_personal.country.data, form_personal.qualification.data,
-                form_personal.title.data, form_personal.phone.data,
-                form_personal.fax.data, form_personal.specialisation.data)
-        if status:
-            flash('Personal data updated')
-    return render_template('reset_personal.html',
-            form_personal = form_personal,
-            title = data['title'],
-            first_name = data['first_name'],
-            second_name = data['second_name'],
-            phone = data['phone'],
-            cell = data['cell'],
-            fax = data['fax'],
-            pob = data['pob'],
-            city = data['city'],
-            country = data['country'],
-            qualification = data['qualification'],
-            specialisation = data['specialisation'],
-            page_title = 'Change personal')
-
-
-@app.route('/profile/reset-practice', methods=('GET', 'POST'))
-def resetPractice():
-    data = checkUser(current_user.id)
-    form_practice = updatePracticeForm()
-    if request.method == 'POST' and form_practice.validate():
-        status = updateUserPractice(current_user.id,
-                form_practice.practice_name.data,
-                form_practice.practice_number.data,
-                form_practice.hpcna_number.data)
-        if status:
-            flash('Practice data updated')
-    return render_template('reset_practice.html',
-            form_practice = form_practice,
-            practice_name = data['practice_name'],
-            practice_number = data['practice_number'],
-            hpcna_number = data['hpcna_number'],
-            page_title = 'Change practice info')
-
-
-@app.route('/profile/reset-banking', methods=('GET', 'POST'))
-def resetBanking():
-    data = checkUser(current_user.id)
-    form_banking = updateBankingForm()
-    if request.method == 'POST' and form_banking.validate():
-        status = updateUserBanking(current_user.id,
-                form_banking.bank_holder.data,
-                form_banking.bank_account.data,
-                form_banking.bank_branch.data,
-                form_banking.bank.data)
-        if status:
-            flash('Banking data updated')
-    return render_template('reset_banking.html',
-            form_banking = form_banking,
-            bank_holder = data['bank_holder'],
-            bank_account = data['bank_account'],
-            bank_branch = data['bank_branch'],
-            bank = data['bank'],
-            page_title = 'Change banking info')
-
-
-@app.route('/profile/reset-layout', methods=('GET', 'POST'))
-def resetLayout():
-    data = checkUser(current_user.id)
-    layout_code = data['invoice_layout']
-    form_layout = updateLayoutForm()
-    if request.method == 'POST' and form_layout.validate():
-        status = updateUserLayout(current_user.id,
-               form_layout.phone.data,
-               form_layout.fax.data,
-               form_layout.hospital.data,
-               form_layout.diagnosis.data)
-        if status:
-           flash('Invoice Layout updated')
-    return render_template('reset_layout.html',
-            form_layout = form_layout,
-            layout_code = layout_code,
-            page_title = 'Change Invoice Layout')
 
 
 @app.route('/new-patient', methods=('GET', 'POST'))
