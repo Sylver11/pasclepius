@@ -1,10 +1,11 @@
-from flask import Blueprint, render_template
-from flask import current_app as app
 from flask_login import current_user, login_required
+from flask import render_template, Blueprint, request, session, redirect
+from application.database_users import checkUser
+from application.forms import Patient_mva, Patient_psemas, Patient_other,getTreatmentForm
+from application.database_invoice import queryInvoice, getPatient
+
 
 patient_bp = Blueprint('patient_bp',__name__)
-
-
 
 
 @patient_bp.route('/new-patient', methods=('GET', 'POST'))

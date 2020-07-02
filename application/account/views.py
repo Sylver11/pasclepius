@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template
-from flask import current_app as app
 from flask_login import current_user, login_required
 account_bp = Blueprint('account_bp',__name__,template_folder='templates')
 

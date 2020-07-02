@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 import os
 
 login_manager = LoginManager()
-login_manager.login_view = 'login'
-login_manager.refresh_view = 'freshLogin'
+login_manager.login_view = 'auth_bp.login'
+login_manager.refresh_view = 'auth_bp.freshLogin'
 #from application.models import User
 #from application.database_users import checkUser
 
@@ -23,14 +23,21 @@ def create_app():
     application.secret_key = os.getenv("SECRET_KEY")
     application.config['SESSION_TYPE'] = 'filesystem'
     application.config.update(
-  #  SECRET_KEY =  os.getenv("SECRET_KEY")
 )
 
     with application.app_context():
-        from . import views
+       # from . import views
+        from .home import views
+        application.register_blueprint(views.home_bp, url_prefix='/')
+        from .api import views
+        application.register_blueprint(views.api_bp, url_prefix='/')
         from .account import views
         application.register_blueprint(views.account_bp, url_prefix='/account')
         from .profile import views
         application.register_blueprint(views.profile_bp, url_prefix='/profile')
+        from .patient import views
+        application.register_blueprint(views.patient_bp, url_prefix='/patient')
+        from .auth import views
+        application.register_blueprint(views.auth_bp, url_prefix='/auth')
         return application
 

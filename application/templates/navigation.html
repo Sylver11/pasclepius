@@ -11,7 +11,7 @@
         </li>
         {% if current_user.is_authenticated %}
         <li class="nav-item patient">
-          <a class="nav-link" href="/new-patient">New Patient</a>
+          <a class="nav-link" href="/patient/new-patient">New Patient</a>
         </li>
         <li class="nav-item files">
           <a class="nav-link" href="/files">Files</a>
@@ -23,11 +23,11 @@
           <a class="nav-link" href="/profile/reset-personal">{{ current_user.first_name }}</a>
         </li>
         <li class="nav-item logout">
-          <a class="nav-link" href="/logout">Logout</a>
+          <a class="nav-link" href="/auth/logout">Logout</a>
         </li>
         {% else %}
         <li class="nav-item login">
-          <a class="nav-link" href="/login">Login</a>
+          <a class="nav-link" href="/auth/login">Login</a>
         </li>
         {% endif %}
       </ul>
