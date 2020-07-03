@@ -23,6 +23,7 @@ def create_app():
     application = Flask(__name__)
     application.secret_key = os.getenv("SECRET_KEY")
     application.config['SESSION_TYPE'] = 'filesystem'
+    application.config['REMEMBER_COOKIE_DURATION'] = 2592000
     application.config.update(
 )
     login_manager.init_app(application)

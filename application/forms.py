@@ -166,8 +166,10 @@ class updateLayoutForm(FlaskForm):
 class LoginForm(FlaskForm):
     """User Login Form."""
     email = StringField('Email', validators=[DataRequired(),
-                                             Email(message='Enter a valid email')])
+                                             Email(message='Enter a valid email')],
+                                             render_kw={'autofocus': True})
     password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Remember me for 4 weeks')
     submit = SubmitField('Log In')
 
 class Patient_mva(FlaskForm):
