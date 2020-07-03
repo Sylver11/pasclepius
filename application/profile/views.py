@@ -1,15 +1,10 @@
-from flask import Blueprint, render_template, Response, request, session, jsonify, redirect, url_for, send_file, flash
-
-from flask import current_app as app
+from flask import Blueprint, render_template, Response, request, session, redirect, url_for, send_file, flash
 from flask_login import current_user, login_required, fresh_login_required
-
-from application.database_users import addUser,checkUser, updateUserLayout, updateUserPassword, updateUserPersonal, updateUserPractice, updateUserBanking
-
-
-from application.forms import updateBankingForm, updatePracticeForm,Patient_mva, Patient_psemas, Patient_other,getTreatmentForm, RegistrationForm, LoginForm, updatePasswordForm, updatePersonalForm,  updateLayoutForm
+from application.db_users import checkUser, updateUserLayout, updateUserPassword, updateUserPersonal, updateUserPractice, updateUserBanking
+from application.forms import updateBankingForm, updatePracticeForm, updatePasswordForm, updatePersonalForm,  updateLayoutForm
 
 
-profile_bp = Blueprint('profile_bp',__name__)
+profile_bp = Blueprint('profile_bp',__name__, template_folder='templates')
 
 
 
@@ -23,7 +18,7 @@ def resetPassword():
         status =  updateUserPassword(current_user.id, hashed_password)
         if status:
             flash('Password changed succesfully')
-    return render_template('reset_password.html', form_password=form_password,
+    return render_template('profile/reset_password.html', form_password=form_password,
             page_title = 'Change password')
 
 
@@ -41,7 +36,7 @@ def resetPersonal():
                 form_personal.fax.data, form_personal.specialisation.data)
         if status:
             flash('Personal data updated')
-    return render_template('reset_personal.html',
+    return render_template('profile/reset_personal.html',
             form_personal = form_personal,
             title = data['title'],
             first_name = data['first_name'],
@@ -69,7 +64,7 @@ def resetPractice():
                 form_practice.hpcna_number.data)
         if status:
             flash('Practice data updated')
-    return render_template('reset_practice.html',
+    return render_template('profile/reset_practice.html',
             form_practice = form_practice,
             practice_name = data['practice_name'],
             practice_number = data['practice_number'],
@@ -90,7 +85,7 @@ def resetBanking():
                 form_banking.bank.data)
         if status:
             flash('Banking data updated')
-    return render_template('reset_banking.html',
+    return render_template('profile/reset_banking.html',
             form_banking = form_banking,
             bank_holder = data['bank_holder'],
             bank_account = data['bank_account'],
@@ -113,7 +108,7 @@ def resetLayout():
                form_layout.diagnosis.data)
         if status:
            flash('Invoice Layout updated')
-    return render_template('reset_layout.html',
+    return render_template('profile/reset_layout.html',
             form_layout = form_layout,
             layout_code = layout_code,
             page_title = 'Change Invoice Layout')

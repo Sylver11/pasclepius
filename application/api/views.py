@@ -1,16 +1,12 @@
 import os
-#from flask import current_app as app
-from flask import Blueprint, render_template, Response, request, session, jsonify, redirect, url_for, send_file, flash
-from werkzeug.urls import url_parse
+from flask import Blueprint, request, session, jsonify, redirect, url_for, send_file, flash
 from application.forms import updateBankingForm, updatePracticeForm,Patient_mva, Patient_psemas, Patient_other,getTreatmentForm, RegistrationForm, LoginForm, updatePasswordForm, updatePersonalForm,  updateLayoutForm
-from application.database_io import getTreatmentByItem, getValueTreatments, getMultipleValues, getTreatmentByGroup, liveSearchTreatments
-from application.database_invoice import get_index, add_invoice, getInvoiceURL, getSingleInvoice, updateInvoice, liveSearch
-from application.database_users import addUser,checkUser, updateUserLayout, updateUserPassword, updateUserPersonal, updateUserPractice, updateUserBanking
+from application.db_tariffs import getTreatmentByItem, getValueTreatments, getMultipleValues, getTreatmentByGroup, liveSearchTreatments
+from application.db_invoice import get_index, add_invoice, getInvoiceURL, getSingleInvoice, updateInvoice, liveSearch
+from application.db_users import addUser,checkUser, updateUserLayout, updateUserPassword, updateUserPersonal, updateUserPractice, updateUserBanking
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
-from application.models import User, Password
-from flask_login import current_user, login_user, logout_user, UserMixin, login_required, fresh_login_required
-#from . import login_manager
+from flask_login import current_user, login_required
 from datetime import datetime
 import datetime as datetime2
 from jinja2 import Template
@@ -18,21 +14,8 @@ from decimal import *
 import subprocess
 import simplejson as json
 
-#@login_manager.user_loader
-#def load_user(id):
-#    data = checkUser(id)
-#    if data:
-#        return User(id, data["first_name"], data["uuid_text"])                        
-
-
-
 
 api_bp = Blueprint('api_bp',__name__)
-
-
-####TODO: Reset data queries need to be fitted with MASTER_POS_WAIT######
-
-
 
 
 @api_bp.route('/generate-invoice', methods=['POST'])
@@ -85,10 +68,10 @@ def generateInvoice():
             to_json = json.dumps(res_dict)
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/swriter/main.py', to_json])
-            return jsonify(result='success')
+            return json_dumps({'result':'success'})
         else:
-            return jsonify(result='Error: Entry already exists. Have a look at past invoices to continue this invoice.')
-    return jsonify(result='error')
+            return json_dumps({'result':'Error: Entry already exists. Have a look at past invoices to continue this invoice.'})
+        return json_dumps({'result':'error'})
 
 
 @api_bp.route('/live-search',methods=['GET','POST'])

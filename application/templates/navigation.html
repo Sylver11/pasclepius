@@ -107,7 +107,7 @@
             e.preventDefault();
             var currentFocus;
             var input_element = document.getElementById("patient_name")
-            var url = "{{ url_for('liveSearchPatient') }}";
+            var url = "{{ url_for('api_bp.liveSearchPatient') }}";
             var a, b, i, val = input_element.value;
             var name = input_element.value
                 $.ajax({

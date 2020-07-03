@@ -1,12 +1,11 @@
 from flask import Blueprint, render_template, Response, request, session, redirect, url_for, flash
 from application.forms import RegistrationForm, LoginForm
-from application.database_users import addUser,checkUser
-
+from application.db_users import addUser,checkUser
 from flask_login import current_user, login_user, logout_user, login_required
-
 from application.models import User, Password
+from werkzeug.urls import url_parse
 
-auth_bp = Blueprint('auth_bp',__name__)
+auth_bp = Blueprint('auth_bp',__name__, template_folder='templates')
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -30,7 +29,7 @@ def register():
                          form.specialisation.data)
         if status:
             return redirect(url_for('auth_bp.login'))
-    return render_template('register.html', form=form, page_title = 'Register')
+    return render_template('auth/register.html', form=form, page_title = 'Register')
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -49,7 +48,7 @@ def login():
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('home_bp.home')
         return redirect(next_page)
-    return render_template('login.html', form=form, page_title = 'Login')
+    return render_template('auth/login.html', form=form, page_title = 'Login')
 
 
 @auth_bp.route('/fresh-login', methods=['GET', 'POST'])
@@ -66,7 +65,7 @@ def freshLogin():
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('home_bp.home')
         return redirect(next_page)
-    return render_template('login.html', form=form, page_title = 'Fresh login')
+    return render_template('auth/login.html', form=form, page_title = 'Fresh login')
 
 
 @auth_bp.route('/logout')

@@ -7,8 +7,8 @@ from wtforms.validators import DataRequired, Length, Email, Required, NumberRang
 from wtforms.widgets.html5 import NumberInput
 from wtforms.widgets import TextArea, CheckboxInput
 from wtforms import Form as NoCsrfForm
-from application.database_io import getTreatments, getAllTariffs
-from application.database_users import checkDuplicateEmail
+from application.db_tariffs import getTreatments, getAllTariffs
+from application.db_users import checkDuplicateEmail
 
 def getTreatmentForm(tariff = None):
     class Treatment(FlaskForm):
