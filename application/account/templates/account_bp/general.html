@@ -1,17 +1,251 @@
-{% extends 'layout.html' %}
+{% include 'account_bp/index.html' %}
 {% block content %}
 <div class="jumbotron jumbotron-fluid">
     <div class="container">
-        <div id="second_inside" class="align-middle">
+        <form autocomplete="off" class="invoice-search">
+            <input id="invoice-search" class="form-control mr-sm-2" name="treatment" type="search" placeholder="Search invoices by patient name">
+        </form>
+        <!-- <div id="second_inside" class="align-middle">
             <img id="green-leaf-index" src="{{ url_for('static', filename='img/green-leaf.png') }}" alt="green-leaf">
-        </div>
+        </div> -->
         <div id="inside_container" class="align-middle">
             {% if current_user.is_authenticated %}
                 Hi {{ current_user.first_name }}!
             {% endif %}
             <h3 class="display-5">This is inside the bp folder</h3>
+            {{ invoices }}
             <p class="lead">Watch this space</p>
         </div>
     </div>
 </div>
+<script>
+
+
+$(document).ready(function(){
+
+
+    function sum(input){
+             if (toString.call(input) !== "[object Array]")
+                return false;
+                        var total =  0;
+                        for(var i=0;i<input.length;i++)
+                          {                  
+                            if(isNaN(input[i])){
+                            continue;
+                             }
+                              total += Number(input[i]);
+                           }
+                         return total;
+                        }
+
+
+    function removeActive(x) {
+    for (var i = 0; i < x.length; i++) {
+        x[i].classList.remove("autocomplete-active");
+    }
+}       
+
+function addActive(x) {
+    if (!x) return false;
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    x[currentFocus].classList.add("autocomplete-active");
+}
+
+ function uniq_fast(a) {
+    var seen = {};
+    var out = [];
+    var len = a.length;
+    var j = 0;
+    for(var i = 0; i < len; i++) {
+        var item = a[i];
+        if(seen[item] !== 1) {
+            seen[item] = 1;
+            out[j++] = item;
+            }
+        }
+    return out;
+}
+
+$(document).on("keyup", ".invoice-search", function (e) {
+    e.preventDefault();
+    var currentFocus;
+    var input_element = document.getElementById("invoice-search")
+    var url = "/account/live-search-invoice";
+    var a, b, i, val = input_element.value;
+    var search_item = input_element.value
+        $.ajax({
+        type: "GET",
+        url: url,
+        data: {name: search_item}, 
+        dataType: 'json',
+        success: function (returnData) {
+            if (returnData.invoices.length <= 9){
+              var invoices = [], range = returnData.invoices.length;
+            }
+            else{
+             var invoices = [], range = 10
+            }
+            for (i = 0; i < range; i++) {
+                invoices[i] = returnData.invoices[i]['invoice'].toString()
+            }   
+            closeAllLists();
+            if (!val) { return false;}
+            currentFocus = -1;
+            var a = document.createElement("DIV");
+            a.setAttribute("id", "autocomplete-list-invoices");
+            a.setAttribute("class", "autocomplete-invoices");
+            input_element.parentNode.insertBefore(a, input_element.nextSibling);
+            if(returnData.invoices.length > 0){
+                var patient_div = document.createElement("DIV");
+                var invoice_from_invoices = [], range = returnData.invoices.length;
+                var patient_name_from_invoices = [], range = returnData.invoices.length;
+                var arr_unique_patient_name = [];
+                for(i = 0; i < returnData.invoices.length; i++){
+                    patient_name_from_invoices[i] = returnData.invoices[i]['name']
+                    arr_unique_patient_name = uniq_fast(patient_name_from_invoices)
+                }
+                var found_patient_names = [], range = arr_unique_patient_name.length;
+                // console.log(arr_unique_patient_name)
+                for(i = 0; i < arr_unique_patient_name.length; i++){
+                    found_patient_names[i] = returnData.invoices.filter(function(single) {
+                        // console.log(single.invoices)
+                        return single.name ==  arr_unique_patient_name[i];})
+                    }
+                    console.log(found_patient_names)
+                let index_invoice_names = 0;
+                for (i = 0; i < arr_unique_patient_name.length; i++){
+                    var invoice_div = document.createElement("DIV");
+                    // y.style.cursor = "default";
+                    invoice_div.innerHTML += "<strong>" + arr_unique_patient_name[i].substr(0, val.length) + "</strong>";
+                    invoice_div.innerHTML += arr_unique_patient_name[i].substr(val.length) + "<br>";
+                    // console.log(found_patient_names)
+                    for(x=0; x < found_patient_names[i].length; x++){
+                        var flex_wrapper = document.createElement("DIV");
+                        var action_wrapper = document.createElement("DIV");
+                        
+                        
+                        
+                        var input_field = document.createElement("INPUT");
+                        input_field.setAttribute("type", "hidden")
+                        
+                        var paragraph_balance = document.createElement("P");
+                        var paragraph_invoice = document.createElement("P");
+                        var paragraph_submitted_on = document.createElement("P");
+
+
+                        var paid_button = document.createElement("BUTTON");
+                            var partial_paid_button = document.createElement("BUTTON");
+                            paid_button.innerHTML = "Paid"
+                            partial_paid_button.innerHTML = "Partial paid"
+
+                        var sumArr = found_patient_names[i][x]['values'].split(',');
+                        
+                        console.log(sum(sumArr).toFixed(2))
+                        index_invoice_names++;
+                        // paragraph_field.setAttribute("id", "procedure-list-description" + index_treatment_procedure)
+                        // input_field.setAttribute("id", "treatment-list-input-procedure" + index_treatment_procedure)
+                        // input_field.readOnly = true;
+                        // input_field.style.cursor = "default";
+                        // flex_wrapper.style.display = "flex";
+                        // flex_wrapper.style.justifyContent = "flex-start";
+                        // flex_wrapper.style.alignItems = "center";
+                        // paragraph_field.style.margin = "0";
+                        // input_field.style.backgroundColor = 'white';
+                        input_field.value = found_patient_names[i][x]['invoice']
+                        paragraph_invoice.textContent = found_patient_names[i][x]['invoice']
+
+
+                        if(found_patient_names[i][x]['submitted_on']){
+                                
+                                paragraph_submitted_on.textContent = found_patient_names[i][x]['submitted_on']
+                                flex_wrapper.appendChild(paragraph_submitted_on)
+                                
+                            }
+                            else{
+                                var submit_button = document.createElement("BUTTON");
+                                submit_button.innerHTML = "Submit invoice"
+                                action_wrapper.appendChild(submit_button)
+                            }
+
+
+                        if(found_patient_names[i][x]['paid'] == 1){
+                            var paragraph_paid = document.createElement("P");
+                            paragraph_paid.textContent = "Paid"
+                            flex_wrapper.appendChild(paragraph_paid)
+                        }
+                        else if(found_patient_names[i][x]['balance'] ){
+                            paragraph_balance.textContent = found_patient_names[i][x]['balance']
+                            action_wrapper.appendChild(partial_paid_button)
+                            action_wrapper.appendChild(paid_button)
+                            
+                        }
+                        else{
+                            action_wrapper.appendChild(partial_paid_button)
+                            action_wrapper.appendChild(paid_button)
+                            
+                        }
+
+
+                       
+                        
+                        
+                        // console.log("ruuuuu")
+                        // console.log(found_patient_names[i][x]['invoice'])
+                        // paragraph_field.setAttribute('class','input-fields-procedures')
+                        // cloneIndex_orthopaedic_surgeon2 = cloneIndex - 1 ;
+
+                        // (function(index){
+                        //         paragraph_field.addEventListener("click", function() {
+                        //             var value_of_value = document.getElementById("value-0").value
+                        //             if(value_of_value){
+                        //                 clone()
+                        //             } 
+                        //             next_empty_treatment_input = document.getElementById("tbodyClone").lastElementChild.childNodes[3].firstChild
+                        //             item_num = document.getElementById("treatment-list-input-procedure" + index).value
+                        //             next_empty_treatment_input.value = item_num
+                        //             description_procedures = document.getElementById("procedure-list-description" + index).textContent;
+                        //             next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_procedures
+                        //             newTreatmentLiveSearch(next_empty_treatment_input)
+                        //             closeAllLists();
+                        //         })
+                        //     })(index_treatment_procedure)
+
+                        invoice_div.appendChild(flex_wrapper)
+                        
+                        flex_wrapper.appendChild(paragraph_invoice)
+                        
+                        flex_wrapper.appendChild(paragraph_balance)
+                        flex_wrapper.appendChild(input_field)
+                        flex_wrapper.appendChild(action_wrapper)  
+                    }
+                    patient_div.appendChild(invoice_div);
+                }
+                a.appendChild(patient_div);    
+            }
+        
+
+            
+
+
+    function closeAllLists(elmnt) {
+        var x = document.getElementsByClassName("autocomplete-items2");
+        for (var i = 0; i < x.length; i++) {
+            if (elmnt != x[i] && elmnt != input_element) {
+            x[i].parentNode.removeChild(x[i]);
+            }
+        }
+        
+    }
+    document.addEventListener("click", function (e) {
+        closeAllLists(e.target);
+        $('#treatmentsearch').val('');
+    });
+
+        }
+    });
+});
+})
+</script>
  {% endblock %}

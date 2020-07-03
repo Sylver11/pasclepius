@@ -28,6 +28,16 @@ def liveSearch(uuid, name):
     conn.close()
     return data
 
+def liveSearchInvoices(uuid, name):
+    sql = """SELECT * FROM invoices WHERE uuid_text = '{}' AND name LIKE '{}%'
+    """.format(uuid, name)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return data
 
 def getPatient(uuid, name):
     sql = """ SELECT any_value(tariff) AS tariff, any_value(dob) AS dob,
@@ -82,6 +92,18 @@ def getSingleInvoice(uuid, patient, date):
     conn.close()
     return data
 
+def getAllInvoices(uuid):
+    sql = """SELECT name, date_created, date_invoice, remind_me, balance, paid,
+    submitted_on, medical, invoice,url, `values`, treatments, dates, tariff,
+    main, dob, number, po,`case` FROM invoices WHERE uuid_text = '{}'
+    """.format(uuid)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return data
 
 def updateInvoice(layout, uuid, modifiers, treatments, prices, dates, patient, date_invoice):
     name = patient['name']

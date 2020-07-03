@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+{% block content %}
+<nav class="navbar navbar-expand-sm navbar-dark" style="background-color:#017B25; margin-bottom: 30px;">
+    <ul class="navbar-nav" id="myTab">
+        <a class="general nav-link nav-item" href="/account">General</a>
+        <a class="due nav-link nav-item" href="/account/invoices-due">Due</a>
+        <a class="not-submitted nav-link nav-item" href="/account/invoices-not-submitted">Not submitted</a>
+        <a class="settings nav-link nav-item" href="/account/settings">Settings</a>
+    </ul>
+</nav>
+<script>
+    $(document).ready(function(){
+    
+     if (window.location.href.match('account/invoices-due')){
+       $('.due').addClass('active');
+     }
+     else if (window.location.href.match('account/invoices-not-submitted')){
+       $('.not-submitted').addClass('active');
+     }
+     else if (window.location.href.match('account/settings')){
+       $('.settings').addClass('active');
+       
+     }
+     else if(window.location.href.match('account')){
+       $('.general').addClass('active');
+     }
+   })
+</script>
+{% endblock %}

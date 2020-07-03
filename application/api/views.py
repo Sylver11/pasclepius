@@ -1,15 +1,14 @@
 import os
-from flask import Blueprint, request, session, jsonify, redirect, url_for, send_file, flash
-from application.forms import updateBankingForm, updatePracticeForm,Patient_mva, Patient_psemas, Patient_other,getTreatmentForm, RegistrationForm, LoginForm, updatePasswordForm, updatePersonalForm,  updateLayoutForm
+from flask import Blueprint, request, session, send_file
+from application.forms import getTreatmentForm
 from application.db_tariffs import getTreatmentByItem, getValueTreatments, getMultipleValues, getTreatmentByGroup, liveSearchTreatments
 from application.db_invoice import get_index, add_invoice, getInvoiceURL, getSingleInvoice, updateInvoice, liveSearch
-from application.db_users import addUser,checkUser, updateUserLayout, updateUserPassword, updateUserPersonal, updateUserPractice, updateUserBanking
+from application.db_users import checkUser
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 from flask_login import current_user, login_required
 from datetime import datetime
 import datetime as datetime2
-from jinja2 import Template
 from decimal import *
 import subprocess
 import simplejson as json
