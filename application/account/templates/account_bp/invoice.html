@@ -1,25 +1,97 @@
 {% include 'account_bp/index.html' %}
 {% block content %}
-<div class="jumbotron jumbotron-fluid">
-    <div class="container">
-        <!-- <div id="second_inside" class="align-middle">
-            <img id="green-leaf-index" src="{{ url_for('static', filename='img/green-leaf.png') }}" alt="green-leaf">
-        </div> -->
-        <div id="inside_container" class="align-middle">
-            <h3 class="display-5">invoice</h3>
-            <p class="lead">Watch this space</p>
+<div class="jumbotron jumbotron-fluid" style="height:88%; margin:0">
+    <div class="container d-flex flex-column">
+        <div class="d-flex flex-row-reverse">
+            <h3>Status: <span class="badge badge-primary">Not submitted</span></h3>
+            <h3>Status: <span class="badge badge-warning">Due</span></h3>
+            <h3>Status: <span class="badge badge-danger">Over-Due</span></h3>
+            <h3>Status: <span class="badge badge-success">Settled</span></h3>
+        </div>
+        <div class="d-flex justify-content-between">
+            <div>
+                <h3>Patient Name: {{ invoice['name'] }}</h3>
+                {% if  invoice['medical'] =='mva' %}
+                    <p>Medical Aid: invoice['medical'] }}</p>
+                    <p>Tariff: {{ invoice['tariff'] }}</p>
+                    <p>Case Number: {{ invoice['case'] }}</p>
+                    <p>PO: {{ invoice['po'] }}</p>
+                    <p>Invoice created: {{ invoice['date_created'] }}</p>  
+
+                {% elif  invoice['medical'] =='psemas' %}
+                        <p>Medical Aid: {{ invoice['medical'] }}<br>
+                        Tariff: {{ invoice['tariff'] }}<br>
+                        Main Member: {{ invoice['main'] }}<br>
+                        Medical Aid Number: {{ invoice['number'] }}<br>
+                        Date of Birth: {{ invoice['dob'] }}<br>
+                        Invoice created: {{ invoice['date_created'] }}</p>
+
+                {% else %}
+                        <p>Medical Aid:  {{ invoice['medical'] }}<br>
+                        Tariff: {{ invoice['tariff']  }}<br>
+                        Main Member: {{ invoice['main']  }}<br>
+                        Medical Aid Number: {{ invoice['number'] }}<br>
+                        Date of Birth: {{ invoice['dob'] }}<br>
+                        Invoice created: {{ invoice['date_created']}}</p>
+                {% endif %}  
+            </div> 
+            <div>
+                <p id="submitted_on"></p>
+                <p id="debit"></p>
+                <p id="credit"></p>
+                <p id="balance"></p>
+            </div>
         </div>
     </div>
 </div>
 <script>
     $(document).ready(function(){
-        var invoice = '{{ invoice }}'
+
+        function sum(input){
+             if (toString.call(input) !== "[object Array]")
+                return false;
+                        var total =  0;
+                        for(var i=0;i<input.length;i++)
+                          {                  
+                            if(isNaN(input[i])){
+                            continue;
+                             }
+                              total += Number(input[i]);
+                           }
+                         return total;
+                        }
+
+
+
+        var invoice = '{{ invoice_json }}'
         invoice = JSON.parse(invoice.replace(/&#34;/g,'"'))
         console.log(invoice)
         var patient = invoice["name"]
         var name = invoice["invoice"]
         var date = invoice["date_invoice"]
         var created = invoice["date_created"]
+        var submitted_on = invoice['submitted_on']
+        var credit = invoice["credit"];
+        var sumArr = invoice['values'].split(',');
+        var debit = sum(sumArr).toFixed(2)
+
+        if (submitted_on){
+            $('#submitted_on').text("Submitted on: " + submitted_on);
+        }
+        else{
+            $('#submitted_on').text("Submitted on: Not submitted");
+        }
+        $('#debit').text(debit);
+        if (credit){
+            balance = debit - credit
+            $('#credit').text(credit.toFixed(2));
+            $('#balance').text(balance.toFixed(2));
+        }
+        else{
+            $('#balance').text(debit);
+            $('#credit').text((0).toFixed(2));
+        }
+
         console.log(patient)
     })
 </script>

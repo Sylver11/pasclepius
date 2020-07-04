@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash
 from flask_login import current_user, login_required
 account_bp = Blueprint('account_bp',__name__,template_folder='templates')
-from application.db_invoice import getAllInvoices, liveSearchInvoices, updateSubmitted, updateDebit, getInvoiceByInvoiceName
+from application.db_invoice import getAllInvoices, liveSearchInvoices, updateSubmitted, updateCredit, getInvoiceByInvoiceName
 import simplejson as json
 from datetime import datetime
 import datetime as datetime2
@@ -50,7 +50,8 @@ def singleInvoice(medical, year, index):
              date = d.strftime('%d.%m.%Y')
              invoice[o] = date
     return render_template('account_bp/invoice.html',
-            invoice = json.dumps(invoice))
+            invoice_json = json.dumps(invoice),
+            invoice = invoice)
 
 
 @account_bp.route('/live-search-invoice',methods=['GET','POST'])
@@ -76,11 +77,11 @@ def submitInvoice():
         return json.dumps("Something went wrong. Please contact the system administrator")
 
 
-@account_bp.route('/add-debit-invoice',methods=['GET'])
-def addDebitInvoice():
+@account_bp.route('/add-credit-invoice',methods=['GET'])
+def addCreditInvoice():
     invoice_name = request.args.get('invoice_name')
-    debit = request.args.get('debit')
-    status = updateDebit(current_user.uuid, invoice_name, debit)
+    credit = request.args.get('credit')
+    status = updateDebit(current_user.uuid, invoice_name, credit)
     if status:
         return json.dumps(invoice_name + " marked as paid")
     else:

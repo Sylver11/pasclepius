@@ -127,7 +127,6 @@ $(document).on("keyup", ".invoice-search", function (e) {
                     found_patient_names[i] = returnData.invoices.filter(function(single) {
                         return single.name ==  arr_unique_patient_name[i];})
                     }
-                    console.log(found_patient_names)
                 let index_invoice_names = 0;
                 for (i = 0; i < arr_unique_patient_name.length; i++){
                     var invoice_div = document.createElement("DIV");
@@ -186,12 +185,10 @@ $(document).on("keyup", ".invoice-search", function (e) {
                         open_invoice_button .setAttribute("value", found_patient_names[i][x]['invoice']);
                         open_invoice_button.innerHTML = "Open"
                         action_wrapper.appendChild(open_invoice_button)
-                        if(found_patient_names[i][x]['submitted_on']){
-                                
+                        if(found_patient_names[i][x]['submitted_on']){ 
                                 var paragraph_submitted_on = document.createElement("P");
                                 paragraph_submitted_on.textContent = "Submitted on: " + found_patient_names[i][x]['submitted_on']
                                 paragraph_info_wrapper.appendChild(paragraph_submitted_on)
-                                
                             }
                             else{
                                 var submit_button = document.createElement("BUTTON");
@@ -200,11 +197,9 @@ $(document).on("keyup", ".invoice-search", function (e) {
                                 action_wrapper.appendChild(submit_button)
                             }
 
-
-
                         var paid_button = document.createElement("BUTTON");
-                        if(found_patient_names[i][x]['debit']){
-                            var balance = sum(sumArr).toFixed(2) - found_patient_names[i][x]['debit'];
+                        if(found_patient_names[i][x]['credit']){
+                            var balance = sum(sumArr).toFixed(2) - found_patient_names[i][x]['credit'];
                             paid_button.setAttribute("value", balance);
                         }
                         else{
@@ -214,15 +209,13 @@ $(document).on("keyup", ".invoice-search", function (e) {
                         paid_button.innerHTML = "Paid";
 
 
-
-
-                        if(found_patient_names[i][x]['debit'] == sum(sumArr).toFixed(2)){
+                        if(found_patient_names[i][x]['credit'] == sum(sumArr).toFixed(2)){
                             var paragraph_paid = document.createElement("P");
                             paragraph_paid.textContent = "Paid"
                             flex_wrapper.appendChild(paragraph_paid)
                         }
-                        else if(found_patient_names[i][x]['debit'] ){
-                            paragraph_balance.textContent = found_patient_names[i][x]['debit']
+                        else if(found_patient_names[i][x]['credit'] ){
+                            paragraph_balance.textContent = found_patient_names[i][x]['credit']
                             action_wrapper.appendChild(paid_button)
                         }
                         else{
@@ -230,9 +223,9 @@ $(document).on("keyup", ".invoice-search", function (e) {
                         }
                         
                         
-                        if(found_patient_names[i][x]['debit']){
-                            paragraph_sum_debit.textContent = found_patient_names[i][x]['debit'];
-                            paragraph_balance.textContent = sum(sumArr).toFixed(2) - found_patient_names[i][x]['debit'];
+                        if(found_patient_names[i][x]['credit']){
+                            paragraph_sum_debit.textContent = found_patient_names[i][x]['credit'];
+                            paragraph_balance.textContent = sum(sumArr).toFixed(2) - found_patient_names[i][x]['credit'];
                         }
                         else{
                             paragraph_sum_debit.textContent = (0).toFixed(2)
@@ -302,11 +295,11 @@ $(document).on("click", ".open_invoice_button", function (e) {
         $(document).on("click", ".paid_button", function (e) {
             e.preventDefault();
             var invoice_name = $(this).siblings('input').val();
-            var debit = $(this).val()
+            var credit = $(this).val()
             $.ajax({
                 type: "GET",
-                url: '/account/add-debit-invoice',
-                data: {invoice_name: invoice_name, debit: debit}, 
+                url: '/account/add-credit-invoice',
+                data: {invoice_name: invoice_name, credit: credit}, 
                 dataType: 'json',
                 success: function (returnData) {
                     console.log(returnData)

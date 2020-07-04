@@ -106,7 +106,7 @@ def getInvoiceByInvoiceName(uuid, invoice_name):
     return invoice
 
 def getAllInvoices(uuid):
-    sql = """SELECT name, date_created, date_invoice, remind_me, debit,
+    sql = """SELECT name, date_created, date_invoice, remind_me, credit,
     submitted_on, medical, invoice,url, `values`, treatments, dates, tariff,
     main, dob, number, po,`case` FROM invoices WHERE uuid_text = '{}'
     """.format(uuid)
@@ -132,9 +132,10 @@ def updateSubmitted(uuid, invoice_name):
     return status
 
 
-def updateDebit(uuid, invoice_name, debit):
-    sql = """UPDATE invoices SET `debit` =  CASE WHEN `debit` IS NOT NULL THEN
-    `debit` + '{}' ELSE '{}' END WHERE uuid_text = '{}' AND invoice = '{}'""".format(debit, debit, uuid, invoice_name)
+def updateCredit(uuid, invoice_name, credit):
+    sql = """UPDATE invoices SET `credit` =  CASE WHEN `credit` IS NOT NULL THEN
+    `credit` + '{}' ELSE '{}' END WHERE uuid_text = '{}' AND invoice =
+    '{}'""".format(credit, credit, uuid, invoice_name)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
