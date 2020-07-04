@@ -58,7 +58,7 @@ def setupTable():
         post_op varchar(255),
         submitted_on DATETIME,
         paid BOOLEAN NOT NULL DEFAULT false,
-        balance int(11),
+        `debit` DECIMAL(10,2),
         remind_me DATETIME,
         PRIMARY KEY (id));"""
 

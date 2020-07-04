@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 {% block content %}
-<nav class="navbar navbar-expand-sm navbar-dark" style="background-color:#017B25; margin-bottom: 30px;">
+<nav class="navbar navbar-expand-sm navbar-dark" style="background-color:#017B25;">
     <ul class="navbar-nav" id="myTab">
         <a class="general nav-link nav-item" href="/account">General</a>
         <a class="due nav-link nav-item" href="/account/invoices-due">Due</a>
@@ -19,6 +19,10 @@
      }
      else if (window.location.href.match('account/settings')){
        $('.settings').addClass('active');
+       
+     }
+     else if (window.location.href.match('account/invoice')){
+      var donothing;
        
      }
      else if(window.location.href.match('account')){

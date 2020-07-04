@@ -1,0 +1,26 @@
+{% include 'account_bp/index.html' %}
+{% block content %}
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <!-- <div id="second_inside" class="align-middle">
+            <img id="green-leaf-index" src="{{ url_for('static', filename='img/green-leaf.png') }}" alt="green-leaf">
+        </div> -->
+        <div id="inside_container" class="align-middle">
+            <h3 class="display-5">invoice</h3>
+            <p class="lead">Watch this space</p>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        var invoice = '{{ invoice }}'
+        invoice = JSON.parse(invoice.replace(/&#34;/g,'"'))
+        console.log(invoice)
+        var patient = invoice["name"]
+        var name = invoice["invoice"]
+        var date = invoice["date_invoice"]
+        var created = invoice["date_created"]
+        console.log(patient)
+    })
+</script>
+ {% endblock %}

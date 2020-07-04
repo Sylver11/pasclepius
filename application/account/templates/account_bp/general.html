@@ -1,5 +1,20 @@
 {% include 'account_bp/index.html' %}
 {% block content %}
+<div id="account_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Success</h5>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="jumbotron jumbotron-fluid">
     <div class="container">
         <form autocomplete="off" class="invoice-search">
@@ -9,9 +24,6 @@
             <img id="green-leaf-index" src="{{ url_for('static', filename='img/green-leaf.png') }}" alt="green-leaf">
         </div> -->
         <div id="inside_container" class="align-middle">
-            {% if current_user.is_authenticated %}
-                Hi {{ current_user.first_name }}!
-            {% endif %}
             <h3 class="display-5">This is inside the bp folder</h3>
             {{ invoices }}
             <p class="lead">Watch this space</p>
@@ -23,6 +35,10 @@
 
 $(document).ready(function(){
 
+    var messages = "{{ get_flashed_messages() }}";
+            if (typeof messages != 'undefined' && messages != '[]') {
+                $("#account_modal").modal();
+            };
 
     function sum(input){
              if (toString.call(input) !== "[object Array]")
@@ -107,51 +123,49 @@ $(document).on("keyup", ".invoice-search", function (e) {
                     arr_unique_patient_name = uniq_fast(patient_name_from_invoices)
                 }
                 var found_patient_names = [], range = arr_unique_patient_name.length;
-                // console.log(arr_unique_patient_name)
                 for(i = 0; i < arr_unique_patient_name.length; i++){
                     found_patient_names[i] = returnData.invoices.filter(function(single) {
-                        // console.log(single.invoices)
                         return single.name ==  arr_unique_patient_name[i];})
                     }
                     console.log(found_patient_names)
                 let index_invoice_names = 0;
                 for (i = 0; i < arr_unique_patient_name.length; i++){
                     var invoice_div = document.createElement("DIV");
-                    // y.style.cursor = "default";
                     invoice_div.innerHTML += "<strong>" + arr_unique_patient_name[i].substr(0, val.length) + "</strong>";
                     invoice_div.innerHTML += arr_unique_patient_name[i].substr(val.length) + "<br>";
-                    // console.log(found_patient_names)
                     for(x=0; x < found_patient_names[i].length; x++){
+                        var sumArr = found_patient_names[i][x]['values'].split(',');
                         var flex_wrapper = document.createElement("DIV");
                         flex_wrapper.style.margin = "2rem";
                         var single_balance_wrapper = document.createElement("DIV");
+                        single_balance_wrapper.style.display = "flex";
+                        single_balance_wrapper.style.justifyContent = "space-between";
+                        single_balance_wrapper.style.alignItems = "center";
                         var paragraph_info_wrapper = document.createElement("DIV");
                         var action_wrapper = document.createElement("DIV");
                         var balance_wrapper = document.createElement("DIV");
-                        
-                        
-                        
-                        var input_field = document.createElement("INPUT");
-                        input_field.setAttribute("type", "hidden")
-                        input_field.value = found_patient_names[i][x]['invoice']
-                        
+
                         
                         var paragraph_invoice = document.createElement("P");
                         paragraph_invoice.textContent = found_patient_names[i][x]['invoice']
+                        paragraph_info_wrapper.appendChild(paragraph_invoice)
 
                         var paragraph_invoice_created = document.createElement("P");
                         paragraph_invoice_created.style.marginBottom = "0.5rem";
                         paragraph_invoice_created.textContent = "Created on: " + found_patient_names[i][x]['date_created'];
+                        paragraph_info_wrapper.appendChild(paragraph_invoice_created)
+                        
                         var paragraph_invoice_date = document.createElement("P");
                         paragraph_invoice_date.style.marginBottom = "0.5rem";
                         paragraph_invoice_date.textContent = "Invoice date: " +found_patient_names[i][x]['date_invoice']
+                        paragraph_info_wrapper.appendChild(paragraph_invoice_date)
+                        
                         var paragraph_invoice_items = document.createElement("P");
                         paragraph_invoice_items.style.marginBottom = "0.5rem";
                         paragraph_invoice_items.textContent = "Treatment codes: " +found_patient_names[i][x]['treatments']
+                        paragraph_info_wrapper.appendChild(paragraph_invoice_items)
 
-                        var paragraph_submitted_on = document.createElement("P");
-
-
+                        
                         var paragraph_sum_debit = document.createElement("P");
                         paragraph_sum_debit.style.textAlign = "right";
                         paragraph_sum_debit.style.marginBottom = "0.5rem";
@@ -162,112 +176,77 @@ $(document).on("keyup", ".invoice-search", function (e) {
                         var paragraph_sum_line = document.createElement("HR");
                         paragraph_sum_line.style.margin = "0";
                         var paragraph_balance = document.createElement("P");
-
-
-
-                        var paid_button = document.createElement("BUTTON");
-                        var open_invoice_button = document.createElement("BUTTON");
-                        paid_button.innerHTML = "Paid"
-                        open_invoice_button.innerHTML = "Open"
-
                         
-
-                        index_invoice_names++;
-                        // paragraph_field.setAttribute("id", "procedure-list-description" + index_treatment_procedure)
-                        // input_field.setAttribute("id", "treatment-list-input-procedure" + index_treatment_procedure)
-                        // input_field.readOnly = true;
-                        // input_field.style.cursor = "default";
-                        single_balance_wrapper.style.display = "flex";
-                        single_balance_wrapper.style.justifyContent = "space-between";
-                        single_balance_wrapper.style.alignItems = "center";
-                        // paragraph_field.style.margin = "0";
-                        // input_field.style.backgroundColor = 'white';
-
+                        var input_field = document.createElement("INPUT");
+                        input_field.setAttribute("type", "hidden")
+                        input_field.value = found_patient_names[i][x]['invoice']
+                        action_wrapper.appendChild(input_field)
+                        var open_invoice_button = document.createElement("BUTTON");
+                        open_invoice_button .setAttribute("class", "open_invoice_button");
+                        open_invoice_button .setAttribute("value", found_patient_names[i][x]['invoice']);
+                        open_invoice_button.innerHTML = "Open"
                         action_wrapper.appendChild(open_invoice_button)
                         if(found_patient_names[i][x]['submitted_on']){
                                 
-                                paragraph_submitted_on.textContent = found_patient_names[i][x]['submitted_on']
-                                flex_wrapper.appendChild(paragraph_submitted_on)
+                                var paragraph_submitted_on = document.createElement("P");
+                                paragraph_submitted_on.textContent = "Submitted on: " + found_patient_names[i][x]['submitted_on']
+                                paragraph_info_wrapper.appendChild(paragraph_submitted_on)
                                 
                             }
                             else{
                                 var submit_button = document.createElement("BUTTON");
+                                submit_button.setAttribute("class", "submit_button_invoice");
                                 submit_button.innerHTML = "Submit invoice"
                                 action_wrapper.appendChild(submit_button)
                             }
 
-                        
-                        if(found_patient_names[i][x]['paid'] == 1){
+
+
+                        var paid_button = document.createElement("BUTTON");
+                        if(found_patient_names[i][x]['debit']){
+                            var balance = sum(sumArr).toFixed(2) - found_patient_names[i][x]['debit'];
+                            paid_button.setAttribute("value", balance);
+                        }
+                        else{
+                            paid_button.setAttribute("value", sum(sumArr).toFixed(2));
+                        }   
+                        paid_button.setAttribute("class", "paid_button");
+                        paid_button.innerHTML = "Paid";
+
+
+
+
+                        if(found_patient_names[i][x]['debit'] == sum(sumArr).toFixed(2)){
                             var paragraph_paid = document.createElement("P");
                             paragraph_paid.textContent = "Paid"
                             flex_wrapper.appendChild(paragraph_paid)
                         }
-                        else if(found_patient_names[i][x]['balance'] ){
-                            paragraph_balance.textContent = found_patient_names[i][x]['balance']
-                            // action_wrapper.appendChild(partial_paid_button)
+                        else if(found_patient_names[i][x]['debit'] ){
+                            paragraph_balance.textContent = found_patient_names[i][x]['debit']
                             action_wrapper.appendChild(paid_button)
-                            
                         }
                         else{
-                            // action_wrapper.appendChild(partial_paid_button)
                             action_wrapper.appendChild(paid_button)
-                            
                         }
                         
-                        var sumArr = found_patient_names[i][x]['values'].split(',');
-                        if(found_patient_names[i][x]['balance']){
-                            paragraph_sum_debit.textContent = found_patient_names[i][x]['balance'];
-                            var balance = sum(sumArr).toFixed(2) - found_patient_names[i][x]['balance'];
-                            paragraph_balance.textContent = balance;
-
+                        
+                        if(found_patient_names[i][x]['debit']){
+                            paragraph_sum_debit.textContent = found_patient_names[i][x]['debit'];
+                            paragraph_balance.textContent = sum(sumArr).toFixed(2) - found_patient_names[i][x]['debit'];
                         }
                         else{
                             paragraph_sum_debit.textContent = (0).toFixed(2)
                             paragraph_balance.textContent = sum(sumArr).toFixed(2)
-                            
                         }
+
                         paragraph_sum_credit.textContent = sum(sumArr).toFixed(2)
                         balance_wrapper.appendChild(paragraph_sum_credit)
                         balance_wrapper.appendChild(paragraph_sum_debit)
                         balance_wrapper.appendChild(paragraph_sum_line)
                         balance_wrapper.appendChild(paragraph_balance)
 
-
-
-
-
-                       
-                        
-                        
-                        // console.log("ruuuuu")
-                        // console.log(found_patient_names[i][x]['invoice'])
-                        // paragraph_field.setAttribute('class','input-fields-procedures')
-                        // cloneIndex_orthopaedic_surgeon2 = cloneIndex - 1 ;
-
-                        // (function(index){
-                        //         paragraph_field.addEventListener("click", function() {
-                        //             var value_of_value = document.getElementById("value-0").value
-                        //             if(value_of_value){
-                        //                 clone()
-                        //             } 
-                        //             next_empty_treatment_input = document.getElementById("tbodyClone").lastElementChild.childNodes[3].firstChild
-                        //             item_num = document.getElementById("treatment-list-input-procedure" + index).value
-                        //             next_empty_treatment_input.value = item_num
-                        //             description_procedures = document.getElementById("procedure-list-description" + index).textContent;
-                        //             next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_procedures
-                        //             newTreatmentLiveSearch(next_empty_treatment_input)
-                        //             closeAllLists();
-                        //         })
-                        //     })(index_treatment_procedure)
-
                         invoice_div.appendChild(flex_wrapper)
                         flex_wrapper.appendChild(single_balance_wrapper)
-                        // flex_wrapper.appendChild(action_balance_wrapper)
-                        paragraph_info_wrapper.appendChild(paragraph_invoice)
-                        paragraph_info_wrapper.appendChild(paragraph_invoice_created)
-                        paragraph_info_wrapper.appendChild(paragraph_invoice_date)
-                        paragraph_info_wrapper.appendChild(paragraph_invoice_items)
-                        paragraph_info_wrapper.appendChild(input_field)
 
                         single_balance_wrapper.appendChild(paragraph_info_wrapper)
                         single_balance_wrapper.appendChild(balance_wrapper)
@@ -278,10 +257,6 @@ $(document).on("keyup", ".invoice-search", function (e) {
                 }
                 a.appendChild(patient_div);    
             }
-        
-
-            
-
 
     function closeAllLists(elmnt) {
         var x = document.getElementsByClassName("autocomplete-invoices");
@@ -300,6 +275,47 @@ $(document).on("keyup", ".invoice-search", function (e) {
         }
     });
 });
+
+
+$(document).on("click", ".open_invoice_button", function (e) {
+        e.preventDefault()
+        var invoice_name = $(this).val()
+        window.location.href = "/account/invoice/" + invoice_name
+        });
+
+
+    $(document).on("click", ".submit_button_invoice", function (e) {
+            e.preventDefault();
+            var invoice_name = $(this).siblings('input').val();
+            $.ajax({
+                type: "GET",
+                url: '/account/submit-invoice',
+                data: {invoice_name: invoice_name}, 
+                dataType: 'json',
+                success: function (returnData) {
+                    $('.modal-body').text(returnData)
+                    $("#account_modal").modal();
+                }
+            })
+        })
+
+        $(document).on("click", ".paid_button", function (e) {
+            e.preventDefault();
+            var invoice_name = $(this).siblings('input').val();
+            var debit = $(this).val()
+            $.ajax({
+                type: "GET",
+                url: '/account/add-debit-invoice',
+                data: {invoice_name: invoice_name, debit: debit}, 
+                dataType: 'json',
+                success: function (returnData) {
+                    console.log(returnData)
+                    $('.modal-body').text(returnData)
+                    $("#account_modal").modal();
+            
+                }
+            })
+        })
 })
 </script>
  {% endblock %}

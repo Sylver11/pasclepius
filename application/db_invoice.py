@@ -92,8 +92,21 @@ def getSingleInvoice(uuid, patient, date):
     conn.close()
     return data
 
+
+def getInvoiceByInvoiceName(uuid, invoice_name):
+    sql = """SELECT *
+    FROM invoices WHERE uuid_text = '{}' AND invoice = '{}'
+    """.format(uuid, invoice_name)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    invoice = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return invoice
+
 def getAllInvoices(uuid):
-    sql = """SELECT name, date_created, date_invoice, remind_me, balance, paid,
+    sql = """SELECT name, date_created, date_invoice, remind_me, debit,
     submitted_on, medical, invoice,url, `values`, treatments, dates, tariff,
     main, dob, number, po,`case` FROM invoices WHERE uuid_text = '{}'
     """.format(uuid)
@@ -104,6 +117,32 @@ def getAllInvoices(uuid):
     cursor.close()
     conn.close()
     return data
+
+
+def updateSubmitted(uuid, invoice_name):
+    sql= """UPDATE invoices SET submitted_on = NOW() WHERE uuid_text = '{}' and
+    invoice = '{}'""".format(uuid, invoice_name)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    #data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    status = True
+    return status
+
+
+def updateDebit(uuid, invoice_name, debit):
+    sql = """UPDATE invoices SET `debit` =  CASE WHEN `debit` IS NOT NULL THEN
+    `debit` + '{}' ELSE '{}' END WHERE uuid_text = '{}' AND invoice = '{}'""".format(debit, debit, uuid, invoice_name)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    cursor.close()
+    conn.close()
+    print(sql)
+    status = True
+    return status
 
 def updateInvoice(layout, uuid, modifiers, treatments, prices, dates, patient, date_invoice):
     name = patient['name']
