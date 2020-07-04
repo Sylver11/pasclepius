@@ -123,40 +123,67 @@ $(document).on("keyup", ".invoice-search", function (e) {
                     // console.log(found_patient_names)
                     for(x=0; x < found_patient_names[i].length; x++){
                         var flex_wrapper = document.createElement("DIV");
+                        flex_wrapper.style.margin = "2rem";
+                        var single_balance_wrapper = document.createElement("DIV");
+                        var paragraph_info_wrapper = document.createElement("DIV");
                         var action_wrapper = document.createElement("DIV");
+                        var balance_wrapper = document.createElement("DIV");
                         
                         
                         
                         var input_field = document.createElement("INPUT");
                         input_field.setAttribute("type", "hidden")
+                        input_field.value = found_patient_names[i][x]['invoice']
                         
-                        var paragraph_balance = document.createElement("P");
+                        
                         var paragraph_invoice = document.createElement("P");
+                        paragraph_invoice.textContent = found_patient_names[i][x]['invoice']
+
+                        var paragraph_invoice_created = document.createElement("P");
+                        paragraph_invoice_created.style.marginBottom = "0.5rem";
+                        paragraph_invoice_created.textContent = "Created on: " + found_patient_names[i][x]['date_created'];
+                        var paragraph_invoice_date = document.createElement("P");
+                        paragraph_invoice_date.style.marginBottom = "0.5rem";
+                        paragraph_invoice_date.textContent = "Invoice date: " +found_patient_names[i][x]['date_invoice']
+                        var paragraph_invoice_items = document.createElement("P");
+                        paragraph_invoice_items.style.marginBottom = "0.5rem";
+                        paragraph_invoice_items.textContent = "Treatment codes: " +found_patient_names[i][x]['treatments']
+
                         var paragraph_submitted_on = document.createElement("P");
 
 
-                        var paid_button = document.createElement("BUTTON");
-                            var partial_paid_button = document.createElement("BUTTON");
-                            paid_button.innerHTML = "Paid"
-                            partial_paid_button.innerHTML = "Partial paid"
+                        var paragraph_sum_debit = document.createElement("P");
+                        paragraph_sum_debit.style.textAlign = "right";
+                        paragraph_sum_debit.style.marginBottom = "0.5rem";
+                        paragraph_sum_debit.style.color = "green";
+                        var paragraph_sum_credit = document.createElement("P");
+                        paragraph_sum_credit.style.marginBottom = "0";
+                        paragraph_sum_credit.style.color = "red";
+                        var paragraph_sum_line = document.createElement("HR");
+                        paragraph_sum_line.style.margin = "0";
+                        var paragraph_balance = document.createElement("P");
 
-                        var sumArr = found_patient_names[i][x]['values'].split(',');
+
+
+                        var paid_button = document.createElement("BUTTON");
+                        var open_invoice_button = document.createElement("BUTTON");
+                        paid_button.innerHTML = "Paid"
+                        open_invoice_button.innerHTML = "Open"
+
                         
-                        console.log(sum(sumArr).toFixed(2))
+
                         index_invoice_names++;
                         // paragraph_field.setAttribute("id", "procedure-list-description" + index_treatment_procedure)
                         // input_field.setAttribute("id", "treatment-list-input-procedure" + index_treatment_procedure)
                         // input_field.readOnly = true;
                         // input_field.style.cursor = "default";
-                        // flex_wrapper.style.display = "flex";
-                        // flex_wrapper.style.justifyContent = "flex-start";
-                        // flex_wrapper.style.alignItems = "center";
+                        single_balance_wrapper.style.display = "flex";
+                        single_balance_wrapper.style.justifyContent = "space-between";
+                        single_balance_wrapper.style.alignItems = "center";
                         // paragraph_field.style.margin = "0";
                         // input_field.style.backgroundColor = 'white';
-                        input_field.value = found_patient_names[i][x]['invoice']
-                        paragraph_invoice.textContent = found_patient_names[i][x]['invoice']
 
-
+                        action_wrapper.appendChild(open_invoice_button)
                         if(found_patient_names[i][x]['submitted_on']){
                                 
                                 paragraph_submitted_on.textContent = found_patient_names[i][x]['submitted_on']
@@ -169,7 +196,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
                                 action_wrapper.appendChild(submit_button)
                             }
 
-
+                        
                         if(found_patient_names[i][x]['paid'] == 1){
                             var paragraph_paid = document.createElement("P");
                             paragraph_paid.textContent = "Paid"
@@ -177,15 +204,36 @@ $(document).on("keyup", ".invoice-search", function (e) {
                         }
                         else if(found_patient_names[i][x]['balance'] ){
                             paragraph_balance.textContent = found_patient_names[i][x]['balance']
-                            action_wrapper.appendChild(partial_paid_button)
+                            // action_wrapper.appendChild(partial_paid_button)
                             action_wrapper.appendChild(paid_button)
                             
                         }
                         else{
-                            action_wrapper.appendChild(partial_paid_button)
+                            // action_wrapper.appendChild(partial_paid_button)
                             action_wrapper.appendChild(paid_button)
                             
                         }
+                        
+                        var sumArr = found_patient_names[i][x]['values'].split(',');
+                        if(found_patient_names[i][x]['balance']){
+                            paragraph_sum_debit.textContent = found_patient_names[i][x]['balance'];
+                            var balance = sum(sumArr).toFixed(2) - found_patient_names[i][x]['balance'];
+                            paragraph_balance.textContent = balance;
+
+                        }
+                        else{
+                            paragraph_sum_debit.textContent = (0).toFixed(2)
+                            paragraph_balance.textContent = sum(sumArr).toFixed(2)
+                            
+                        }
+                        paragraph_sum_credit.textContent = sum(sumArr).toFixed(2)
+                        balance_wrapper.appendChild(paragraph_sum_credit)
+                        balance_wrapper.appendChild(paragraph_sum_debit)
+                        balance_wrapper.appendChild(paragraph_sum_line)
+                        balance_wrapper.appendChild(paragraph_balance)
+
+
+
 
 
                        
@@ -213,12 +261,18 @@ $(document).on("keyup", ".invoice-search", function (e) {
                         //     })(index_treatment_procedure)
 
                         invoice_div.appendChild(flex_wrapper)
-                        
-                        flex_wrapper.appendChild(paragraph_invoice)
-                        
-                        flex_wrapper.appendChild(paragraph_balance)
-                        flex_wrapper.appendChild(input_field)
+                        flex_wrapper.appendChild(single_balance_wrapper)
+                        // flex_wrapper.appendChild(action_balance_wrapper)
+                        paragraph_info_wrapper.appendChild(paragraph_invoice)
+                        paragraph_info_wrapper.appendChild(paragraph_invoice_created)
+                        paragraph_info_wrapper.appendChild(paragraph_invoice_date)
+                        paragraph_info_wrapper.appendChild(paragraph_invoice_items)
+                        paragraph_info_wrapper.appendChild(input_field)
+
+                        single_balance_wrapper.appendChild(paragraph_info_wrapper)
+                        single_balance_wrapper.appendChild(balance_wrapper)
                         flex_wrapper.appendChild(action_wrapper)  
+                         
                     }
                     patient_div.appendChild(invoice_div);
                 }
@@ -230,7 +284,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
 
 
     function closeAllLists(elmnt) {
-        var x = document.getElementsByClassName("autocomplete-items2");
+        var x = document.getElementsByClassName("autocomplete-invoices");
         for (var i = 0; i < x.length; i++) {
             if (elmnt != x[i] && elmnt != input_element) {
             x[i].parentNode.removeChild(x[i]);
@@ -240,7 +294,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
     }
     document.addEventListener("click", function (e) {
         closeAllLists(e.target);
-        $('#treatmentsearch').val('');
+        $('#invoice-search').val('');
     });
 
         }
