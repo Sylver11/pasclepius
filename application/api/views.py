@@ -67,10 +67,10 @@ def generateInvoice():
             to_json = json.dumps(res_dict)
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/swriter/main.py', to_json])
-            return json_dumps({'result':'success'})
+            return json.dumps({'result':'success'})
         else:
-            return json_dumps({'result':'Error: Entry already exists. Have a look at past invoices to continue this invoice.'})
-        return json_dumps({'result':'error'})
+            return json.dumps({'result':'Error: Entry already exists. Have a look at past invoices to continue this invoice.'})
+        return json.dumps({'result':'error'})
 
 
 @api_bp.route('/live-search',methods=['GET','POST'])

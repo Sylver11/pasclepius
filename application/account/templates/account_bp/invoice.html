@@ -1,12 +1,27 @@
 {% include 'account_bp/index.html' %}
 {% block content %}
+<div id="account_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Success</h5>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="jumbotron jumbotron-fluid" style="height:88%; margin:0">
     <div class="container d-flex flex-column">
         <div class="d-flex flex-row-reverse">
-            <h3>Status: <span class="badge badge-primary">Not submitted</span></h3>
-            <h3>Status: <span class="badge badge-warning">Due</span></h3>
-            <h3>Status: <span class="badge badge-danger">Over-Due</span></h3>
-            <h3>Status: <span class="badge badge-success">Settled</span></h3>
+            <h3 id="not-submitted" style="display:none" >Status: <span class="badge badge-primary">Not submitted</span></h3>
+            <h3 id="due" style="display:none" >Status: <span class="badge badge-warning">Due</span></h3>
+            <h3 id="over-due" style="display:none" >Status: <span class="badge badge-danger">Over-Due</span></h3>
+            <h3 id="settled" style="display:none" >Status: <span class="badge badge-success">Settled</span></h3>
         </div>
         <div class="d-flex justify-content-between">
             <div>
@@ -42,57 +57,222 @@
                 <p id="balance"></p>
             </div>
         </div>
+        <div class="d-flex justify-content-between">
+            <button id=submit_button>Submit</button>
+            <button id=paid_button class=add_credit_button>Paid</button>
+            <button id=reveal_add_custom_credit_button>Add credit</button>
+            <input  id='custom_credit_field' style='display:none' type='number'>
+            <button id=add_custom_credit class=add_credit_button style=display:none>Add credit</button>
+            <button id=reveal_add_credit_by_item_button>Add credit by item</button>
+        </div>
+        
     </div>
 </div>
 <script>
     $(document).ready(function(){
 
+        function check_settled(debit, credit){
+            if(credit == debit){
+                return true
+            }
+            else{
+                return false
+            }
+        }
+
+
+        function status_checker(submitted_on){
+            var status;
+            if(submitted_on){
+                var parts = submitted_on.split(".");
+                var dt = new Date(parseInt(parts[2], 10),
+                        parseInt(parts[1], 10) - 1,
+                        parseInt(parts[0], 10));
+                var days_past_ms =  new Date() - dt
+                var ninety_days_ms = 7776000000
+                if(days_past_ms > ninety_days_ms){
+                    return status = "overdue"
+                }
+                else{
+                    return status = "due"
+                }
+            }
+            else{
+                return status = "not-submitted"
+            }   
+        }
+
+
         function sum(input){
-             if (toString.call(input) !== "[object Array]")
+            if (toString.call(input) !== "[object Array]")
                 return false;
-                        var total =  0;
-                        for(var i=0;i<input.length;i++)
-                          {                  
-                            if(isNaN(input[i])){
-                            continue;
-                             }
-                              total += Number(input[i]);
-                           }
-                         return total;
-                        }
+            var total =  0;
+            for(var i=0;i<input.length;i++){                  
+                if(isNaN(input[i])){
+                    continue;
+                }
+                total += Number(input[i]);
+            }
+            return total;
+        }
 
 
 
         var invoice = '{{ invoice_json }}'
         invoice = JSON.parse(invoice.replace(/&#34;/g,'"'))
-        console.log(invoice)
-        var patient = invoice["name"]
-        var name = invoice["invoice"]
-        var date = invoice["date_invoice"]
-        var created = invoice["date_created"]
-        var submitted_on = invoice['submitted_on']
-        var credit = invoice["credit"];
-        var sumArr = invoice['values'].split(',');
-        var debit = sum(sumArr).toFixed(2)
+        var patient = invoice["name"];
+        var invoice_name = invoice["invoice"];
+        var date = invoice["date_invoice"];
+        var created = invoice["date_created"];
+        var submitted_on = invoice['submitted_on'];
+        var credit_cent = invoice["credit"] * 100; 
+        var sumArr = (invoice['values'].split(',')).map(x => x * 100);
+        var debit_cent = sum(sumArr)
+        if(!(credit_cent)){
+            credit_cent = 0
+        }
+        var balance_cent = debit_cent - credit_cent;
 
-        if (submitted_on){
+        if(check_settled(debit_cent,credit_cent) && submitted_on){
+            $('#settled').css('display','block')
             $('#submitted_on').text("Submitted on: " + submitted_on);
+            $('#submit_button').prop('disabled', true)
+            $('#paid_button').prop('disabled', true)
+            $('#reveal_add_custom_credit_button').prop('disabled', true)
+            $('#reveal_add_credit_by_item_button').prop('disabled', true)
+        }
+        else if(check_settled(debit_cent,credit_cent)){
+            $('#settled').css('display','block')
+            $('#submitted_on').text("Submitted on: Not submitted");
+            $('#paid_button').prop('disabled', true)
+            $('#reveal_add_custom_credit_button').prop('disabled', true)
+            $('#reveal_add_credit_by_item_button').prop('disabled', true)
+            }
+        else if(status_checker(submitted_on) == 'due'){
+            $('#due').css('display','block')
+            $('#submitted_on').text("Submitted on: " + submitted_on);
+            $('#submit_button').prop('disabled', true)
+        }
+        else if(status_checker(submitted_on) == 'overdue'){
+            $('#over-due').css('display','block')
+            $('#submitted_on').text("Submitted on: " + submitted_on);
+            $('#submit_button').prop('disabled', true)
         }
         else{
+            $('#not-submitted').css('display','block')
             $('#submitted_on').text("Submitted on: Not submitted");
         }
-        $('#debit').text(debit);
-        if (credit){
-            balance = debit - credit
-            $('#credit').text(credit.toFixed(2));
-            $('#balance').text(balance.toFixed(2));
-        }
-        else{
-            $('#balance').text(debit);
-            $('#credit').text((0).toFixed(2));
-        }
+            
 
-        console.log(patient)
+        $('#credit').text(credit_cent / 100);
+        $('#balance').text(balance_cent / 100);
+        $('#debit').text(debit_cent / 100);
+        $('#paid_button').attr('value', balance_cent / 100)
+        $('#reveal_add_credit_by_item_button').prop('disabled', true);
+       
+        
+
+
+            
+        $(document).on("click", "#reveal_add_custom_credit_button", function (e) {
+            $('#custom_credit_field').css('display','block')
+            $('#add_custom_credit').css('display','block')
+            $('#reveal_add_custom_credit_button').css('display','none')
+        })
+
+
+        $(document).on("click", "#reveal_add_credit_by_item_button", function (e) {
+            $('#custom_credit_field').css('display','block')
+            $('#add_custom_credit').css('display','block')
+            $('#reveal_add_custom_credit_button').css('display','none')
+        })
+
+
+        $(document).on("click", "#submit_button", function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "GET",
+                url: '/account/submit-invoice',
+                data: {invoice_name: invoice_name}, 
+                dataType: 'json',
+                success: function (returnData) {
+                    $('.modal-body').text(returnData)
+                    $("#account_modal").modal();
+                    $('#settled').css('display','none');
+                    $('#due').css('display','block');
+                    $('#over-due').css('display','none');
+                    $('#submitted_on').text("Submitted on: " + new Date());
+                    $('#not-submitted').css('display','none');
+                    $('#submit_button').prop('disabled', true);
+                }
+            })
+        })
+
+        $(document).on("click", ".add_credit_button", function (e) {
+            e.preventDefault();
+            var final_credit_cent;
+            var final_balance_cent;
+            var new_credit_cent = $(this).val() * 100;
+            if(!(new_credit_cent)){
+                new_credit_cent = $(this).prev().val() * 100
+                if(new_credit_cent > balance_cent){
+                    alert("You exceeded the open balance amount. Please input a lower number.")
+                    return false
+                }
+                $(this).prev().val('')
+            }
+            
+            $.ajax({
+                type: "GET",
+                url: '/account/add-credit-invoice',
+                data: {invoice_name: invoice_name, new_credit: new_credit_cent / 100}, 
+                dataType: 'json',
+                success: function (returnData) {
+                    final_credit_cent = new_credit_cent + credit_cent;
+                    credit_cent = credit_cent + new_credit_cent;
+                    final_balance_cent = debit_cent - final_credit_cent;
+                    $('.modal-body').text(returnData)
+                    $("#account_modal").modal();
+                    $('#credit').text(final_credit_cent / 100);
+                    $('#balance').text(final_balance_cent / 100);
+                    $('#custom_credit_field').css('display','none')
+                    $('#add_custom_credit').css('display','none')
+                    $('#reveal_add_custom_credit_button').css('display','block')
+                    $('#paid_button').attr('value', final_balance_cent / 100)
+                    if(check_settled(debit_cent, final_credit_cent)){
+                        $('#settled').css('display','block');
+                        $('#due').css('display','none');
+                        $('#over-due').css('display','none');
+                        $('#not-submitted').css('display','none');
+                        $('#reveal_add_credit_by_item_button').prop('disabled', true);
+                        $('#reveal_add_custom_credit_button').prop('disabled', true);
+                        $('#paid_button').prop('disabled', true);   
+                    }
+                    else if(status_checker(submitted_on) == 'due'){
+                        $('#due').css('display','block');
+                        $('#over-due').css('display','none');
+                        $('#not-submitted').css('display','none');
+                        $('#settled').css('display','none');
+                    }
+                    else if(status_checker(submitted_on) == 'overdue') {
+                        $('#settled').css('display','none');
+                        $('#over-due').css('display','block');
+                        $('#not-submitted').css('display','none');
+                        $('#due').css('display','none');
+                    }
+                    else{
+                        $('#over-due').css('display','none');
+                        $('#not-submitted').css('display','block');
+                        $('#due').css('display','none');
+                        $('#settled').css('display','none');
+                    }
+                }
+            })
+        })
     })
+
+
+
+
 </script>
  {% endblock %}

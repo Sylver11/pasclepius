@@ -15,26 +15,75 @@
         </div>
     </div>
 </div>
-<div class="jumbotron jumbotron-fluid">
+<div class="jumbotron jumbotron-fluid" style="height:88%; margin:0">
     <div class="container">
         <form autocomplete="off" class="invoice-search">
             <input id="invoice-search" class="form-control mr-sm-2" name="treatment" type="search" placeholder="Search invoices by patient name">
         </form>
-        <!-- <div id="second_inside" class="align-middle">
-            <img id="green-leaf-index" src="{{ url_for('static', filename='img/green-leaf.png') }}" alt="green-leaf">
-        </div> -->
         <div id="inside_container" class="align-middle">
-            <h3 class="display-5">This is inside the bp folder</h3>
-            {{ invoices }}
-            <p class="lead">Watch this space</p>
         </div>
+        <div class="dropdown">
+            <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+            <div id="myDropdown" class="dropdown-content">
+                <li class='c_option' data-value='None'>No Criteria</li>
+                <li class='c_option' data-value='medical'>Medical</li>
+                <li class='c_option' data-value='tariffs'>Tariff</li>
+                <li class='c_option' data-value='credit'>Credit</li>
+                <li class='c_option' data-value='status'>Status</li>
+                <li class='c_option' data-value='remind_me'>Remind me</li>
+            </div>
+          </div> 
+       
+
+        <div  style="border: olive;border-style: solid;" id="dynamic_list" class="d-flex flex-column"></div>
     </div>
+    
 </div>
 <script>
-
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
 
 $(document).ready(function(){
+    
+    dynamic('medical', 'mva', 'date_created', 'DESC', 0, 10)
 
+    
+    $(document).on("click", ".c_option", function (e) {
+        var c_option = $(this).data('value');
+        $.ajax({
+                type: "GET",
+                url: '/account/check-r-option',
+                data: {c_option: c_option}, 
+                dataType: 'json',
+                success: function (returnData) {
+                    // $('.modal-body').text(returnData)
+                    // $("#account_modal").modal();
+                }
+            })
+        console.log($(this).data('value'))
+    })
+
+
+        window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+            }
+        }
+        } 
+
+    function dynamic(c_option, r_option, focus, order, start, range){
+        $( "#dynamic_list" ).load( "/account/all-invoices/" + c_option + "/" + r_option + '/' + focus + '/' + order + '/' + start + '/' + range, function(){
+            console.log(invoices)
+        });
+    }
+    
     var messages = "{{ get_flashed_messages() }}";
             if (typeof messages != 'undefined' && messages != '[]') {
                 $("#account_modal").modal();
@@ -200,7 +249,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
                         var paid_button = document.createElement("BUTTON");
                         if(found_patient_names[i][x]['credit']){
                             var balance = sum(sumArr).toFixed(2) - found_patient_names[i][x]['credit'];
-                            paid_button.setAttribute("value", balance);
+                            paid_button.setAttribute("value", balance.toFixed(2));
                         }
                         else{
                             paid_button.setAttribute("value", sum(sumArr).toFixed(2));
@@ -215,7 +264,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
                             flex_wrapper.appendChild(paragraph_paid)
                         }
                         else if(found_patient_names[i][x]['credit'] ){
-                            paragraph_balance.textContent = found_patient_names[i][x]['credit']
+                            paragraph_balance.textContent = found_patient_names[i][x]['credit'].toFixed(2)
                             action_wrapper.appendChild(paid_button)
                         }
                         else{
@@ -225,7 +274,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
                         
                         if(found_patient_names[i][x]['credit']){
                             paragraph_sum_debit.textContent = found_patient_names[i][x]['credit'];
-                            paragraph_balance.textContent = sum(sumArr).toFixed(2) - found_patient_names[i][x]['credit'];
+                            paragraph_balance.textContent = sum(sumArr).toFixed(2) - found_patient_names[i][x]['credit'].toFixed(2);
                         }
                         else{
                             paragraph_sum_debit.textContent = (0).toFixed(2)

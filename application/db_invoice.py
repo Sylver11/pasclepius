@@ -105,11 +105,21 @@ def getInvoiceByInvoiceName(uuid, invoice_name):
     conn.close()
     return invoice
 
-def getAllInvoices(uuid):
-    sql = """SELECT name, date_created, date_invoice, remind_me, credit,
-    submitted_on, medical, invoice,url, `values`, treatments, dates, tariff,
-    main, dob, number, po,`case` FROM invoices WHERE uuid_text = '{}'
-    """.format(uuid)
+def getAllInvoices(uuid, c_option=None, r_option=None, 
+        focus= None, order=None, start=None, range=None):
+    if(start and range and focus and order and c_option and r_option):
+        sql = """SELECT name, date_created, date_invoice, remind_me, credit,
+        submitted_on, medical, invoice,url, `values`, treatments, dates, tariff,
+        main, dob, number, po,`case` FROM invoices WHERE uuid_text = '{}'
+        AND {} = '{}' ORDER BY '{}' {} LIMIT {},{}
+        """.format(uuid, c_option, r_option, focus, order,  start, range)
+    else:
+        sql = """SELECT name, date_created, date_invoice, remind_me, credit,
+        submitted_on, medical, invoice,url, `values`, treatments, dates, tariff,
+        main, dob, number, po,`case` FROM invoices WHERE uuid_text = '{}'
+        """.format(uuid)
+
+    print(sql)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
