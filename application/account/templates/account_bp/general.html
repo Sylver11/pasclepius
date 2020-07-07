@@ -105,7 +105,6 @@ function page_click(){
     current_range = criteria[5];
     page_requested = this.textContent; 
     criteria[4] = current_range * (page_requested - 1);
-    console.log(criteria)
     dynamic.apply(this, criteria);
 }
 
@@ -115,6 +114,7 @@ function page_click(){
         var r_option = $(this).data('value');
         $('#row_option').text(r_option)
         criteria[1] = r_option; 
+        criteria[4] = 0;
         dynamic.apply(this, criteria);
         }
 

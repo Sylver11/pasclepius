@@ -43,7 +43,7 @@ def insertTextIntoCell( table, cellName, text, color = None ):
         cursor.setPropertyValue( "CharColor", color )
     tableText.setString( text )
 
-def treatmentTable(doc, text, cursor, items, treatments, price, dates, modifier=None):
+def treatmentTable(doc, text, cursor, items, treatments, price, dates, patient, modifier=None):
     table, unitCount = createTable(doc, text, cursor, len(treatments))
     if not modifier:
         modifier=[]
@@ -54,8 +54,10 @@ def treatmentTable(doc, text, cursor, items, treatments, price, dates, modifier=
             insertTextIntoCell(table, "A" + str(a[0] + 2), str(c + " (0" + e + ")"))
         elif e == '6' or e == '8' or e == '9':
             insertTextIntoCell(table, "A" + str(a[0] + 2), str(c + " (00" + e + ")"))
-        else:
+        elif('namaf_orthopaedic_surgeons' in patient['tariff']):
             insertTextIntoCell(table, "A" + str(a[0] + 2), c.zfill(4))
+        else:
+            insertTextIntoCell(table, "A" + str(a[0] + 2), c)
         insertTextIntoCell(table, "D" + str(a[0] + 2), b)
         insertTextIntoCell(table, "B" + str(a[0] + 2), a[1]['description'])
         insertTextIntoCell(table, "C" + str(a[0] + 2), a[1]['units'])

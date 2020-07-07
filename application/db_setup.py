@@ -6,7 +6,7 @@ def setupTable():
     sql_drop_table_namaf_tariffs = "DROP TABLE namaf_tariffs"
     sql_drop_table_invoice = "DROP TABLE invoices"
     sql_drop_table_users = "DROP TABLE users"
-
+    sql_drop_table_invoice_items = "DROP TABLE invoice_items"
 
     sql_create_table_namaf_tariffs = """CREATE TABLE namaf_tariffs  (
         id MEDIUMINT NOT NULL AUTO_INCREMENT,
@@ -26,6 +26,15 @@ def setupTable():
         tariff varchar(255) NOT NULL,
         PRIMARY KEY (id));"""
 
+    sql_create_table_invoice_items = """CREATE TABLE invoice_items (
+        id MEDIUMINT NOT NULL AUTO_INCREMENT,
+        uuid_text varchar(36) NOT NULL,
+        invoice varchar(255) NOT NULL,
+        item int(11) NOT NULL,
+        price DECIMAL(10,2) NOT NULL,
+        date DATETIME NOT NULL,
+        modifier int(11),
+        PRIMARY KEY (id))"""
 
     sql_create_table_invoice = """CREATE TABLE invoices (
         id MEDIUMINT NOT NULL AUTO_INCREMENT,
@@ -36,10 +45,6 @@ def setupTable():
         medical varchar(255) NOT NULL,
         invoice varchar(255) NOT NULL,
         url varchar(255) NOT NULL,
-        modifiers varchar(500),
-        `values` varchar(500) NOT NULL,
-        treatments varchar(500) NOT NULL,
-        dates varchar(500) NOT NULL,
         tariff varchar(255) NOT NULL,
         main varchar(255),
         dob varchar(255),
@@ -57,8 +62,8 @@ def setupTable():
         intra_op varchar(255),
         post_op varchar(255),
         submitted_on DATETIME,
-        paid BOOLEAN NOT NULL DEFAULT false,
-        `debit` DECIMAL(10,2),
+        status varchar(255) NOT NULL DEFAULT 'not-submitted',
+        `credit` DECIMAL(10,2),
         remind_me DATETIME,
         PRIMARY KEY (id));"""
 
@@ -103,12 +108,14 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
+    cursor.execute(sql_drop_table_invoice_items)
+    cursor.execute(sql_create_table_invoice_items)
    # cursor.execute(sql_drop_table_users)
-   # cursor.execute(sql_drop_table_invoice)
-    cursor.execute(sql_drop_table_namaf_tariffs)
-    cursor.execute(sql_create_table_namaf_tariffs)
+    cursor.execute(sql_drop_table_invoice)
+   # cursor.execute(sql_drop_table_namaf_tariffs)
+   # cursor.execute(sql_create_table_namaf_tariffs)
    # cursor.execute(sql_create_table_users)
-   # cursor.execute(sql_create_table_invoice)
+    cursor.execute(sql_create_table_invoice)
 
     cursor.close()
     conn.close()
@@ -118,7 +125,7 @@ def populateTreatment():
     conn = pool.connection()
     cursor = conn.cursor()
 
-    data = pd.read_csv (os.getenv("CSV_URL_NAMAF_TARIFFS"),
+    data = pd.read_csv(os.getenv("CSV_URL_NAMAF_TARIFFS"),
                         delimiter=';', skipinitialspace = True)
 
     df_namaf_tariffs = pd.DataFrame(data, columns=
@@ -151,4 +158,4 @@ if __name__ == '__main__':
     load_dotenv()
     from db_utils import pool
     setupTable()
-    populateTreatment()
+   # populateTreatment()

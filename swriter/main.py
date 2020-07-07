@@ -42,7 +42,8 @@ def createTextInvoice(layout, items, treatments, price, dates, patient, modifier
         doc, text, cursor = hospitalTable(doc, text, cursor, patient)
     if 7 <= layout <= 12:
         doc, text, cursor = diagnosisTable(doc, text, cursor, patient)
-    doc, text = treatmentTable(doc, text, cursor, items, treatments, price, dates, modifier)
+    doc, text = treatmentTable(doc, text, cursor, items, treatments, price,
+            dates, patient, modifier)
     doc, text = populateBottomTable(doc, text, data)
     doc, text = configureBorders(doc, text, items)
     saveDocument(doc, url)

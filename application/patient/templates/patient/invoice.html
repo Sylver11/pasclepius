@@ -158,10 +158,10 @@
             <br>
         <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
         <br><br>
-        {% if session['PATIENT']['treatments'] == None %}
-        <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary',style='background-color:#017B25;', value='Create Invoice') }}</div>
+        {% if session['PATIENT']['treatments'] %}
+            <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary', style='background-color:#017B25;', value='Update Invoice') }}</div>
         {% else %}
-        <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary', style='background-color:#017B25;', value='Update Invoice') }}</div>
+            <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary',style='background-color:#017B25;', value='Create Invoice') }}</div>
         {% endif %}
         <div style="display:flex; flex-direction: column; align-items: flex-end;"><span id="result"></span><span><input class="btn btn-secondary" id="download_invoice" value="Download invoice" type="button" style="display:none;"></span></div>
     </form> 
@@ -195,10 +195,10 @@
             <br>
         <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
         <br><br>
-        {% if session['PATIENT']['treatments'] == None %}
-        <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary', style='background-color:#017B25;',value='Create Invoice') }}</div>
+        {% if session['PATIENT']['treatments'] %}
+            <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary', style='background-color:#017B25;', value='Update Invoice') }}</div>
         {% else %}
-        <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary', style='background-color:#017B25;',value='Update Invoice') }}</div>
+            <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary',style='background-color:#017B25;', value='Create Invoice') }}</div>
         {% endif %}
         <div style="display:flex; flex-direction: column; align-items: flex-end;"><span id="result"></span><span><input class="btn btn-secondary" id="download_invoice" value="Download invoice" type="button" style="display:none;"></span></div>
     </form> 

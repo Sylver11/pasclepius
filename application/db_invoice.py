@@ -1,7 +1,6 @@
 from application.db_utils import pool
 from datetime import datetime
 
-
 def get_index(uuid, medical, date):
     date = datetime.strptime(date, '%d.%m.%Y')
     month = date.month
@@ -146,7 +145,7 @@ def queryR(uuid, c_option):
 
 
 def updateSubmitted(uuid, invoice_name):
-    sql= """UPDATE invoices SET submitted_on = NOW() WHERE uuid_text = '{}' and
+    sql= """UPDATE invoices SET submitted_on = NOW(), status = 'due' WHERE uuid_text = '{}' and
     invoice = '{}'""".format(uuid, invoice_name)
     conn = pool.connection()
     cursor = conn.cursor()
@@ -246,27 +245,30 @@ def add_invoice(layout, patient, invoice, url, modifiers, treatments, prices, da
         number = patient['number']
     date = datetime.strptime(date, '%d.%m.%Y')
     date_invoice = datetime.strptime(date_invoice[0], '%d.%m.%Y')
-    modifiers = ','.join(map(str, modifiers))
-    treatments = ','.join(map(str, treatments))
-    prices = ','.join(map(str, prices))
-    dates = ','.join(map(str, dates))
     sql = """INSERT INTO invoices (uuid_text,
     name, date_created, date_invoice, medical,
-    invoice, url, modifiers, treatments,`values`,
-    dates, tariff, main, dob, number, `case`, po,
+    invoice, url, tariff, main, dob, number, `case`, po,
     hospital, admission, discharge, `procedure`,
     procedure_date, diagnosis, diagnosis_date,
     implants, intra_op, post_op)
     VALUES('{0}','{1}','{2}','{3}','{4}','{5}',
     '{6}','{7}','{8}','{9}','{10}','{11}','{12}',
     '{13}','{14}','{15}','{16}','{17}','{18}','{19}',
-    '{20}','{21}','{22}','{23}','{24}','{25}','{26}')
+    '{20}','{21}','{22}')
     """.format(uuid, name, date, date_invoice, medical,
-        invoice, url, modifiers, treatments,prices,
-        dates, tariff, main, dob, number, case, po,
+        invoice, url, tariff, main, dob, number, case, po,
         hospital, admission, discharge, procedure,
         procedure_date, diagnosis, diagnosis_date,
         implants, intra_op, post_op)
+    if not modifiers:
+        modifiers = [0] * len(treatments)
+    dates = [d.replace(d, str(datetime.strptime(d, '%d.%m.%Y'))) for d in dates]
+    uuid_list = [uuid] * len(treatments)
+    invoice_list = [invoice] * len(treatments)
+    list_item = list(zip(uuid_list, invoice_list, treatments, prices, dates,
+        modifiers))
+    sql_individual_item = "INSERT INTO invoice_items (uuid_text, invoice, item, price, date, modifier) VALUES (%s, %s, %s, %s, %s, %s)"
+
     sql_check_duplicate = """ SELECT * FROM invoices WHERE uuid_text='{}' AND
     name='{}' AND date_created='{}'""".format(uuid, name, date)
     conn = pool.connection()
@@ -275,6 +277,7 @@ def add_invoice(layout, patient, invoice, url, modifiers, treatments, prices, da
     rows = cursor.fetchall()
     if not rows:
         cursor.execute(sql)
+        cursor.executemany(sql_individual_item, list_item)
         status = True
     else:
         status = False
@@ -287,5 +290,21 @@ if __name__ == '__main__':
     from dotenv import load_dotenv
     load_dotenv()
     from db_utils import pool
-    get_index('mva','30.04.2020')
-    #add_invoice("JustusVoigt",'14.04.2020', 'mva', 'MVA/2020/4-1', 'namaf_physio_2019', case='bl23424', po='123132')
+    #get_index('mva','30.04.2020')
+    layout = 3
+    patient = {'admission': '', 'case': '234234',
+            'date_created': '09.07.2020', 'diagnosis': '',
+            'diagnosis_date': '', 'discharge': '', 'hospital': '',
+            'implants': '', 'intra_op': '', 'medical': 'mva',
+            'name': 'Thomas Mueller', 'po': 234234, 'post_op': '',
+            'procedure': '', 'procedure_date': '', 'submit': True,
+            'tariff': 'namaf_orthopaedic_surgeons_2020'}
+    invoice = 'MVA/2020/7-5'
+    url = '/home/practice/Documents/Juschdus sei super praxis/MVA_Justus2020/7July2020/7_5Thomas Mueller'
+    modifiers = []
+    treatments = ['503', '773', '1815', '2725']
+    prices = ['3688.10', '1432.30', '3917.30', '447.60']
+    dates = ['15.07.2020', '22.07.2020', '16.07.2020', '15.07.2020']
+    date_invoice = ['07.07.2020']
+    uuid = 'E7D76BE4-BA3E-11EA-BCD1-0AE0AFC200E9'
+    add_invoice(layout, patient, invoice, url, modifiers, treatments, prices, dates, date_invoice, uuid)

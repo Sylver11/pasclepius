@@ -26,8 +26,8 @@
         <div class="d-flex justify-content-between">
             <div>
                 <h3>Patient Name: {{ invoice['name'] }}</h3>
-                {% if  invoice['medical'] =='mva' %}
-                    <p>Medical Aid: invoice['medical'] }}</p>
+                {% if  invoice['medical'] == 'mva' %}
+                    <p>Medical Aid: {{ invoice['medical'] }}</p>
                     <p>Tariff: {{ invoice['tariff'] }}</p>
                     <p>Case Number: {{ invoice['case'] }}</p>
                     <p>PO: {{ invoice['po'] }}</p>
