@@ -113,14 +113,18 @@ def getAllInvoices(uuid, c_option=None, r_option=None,
     if(start and range and focus and order and c_option and r_option):
         sql = """SELECT name, date_created, date_invoice, remind_me, credit,
         submitted_on, medical, invoice,url, `values`, treatments, dates, tariff,
-        main, dob, number, po,`case` FROM invoices WHERE uuid_text = '{}'
+        main, dob, number, po,`case`,
+        (SELECT COUNT('name') FROM invoices WHERE uuid_text = '{}' AND {} = '{}' ) 
+        as rowcounter
+        FROM invoices WHERE uuid_text = '{}'
         AND {} = '{}' ORDER BY {} {} LIMIT {},{}
-        """.format(uuid, c_option, r_option, focus, order,  start, range)
+        """.format(uuid, c_option, r_option, uuid, c_option, r_option, focus, order,  start, range)
     else:
         sql = """SELECT name, date_created, date_invoice, remind_me, credit,
         submitted_on, medical, invoice,url, `values`, treatments, dates, tariff,
         main, dob, number, po,`case` FROM invoices WHERE uuid_text = '{}'
         """.format(uuid)
+    print(sql)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)

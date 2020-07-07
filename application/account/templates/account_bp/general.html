@@ -56,6 +56,7 @@
         </div> 
         <div id="r_option_div" class="dropdown"></div>
         <div  style="border: olive;border-style: solid;" id="dynamic_list" class="d-flex flex-column"></div>
+        <div><ul id="pages" style="list-style: none;"></ul></div>
     </div>
     
 </div>
@@ -70,7 +71,7 @@ function closeDropDown(){
         }
     }
 }
-
+// console.log(invoices)
 
 
 function ffocus() {
@@ -92,9 +93,22 @@ function r_option() {
 
 
 $(document).ready(function(){
-    let criteria = ['None','None','date_created','DESC', 0, 10];
+    let criteria = ['None','None','date_created','DESC', 0, 5];
     dynamic.apply(this, criteria);
 
+function mouse_on_page(){
+    this.setAttribute("style", "background-color:blue;")
+}
+function mouse_off_page(){
+    this.setAttribute("style", "background-color:white;")
+}
+function page_click(){
+    current_range = criteria[5];
+    page_requested = this.textContent; 
+    criteria[4] = current_range * (page_requested - 1);
+    console.log(criteria)
+    dynamic.apply(this, criteria);
+}
 
 
 
@@ -110,7 +124,6 @@ $(document).ready(function(){
         var focus = $(this).data('value');
             $('#focus').text(focus)
             criteria[2] = focus;
-            // console.log(criteria)
             dynamic.apply(this, criteria);     
     })
 
@@ -118,7 +131,6 @@ $(document).ready(function(){
         var order = $(this).data('value');
             $('#order').text(order)
             criteria[3] = order;
-            // console.log(criteria)
             dynamic.apply(this, criteria);     
     })
 
@@ -151,7 +163,6 @@ $(document).ready(function(){
                         wrapper_li.setAttribute("class", "dropdown-content");
                         for (let i = 0; i < returnData['r_option'].length; i++) {
                             const element = returnData['r_option'][i];
-                            // console.log(element[c_option])
                             var li = document.createElement("LI");
                             li.setAttribute("class", "r_option")
                             li.setAttribute("data-value", element[c_option])
@@ -182,6 +193,31 @@ $(document).ready(function(){
 
     function dynamic(c_option, r_option, focus, order, start, range){
         $( "#dynamic_list" ).load( "/account/all-invoices/" + c_option + "/" + r_option + '/' + focus + '/' + order + '/' + start + '/' + range, function(){
+            var row_total_count = invoices[0]['rowcounter'];
+            var items_per_site = criteria[5];
+            var pages = Math.floor(row_total_count / items_per_site)
+            if(pages == row_total_count / items_per_site){
+                pages = pages + 1;
+            }
+            console.log(pages)
+            var ul = document.getElementById("pages")
+            ul.innerHTML = '';
+            for(var i = 0; i < pages; i++){
+                var li = document.createElement("LI");
+                var a = document.createElement("A");
+                a.setAttribute("class", "link_pages");
+                li.style.cursor = "pointer";
+                a.addEventListener("mouseover", mouse_on_page, false);
+                a.addEventListener("mouseout", mouse_off_page, false);
+                a.addEventListener("click", page_click, false);
+                li.style.display = "inline";
+                li.style.padding = "5px";
+                a.textContent = i + 1;
+                li.appendChild(a)
+                ul.appendChild(li);
+            }
+            
+            // console.log(pages)
         });
     }
     
