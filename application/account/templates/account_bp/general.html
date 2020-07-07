@@ -7,7 +7,6 @@
                 <h5 class="modal-title">Success</h5>
             </div>
             <div class="modal-body">
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -23,45 +22,148 @@
         <div id="inside_container" class="align-middle">
         </div>
         <div class="dropdown">
-            <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+            <button onclick="ffocus()" id="focus" class="dropbtn">Date created</button>
+            <div id="fDropdown" class="dropdown-content">
+                <li class='focus' data-value='date_created'>Date created</li>
+                <li class='focus' data-value='date_invoice'>Invoice date</li>
+                <li class='focus' data-value='name'>Patient Name</li>
+                <li class='focus' data-value='main'>Main Member</li>        
+                <li class='focus' data-value='procedure_date'>Procedure Date</li>
+                <li class='focus' data-value='diagnosis_date'>Diagnosis Date</li>
+                <li class='focus' data-value='admission'>Admission Date</li>
+                <li class='focus' data-value='discharge'>Discharge Date</li>
+                <li class='focus' data-value='submitted_on'>Submission Date</li>
+                <li class='focus' data-value='debit'>Value</li>
+            </div>
+          </div> 
+        <div class="dropdown">
+            <button onclick="order()" id="order" class="dropbtn">Descending</button>
+            <div id="oDropdown" class="dropdown-content">
+                <li class='order' data-value='ASC'>Ascending</li>
+                <li class='order' data-value='DESC'>Descending</li>
+            </div>
+          </div> 
+        <div class="dropdown">
+            <button onclick="myFunction()" id="column_option" class="dropbtn">None</button>
             <div id="myDropdown" class="dropdown-content">
                 <li class='c_option' data-value='None'>No Criteria</li>
                 <li class='c_option' data-value='medical'>Medical</li>
-                <li class='c_option' data-value='tariffs'>Tariff</li>
+                <li class='c_option' data-value='tariff'>Tariff</li>
                 <li class='c_option' data-value='credit'>Credit</li>
                 <li class='c_option' data-value='status'>Status</li>
                 <li class='c_option' data-value='remind_me'>Remind me</li>
             </div>
-          </div> 
-       
-
+        </div> 
+        <div id="r_option_div" class="dropdown"></div>
         <div  style="border: olive;border-style: solid;" id="dynamic_list" class="d-flex flex-column"></div>
     </div>
     
 </div>
 <script>
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
+function closeDropDown(){
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+        }
+    }
 }
 
-$(document).ready(function(){
-    
-    dynamic('medical', 'mva', 'date_created', 'DESC', 0, 10)
 
-    
+
+function ffocus() {
+    closeDropDown()
+    document.getElementById("fDropdown").classList.toggle("show");
+}
+function order() {
+    closeDropDown()
+  document.getElementById("oDropdown").classList.toggle("show");
+}
+function myFunction() {
+    closeDropDown()
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+function r_option() {
+    closeDropDown()
+  document.getElementById("rDropdown").classList.toggle("show");
+}
+
+
+$(document).ready(function(){
+    let criteria = ['None','None','date_created','DESC', 0, 10];
+    dynamic.apply(this, criteria);
+
+
+
+
+    function r_option_click() {
+        var r_option = $(this).data('value');
+        $('#row_option').text(r_option)
+        criteria[1] = r_option; 
+        dynamic.apply(this, criteria);
+        }
+
+
+    $(document).on("click", ".focus", function (e) {
+        var focus = $(this).data('value');
+            $('#focus').text(focus)
+            criteria[2] = focus;
+            // console.log(criteria)
+            dynamic.apply(this, criteria);     
+    })
+
+    $(document).on("click", ".order", function (e) {
+        var order = $(this).data('value');
+            $('#order').text(order)
+            criteria[3] = order;
+            // console.log(criteria)
+            dynamic.apply(this, criteria);     
+    })
+
     $(document).on("click", ".c_option", function (e) {
         var c_option = $(this).data('value');
-        $.ajax({
-                type: "GET",
-                url: '/account/check-r-option',
-                data: {c_option: c_option}, 
-                dataType: 'json',
-                success: function (returnData) {
-                    // $('.modal-body').text(returnData)
-                    // $("#account_modal").modal();
-                }
-            })
-        console.log($(this).data('value'))
+        var div = document.getElementById("r_option_div")
+        if(c_option == 'None'){
+            $('#column_option').text(c_option)
+            criteria[0] = c_option;
+            dynamic.apply(this, criteria);
+            div.innerHTML = '';
+        }
+        else{
+            $.ajax({
+                    type: "GET",
+                    url: '/account/check-r-option',
+                    data: {c_option: c_option}, 
+                    dataType: 'json',
+                    success: function (returnData) {
+                        $('#column_option').text(c_option)
+                        criteria[0] = c_option;
+                        div.innerHTML = '';
+                        var button = document.createElement("BUTTON");
+                        button.addEventListener("click", r_option, false);
+                        button.setAttribute("id", "row_option");
+                        button.setAttribute("class", "dropbtn");
+                        button.textContent = "Row options";
+                        var wrapper_li = document.createElement("DIV");
+                        wrapper_li.setAttribute("id", "rDropdown");
+                        wrapper_li.setAttribute("class", "dropdown-content");
+                        for (let i = 0; i < returnData['r_option'].length; i++) {
+                            const element = returnData['r_option'][i];
+                            // console.log(element[c_option])
+                            var li = document.createElement("LI");
+                            li.setAttribute("class", "r_option")
+                            li.setAttribute("data-value", element[c_option])
+                            li.addEventListener("click", r_option_click, false);
+                            li.textContent = element[c_option]
+                            wrapper_li.appendChild(li);
+                        }
+                        div.appendChild(button);
+                        div.appendChild(wrapper_li);
+                    }
+                })
+        }
     })
 
 
@@ -80,7 +182,6 @@ $(document).ready(function(){
 
     function dynamic(c_option, r_option, focus, order, start, range){
         $( "#dynamic_list" ).load( "/account/all-invoices/" + c_option + "/" + r_option + '/' + focus + '/' + order + '/' + start + '/' + range, function(){
-            console.log(invoices)
         });
     }
     

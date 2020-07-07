@@ -5,7 +5,6 @@
 
 </ul>
 <script>
-    // dynamic(0,10)
     var invoices = '{{ invoices_json }}'
     invoices = JSON.parse(invoices.replace(/&#34;/g,'"'))
     // console.log(invoices)
@@ -20,8 +19,6 @@
         sub_ul.appendChild(sub_li);
         li.appendChild(sub_ul);
         ul.appendChild(li);
-        // console.log(element)
-        
     }
     
 </script>

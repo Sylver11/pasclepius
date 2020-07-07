@@ -107,19 +107,20 @@ def getInvoiceByInvoiceName(uuid, invoice_name):
 
 def getAllInvoices(uuid, c_option=None, r_option=None, 
         focus= None, order=None, start=None, range=None):
+    if c_option == 'None' or r_option == 'None':
+        c_option = 'uuid_text'
+        r_option = uuid
     if(start and range and focus and order and c_option and r_option):
         sql = """SELECT name, date_created, date_invoice, remind_me, credit,
         submitted_on, medical, invoice,url, `values`, treatments, dates, tariff,
         main, dob, number, po,`case` FROM invoices WHERE uuid_text = '{}'
-        AND {} = '{}' ORDER BY '{}' {} LIMIT {},{}
+        AND {} = '{}' ORDER BY {} {} LIMIT {},{}
         """.format(uuid, c_option, r_option, focus, order,  start, range)
     else:
         sql = """SELECT name, date_created, date_invoice, remind_me, credit,
         submitted_on, medical, invoice,url, `values`, treatments, dates, tariff,
         main, dob, number, po,`case` FROM invoices WHERE uuid_text = '{}'
         """.format(uuid)
-
-    print(sql)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -128,6 +129,17 @@ def getAllInvoices(uuid, c_option=None, r_option=None,
     conn.close()
     return data
 
+def queryR(uuid, c_option):
+    sql = """SELECT DISTINCT {} FROM invoices WHERE uuid_text = '{}'
+        """.format(c_option, uuid)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    r_option = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return r_option
+
 
 def updateSubmitted(uuid, invoice_name):
     sql= """UPDATE invoices SET submitted_on = NOW() WHERE uuid_text = '{}' and
@@ -135,7 +147,6 @@ def updateSubmitted(uuid, invoice_name):
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
-    #data = cursor.fetchall()
     cursor.close()
     conn.close()
     status = True
@@ -151,7 +162,6 @@ def updateCredit(uuid, invoice_name, credit):
     cursor.execute(sql)
     cursor.close()
     conn.close()
-    print(sql)
     status = True
     return status
 
