@@ -71,7 +71,6 @@ function closeDropDown(){
         }
     }
 }
-// console.log(invoices)
 
 
 function ffocus() {
@@ -93,7 +92,7 @@ function r_option() {
 
 
 $(document).ready(function(){
-    let criteria = ['None','None','date_created','DESC', 0, 5];
+    let criteria = ['None','None','date_created','DESC', 0, 3];
     dynamic.apply(this, criteria);
 
 function mouse_on_page(){
@@ -196,7 +195,7 @@ function page_click(){
             var row_total_count = invoices[0]['rowcounter'];
             var items_per_site = criteria[5];
             var pages = Math.floor(row_total_count / items_per_site)
-            if(pages == row_total_count / items_per_site){
+            if(pages != row_total_count / items_per_site){
                 pages = pages + 1;
             }
             console.log(pages)
