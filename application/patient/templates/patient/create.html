@@ -4,7 +4,7 @@
     <br>
     <br>
     <h3>Create new patient</h3> 
-    <select class="medical custom-select w-25">
+    <select class="medical_aid custom-select w-25">
         <option value="0">Select medical aid</option>
         <option value="psemas">PSEMAS</option>
         <option value="mva">MVA</option>
@@ -20,32 +20,32 @@
         {% endfor %}  
         <div class="form-row">
             {{ form_mva.hidden_tag() }}
-            {{ form_mva.medical(value='mva', style='display:none') }}
+            {{ form_mva.medical_aid(value='mva', style='display:none') }}
             <div class="form-group col-md-4">
                 {{ form_mva.tariff.label(class="required") }} {{ form_mva.tariff(class_="tariff form-control") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_mva.name.label(class="required",  for="name") }} {{ form_mva.name(class_="form-control") }}
+                {{ form_mva.patient_name.label(class="required",  for="patient_name") }} {{ form_mva.patient_name(class_="form-control") }}
             </div>
         </div>  
         <div class="form-row">
             <div class="form-group col-md-4">
-                {{ form_mva.case.label(class="required",  for="case") }} {{ form_mva.case(class_="form-control") }}
+                {{ form_mva.case_number.label(class="required",  for="case_number") }} {{ form_mva.case_number(class_="form-control") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_mva.po.label(class="required") }} {{ form_mva.po(class_="form-control") }}
+                {{ form_mva.po_number.label(class="required") }} {{ form_mva.po_number(class_="form-control") }}
             </div>
         </div>
         {% if 4 <= layout_code <= 9 %}
         <div class="form-row">
             <div class="form-group col-md-4">
-                {{ form_mva.hospital.label }} {{ form_mva.hospital(class_="form-control") }}
+                {{ form_mva.hospital_name.label }} {{ form_mva.hospital_name(class_="form-control") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_mva.admission.label }} {{ form_mva.admission(class_="form-control") }}
+                {{ form_mva.admission_date.label }} {{ form_mva.admission_date(class_="form-control") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_mva.discharge.label }} {{ form_mva.discharge(class_="form-control") }}
+                {{ form_mva.discharge_date.label }} {{ form_mva.discharge_date(class_="form-control") }}
             </div>
         </div>
         {% endif %}
@@ -89,37 +89,37 @@
         </div>
         {% endfor %}
         {{ form_psemas.hidden_tag() }}
-        {{ form_psemas.medical(value='psemas', style='display:none') }}
+        {{ form_psemas.medical_aid(value='psemas', style='display:none') }}
         <div class="form-row">
             <div class="form-group col-md-4">
                 {{ form_psemas.tariff.label(class='required') }} {{ form_psemas.tariff(class_="tariff") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_psemas.name.label(class='required') }} {{ form_psemas.name(class_="form-control") }}
+                {{ form_psemas.patient_name.label(class='required') }} {{ form_psemas.patient_name(class_="form-control") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_psemas.main.label(class='required') }} {{ form_psemas.main(class_="form-control") }}
+                {{ form_psemas.main_member.label(class='required') }} {{ form_psemas.main_member(class_="form-control") }}
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                {{ form_psemas.dob.label(class='required') }} {{ form_psemas.dob(class_="form-control") }}
+                {{ form_psemas.patient_birth_date.label(class='required') }} {{ form_psemas.patient_birth_date(class_="form-control") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_psemas.number.label(class='required') }} {{ form_psemas.number(class_="form-control") }}
+                {{ form_psemas.medical_number.label(class='required') }} {{ form_psemas.medical_number(class_="form-control") }}
             </div>
         </div>
        
         {% if 4 <= layout_code <= 9 %}
         <div class="form-row">
             <div class="form-group col-md-4">
-                {{ form_mva.hospital.label }} {{ form_mva.hospital(class_="form-control") }}
+                {{ form_mva.hospital_name.label }} {{ form_mva.hospital_name(class_="form-control") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_mva.admission.label }} {{ form_mva.admission(class_="form-control") }}
+                {{ form_mva.admission_date.label }} {{ form_mva.admission_date(class_="form-control") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_mva.discharge.label }} {{ form_mva.discharge(class_="form-control") }}
+                {{ form_mva.discharge_date.label }} {{ form_mva.discharge_date(class_="form-control") }}
             </div>
         </div>
         {% endif %}
@@ -165,7 +165,7 @@
         {{ form_other.hidden_tag() }}
         <div class="form-row">
             <div class="form-group col-md-4">
-                {{form_other.medical.label(class="required")}}  {{ form_other.medical(class_="form-control") }}
+                {{form_other.medical_aid.label(class="required")}}  {{ form_other.medical_aid(class_="form-control") }}
             </div>
             <div class="form-group col-md-4">
                 {{ form_other.tariff.label(class="required") }} {{ form_other.tariff(class_="tariff") }}
@@ -173,30 +173,30 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                {{ form_other.name.label(class="required") }} {{ form_other.name(class_="form-control") }}
+                {{ form_other.patient_name.label(class="required") }} {{ form_other.patient_name(class_="form-control") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_other.main.label(class="required") }} {{ form_other.main(class_="form-control") }}
+                {{ form_other.main_member.label(class="required") }} {{ form_other.main_member(class_="form-control") }}
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                {{ form_other.dob.label(class="required") }} {{ form_other.dob(class_="form-control") }}
+                {{ form_other.patient_birth_date.label(class="required") }} {{ form_other.patient_birth_date(class_="form-control") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_other.number.label(class="required") }} {{ form_other.number(class_="form-control") }}
+                {{ form_other.medical_number.label(class="required") }} {{ form_other.medical_number(class_="form-control") }}
             </div>
         </div>
         {% if 4 <= layout_code <= 9 %}
         <div class="form-row">
             <div class="form-group col-md-4">
-                {{ form_mva.hospital.label }} {{ form_mva.hospital(class_="form-control") }}
+                {{ form_mva.hospital_name.label }} {{ form_mva.hospital_name(class_="form-control") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_mva.admission.label }} {{ form_mva.admission(class_="form-control") }}
+                {{ form_mva.admission_date.label }} {{ form_mva.admission_date(class_="form-control") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_mva.discharge.label }} {{ form_mva.discharge(class_="form-control") }}
+                {{ form_mva.discharge_date.label }} {{ form_mva.discharge_date(class_="form-control") }}
             </div>
         </div>
         {% endif %}
@@ -242,9 +242,9 @@
         $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})
         $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
         $('#diagnosis_date').datepicker({dateFormat: 'dd.mm.yy'})
-        $('#admission').datepicker({dateFormat: 'dd.mm.yy'})
-        $('#discharge').datepicker({dateFormat: 'dd.mm.yy'})
-        $(document).on('change', '.medical',function() {
+        $('#admission_date').datepicker({dateFormat: 'dd.mm.yy'})
+        $('#discharge_date').datepicker({dateFormat: 'dd.mm.yy'})
+        $(document).on('change', '.medical_aid',function() {
             var selection = $(this).val()
             if(selection == 'psemas'){
                 $('.mva').css("display","none")

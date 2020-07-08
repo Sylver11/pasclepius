@@ -35,10 +35,10 @@ def settings():
     return render_template('account_bp/settings.html')
 
 
-@account_bp.route("/invoice/<medical>/<year>/<index>", methods=['GET'])
-def singleInvoice(medical, year, index):
-    invoice_name = medical + "/" + year + "/" + index
-    invoice = getInvoiceByInvoiceName(current_user.uuid, invoice_name)
+@account_bp.route("/invoice/<medical_aid>/<year>/<index>", methods=['GET'])
+def singleInvoice(medical_aid, year, index):
+    invoice_id = medical_aid + "/" + year + "/" + index
+    invoice = getInvoiceByInvoiceName(current_user.uuid, invoice_id)
     for o, i in invoice.items():
          if isinstance(i, datetime2.datetime):
              d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
@@ -51,8 +51,8 @@ def singleInvoice(medical, year, index):
 
 @account_bp.route('/live-search-invoice',methods=['GET','POST'])
 def liveSearchTreatment():
-    name = request.args.get('name')
-    invoices = liveSearchInvoices(current_user.uuid, name)
+    patient_name = request.args.get('patient_name')
+    invoices = liveSearchInvoices(current_user.uuid, patient_name)
     for i in invoices:
         for o in i:
             if isinstance(i[o], datetime2.datetime):
@@ -63,21 +63,21 @@ def liveSearchTreatment():
 
 @account_bp.route('/submit-invoice',methods=['GET'])
 def submitInvoice():
-    invoice_name = request.args.get('invoice_name')
-    status = updateSubmitted(current_user.uuid, invoice_name)
+    invoice_id = request.args.get('invoice_id')
+    status = updateSubmitted(current_user.uuid, invoice_id)
     if status:
-        return json.dumps(invoice_name + " was succesfully submitted")
+        return json.dumps(invoice_id + " was succesfully submitted")
     else:
         return json.dumps("Something went wrong. Please contact the system administrator")
 
 
 @account_bp.route('/add-credit-invoice',methods=['GET'])
 def addCreditInvoice():
-    invoice_name = request.args.get('invoice_name')
+    invoice_id = request.args.get('invoice_id')
     credit = request.args.get('new_credit')
-    status = updateCredit(current_user.uuid, invoice_name, credit)
+    status = updateCredit(current_user.uuid, invoice_id, credit)
     if status:
-        return json.dumps(invoice_name + " added credit")
+        return json.dumps(invoice_id + " added credit")
     else:
         return json.dumps('Could not add debit to invoice account. Please contact the system administator')
 

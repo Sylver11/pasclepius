@@ -2,21 +2,21 @@
 {% block content %}
 <div class="container personal_style" id="container_id">
     <br>
-    <h3>Patient Name: {{ session['PATIENT']['name'] }}</h3>
-        {% if  session['PATIENT']['medical'] =='mva' %}
-            <p>Medical Aid: {{ session['PATIENT']['medical'] }}</p>
+    <h3>Patient Name: {{ session['PATIENT']['patient_name'] }}</h3>
+        {% if  session['PATIENT']['medical_aid'] =='mva' %}
+            <p>Medical Aid: {{ session['PATIENT']['medical_aid'] }}</p>
             <p>Tariff: {{ session['PATIENT']['tariff'] }}</p>
-            <p>Case Number: {{ session['PATIENT']['case'] }}</p>
-            <p>PO: {{ session['PATIENT']['po'] }}</p>
+            <p>Case Number: {{ session['PATIENT']['case_number'] }}</p>
+            <p>PO: {{ session['PATIENT']['po_number'] }}</p>
             <p>Invoice created: {{ session['PATIENT']['date_created'] }}</p>   
 
             {% if 4 <= layout_code <= 9 %}
             <div style="max-width: 600px;">
-                <div style="display: flex;"><div style="display: flex; align-items: center; flex-shrink: 0;">Hopital:<p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['hospital'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="hospital" value="{{ session['PATIENT']['hospital'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
+                <div style="display: flex;"><div style="display: flex; align-items: center; flex-shrink: 0;">Hopital:<p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['hospital_name'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="hospital_name" value="{{ session['PATIENT']['hospital_name'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
 
-                <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center;flex-shrink: 0; ">Admission Date:<p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['admission'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="justify-content: flex-end;"class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="admission" class="mva_input" style="display: none;" type="text" name="admission" value="{{ session['PATIENT']['admission'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
+                <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center;flex-shrink: 0; ">Admission Date:<p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['admission_date'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="justify-content: flex-end;"class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="admission_date" class="mva_input" style="display: none;" type="text" name="admission_date" value="{{ session['PATIENT']['admission_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
 
-                <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center; flex-shrink: 0;">Discharge Date: <p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['discharge'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="discharge" class="mva_input" style="display: none;" type="text" name="discharge" value="{{ session['PATIENT']['discharge'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
+                <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center; flex-shrink: 0;">Discharge Date: <p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['discharge_date'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="discharge_date" class="mva_input" style="display: none;" type="text" name="discharge_date" value="{{ session['PATIENT']['discharge_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
             </div>
             {% endif %}
 
@@ -38,21 +38,21 @@
             </div>
             {% endif %}
 
-        {% elif session['PATIENT']['medical'] =='psemas' %}
-            <p>Medical Aid: {{ session['PATIENT']['medical'] }}<br>
+        {% elif session['PATIENT']['medical_aid'] =='psemas' %}
+            <p>Medical Aid: {{ session['PATIENT']['medical_aid'] }}<br>
             Tariff: {{ session['PATIENT']['tariff'] }}<br>
-            Main Member: {{ session['PATIENT']['main'] }}<br>
-            Medical Aid Number: {{ session['PATIENT']['number'] }}<br>
-            Date of Birth: {{ session['PATIENT']['dob'] }}<br>
+            Main Member: {{ session['PATIENT']['main_member'] }}<br>
+            Medical Aid Number: {{ session['PATIENT']['medical_number'] }}<br>
+            Date of Birth: {{ session['PATIENT']['patient_birth_date'] }}<br>
             Invoice created: {{ session['PATIENT']['date_created'] }}</p>
 
             {% if 4 <= layout_code <= 9 %}
             <div style="max-width: 600px;">
-                <div style="display: flex;"><div style="display: flex; align-items: center; flex-shrink: 0;">Hopital:<p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['hospital'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="hospital" value="{{ session['PATIENT']['hospital'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
+                <div style="display: flex;"><div style="display: flex; align-items: center; flex-shrink: 0;">Hopital:<p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['hospital_name'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="hospital_name" value="{{ session['PATIENT']['hospital_name'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
 
-                <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center;flex-shrink: 0; ">Admission Date:<p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['admission'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="justify-content: flex-end;"class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="admission" class="mva_input" style="display: none;" type="text" name="admission" value="{{ session['PATIENT']['admission'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
+                <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center;flex-shrink: 0; ">Admission Date:<p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['admission_date'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="justify-content: flex-end;"class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="admission_date" class="mva_input" style="display: none;" type="text" name="admission_date" value="{{ session['PATIENT']['admission_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
 
-                <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center; flex-shrink: 0;">Discharge Date: <p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['discharge'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="discharge" class="mva_input" style="display: none;" type="text" name="discharge" value="{{ session['PATIENT']['discharge'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
+                <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center; flex-shrink: 0;">Discharge Date: <p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['discharge_date'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="discharge_date" class="mva_input" style="display: none;" type="text" name="discharge_date" value="{{ session['PATIENT']['discharge_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
             </div>
             {% endif %}
 
@@ -75,20 +75,20 @@
             {% endif %}
         
         {% else %}
-            <p>Medical Aid:  {{ session['PATIENT']['medical'] }}<br>
+            <p>Medical Aid:  {{ session['PATIENT']['medical_aid'] }}<br>
             Tariff: {{ session['PATIENT']['tariff'] }}<br>
-            Main Member: {{ session['PATIENT']['main'] }}<br>
-            Medical Aid Number: {{ session['PATIENT']['number'] }}<br>
-            Date of Birth: {{ session['PATIENT']['dob'] }}<br>
+            Main Member: {{ session['PATIENT']['main_member'] }}<br>
+            Medical Aid Number: {{ session['PATIENT']['medical_number'] }}<br>
+            Date of Birth: {{ session['PATIENT']['patient_birth_date'] }}<br>
             Invoice created: {{ session['PATIENT']['date_created'] }}</p>
 
             {% if 4 <= layout_code <= 9 %}
             <div style="max-width: 600px;">
-                <div style="display: flex;"><div style="display: flex; align-items: center; flex-shrink: 0;">Hopital:<p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['hospital'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="hospital" value="{{ session['PATIENT']['hospital'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
+                <div style="display: flex;"><div style="display: flex; align-items: center; flex-shrink: 0;">Hopital:<p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['hospital_name'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input class="mva_input" style="display: none;" type="text" name="hospital_name" value="{{ session['PATIENT']['hospital_name'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
 
-                <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center;flex-shrink: 0; ">Admission Date:<p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['admission'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="justify-content: flex-end;"class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="admission" class="mva_input" style="display: none;" type="text" name="admission" value="{{ session['PATIENT']['admission'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
+                <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center;flex-shrink: 0; ">Admission Date:<p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['admission_date'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="justify-content: flex-end;"class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="admission_date" class="mva_input" style="display: none;" type="text" name="admission_date" value="{{ session['PATIENT']['admission_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
 
-                <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center; flex-shrink: 0;">Discharge Date: <p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['discharge'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="discharge" class="mva_input" style="display: none;" type="text" name="discharge" value="{{ session['PATIENT']['discharge'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
+                <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center; flex-shrink: 0;">Discharge Date: <p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['discharge_date'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="discharge_date" class="mva_input" style="display: none;" type="text" name="discharge_date" value="{{ session['PATIENT']['discharge_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
             </div>
             {% endif %}
 
@@ -183,7 +183,7 @@
                             <input id="fourty-0" value = "40%" type="button" class="fourty inline"> 
                         </td>
                         <td>{{  form.modifier(id='modifier-0', class='modifier form-control w-75')  }}</td>
-                        <td>{{  form.date(id='date-0', class='date datepicker form-control', placeholder="DD/MM/YYYY")  }}</td>
+                        <td>{{  form.date(id='date-0', class='date form-control', placeholder="DD/MM/YYYY")  }}</td>
                         <td>
                             <input id="delete-0" value="Delete" type="button" style="width:100px" class="remove">
                             <input id="clone-0" value="Clone" type="button" style="width:100px" class="clone">
@@ -212,32 +212,31 @@ $(document).ready(function(){
     function removeActive(x) {
     for (var i = 0; i < x.length; i++) {
         x[i].classList.remove("autocomplete-active");
-    }
-}       
-
-function addActive(x) {
-    if (!x) return false;
-    removeActive(x);
-    if (currentFocus >= x.length) currentFocus = 0;
-    if (currentFocus < 0) currentFocus = (x.length - 1);
-    x[currentFocus].classList.add("autocomplete-active");
-}
-
- function uniq_fast(a) {
-    var seen = {};
-    var out = [];
-    var len = a.length;
-    var j = 0;
-    for(var i = 0; i < len; i++) {
-        var item = a[i];
-        if(seen[item] !== 1) {
-            seen[item] = 1;
-            out[j++] = item;
-            }
         }
-    return out;
-}
+    }       
 
+    function addActive(x) {
+        if (!x) return false;
+        removeActive(x);
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        x[currentFocus].classList.add("autocomplete-active");
+    }
+
+    function uniq_fast(a) {
+        var seen = {};
+        var out = [];
+        var len = a.length;
+        var j = 0;
+        for(var i = 0; i < len; i++) {
+            var item = a[i];
+            if(seen[item] !== 1) {
+                seen[item] = 1;
+                out[j++] = item;
+                }
+            }
+        return out;
+    }
 
 
 
@@ -564,30 +563,24 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
                 }
                 a.appendChild(categories_div);
             }
-
-
-    function closeAllLists(elmnt) {
-        var x = document.getElementsByClassName("autocomplete-items2");
-        for (var i = 0; i < x.length; i++) {
-            if (elmnt != x[i] && elmnt != input_element) {
-            x[i].parentNode.removeChild(x[i]);
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items2");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != input_element) {
+                    x[i].parentNode.removeChild(x[i]);
+                    }
+                }     
             }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+                $('#treatmentsearch').val('');
+            })
         }
-        
-    }
-    document.addEventListener("click", function (e) {
-        closeAllLists(e.target);
-        $('#treatmentsearch').val('');
-    });
-
-        }
-    });
-});
+    })
+})
 
 
-    
-    $('.treatment').prepend($('<option value="" disabled hidden selected>Choose treatment</option>'));
-    
+     
     function addSubmit(ev) {
         ev.preventDefault();   
         if ($('form').data('submitted') === true) {
@@ -647,8 +640,8 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
         $('.remove').show();
     }
 
-    function clone_insert_below(){
 
+    function clone_insert_below(){
         $(this).parents(".clonedInput").clone()
             .insertAfter($(this).parents(".clonedInput"))
             .attr("id", "clonedInput" + cloneIndex)
@@ -665,7 +658,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
                  if (this.className.includes("description")){
                     this.value = ''
                  } 
-                 if (this.className.includes("datepicker")){
+                 if (this.className.includes("date")){
                     this.value = ''
                  }  
                  if (this.className.includes("value")){
@@ -679,10 +672,11 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
                  } 
             }            
             )
-            cloneIndex++;
-            re_number()
-
+        cloneIndex++;
+        re_number()
     }
+
+
     function clone() {
         if ($(this).parents(".clonedInput").length == 1){
             $(this).parents(".clonedInput").clone()
@@ -696,7 +690,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
                      this.id = match[1] + (cloneIndex);
                  }
                  
-                 if (this.className.includes("datepicker")){
+                 if (this.className.includes("date")){
                     this.value = ''
                  }  
                  if (this.className.includes("value")){
@@ -717,7 +711,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
                 item: select_value			
             }, function(data) {
                 cloneIndex2 = cloneIndex - 1 
-                $('#value-' + cloneIndex2).val(data.value.toFixed(2));
+                $('#value-' + cloneIndex2).val(data.value / 100);
                 });
         }
         else{
@@ -740,9 +734,6 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
                  if (this.className.includes("value")){
                     this.value = ''
                  } 
-                 if (this.className.includes("datepicker")){
-                    this.value = ''
-                 } 
                  if (this.className.includes("thirty") || (this.className.includes("fourty"))){
                     this.style.backgroundColor = "white";
                     this.style.display = "none";
@@ -755,6 +746,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
                  } 
                  if (this.className.includes("date")){
                     this.style.display = "none";
+                    this.value = ''
                  } 
                  if (this.className.includes("clone")){
                     this.style.display = "none";
@@ -762,8 +754,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
                  if (this.className.includes("row")){
                     this.remove();
                  } 
-            }            
-            )
+            })
         }
         
         cloneIndex++;
@@ -788,6 +779,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
         });
     }
 
+
     function remove() {        
         $(this).parents(".clonedInput").remove();
         re_number()
@@ -811,7 +803,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
             value: current_value,
             edit: true,
             last: percent
-            };
+        };
     }
 
 
@@ -839,7 +831,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
             value: original_value,
             edit: true,
             last: percent
-            };
+        };
     }
 
 
@@ -898,7 +890,6 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
         checkState(object, id, percent)
     })
 
-
      
     function newTreatmentLiveSearch(element){
         element.parentNode.parentNode.childNodes[5].childNodes[0].style.display = "block";
@@ -908,7 +899,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
             $.getJSON('/get-value', {
                 item: element.value			
             }, function(data) {
-                element.parentNode.parentNode.childNodes[7].childNodes[0].value = data.value.toFixed(2)    
+                element.parentNode.parentNode.childNodes[7].childNodes[0].value = data.value / 100   
                 });
         }
     }
@@ -920,7 +911,6 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
         var match_ = id_.match(regex) || [];
         match_ = parseInt(match_[3])  
         value_edit.splice(match_, 1);
-        $('.datepicker' ).datepicker({dateFormat: 'dd.mm.yy'});
         $(this).parent().siblings().find('.value').show()
         $(this).parent().siblings().find('.thirty').show()
         $(this).parent().siblings().find('.fourty').show()
@@ -934,7 +924,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
             $.getJSON('/get-value', {
                 item: $(this).val()			
             }, function(data) {
-                $(sibling_of_value).parent().parent().children().children(".value").val(data.value.toFixed(2));
+                $(sibling_of_value).parent().parent().children().children(".value").val(data.value / 100);
                 });
             }
             else{
@@ -942,14 +932,17 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
             }
         return false;
     };
+
+    let element = document.getElementById('treatment-0');
+    element.value = '';
     $('#date-0').hide();
     $('#value-0').hide();
     $('#modifier-0').hide();
     $('#clone-0').hide();
     $('#thirty-0').hide();
     $('#fourty-0').hide();
-    $('#admission').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#discharge').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#admission_date').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#discharge_date').datepicker({dateFormat: 'dd.mm.yy'})
     $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
     $('#diagnosis_date').datepicker({dateFormat: 'dd.mm.yy'})
     $('#date_invoice').datepicker({dateFormat: 'dd.mm.yy'})
@@ -957,9 +950,9 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
     $(document).on("click", ".clone", clone);
     $(document).on("click", ".below", clone_insert_below);
     $(document).on("click", ".remove", remove);
-    $(document).on("click", ".datepicker", function() {
+    $(document).on("click", ".date", function() {
         $(this).removeClass('hasDatepicker');
-        $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" );
+        $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" )
     });
     
     $(document).on("click", ".unhide_change", function(event) {
@@ -970,28 +963,28 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
         $(this).next().css("display", "inline-block")
         $(this).prev().css("margin", "0")
     });
+
     $(document).on("click", ".change_session", function(e) {
         e.preventDefault();
         var change_session_button = $(this);
         var description = $(this).prev().attr("name")
         var item = $(this).prev().val()
         $.ajax({
-                type: "GET",
-                url: '/update-session',
-                data: {description: description, item: item}, 
-                dataType: 'json',
-                success: function (returnData) {
-                    alert(returnData);
-                    change_session_button.parent().prev().children('p').text(item);
-                    change_session_button.hide();
-                    change_session_button.next().hide();
-                    change_session_button.prev().hide();
-                    change_session_button.prev().prev().show()
-                    
-                }
+            type: "GET",
+            url: '/update-session',
+            data: {description: description, item: item}, 
+            dataType: 'json',
+            success: function (returnData) {
+                alert(returnData);
+                change_session_button.parent().prev().children('p').text(item);
+                change_session_button.hide();
+                change_session_button.next().hide();
+                change_session_button.prev().hide();
+                change_session_button.prev().prev().show()    
+            }
         })
- 
     });
+
     $(document).on("click", ".cancel_change", function(event) {
         event.preventDefault();
         $(this).hide()
@@ -999,6 +992,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
         $(this).prev().prev().hide();
         $(this).prev().prev().prev().show()
     });
+
     if("{{ session['PATIENT']['treatments'] }}"){
         var prices = "{{ session['PATIENT']['values'] }}";
         var modifiers = "{{ session['PATIENT']['modifiers'] }}";
@@ -1047,7 +1041,6 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
                     $('#value-' + index).show()
                     $('#clone-' + index).show()
                     $('#date-' + index).show()
-
                 })
             }
         })

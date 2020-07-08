@@ -3,7 +3,7 @@ from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK, APPEND_PARAGRAPH
 from com.sun.star.awt.FontWeight import BOLD as FW_BOLD, NORMAL, LIGHT
 
 
-def patientTable(doc, text, cursor, patient, invoice_name, date_invoice):
+def patientTable(doc, text, cursor, patient, invoice_id, date_invoice):
     cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
     text.insertControlCharacter(cursor, PARAGRAPH_BREAK, False)
     cursor.setPropertyValue( "CharHeight", 12.0 )
@@ -14,24 +14,24 @@ def patientTable(doc, text, cursor, patient, invoice_name, date_invoice):
     cursor.setPropertyValue( "CharHeight", 18.0 )
     text.insertString( cursor, "Invoice", 0 )
     middle_table = doc.createInstance( "com.sun.star.text.TextTable" )
-    if (patient['medical'] == 'mva'):
+    if (patient['medical_aid'] == 'mva'):
         middle_table.initialize(2,3)
         middle_table.setName('patient_table')
         text.insertTextContent( cursor, middle_table, 1 )
         first_middle_table_text = middle_table.getCellByName("C2")
-        first_middle_table_text.setString("Invoice No: " + str(invoice_name))
+        first_middle_table_text.setString("Invoice No: " + str(invoice_id))
         second_middle_table_text = middle_table.getCellByName("A2")
         second_middle_table_text.setString("Patient Name: "
-                + str(patient['name'])
+                + str(patient['patient_name'])
                 + "\nPO: "
-                + str(patient['po']))
+                + str(patient[po_number]))
         cursor_middle_right = middle_table.createCursorByCellName("C1")
         cursor_middle_right.setPropertyValue( "ParaAdjust", RIGHT )
         fourth_middle_table_text = middle_table.getCellByName("B2")
         fourth_middle_table_text.setString("Insurance: "
-                + str(patient['medical']).upper()
+                + str(patient['medical_aid']).upper()
                 + "\nCase Number: "
-                + str(patient['case']))
+                + str(patient['case_number']))
         range = middle_table.getCellRangeByName("A1:C2")
         range.setPropertyValue( "CharFontName", "Liberation Serif" )
         range.setPropertyValue( "CharHeight", 10.0 )
@@ -42,19 +42,19 @@ def patientTable(doc, text, cursor, patient, invoice_name, date_invoice):
         middle_table.setName('patient_table')
         text.insertTextContent( cursor, middle_table, 1 )
         first_middle_table_text = middle_table.getCellByName("C3")
-        first_middle_table_text.setString("Invoice No: " + str(invoice_name))
+        first_middle_table_text.setString("Invoice No: " + str(invoice_id))
         range_left = middle_table.getCellRangeByName("A1:A2")
         range_left.setPropertyValue( "ParaAdjust", LEFT )
         second_middle_table_text = middle_table.getCellByName("A2")
-        second_middle_table_text.setString("Main Member: " + str(patient['main']))
+        second_middle_table_text.setString("Main Member: " + str(patient['main_member']))
         third_middle_table_text = middle_table.getCellByName("B2")
-        third_middle_table_text.setString("Medical Aid No: " + str(patient['number']))
+        third_middle_table_text.setString("Medical Aid No: " + str(patient['medical_number']))
         cursor_middle_right = middle_table.createCursorByCellName("C1")
         cursor_middle_right.setPropertyValue( "ParaAdjust", RIGHT )
         fourth_middle_table_text = middle_table.getCellByName("C2")
-        fourth_middle_table_text.setString("Insurance: " + str(patient['medical']).upper())
+        fourth_middle_table_text.setString("Insurance: " + str(patient['medical_aid']).upper())
         fifth_middle_table_text = middle_table.getCellByName("A3")
-        fifth_middle_table_text.setString("Patient Name: " + str(patient['name']))
+        fifth_middle_table_text.setString("Patient Name: " + str(patient['patient_name']))
         sixth_middle_table_text = middle_table.getCellByName("B3")
         sixth_middle_table_text.setString("Patient DoB: " + str(patient['dob']))
         range_bottom = middle_table.getCellRangeByName("A2:C3")

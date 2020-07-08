@@ -10,21 +10,21 @@
     <h4>Patients</h4>  
     <div class="list-group">
         {% for i in patient_data %} 
-        {% if i['medical'] == 'mva'%}
+        {% if i['medical_aid'] == 'mva'%}
         <div class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">{{i['name']}}</h5>
+                <h5 class="mb-1">{{i['patient_name']}}</h5>
                 <small>
-                    <span style="text-transform: uppercase;">{{i['medical']}}</span>
+                    <span style="text-transform: uppercase;">{{i['medical_aid']}}</span>
                 </small>
             </div>
             <form method=post autocomplete="off" id="continue_mva_{{loop.index}}" class="mva" >  
                     {{ form_mva.hidden_tag() }}
-                    {{ form_mva.medical(style='display:none', value=i['medical']) }}
+                    {{ form_mva.medical_aid(style='display:none', value=i['medical_aid']) }}
                     {{ form_mva.tariff(class_="tariff", style="display: none;", id='tariff_' ~ loop.index) }}
-                    {{ form_mva.name(value=i['name'], style="display: none") }}
+                    {{ form_mva.patient_name(value=i['patient_name'], style="display: none") }}
                     {{ form_mva.case(style="display: none;", value=i['case']) }}
-                    {{ form_mva.po.label(class_="required") }} {{ form_mva.po(class_="form-control w-25") }}
+                    {{ form_mva.po_number.label(class_="required") }} {{ form_mva.po_number(class_="form-control w-25") }}
                     {{ form_mva.date_created.label(for="date_mva_" ~ loop.index, class_="required") }} {{ form_mva.date_created(id='date_mva_' ~ loop.index, class_="form-control w-25 p-3" ) }}
                     <br>
                     {{ form_mva.submit(class_="btn btn-success") }}
@@ -33,51 +33,51 @@
         </div>
         <br>
 
-    {% elif i['medical'] == 'psemas'%}
+    {% elif i['medical_aid'] == 'psemas'%}
     <div  class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">{{i['name']}}</h5>
+            <h5 class="mb-1">{{i['name_patient']}}</h5>
             <small>
-                <span style="text-transform: uppercase;">{{i['medical']}}</span>
+                <span style="text-transform: uppercase;">{{i['medical_aid']}}</span>
             </small>
         </div>
         <form method=post autocomplete="off" id="continue_psemas_{{loop.index}}" class="psemas" >  
             {{ form_psemas.hidden_tag() }}
-            {{ form_psemas.medical(value=i['medical'], style="display: none;") }}
+            {{ form_psemas.medical_aid(value=i['medical_aid'], style="display: none;") }}
             {{ form_psemas.tariff(id='tariff_' ~ loop.index, style="display: none;") }}
-            {{ form_psemas.name(value=i['name'], style="display: none")  }}
-            {{ form_psemas.main(value=i['main'], style="display: none") }}
-            {{ form_psemas.dob(value=i['dob'], style="display: none") }}
-            {{ form_psemas.number(value=i['number'], style="display: none") }}
+            {{ form_psemas.patient_name(value=i['patient_name'], style="display: none")  }}
+            {{ form_psemas.main_member(value=i['main_member'], style="display: none") }}
+            {{ form_psemas.patient_birth_date(value=i['patient_birth_date'], style="display: none") }}
+            {{ form_psemas.medical_number(value=i['medical_number'], style="display: none") }}
             {{ form_psemas.date_created.label(class_="required") }} {{ form_psemas.date_created(id='date_psemas_' ~ loop.index, class_="form-control w-25 p-3") }}
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
         </form>
-        <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['number']}} <br>Main Member: {{i['main']}} <br>Date of Birth: {{i['dob']}}</small>
+        <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['medical_number']}} <br>Main Member: {{i['main_member']}} <br>Date of Birth: {{i['patient_birth_date']}}</small>
     </div>
     <br>
 
         {% else %}
         <div  class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">{{i['name']}}</h5>
+                <h5 class="mb-1">{{i['patient_name']}}</h5>
                 <small>
-                    <span style="text-transform: uppercase;">{{i['medical']}}</span>
+                    <span style="text-transform: uppercase;">{{i['medical_aid']}}</span>
             </small>
         </div>
         <form  method=post autocomplete="off" id="continue_other_{{loop.index}}" class="other" >  
             {{ form_other.hidden_tag() }}
-            {{ form_other.medical(value=i['medical'], style="display: none") }}  
+            {{ form_other.medical_aid(value=i['medical_aid'], style="display: none") }}  
             {{ form_other.tariff(id='tariff_' ~ loop.index, style="display: none") }}
-            {{ form_other.name(value=i['name'], style="display: none")  }}
-            {{ form_other.main(value=i['main'], style="display: none") }}
-            {{ form_other.dob(value=i['dob'], style="display: none") }}
-            {{ form_other.number(value=i['number'], style="display: none") }}
+            {{ form_other.patient_name(value=i['patient_name'], style="display: none")  }}
+            {{ form_other.main_member(value=i['main_member'], style="display: none") }}
+            {{ form_other.patient_birth_date(value=i['patient_birth_date'], style="display: none") }}
+            {{ form_other.medical_number(value=i['medical_number'], style="display: none") }}
             {{ form_other.date_created.label(class_="required") }} {{ form_other.date_created(id='date_other_' ~ loop.index, class_="form-control w-25 p-3") }}
         <br>
         {{ form_other.submit(class_="btn btn-success") }}
         </form>  
-        <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['number']}} <br>Main Member: {{i['main']}} <br>Date of Birth: {{i['dob']}}</small>
+        <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['medical_number']}} <br>Main Member: {{i['main_member']}} <br>Date of Birth: {{i['patient_birth_date']}}</small>
     </div>
     <br>
 
@@ -102,9 +102,10 @@
     <h4>Past invoice</h4>  
     <ul class="list-group">
         {% for i in data %} 
-        <li class="invoice_list list-group-item" ><span id="patient_name-{{loop.index}}">{{i['name']}}</span> {{i['medical']}} {{i['date_created'].strftime('%d.%m.%Y')}} <span style="display:none;" id="patient_date-{{loop.index}}">{{ i['date_created'] }}</span></li>
+        <li class="invoice_list list-group-item" ><span id="patient_name-{{loop.index}}">{{i['patient_name']}}</span> {{i['medical_aid']}} {{i['date_created'].strftime('%d.%m.%Y')}} <span style="display:none;" id="patient_date-{{loop.index}}">{{ i['date_created'] }}</span></li>
         <ul class="treatment_list list-group-item" id="treatment-list-{{loop.index}}" style="display:none;">
                 <script>
+                    /// rm unneeded ids
                     $.getJSON('/get-treatment-name', {
                         items: '{{ i["treatments"] }}',
                         tariff: '{{ i["tariff"] }}'		
@@ -121,13 +122,14 @@
                         button.classList.add("continue" + '{{loop.index}}')
                         el.appendChild(button);
                         $('.continue' + '{{loop.index}}').click(function(){
-                            var patient_name = $('#patient_name-{{loop.index}}').text();
-                            var patient_date = $('#patient_date-{{loop.index}}').text();
+                            // var patient_name = $('#patient_name-{{loop.index}}').text();
+                            // var patient_date = $('#patient_date-{{loop.index}}').text();
                             $.getJSON('/set-known-invoice', {
-                                patient: patient_name,
-                                date_created: patient_date		
+                                invoice_id: '{{ i["invoice_id"] }}'
+                                // patient: patient_name,
+                                // date_created: patient_date		
                             }, function(data) {
-                                window.location.href = "/patient/" + patient_name.toString() +"/continue-invoice";
+                                window.location.href = "/patient/" + '{{i["patient_name"]}}' + "/continue-invoice";
                                 })
                         })
                         
@@ -143,9 +145,6 @@
 <script>
 
     $(document).ready(function() {
-        // $('.continue').click(function(){
-        //     console.log($(this).parent().siblings('li'));
-        // })
         $('.invoice_list').click(function() {
             $(this).next().css("display", "block");
         });

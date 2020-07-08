@@ -13,7 +13,8 @@ from application.db_users import checkDuplicateEmail
 def getTreatmentForm(tariff = None):
     class Treatment(FlaskForm):
         if ('namaf_physio' in tariff):
-            treatments = SelectField(u'Treatments',coerce=int, validators=[DataRequired()] )
+            treatments = SelectField(u'Treatments',coerce=int,
+                    validators=[DataRequired()])
             date = TextField('Date', validators=[DataRequired()])
             price = DecimalField(u'Value')
             modifier = SelectField(u'Modifier', choices= 
@@ -173,7 +174,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log In')
 
 class Patient_mva(FlaskForm):
-    medical = StringField('Medical Aid')
+    medical_aid = StringField('Medical Aid')
     tariffs = getAllTariffs()
     choices = []
     for x in tariffs:
@@ -182,15 +183,15 @@ class Patient_mva(FlaskForm):
         _tariff_ = tariff_.upper()
         choices.append((_tariff, _tariff_))
     choices.append(('', 'Choose Tariff'))
-    name = StringField(u'Full Name', validators=[DataRequired()])
-    case = StringField(u'Case Number', validators=[DataRequired()])
-    po = IntegerField(u'PO', validators=[DataRequired()]) #widget=NumberInput(min=111111,max=999999))
+    patient_name = StringField(u'Full Name', validators=[DataRequired()])
+    case_number = StringField(u'Case Number', validators=[DataRequired()])
+    po_number = IntegerField(u'PO', validators=[DataRequired()]) #widget=NumberInput(min=111111,max=999999))
     tariff = SelectField(u'Tariff', choices = choices,
             validators=[DataRequired()], default='')
     date_created =  StringField(u'Invoice created', validators=[DataRequired()])
-    hospital = StringField('Hospital')
-    admission = StringField('Date of admission')
-    discharge = StringField('Date of discharge')
+    hospital_name = StringField('Hospital')
+    admission_date = StringField('Date of admission')
+    discharge_date = StringField('Date of discharge')
     diagnosis = StringField('Diagnosis')
     diagnosis_date = StringField('Date of diagnosis')
     procedure = StringField('Procedure')
@@ -203,11 +204,11 @@ class Patient_mva(FlaskForm):
 
 
 class Patient_psemas(FlaskForm):
-    medical = StringField('Medical Aid')
-    name = StringField(u'Full Name', validators=[DataRequired()])
-    main = StringField(u'Main Member', validators=[DataRequired()])
-    number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
-    dob = StringField(u'Date of Birth', validators=[DataRequired()])
+    medical_aid = StringField('Medical Aid')
+    patient_name = StringField(u'Full Name', validators=[DataRequired()])
+    main_member = StringField(u'Main Member', validators=[DataRequired()])
+    medical_number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
+    patient_birth_date = StringField(u'Date of Birth', validators=[DataRequired()])
     tariffs = getAllTariffs()
     choices = []
     for x in tariffs:
@@ -219,9 +220,9 @@ class Patient_psemas(FlaskForm):
     tariff = SelectField(u'Tariff', choices = choices,
                          validators=[DataRequired()] , default='')
     date_created =  StringField(u'Invoice created', validators=[DataRequired()])
-    hospital = StringField('Hospital')
-    admission = StringField('Date of admission')
-    discharge = StringField('Date of discharge')
+    hospital_name = StringField('Hospital')
+    admission_date = StringField('Date of admission')
+    discharge_date = StringField('Date of discharge')
     diagnosis = StringField('Diagnosis')
     diagnosis_date = StringField('Date of diagnosis')
     procedure = StringField('Procedure')
@@ -233,11 +234,11 @@ class Patient_psemas(FlaskForm):
     submit = SubmitField('Create invoice')
 
 class Patient_other(FlaskForm):
-    medical = StringField('Medical Aid', validators=[DataRequired()])
-    name = StringField(u'Full Name', validators=[DataRequired()])
-    main = StringField(u'Main Member', validators=[DataRequired()])
-    number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
-    dob = StringField(u'Date of Birth', validators=[DataRequired()])
+    medical_aid = StringField('Medical Aid', validators=[DataRequired()])
+    patient_name = StringField(u'Full Name', validators=[DataRequired()])
+    main_member = StringField(u'Main Member', validators=[DataRequired()])
+    medical_number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
+    patient_birth_date = StringField(u'Date of Birth', validators=[DataRequired()])
     date_created =  StringField(u'Invoice created', validators=[DataRequired()])
     tariffs = getAllTariffs()
     choices = []
@@ -249,9 +250,9 @@ class Patient_other(FlaskForm):
     choices.append(('', 'Choose Tariff'))
     tariff = SelectField(u'Tariff', choices = choices,
                          validators=[DataRequired()] , default='')
-    hospital = StringField('Hospital')
-    admission = StringField('Date of admission')
-    discharge = StringField('Date of discharge')
+    hospital_name = StringField('Hospital')
+    admission_date = StringField('Date of admission')
+    discharge_date = StringField('Date of discharge')
     diagnosis = StringField('Diagnosis')
     diagnosis_date = StringField('Date of diagnosis')
     procedure = StringField('Procedure')

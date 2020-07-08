@@ -25,28 +25,28 @@
         </div>
         <div class="d-flex justify-content-between">
             <div>
-                <h3>Patient Name: {{ invoice['name'] }}</h3>
-                {% if  invoice['medical'] == 'mva' %}
-                    <p>Medical Aid: {{ invoice['medical'] }}</p>
+                <h3>Patient Name: {{ invoice['patient_name'] }}</h3>
+                {% if  invoice['medical_aid'] == 'mva' %}
+                    <p>Medical Aid: {{ invoice['medical_aid'] }}</p>
                     <p>Tariff: {{ invoice['tariff'] }}</p>
-                    <p>Case Number: {{ invoice['case'] }}</p>
-                    <p>PO: {{ invoice['po'] }}</p>
+                    <p>Case Number: {{ invoice['case_number'] }}</p>
+                    <p>PO: {{ invoice['po_number'] }}</p>
                     <p>Invoice created: {{ invoice['date_created'] }}</p>  
 
-                {% elif  invoice['medical'] =='psemas' %}
-                        <p>Medical Aid: {{ invoice['medical'] }}<br>
+                {% elif  invoice['medical_aid'] =='psemas' %}
+                        <p>Medical Aid: {{ invoice['medical_aid'] }}<br>
                         Tariff: {{ invoice['tariff'] }}<br>
-                        Main Member: {{ invoice['main'] }}<br>
-                        Medical Aid Number: {{ invoice['number'] }}<br>
-                        Date of Birth: {{ invoice['dob'] }}<br>
+                        Main Member: {{ invoice['main_member'] }}<br>
+                        Medical Aid Number: {{ invoice['medical_number'] }}<br>
+                        Date of Birth: {{ invoice['patient_birth_date'] }}<br>
                         Invoice created: {{ invoice['date_created'] }}</p>
 
                 {% else %}
-                        <p>Medical Aid:  {{ invoice['medical'] }}<br>
+                        <p>Medical Aid:  {{ invoice['medical_aid'] }}<br>
                         Tariff: {{ invoice['tariff']  }}<br>
-                        Main Member: {{ invoice['main']  }}<br>
-                        Medical Aid Number: {{ invoice['number'] }}<br>
-                        Date of Birth: {{ invoice['dob'] }}<br>
+                        Main Member: {{ invoice['main_member']  }}<br>
+                        Medical Aid Number: {{ invoice['medical_number'] }}<br>
+                        Date of Birth: {{ invoice['patient_birth_date'] }}<br>
                         Invoice created: {{ invoice['date_created']}}</p>
                 {% endif %}  
             </div> 
@@ -120,8 +120,8 @@
 
         var invoice = '{{ invoice_json }}'
         invoice = JSON.parse(invoice.replace(/&#34;/g,'"'))
-        var patient = invoice["name"];
-        var invoice_name = invoice["invoice"];
+        var patient = invoice["patient_name"];
+        var invoice_id = invoice["invoice_id"];
         var date = invoice["date_invoice"];
         var created = invoice["date_created"];
         var submitted_on = invoice['submitted_on'];
@@ -193,7 +193,7 @@
             $.ajax({
                 type: "GET",
                 url: '/account/submit-invoice',
-                data: {invoice_name: invoice_name}, 
+                data: {invoice_id: invoice_id}, 
                 dataType: 'json',
                 success: function (returnData) {
                     $('.modal-body').text(returnData)
@@ -225,7 +225,7 @@
             $.ajax({
                 type: "GET",
                 url: '/account/add-credit-invoice',
-                data: {invoice_name: invoice_name, new_credit: new_credit_cent / 100}, 
+                data: {invoice_id: invoice_id, new_credit: new_credit_cent / 100}, 
                 dataType: 'json',
                 success: function (returnData) {
                     final_credit_cent = new_credit_cent + credit_cent;

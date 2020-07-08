@@ -31,12 +31,12 @@ def setupConnection():
 
 
 def createTextInvoice(layout, items, treatments, price, dates, patient, modifier,
-                      url, invoice_name, date_invoice, data):
+                      url, invoice_id, date_invoice, data):
     doc, text = setupConnection()
     cursor = text.createTextCursor()
     doc, text, cursor = populateTopText(cursor, doc, text, data)
     doc, text, cursor = identityTable(doc, text, cursor, layout, patient, data)
-    doc, text, cursor = patientTable(doc, text, cursor, patient, invoice_name,
+    doc, text, cursor = patientTable(doc, text, cursor, patient, invoice_id,
                                     date_invoice)
     if 4 <= layout <= 9:
         doc, text, cursor = hospitalTable(doc, text, cursor, patient)
@@ -63,6 +63,6 @@ if __name__ == '__main__':
             args.to_json["patient"],
             args.to_json["modifiers"],
             args.to_json["url"],
-            args.to_json["invoice_name"],
+            args.to_json["invoice_id"],
             args.to_json["date_invoice"],
             args.to_json["data"])

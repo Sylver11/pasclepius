@@ -12,10 +12,10 @@
     for (let i = 0; i < invoices.length; i++) {
         const element = invoices[i];
         var li = document.createElement("LI");
-        li.textContent = element['invoice']
+        li.textContent = element['invoice_id']
         var sub_ul = document.createElement("UL");
         var sub_li = document.createElement("LI");
-        sub_li.textContent = element['name']
+        sub_li.textContent = element['patient_name']
         sub_ul.appendChild(sub_li);
         li.appendChild(sub_ul);
         ul.appendChild(li);

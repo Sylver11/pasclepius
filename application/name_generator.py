@@ -6,7 +6,7 @@ class InvoiceName(object):
 
     def __init__(self, patient, index, modifier):
         self.date = patient['date_created']
-        self.medical = patient['medical']
+        self.medical_aid = patient['medical_aid']
         self.index = index
         if '14' in modifier:
             self.modifier = 'H'
@@ -25,13 +25,13 @@ class InvoiceName(object):
 
     def generate(self):
         self.date = self.convert()
-        self.invoice_no = str(self.medical).upper() +'/' + str(self.date_digits('year')) + '/' + str(self.modifier) + str(self.date_digits('month')) + '-' + str(self.index)  
-        return self.invoice_no
+        self.invoice_id = str(self.medical_aid).upper() +'/' + str(self.date_digits('year')) + '/' + str(self.modifier) + str(self.date_digits('month')) + '-' + str(self.index)  
+        return self.invoice_id
 
 
 #patient = {'case': 'asdfasdfa',
 #          'csrf_token':'ImU5NjFiYWEwN2Y1MGUyMmFiZDBkY2ZiYTQ5NDgxYzdiN2NlODQ2MDQi.XpVy6A.zOXe-xkr0gUZJroWUQHqVEoGxu0','date':
-#          '14.04.2020', 'medical': 'psemas', 'name': 'lotharrrr hoo', 'po':
+#          '14.04.2020', 'medical_aid': 'psemas', 'name': 'lotharrrr hoo', 'po':
 #          '423423423#'}
 #date = InvoiceName(patient, 3, ['14','0'])
 #date_convert = date.generate()

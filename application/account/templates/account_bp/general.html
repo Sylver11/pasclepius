@@ -26,12 +26,12 @@
             <div id="fDropdown" class="dropdown-content">
                 <li class='focus' data-value='date_created'>Date created</li>
                 <li class='focus' data-value='date_invoice'>Invoice date</li>
-                <li class='focus' data-value='name'>Patient Name</li>
-                <li class='focus' data-value='main'>Main Member</li>        
+                <li class='focus' data-value='patient_name'>Patient Name</li>
+                <li class='focus' data-value='main_member'>Main Member</li>        
                 <li class='focus' data-value='procedure_date'>Procedure Date</li>
                 <li class='focus' data-value='diagnosis_date'>Diagnosis Date</li>
-                <li class='focus' data-value='admission'>Admission Date</li>
-                <li class='focus' data-value='discharge'>Discharge Date</li>
+                <li class='focus' data-value='admission_date'>Admission Date</li>
+                <li class='focus' data-value='discharge_date'>Discharge Date</li>
                 <li class='focus' data-value='submitted_on'>Submission Date</li>
                 <li class='focus' data-value='debit'>Value</li>
             </div>
@@ -47,7 +47,7 @@
             <button onclick="myFunction()" id="column_option" class="dropbtn">None</button>
             <div id="myDropdown" class="dropdown-content">
                 <li class='c_option' data-value='None'>No Criteria</li>
-                <li class='c_option' data-value='medical'>Medical</li>
+                <li class='c_option' data-value='medical_aid'>Medical</li>
                 <li class='c_option' data-value='tariff'>Tariff</li>
                 <li class='c_option' data-value='credit'>Credit</li>
                 <li class='c_option' data-value='status'>Status</li>
@@ -279,7 +279,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
         $.ajax({
         type: "GET",
         url: url,
-        data: {name: search_item}, 
+        data: {patient_name: search_item}, 
         dataType: 'json',
         success: function (returnData) {
             if (returnData.invoices.length <= 9){
@@ -289,7 +289,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
              var invoices = [], range = 10
             }
             for (i = 0; i < range; i++) {
-                invoices[i] = returnData.invoices[i]['invoice'].toString()
+                invoices[i] = returnData.invoices[i]['invoice_id'].toString()
             }   
             closeAllLists();
             if (!val) { return false;}
@@ -310,7 +310,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
                 var found_patient_names = [], range = arr_unique_patient_name.length;
                 for(i = 0; i < arr_unique_patient_name.length; i++){
                     found_patient_names[i] = returnData.invoices.filter(function(single) {
-                        return single.name ==  arr_unique_patient_name[i];})
+                        return single.patient_name ==  arr_unique_patient_name[i];})
                     }
                 let index_invoice_names = 0;
                 for (i = 0; i < arr_unique_patient_name.length; i++){
@@ -331,7 +331,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
 
                         
                         var paragraph_invoice = document.createElement("P");
-                        paragraph_invoice.textContent = found_patient_names[i][x]['invoice']
+                        paragraph_invoice.textContent = found_patient_names[i][x]['invoice_id']
                         paragraph_info_wrapper.appendChild(paragraph_invoice)
 
                         var paragraph_invoice_created = document.createElement("P");
@@ -363,11 +363,11 @@ $(document).on("keyup", ".invoice-search", function (e) {
                         
                         var input_field = document.createElement("INPUT");
                         input_field.setAttribute("type", "hidden")
-                        input_field.value = found_patient_names[i][x]['invoice']
+                        input_field.value = found_patient_names[i][x]['invoice_id']
                         action_wrapper.appendChild(input_field)
                         var open_invoice_button = document.createElement("BUTTON");
                         open_invoice_button .setAttribute("class", "open_invoice_button");
-                        open_invoice_button .setAttribute("value", found_patient_names[i][x]['invoice']);
+                        open_invoice_button .setAttribute("value", found_patient_names[i][x]['invoice_id']);
                         open_invoice_button.innerHTML = "Open"
                         action_wrapper.appendChild(open_invoice_button)
                         if(found_patient_names[i][x]['submitted_on']){ 
@@ -457,18 +457,18 @@ $(document).on("keyup", ".invoice-search", function (e) {
 
 $(document).on("click", ".open_invoice_button", function (e) {
         e.preventDefault()
-        var invoice_name = $(this).val()
-        window.location.href = "/account/invoice/" + invoice_name
+        var invoice_id = $(this).val()
+        window.location.href = "/account/invoice/" + invoice_id
         });
 
 
     $(document).on("click", ".submit_button_invoice", function (e) {
             e.preventDefault();
-            var invoice_name = $(this).siblings('input').val();
+            var invoice_id = $(this).siblings('input').val();
             $.ajax({
                 type: "GET",
                 url: '/account/submit-invoice',
-                data: {invoice_name: invoice_name}, 
+                data: {invoice_id: invoice_id}, 
                 dataType: 'json',
                 success: function (returnData) {
                     $('.modal-body').text(returnData)
@@ -479,12 +479,12 @@ $(document).on("click", ".open_invoice_button", function (e) {
 
         $(document).on("click", ".paid_button", function (e) {
             e.preventDefault();
-            var invoice_name = $(this).siblings('input').val();
+            var invoice_id = $(this).siblings('input').val();
             var credit = $(this).val()
             $.ajax({
                 type: "GET",
                 url: '/account/add-credit-invoice',
-                data: {invoice_name: invoice_name, credit: credit}, 
+                data: {invoice_id: invoice_id, credit: credit}, 
                 dataType: 'json',
                 success: function (returnData) {
                     console.log(returnData)

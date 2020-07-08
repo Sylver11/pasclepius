@@ -33,7 +33,7 @@
       </ul>
       {% if current_user.is_authenticated %}
       <form class="search form-inline my-2 my-lg-0" autocomplete="off">
-        <input id="patient_name" class="form-control mr-sm-2" name="user_name" type="search" placeholder="Search patients">
+        <input id="patient_name" class="form-control mr-sm-2" name="patient_name" type="search" placeholder="Search patients">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
       </form>
       {% endif %}
@@ -82,8 +82,8 @@
       $('.search').on("submit", function(e) {
         e.preventDefault()
         var data = $(".search :input").serializeArray();
-        var name = data[0]['value']
-         window.location.href = "/patient/" + name
+        var patient_name = data[0]['value']
+         window.location.href = "/patient/" + patient_name
         });
 
 
@@ -113,7 +113,7 @@
                 $.ajax({
                 type: "GET",
                 url: url,
-                data: {username: name}, 
+                data: {patient_name: name}, 
                 dataType: 'json',
                 success: function (returnData) {
                     if (returnData.length <= 5){
@@ -123,7 +123,7 @@
                      var names = [], range = 5
                     }
                     for (i = 0; i < range; i++) {
-                        names[i] = returnData[i]['name']
+                        names[i] = returnData[i]['patient_name']
                     }
                     closeAllLists();
                     if (!val) { return false;}

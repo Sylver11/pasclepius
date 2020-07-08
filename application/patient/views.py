@@ -18,13 +18,13 @@ def newPatient():
     form_other = Patient_other()
     if request.method == 'POST' and form_mva.validate_on_submit():
         session["PATIENT"] = form_mva.data
-        return redirect('/patient/' + form_mva.name.data + '/new-invoice')
+        return redirect('/patient/' + form_mva.patient_name.data + '/new-invoice')
     elif request.method == 'POST' and form_psemas.validate_on_submit():
         session["PATIENT"] = form_psemas.data
-        return redirect('/patient/' + form_psemas.name.data + '/new-invoice')
+        return redirect('/patient/' + form_psemas.patient_name.data + '/new-invoice')
     elif request.method == 'POST' and form_other.validate_on_submit():
         session["PATIENT"] = form_other.data
-        return redirect('/patient/' + form_other.name.data + '/new-invoice')
+        return redirect('/patient/' + form_other.patient_name.data + '/new-invoice')
     return render_template('patient/create.html',
             form_mva = form_mva,
             form_psemas = form_psemas,
@@ -41,13 +41,13 @@ def invoiceOption(patient):
     form_other = Patient_other()
     if request.method == 'POST' and form_mva.validate_on_submit():
         session["PATIENT"] = form_mva.data
-        return redirect('/patient/' + form_mva.name.data + '/new-invoice')
+        return redirect('/patient/' + form_mva.patient_name.data + '/new-invoice')
     elif request.method == 'POST' and form_psemas.validate_on_submit():
         session["PATIENT"] = form_psemas.data
-        return redirect('/patient/' + form_psemas.name.data + '/new-invoice')
+        return redirect('/patient/' + form_psemas.patient_name.data + '/new-invoice')
     elif request.method == 'POST' and form_other.validate_on_submit():
         session["PATIENT"] = form_other.data
-        return redirect('/patient/' + form_other.name.data + '/new-invoice')
+        return redirect('/patient/' + form_other.patient_name.data + '/new-invoice')
     data = queryInvoice(current_user.uuid, patient)
     patient_data = getPatient(current_user.uuid, patient)
     return render_template('patient/patient.html',
@@ -63,7 +63,7 @@ def invoiceOption(patient):
 @patient_bp.route('/<patient>/new-invoice')
 @login_required
 def newInvoice(patient):
-    medical = (session.get('PATIENT')["medical"])
+    medical_aid = (session.get('PATIENT')["medical_aid"])
     tariff = (session.get('PATIENT')["tariff"])
     form = getTreatmentForm(tariff)
     data = checkUser(current_user.id)
@@ -74,7 +74,7 @@ def newInvoice(patient):
                 form = form,
                 patient = patient,
                 layout_code = layout_code,
-                page_title = 'New ' + medical + ' invoice')
+                page_title = 'New ' + medical_aid + ' invoice')
 
 
 @patient_bp.route('/<patient>/continue-invoice')
@@ -82,10 +82,10 @@ def newInvoice(patient):
 def continueInvoice(patient):
     data = checkUser(current_user.id)
     layout_code = data['invoice_layout']
-    medical = (session.get('PATIENT')["medical"])
+    medical_aid = (session.get('PATIENT')["medical_aid"])
     tariff = (session.get('PATIENT')["tariff"])
     form = getTreatmentForm(tariff) 
     return render_template('patient/invoice.html',
                 form = form,
                 layout_code = layout_code,
-                page_title = 'Continue ' + medical + ' invoice')
+                page_title = 'Continue ' + medical_aid + ' invoice')

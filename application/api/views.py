@@ -29,28 +29,28 @@ def generateInvoice():
     date_invoice = request.form.getlist('date_invoice')
     tariff = session.get('PATIENT')["tariff"]
     patient = session.get('PATIENT')
-    medical = session.get('PATIENT')['medical']
+    medical_aid = session.get('PATIENT')['medical_aid']
     status = False
-    url = ''
-    invoice_name = ''
+    invoice_file_url = ''
+    invoice_id = ''
     form = getTreatmentForm(tariff)
     if form.treatments.data:
         treatment_list = getTreatmentByItem(treatments, tariff)
         data = checkUser(current_user.id)
-        if 'url' in session['PATIENT']:
-            url = session.get('PATIENT')['url']
-            invoice_name = session.get('PATIENT')['invoice']
+        if 'invoice_file_url' in session['PATIENT']:
+            invoice_file_url = session.get('PATIENT')['invoice_file_url']
+            invoice_id = session.get('PATIENT')['invoice_id']
             status = updateInvoice(layout, current_user.uuid,
                     modifiers, treatments, prices, dates,
                     patient, date_invoice)
         else:
             date_created = session.get('PATIENT')['date_created']
-            index = get_index(current_user.uuid, medical, date_created)
-            url = InvoicePath(patient, index, data)
-            url = url.generate()
-            invoice_name = InvoiceName(patient, index, modifiers)
-            invoice_name = invoice_name.generate()
-            status = add_invoice(layout, patient, invoice_name, url, modifiers,
+            index = get_index(current_user.uuid, medical_aid, date_created)
+            invoice_file_url = InvoicePath(patient, index, data)
+            invoice_file_url = invoice_file_url.generate()
+            invoice_id = InvoiceName(patient, index, modifiers)
+            invoice_id = invoice_id.generate()
+            status = add_invoice(layout, patient, invoice_id, invoice_file_url, modifiers,
                     treatments, prices, dates, date_invoice, current_user.uuid)
         if status:
             res_dict = {'layout' : layout,
@@ -60,8 +60,8 @@ def generateInvoice():
                     "dates" : dates,
                     "patient" : patient,
                     "modifiers" : modifiers,
-                    "url" : url,
-                    "invoice_name" : invoice_name,
+                    "invoice_file_url" : invoice_file_url,
+                    "invoice_id" : invoice_id,
                     "date_invoice" : date_invoice,
                     "data" : data}
             to_json = json.dumps(res_dict)
@@ -76,8 +76,8 @@ def generateInvoice():
 @api_bp.route('/live-search',methods=['GET','POST'])
 @login_required
 def liveSearchPatient():
-    name = request.args.get('username')
-    data = liveSearch(current_user.uuid, name)
+    patient_name = request.args.get('patient_name')
+    data = liveSearch(current_user.uuid, patient_name)
     value_json = json.dumps(data)
     return value_json
 
@@ -144,10 +144,10 @@ def getTreatmentName():
 @api_bp.route('/download-invoice/<random>')
 @login_required
 def downloadInvoice(random):
-    name = session.get('PATIENT')['name']
+    patient_name = session.get('PATIENT')['patient_name']
     date = session.get('PATIENT')['date']
-    url = getInvoiceURL(current_user.uuid, name, date)
-    path = str(url['url']) + ".odt"
+    invoice_file_url = getInvoiceURL(current_user.uuid, patient_name, date)
+    path = str(invoice_file_url['invoice_file_url']) + ".odt"
     return send_file(path, as_attachment=True)
 
 
