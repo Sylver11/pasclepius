@@ -40,7 +40,6 @@ def generateInvoice():
         if 'invoice_file_url' in session['PATIENT']:
             invoice_file_url = session.get('PATIENT')['invoice_file_url']
             invoice_id = session.get('PATIENT')['invoice_id']
-            print(patient)
             status = updateInvoice(layout, current_user.uuid,
                     modifiers, treatments, prices, dates,
                     patient, date_invoice)
@@ -95,28 +94,21 @@ def liveSearchTreatment():
 
 
 @api_bp.route('/set-known-invoice',methods=['GET','POST'])
-@login_required
 def knownInvoice():
-  #  patient = request.args.get('patient')
-   # date_created = request.args.get('date_created')
-  #  content = request.get_json()
-   # invoice_items = request.args.get('invoice_items')
-   # invoice_id = request.args.get('invoice_id')
-   # invoice =  getSingleInvoice(current_user.uuid, invoice_id)
-   # print(invoice)
-   # print(content)
-    data = request.get_json(force=True)
-    print(data) 
-   #items = getItems(current_user.uuid, data['invoice_id'])
-   # for o, i in invoice.items():
-   #     if i == 'None':
-   #        invoice[o] = ''
-   #     if isinstance(i, datetime2.datetime):
-   #         d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
-   #         date = d.strftime('%d.%m.%Y')
-   #         invoice[o] = date
-   # session["PATIENT"] = invoice
-    return jsonify({'message', 'New User Created!'})
+    invoice_items = request.args.get('invoice_items')
+    invoice_id = request.args.get('invoice_id')
+    invoice =  getSingleInvoice(current_user.uuid, invoice_id)
+    json_data = json.loads(invoice_items)
+    invoice['treatments'] = json_data
+    for o, i in invoice.items():
+        if i == 'None':
+           invoice[o] = ''
+        if isinstance(i, datetime2.datetime):
+            d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
+            date = d.strftime('%d.%m.%Y')
+            invoice[o] = date
+    session["PATIENT"] = invoice
+    return json.dumps({'message': 'New User Created!'})
 
 
 @api_bp.route('/get-value',methods=['GET','POST'])

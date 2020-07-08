@@ -49,7 +49,6 @@ def invoiceOption(patient):
         session["PATIENT"] = form_other.data
         return redirect('/patient/' + form_other.patient_name.data + '/new-invoice')
     data = queryInvoice(current_user.uuid, patient)
-    print(data)
     patient_data = getPatient(current_user.uuid, patient)
     return render_template('patient/patient.html',
             patient_data = patient_data,

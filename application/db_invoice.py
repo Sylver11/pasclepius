@@ -141,7 +141,6 @@ def getAllInvoices(uuid, c_option=None, r_option=None,
         submitted_on, medical_aid, invoice_id,invoice_file_url, `values`, treatments, dates, tariff,
         main_member, patient_birth_date, medical_number, po_number,`case_number` FROM invoices WHERE uuid_text = '{}'
         """.format(uuid)
-    print(sql)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)

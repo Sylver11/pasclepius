@@ -83,7 +83,6 @@
 
         {% endif %}
         <script>
-            
             selectElement('tariff_{{ loop.index }}', '{{ i["tariff"] }}')
             function selectElement(id, valueToSelect) {    
                 let element = document.getElementById(id);
@@ -105,7 +104,6 @@
         <li class="invoice_list list-group-item" ><span>{{i['patient_name']}}</span> {{i['medical_aid']}} {{i['date_created'].strftime('%d.%m.%Y')}}</li>
         <ul class="list-group-item" id="treatment-list-{{loop.index}}" style="display:none;">
                 <script>
-                    "{{ i['invoice_id'] }}"
                     $.getJSON('/get-invoice-items', {
                         invoice_id: '{{ i["invoice_id"] }}',
                         uuid: '{{ i["uuid_text"] }}'
@@ -121,26 +119,13 @@
                         button.innerHTML = "Continue Invoice";
                         button.classList.add("continue" + '{{loop.index}}')
                         el.appendChild(button);
-                        
-                        
-                        var json = JSON.stringify(invoice_items)
-                        // console.log("{invoice_id: {{ i['invoice_id'] }}, invoice_items: " + json + "}")
-                        // console.log(json)
                         $('.continue' + '{{loop.index}}').click(function(){
                             $.ajax({
-                                // type: "GET",
                                 url: '/set-known-invoice',
-                                // contentType: "application/json",
-                                dataType: "json",
-                                data: {invoice_id: "{{ i['invoice_id'] }}", invoice_items:  invoice_items[0]},
-                                success: function(json) {
-                                    // $("#success").html("json.length=" + json.length);
-                                    // itemAddCallback(json);
-                                     //window.location.href = "/patient/" + '{{i["patient_name"]}}' + "/continue-invoice";
+                                data: {invoice_id: "{{ i['invoice_id'] }}", invoice_items:  JSON.stringify(invoice_items)},
+                                success: function() {
+                                    window.location.href = "/patient/" + '{{i["patient_name"]}}' + "/continue-invoice";
                                 },
-                                // error: function (xhr, textStatus, errorThrown) {
-                                //     // $("#error").html(xhr.responseText);
-                                // }
                             });
                          
                         })
