@@ -41,8 +41,7 @@ def liveSearchInvoices(uuid, patient_name):
 def getPatient(uuid, patient_name):
     sql = """ SELECT any_value(tariff) AS tariff, any_value(patient_birth_date) AS
     patient_birth_date,
-    any_value(medical_number) AS medical_number, any_value(medical_aid) AS medical_aid),
-    any_value(case_number) AS case_number, any_value(main_member) AS main_member,
+    any_value(medical_number) AS medical_number, any_value(medical_aid) AS medical_aid, any_value(case_number) AS case_number, any_value(main_member) AS main_member,
     patient_name FROM
     invoices WHERE uuid_text = '{}' AND patient_name = '{}' GROUP BY CASE WHEN
     medical_aid = 'mva' THEN `case_number` ELSE medical_number END;""".format(uuid, patient_name)
@@ -69,7 +68,7 @@ def getInvoiceURL(uuid, name_patient, date):
 
 
 def queryInvoice(uuid, patient):
-    sql = """SELECT * FROM invoices WHERE uuid_text = '{}' AND name_patient = '{}'
+    sql = """SELECT * FROM invoices WHERE uuid_text = '{}' AND patient_name = '{}'
     """.format(uuid, patient)
     conn = pool.connection()
     cursor = conn.cursor()
@@ -80,19 +79,36 @@ def queryInvoice(uuid, patient):
     return data
 
 
-def getSingleInvoice(uuid, patient, date):
-    sql = """SELECT *
-    FROM invoices WHERE uuid_text = '{}' AND patient_name = '{}' AND
-    date_created = '{}'
-    """.format(uuid, patient, date)
+def getSingleInvoice(uuid, invoice_id=None, patient=None, date=None):
+    sql = ''
+    if invoice_id:
+        sql = """SELECT *
+        FROM invoices WHERE uuid_text = '{}' AND invoice_id = '{}'
+        """.format(uuid, invoice_id)
+    else:
+        sql = """SELECT * FROM invoices WHERE uuid_text = '{}'
+        AND patient_name = '{}' AND
+        date_created = '{}'
+        """.format(uuid, patient, date)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
-    data = cursor.fetchone()
+    invoice = cursor.fetchone()
     cursor.close()
     conn.close()
-    return data
+    return invoice
 
+
+def getItems(uuid, invoice_id):
+    sql = """SELECT * FROM invoice_items WHERE uuid_text = '{}' AND invoice_id
+    = '{}'""".format(uuid, invoice_id)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    items = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return items
 
 def getInvoiceByInvoiceName(uuid, invoice_id):
     sql = """SELECT *
@@ -173,9 +189,16 @@ def updateCredit(uuid, invoice_id, credit):
 def updateInvoice(layout, uuid, modifiers, treatments, prices, dates, patient, date_invoice):
     patient_name = patient['patient_name']
     date = patient['date_created']
-    hospital_name = admission_date = discharge_date = None
-    procedure = procedure_date = diagnosis = diagnosis_date = None
-    implants = intra_op = post_op = None 
+    invoice_id = patient['invoice_id']
+   # po_number = 0
+   # status = patient_birth_date = case_number = medical_number = main_member = None
+    hospital_name = None
+    procedure_date = diagnosis_date = admission_date = discharge_date = datetime.strptime('1000-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+    procedure = diagnosis = None
+    implants = intra_op = post_op = None
+   # hospital_name = admission_date = discharge_date = None
+   # procedure = procedure_date = diagnosis = diagnosis_date = None
+   # implants = intra_op = post_op = None 
     if (4 <= layout <= 9):
         hospital_name = patient['hospital_name']
         admission_date = patient['admission_date']
@@ -189,24 +212,39 @@ def updateInvoice(layout, uuid, modifiers, treatments, prices, dates, patient, d
         implants = patient['implants']
         intra_op = patient['intra_op']
         post_op = patient['post_op']
-    modifiers = ','.join(map(str, modifiers))
-    treatments = ','.join(map(str, treatments))
-    prices = ','.join(map(str, prices))
-    dates = ','.join(map(str, dates))
+   # modifiers = ','.join(map(str, modifiers))
+   # treatments = ','.join(map(str, treatments))
+   # prices = ','.join(map(str, prices))
+   # dates = ','.join(map(str, dates))
     date = datetime.strptime(date, '%d.%m.%Y')
     date_invoice = datetime.strptime(date_invoice[0], '%d.%m.%Y')
-    sql = """UPDATE invoices SET date_invoice = '{}', modifiers = '{}',
-    treatments = '{}', `values` = '{}', dates = '{}', hospital_name = '{}',
+    sql = """UPDATE invoices SET date_invoice = '{}', hospital_name = '{}',
     admission_date = '{}', discharge_date = '{}', `procedure` = '{}',
     procedure_date = '{}', diagnosis = '{}', diagnosis_date = '{}',
     implants = '{}', intra_op ='{}', post_op = '{}' WHERE
     uuid_text = '{}' AND patient_name = '{}' AND date_created =
-    '{}'""".format(date_invoice, modifiers, treatments, prices,
-            dates, hospital_name, admission_date, discharge_date, procedure,
+    '{}'""".format(date_invoice, hospital_name, admission_date, discharge_date, procedure,
             procedure_date, diagnosis, diagnosis_date, implants,
             intra_op, post_op, uuid, patient_name, date)
+
+
+    if not modifiers:
+        modifiers = [0] * len(treatments)
+    dates = [d.replace(d, str(datetime.strptime(d, '%d.%m.%Y'))) for d in dates]
+    uuid_list = [uuid] * len(treatments)
+    invoice_list = [invoice_id] * len(treatments)
+    list_item = list(zip(uuid_list, invoice_list, treatments, prices, dates,
+        modifiers))
+    sql_rm_individual_item = """DELETE FROM invoice_items WHERE uuid_text = '{}'
+    AND invoice_id = '{}'""".format(uuid, invoice_id)
+    sql_individual_item = "INSERT INTO invoice_items (uuid_text, invoice_id, item, value, date, modifier) VALUES (%s, %s, %s, %s, %s, %s)"
+
+
+
     conn = pool.connection()
     cursor = conn.cursor()
+    cursur.execute(sql_rm_individual_item)
+    cursor.execute(sql_individual_item)
     cursor.execute(sql)
     cursor.close()
     conn.close()
@@ -221,9 +259,10 @@ def add_invoice(layout, patient, invoice_id, invoice_file_url, modifiers, treatm
     tariff = patient['tariff']
     po_number = 0
     status = patient_birth_date = case_number = medical_number = main_member = None
-    hospital_name = admission_date = discharge_date = None
-    procedure = procedure_date = diagnosis = diagnosis_date = None
-    implants = intra_op = post_op = None 
+    hospital_name = None
+    patient_birth_date = procedure_date = diagnosis_date = admission_date = discharge_date = datetime.strptime('1000-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+    procedure = diagnosis = None
+    implants = intra_op = post_op = None
     if (4 <= layout <= 9):
         hospital_name = patient['hospital_name']
         admission_date = patient['admission_date']
@@ -244,6 +283,7 @@ def add_invoice(layout, patient, invoice_id, invoice_file_url, modifiers, treatm
     else:
         main_member = patient['main_member']
         patient_birth_date = patient['patient_birth_date']
+        patient_birth_date = datetime.strptime(patient_birth_date, '%d.%m.%Y')
         medical_number = patient['medical_number']
     date = datetime.strptime(date, '%d.%m.%Y')
     date_invoice = datetime.strptime(date_invoice[0], '%d.%m.%Y')
@@ -262,6 +302,8 @@ def add_invoice(layout, patient, invoice_id, invoice_file_url, modifiers, treatm
         hospital_name, admission_date, discharge_date, procedure,
         procedure_date, diagnosis, diagnosis_date,
         implants, intra_op, post_op)
+    
+    
     if not modifiers:
         modifiers = [0] * len(treatments)
     dates = [d.replace(d, str(datetime.strptime(d, '%d.%m.%Y'))) for d in dates]
@@ -269,7 +311,9 @@ def add_invoice(layout, patient, invoice_id, invoice_file_url, modifiers, treatm
     invoice_list = [invoice_id] * len(treatments)
     list_item = list(zip(uuid_list, invoice_list, treatments, prices, dates,
         modifiers))
-    sql_individual_item = "INSERT INTO invoice_items (uuid_text, invoice_id, item, price, date, modifier) VALUES (%s, %s, %s, %s, %s, %s)"
+    sql_individual_item = "INSERT INTO invoice_items (uuid_text, invoice_id, item, value, date, modifier) VALUES (%s, %s, %s, %s, %s, %s)"
+
+
 
     sql_check_duplicate = """ SELECT * FROM invoices WHERE uuid_text='{}' AND
     patient_name='{}' AND date_created='{}'""".format(uuid, patient_name, date)

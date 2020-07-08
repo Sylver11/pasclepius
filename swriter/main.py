@@ -62,7 +62,7 @@ if __name__ == '__main__':
             args.to_json["dates"],
             args.to_json["patient"],
             args.to_json["modifiers"],
-            args.to_json["url"],
+            args.to_json["invoice_file_url"],
             args.to_json["invoice_id"],
             args.to_json["date_invoice"],
             args.to_json["data"])

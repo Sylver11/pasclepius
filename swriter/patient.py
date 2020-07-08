@@ -56,7 +56,7 @@ def patientTable(doc, text, cursor, patient, invoice_id, date_invoice):
         fifth_middle_table_text = middle_table.getCellByName("A3")
         fifth_middle_table_text.setString("Patient Name: " + str(patient['patient_name']))
         sixth_middle_table_text = middle_table.getCellByName("B3")
-        sixth_middle_table_text.setString("Patient DoB: " + str(patient['dob']))
+        sixth_middle_table_text.setString("Patient DoB: " + str(patient['patient_birth_date']))
         range_bottom = middle_table.getCellRangeByName("A2:C3")
         range_bottom.setPropertyValue( "CharFontName", "Liberation Serif" )
         range_bottom.setPropertyValue( "CharHeight", 10.0 )

@@ -47,13 +47,13 @@
             {{ form_psemas.tariff(id='tariff_' ~ loop.index, style="display: none;") }}
             {{ form_psemas.patient_name(value=i['patient_name'], style="display: none")  }}
             {{ form_psemas.main_member(value=i['main_member'], style="display: none") }}
-            {{ form_psemas.patient_birth_date(value=i['patient_birth_date'], style="display: none") }}
+            {{ form_psemas.patient_birth_date(value=i['patient_birth_date'].strftime('%d.%m.%Y'), style="display: none") }}
             {{ form_psemas.medical_number(value=i['medical_number'], style="display: none") }}
             {{ form_psemas.date_created.label(class_="required") }} {{ form_psemas.date_created(id='date_psemas_' ~ loop.index, class_="form-control w-25 p-3") }}
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
         </form>
-        <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['medical_number']}} <br>Main Member: {{i['main_member']}} <br>Date of Birth: {{i['patient_birth_date']}}</small>
+        <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['medical_number']}} <br>Main Member: {{i['main_member']}} <br>Date of Birth: {{ i['patient_birth_date'].strftime('%d.%m.%Y') }}</small>
     </div>
     <br>
 
@@ -71,13 +71,13 @@
             {{ form_other.tariff(id='tariff_' ~ loop.index, style="display: none") }}
             {{ form_other.patient_name(value=i['patient_name'], style="display: none")  }}
             {{ form_other.main_member(value=i['main_member'], style="display: none") }}
-            {{ form_other.patient_birth_date(value=i['patient_birth_date'], style="display: none") }}
+            {{ form_other.patient_birth_date(value=i['patient_birth_date'].strftime('%d.%m.%Y'), style="display: none") }}
             {{ form_other.medical_number(value=i['medical_number'], style="display: none") }}
             {{ form_other.date_created.label(class_="required") }} {{ form_other.date_created(id='date_other_' ~ loop.index, class_="form-control w-25 p-3") }}
         <br>
         {{ form_other.submit(class_="btn btn-success") }}
         </form>  
-        <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['medical_number']}} <br>Main Member: {{i['main_member']}} <br>Date of Birth: {{i['patient_birth_date']}}</small>
+        <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['medical_number']}} <br>Main Member: {{i['main_member']}} <br>Date of Birth: {{i['patient_birth_date'].strftime('%d.%m.%Y')}}</small>
     </div>
     <br>
 
@@ -102,35 +102,47 @@
     <h4>Past invoice</h4>  
     <ul class="list-group">
         {% for i in data %} 
-        <li class="invoice_list list-group-item" ><span id="patient_name-{{loop.index}}">{{i['patient_name']}}</span> {{i['medical_aid']}} {{i['date_created'].strftime('%d.%m.%Y')}} <span style="display:none;" id="patient_date-{{loop.index}}">{{ i['date_created'] }}</span></li>
-        <ul class="treatment_list list-group-item" id="treatment-list-{{loop.index}}" style="display:none;">
+        <li class="invoice_list list-group-item" ><span>{{i['patient_name']}}</span> {{i['medical_aid']}} {{i['date_created'].strftime('%d.%m.%Y')}}</li>
+        <ul class="list-group-item" id="treatment-list-{{loop.index}}" style="display:none;">
                 <script>
-                    /// rm unneeded ids
-                    $.getJSON('/get-treatment-name', {
-                        items: '{{ i["treatments"] }}',
-                        tariff: '{{ i["tariff"] }}'		
-                    }, function(data) {
-                        var button = document.createElement("button");
+                    "{{ i['invoice_id'] }}"
+                    $.getJSON('/get-invoice-items', {
+                        invoice_id: '{{ i["invoice_id"] }}',
+                        uuid: '{{ i["uuid_text"] }}'
+                    }, function(invoice_items) {
                         var el = document.getElementById('treatment-list-{{loop.index}}')
-                        for (i = 0; i < data.treatments.length; i++) {
+                        for (i = 0; i < invoice_items.length; i++) {
                             var node = document.createElement("li");
                             node.classList.add('list-group-item');
-                            node.innerText = data.treatments[i]['description'];
+                            node.innerText = invoice_items[i]['item'];
                             el.appendChild(node);
                         }
+                        var button = document.createElement("button");
                         button.innerHTML = "Continue Invoice";
                         button.classList.add("continue" + '{{loop.index}}')
                         el.appendChild(button);
+                        
+                        
+                        var json = JSON.stringify(invoice_items)
+                        // console.log("{invoice_id: {{ i['invoice_id'] }}, invoice_items: " + json + "}")
+                        // console.log(json)
                         $('.continue' + '{{loop.index}}').click(function(){
-                            // var patient_name = $('#patient_name-{{loop.index}}').text();
-                            // var patient_date = $('#patient_date-{{loop.index}}').text();
-                            $.getJSON('/set-known-invoice', {
-                                invoice_id: '{{ i["invoice_id"] }}'
-                                // patient: patient_name,
-                                // date_created: patient_date		
-                            }, function(data) {
-                                window.location.href = "/patient/" + '{{i["patient_name"]}}' + "/continue-invoice";
-                                })
+                            $.ajax({
+                                // type: "GET",
+                                url: '/set-known-invoice',
+                                // contentType: "application/json",
+                                dataType: "json",
+                                data: {invoice_id: "{{ i['invoice_id'] }}", invoice_items:  invoice_items[0]},
+                                success: function(json) {
+                                    // $("#success").html("json.length=" + json.length);
+                                    // itemAddCallback(json);
+                                     //window.location.href = "/patient/" + '{{i["patient_name"]}}' + "/continue-invoice";
+                                },
+                                // error: function (xhr, textStatus, errorThrown) {
+                                //     // $("#error").html(xhr.responseText);
+                                // }
+                            });
+                         
                         })
                         
                     });

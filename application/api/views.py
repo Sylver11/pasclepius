@@ -2,7 +2,7 @@ import os
 from flask import Blueprint, request, session, send_file
 from application.forms import getTreatmentForm
 from application.db_tariffs import getTreatmentByItem, getValueTreatments, getMultipleValues, getTreatmentByGroup, liveSearchTreatments
-from application.db_invoice import get_index, add_invoice, getInvoiceURL, getSingleInvoice, updateInvoice, liveSearch
+from application.db_invoice import get_index, add_invoice, getInvoiceURL, getSingleInvoice, updateInvoice, liveSearch, getItems
 from application.db_users import checkUser
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
@@ -40,6 +40,7 @@ def generateInvoice():
         if 'invoice_file_url' in session['PATIENT']:
             invoice_file_url = session.get('PATIENT')['invoice_file_url']
             invoice_id = session.get('PATIENT')['invoice_id']
+            print(patient)
             status = updateInvoice(layout, current_user.uuid,
                     modifiers, treatments, prices, dates,
                     patient, date_invoice)
@@ -96,18 +97,26 @@ def liveSearchTreatment():
 @api_bp.route('/set-known-invoice',methods=['GET','POST'])
 @login_required
 def knownInvoice():
-    patient = request.args.get('patient')
-    date_created = request.args.get('date_created')
-    data =  getSingleInvoice(current_user.uuid, patient, date_created)
-    for o, i in data.items():
-        if i == 'None':
-           data[o] = ''
-        if isinstance(i, datetime2.datetime):
-            d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
-            date = d.strftime('%d.%m.%Y')
-            data[o] = date
-    session["PATIENT"] = data
-    return data
+  #  patient = request.args.get('patient')
+   # date_created = request.args.get('date_created')
+  #  content = request.get_json()
+   # invoice_items = request.args.get('invoice_items')
+   # invoice_id = request.args.get('invoice_id')
+   # invoice =  getSingleInvoice(current_user.uuid, invoice_id)
+   # print(invoice)
+   # print(content)
+    data = request.get_json(force=True)
+    print(data) 
+   #items = getItems(current_user.uuid, data['invoice_id'])
+   # for o, i in invoice.items():
+   #     if i == 'None':
+   #        invoice[o] = ''
+   #     if isinstance(i, datetime2.datetime):
+   #         d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
+   #         date = d.strftime('%d.%m.%Y')
+   #         invoice[o] = date
+   # session["PATIENT"] = invoice
+    return jsonify({'message', 'New User Created!'})
 
 
 @api_bp.route('/get-value',methods=['GET','POST'])
@@ -131,14 +140,18 @@ def getValues():
     return value_list
 
 
-@api_bp.route('/get-treatment-name',methods=['GET','POST'])
-@login_required
+@api_bp.route('/get-invoice-items',methods=['GET','POST'])
 def getTreatmentName():
-    items = request.args.get('items')
-    tariff = request.args.get('tariff')
-    treatment_list = getTreatmentByGroup(items, tariff)
-    value_json = json.dumps({'treatments':treatment_list})
-    return value_json
+    invoice_id = request.args.get('invoice_id')
+    uuid = request.args.get('uuid')
+    invoice_items = getItems(uuid, invoice_id)
+    for i in invoice_items:
+        for o in i:
+            if isinstance(i[o], datetime2.datetime):
+                d = datetime.strptime(i[o].__str__(), '%Y-%m-%d %H:%M:%S')
+                date = d.strftime('%d.%m.%Y')
+                i[o] = date
+    return json.dumps(invoice_items)
 
 
 @api_bp.route('/download-invoice/<random>')
