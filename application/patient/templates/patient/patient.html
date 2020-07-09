@@ -23,13 +23,13 @@
                     {{ form_mva.medical_aid(style='display:none', value=i['medical_aid']) }}
                     {{ form_mva.tariff(class_="tariff", style="display: none;", id='tariff_' ~ loop.index) }}
                     {{ form_mva.patient_name(value=i['patient_name'], style="display: none") }}
-                    {{ form_mva.case(style="display: none;", value=i['case']) }}
+                    {{ form_mva.case_number(style="display: none;", value=i['case_number']) }}
                     {{ form_mva.po_number.label(class_="required") }} {{ form_mva.po_number(class_="form-control w-25") }}
                     {{ form_mva.date_created.label(for="date_mva_" ~ loop.index, class_="required") }} {{ form_mva.date_created(id='date_mva_' ~ loop.index, class_="form-control w-25 p-3" ) }}
                     <br>
                     {{ form_mva.submit(class_="btn btn-success") }}
             </form>  
-            <small>Tariff: {{i['tariff']}} <br> Case Number: {{i['case']}}</small>
+            <small>Tariff: {{i['tariff']}} <br> Case Number: {{i['case_number']}}</small>
         </div>
         <br>
 
@@ -112,7 +112,7 @@
                         for (i = 0; i < invoice_items.length; i++) {
                             var node = document.createElement("li");
                             node.classList.add('list-group-item');
-                            node.innerText = invoice_items[i]['item'];
+                            node.innerText = invoice_items[i]['description'];
                             el.appendChild(node);
                         }
                         var button = document.createElement("button");

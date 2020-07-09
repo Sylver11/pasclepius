@@ -35,6 +35,7 @@ def setupTable():
         description varchar(500),
         `procedure` VARCHAR(500),
         value int(11),
+        post_value int(11),
         date DATETIME NOT NULL,
         note varchar(500),
         modifier int(11),

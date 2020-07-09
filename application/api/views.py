@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, request, session, send_file
+from flask import Blueprint, request, session, send_file, jsonify
 from application.forms import getTreatmentForm
 from application.db_tariffs import getTreatmentByItem, getValueTreatments, getMultipleValues, getTreatmentByGroup, liveSearchTreatments
 from application.db_invoice import get_index, add_invoice, getInvoiceURL, getSingleInvoice, updateInvoice, liveSearch, getItems
@@ -18,59 +18,49 @@ api_bp = Blueprint('api_bp',__name__)
 
 
 @api_bp.route('/generate-invoice', methods=['POST'])
-@login_required
 def generateInvoice():
-    data = checkUser(current_user.id)
-    layout = data['invoice_layout']
-    dates = request.form.getlist('date')
-    treatments = request.form.getlist('treatments')
-    modifiers = request.form.getlist('modifier')
-    prices = request.form.getlist('price')
-    date_invoice = request.form.getlist('date_invoice')
-    tariff = session.get('PATIENT')["tariff"]
+    user = checkUser(current_user.id)
     patient = session.get('PATIENT')
-    medical_aid = session.get('PATIENT')['medical_aid']
-    status = False
-    invoice_file_url = ''
-    invoice_id = ''
-    form = getTreatmentForm(tariff)
+    form = getTreatmentForm(patient['tariff'])
     if form.treatments.data:
-        treatment_list = getTreatmentByItem(treatments, tariff)
-        data = checkUser(current_user.id)
-        if 'invoice_file_url' in session['PATIENT']:
-            invoice_file_url = session.get('PATIENT')['invoice_file_url']
-            invoice_id = session.get('PATIENT')['invoice_id']
-            status = updateInvoice(layout, current_user.uuid,
-                    modifiers, treatments, prices, dates,
-                    patient, date_invoice)
+        item_dates = request.form.getlist('date')
+        item_numbers = request.form.getlist('treatments')
+        item_modifiers = request.form.getlist('modifier')
+        item_values = request.form.getlist('price')
+        item_descriptions = getTreatmentByItem(item_numbers, patient['tariff'])
+        date_invoice = request.form.getlist('date_invoice')
+        invoice_file_url = invoice_id = status = None
+        if 'invoice_file_url' in patient:
+            invoice_file_url = patient['invoice_file_url']
+            invoice_id = patient['invoice_id']
+            status = updateInvoice(user, patient, date_invoice, item_numbers, item_descriptions, item_values, item_dates, item_modifiers)
         else:
-            date_created = session.get('PATIENT')['date_created']
-            index = get_index(current_user.uuid, medical_aid, date_created)
-            invoice_file_url = InvoicePath(patient, index, data)
+            index = get_index(current_user.uuid, patient['medical_aid'], patient['date_created'])
+            invoice_file_url = InvoicePath(patient, index, user)
             invoice_file_url = invoice_file_url.generate()
-            invoice_id = InvoiceName(patient, index, modifiers)
+            invoice_id = InvoiceName(patient, index, item_modifiers)
             invoice_id = invoice_id.generate()
-            status = add_invoice(layout, patient, invoice_id, invoice_file_url, modifiers,
-                    treatments, prices, dates, date_invoice, current_user.uuid)
+            status = add_invoice(user, patient, invoice_id, invoice_file_url, date_invoice, item_numbers, item_descriptions, item_values, item_dates, item_modifiers)
         if status:
-            res_dict = {'layout' : layout,
-                    "treatments" : treatments,
-                    "treatment_list" : treatment_list,
-                    "prices" : prices,
-                    "dates" : dates,
+            res_dict = {
+                    "user" : user,
                     "patient" : patient,
-                    "modifiers" : modifiers,
+                    "item_numbers" : item_numbers,
+                    "item_descriptions" : item_descriptions,
+                    "item_values" : item_values,
+                    "item_dates" : item_dates,
+                    "item_modifiers" : item_modifiers,
                     "invoice_file_url" : invoice_file_url,
                     "invoice_id" : invoice_id,
-                    "date_invoice" : date_invoice,
-                    "data" : data}
+                    "date_invoice" : date_invoice
+                    }
             to_json = json.dumps(res_dict)
             subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
                             '/swriter/main.py', to_json])
-            return json.dumps({'result':'success'})
+            return jsonify("success")
         else:
-            return json.dumps({'result':'Error: Entry already exists. Have a look at past invoices to continue this invoice.'})
-        return json.dumps({'result':'error'})
+            return jsonify('Error: Entry already exists. Have a look at past invoices to continue this invoice.')
+        return jsonify('error')
 
 
 @api_bp.route('/live-search',methods=['GET','POST'])
@@ -108,6 +98,7 @@ def knownInvoice():
             date = d.strftime('%d.%m.%Y')
             invoice[o] = date
     session["PATIENT"] = invoice
+    print(invoice)
     return json.dumps({'message': 'New User Created!'})
 
 
@@ -122,14 +113,14 @@ def getValue():
     return value_json
 
 
-@api_bp.route('/get-values',methods=['GET','POST'])
-@login_required
-def getValues():
-    tariff = session.get('PATIENT')["tariff"]
-    items = session.get('PATIENT')['treatments']
-    value_list = getMultipleValues(items, tariff)
-    value_list = json.dumps(value_list)
-    return value_list
+#@api_bp.route('/get-values',methods=['GET','POST'])
+#@login_required
+#def getValues():
+#    tariff = session.get('PATIENT')["tariff"]
+#    items = session.get('PATIENT')['treatments']
+#    value_list = getMultipleValues(items, tariff)
+#    value_list = json.dumps(value_list)
+#    return value_list
 
 
 @api_bp.route('/get-invoice-items',methods=['GET','POST'])

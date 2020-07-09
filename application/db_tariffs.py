@@ -39,7 +39,7 @@ def getMultipleValues(items, tariff):
 
 def getTreatments(tariff, featured=None):
     if (featured is None):
-        sql = """SELECT LPAD(item, 3, 0) AS item, description, category FROM
+        sql = """SELECT * FROM
         namaf_tariffs WHERE tariff = '{}' ORDER BY id""".format(tariff)
         connection = pool.connection()
         cursor = connection.cursor()

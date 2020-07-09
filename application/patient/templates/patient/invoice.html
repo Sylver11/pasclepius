@@ -595,13 +595,18 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
             method: 'POST',
             url: '/generate-invoice',
             data: $('form').serialize(),
-        }).done(addShow);
-            $('form').data('submitted', true);
-            $(this).find('#submit').prop('disabled', true);
-            $(this).find('#submit').css('cursor', 'default');
-            $('#btnAdd_0').css('cursor', 'default');
-            $('#btnAdd_0').prop('disabled', true);
-            $('#treatmentsearch').attr('disabled', true);
+            success: function (data) {
+                $('form').data('submitted', true);
+                $('#submit').prop('disabled', true);
+                $('#submit').css('cursor', 'default');
+                $('#btnAdd_0').css('cursor', 'default');
+                $('#btnAdd_0').prop('disabled', true);
+                $('.clone').prop('disabled', true);
+                $('.below').prop('disabled', true);
+                $('.delete').prop('disabled', true);
+                $('#treatmentsearch').attr('disabled', true);
+                addShow(data)
+            }})
         }
     }
 
@@ -611,9 +616,9 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
 
 
     function addShow(data) {
-      $('#result').text(data.result);
-      if(data.result =='success'){
-          $('#download_invoice').css('display', 'block')
+        $('#result').text(data);
+        if(data =='success'){
+            $('#download_invoice').css('display', 'block')
       }
     }
 
@@ -994,56 +999,74 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
     });
 
     if("{{ session['PATIENT']['treatments'] }}"){
-        var prices = "{{ session['PATIENT']['values'] }}";
-        var modifiers = "{{ session['PATIENT']['modifiers'] }}";
-        var treatments = "{{ session['PATIENT']['treatments'] }}";
-        var mo = modifiers.split(",");
-        var t = treatments.split(",");
-        var p = prices.split(",");
-        var d = "{{ session['PATIENT']['dates'] }}".split(",");
-        $.ajax({
-                url: '/get-values',
-                type: "GET",
-            success: function(data) {
-                data = $.parseJSON(data)
-                $.each(t, function(index, value) {  
-                     var t_ = t.length - 1
-                     if(index !== t_){
-                        clone()
-                     }  
-                    db_value = (parseFloat(p[index])).toFixed(2)
-                    value = (parseFloat(data[index]['value'])).toFixed(2)
-                    if (db_value !== value){
-                        percent = (db_value / value).toFixed(1)
-                        object =  '#clonedInput' + index 
-                        setPremium(index, percent, value)
-                    }
-                    var date = parseDate(d[index])
-                    function parseDate(str) {
-                        var m = str.match(/^(\d{1,2}).(\d{1,2}).(\d{4})$/);
-                        return (m) ? new Date(m[3], m[2]-1, m[1]) : null;
-                    }
-                    $('#value-' + index).val(db_value)
-                    $('#date-' + index).datepicker({dateFormat: 'dd.mm.yy'})
-                    $('#date-' + index).datepicker("setDate", date);
-                    '{% if "namaf_orthopaedic_surgeons" in session["PATIENT"]["tariff"] %}'
-                        treatment_input = document.getElementById("treatment-" + index);
-                        description_input = document.getElementById("description-" + index);
-                        treatment_input.value = t[index]
-                        description_input.value = data[index]['description']
-                    '{% else %}'
-                        $('select#treatment-'+ index + ' option[value='+t[index]+']').attr("selected",true);
-                        $('#thirty-' + index).show()
-                        $('#fourty-' + index).show()
-                        $('#modifier-' + index).show()
-                        $('#modifier-'+ index).val(mo[index]);
-                    '{% endif %}'
-                    $('#value-' + index).show()
-                    $('#clone-' + index).show()
-                    $('#date-' + index).show()
-                })
+       "{% for i in session['PATIENT']['treatments'] %}"
+            var item_number = "{{ i['item'] }}"
+            var item_description = "{{ i['description'] }}"
+            var item_date = "{{ i['date'] }}"
+            var item_value = "{{ i['value'] }}"
+            var item_post_value = "{{ i['post_value'] }}"
+            var item_modifier = "{{ i['modifier'] }}"
+            if('{{loop.index0}}' !== '0'){
+                clone()
+            }   
+            // console.log(item_post_value)
+            // console.log(item_value)
+            item_value = item_value / 100
+            item_post_value = item_post_value / 100 
+            if (item_value !== item_post_value){
+                percent = (item_post_value / item_value).toFixed(1)
+                object =  '#clonedInput{{loop.index0}}'
+                setPremium('{{loop.index0}}', percent, item_value)
             }
-        })
+            var date = parseDate(item_date)
+            function parseDate(str) {
+                var m = str.match(/^(\d{1,2}).(\d{1,2}).(\d{4})$/);
+                return (m) ? new Date(m[3], m[2]-1, m[1]) : null;
+            }
+            $('#value-{{loop.index0}}').val(item_post_value)
+            $('#date-{{loop.index0}}').removeClass('hasDatepicker');
+            $('#date-{{loop.index0}}').datepicker({dateFormat: 'dd.mm.yy'})
+            $('#date-{{loop.index0}}').datepicker("setDate", date);
+            '{% if "namaf_orthopaedic_surgeons" in session["PATIENT"]["tariff"] %}'
+                treatment_input = document.getElementById("treatment-{{loop.index0}}");
+                description_input = document.getElementById("description-{{loop.index0}}");
+                treatment_input.value = item_number
+                description_input.value = item_description
+            '{% else %}'
+                // console.log("this ruuuuu")
+                // console.log(item_number)
+                // console.log('select#treatment-{{loop.index0}}')
+                $('#treatment-{{loop.index0}} option[value=' + item_number + ']').attr('selected','selected');
+                console.log($('#treatment-{{loop.index0}}'))
+                // $('select#treatment-{{loop.index0}}').val( item_number )
+                // $('select#treatment-{{loop.index0}} option[value=' + item_number + ']').attr("selected",true);
+
+                // function setSelectedIndex(s, valsearch){
+                //     for (i = 0; i< s.options.length; i++){ 
+                //         if (s.options[i].value == valsearch){
+                //             s.options[i].selected = true;
+                //             break;
+                //         }
+                //     }
+                //     return;
+                // }
+              
+
+
+
+
+
+
+
+                $('#thirty-{{loop.index0}}').show()
+                $('#fourty-{{loop.index0}}').show()
+                $('#modifier-{{loop.index0}}').show()
+                $('#modifier-{{loop.index0}}').val(item_modifier);
+            '{% endif %}'
+            $('#value-{{loop.index0}}').show()
+            $('#clone-{{loop.index0}}').show()
+            $('#date-{{loop.index0}}').show()
+        "{% endfor %}"
     }
 });
 
