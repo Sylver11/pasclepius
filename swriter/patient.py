@@ -24,7 +24,7 @@ def patientTable(doc, text, cursor, patient, invoice_id, date_invoice):
         second_middle_table_text.setString("Patient Name: "
                 + str(patient['patient_name'])
                 + "\nPO: "
-                + str(patient[po_number]))
+                + str(patient['po_number']))
         cursor_middle_right = middle_table.createCursorByCellName("C1")
         cursor_middle_right.setPropertyValue( "ParaAdjust", RIGHT )
         fourth_middle_table_text = middle_table.getCellByName("B2")

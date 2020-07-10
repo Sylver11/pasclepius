@@ -30,23 +30,23 @@ def setupConnection():
     return doc, text
 
 
-def createTextInvoice(layout, items, treatments, price, dates, patient, modifier,
-                      url, invoice_id, date_invoice, data):
+def createTextInvoice(user, patient, item_numbers, item_descriptions, item_values, item_dates, item_modifiers, invoice_file_url, invoice_id, date_invoice):
     doc, text = setupConnection()
     cursor = text.createTextCursor()
-    doc, text, cursor = populateTopText(cursor, doc, text, data)
-    doc, text, cursor = identityTable(doc, text, cursor, layout, patient, data)
+    doc, text, cursor = populateTopText(cursor, doc, text, user)
+    doc, text, cursor = identityTable(doc, text, cursor,  user, patient)
     doc, text, cursor = patientTable(doc, text, cursor, patient, invoice_id,
                                     date_invoice)
-    if 4 <= layout <= 9:
+    if 4 <= user['invoice_layout'] <= 9:
         doc, text, cursor = hospitalTable(doc, text, cursor, patient)
-    if 7 <= layout <= 12:
+    if 7 <= user['invoice_layout'] <= 12:
         doc, text, cursor = diagnosisTable(doc, text, cursor, patient)
-    doc, text = treatmentTable(doc, text, cursor, items, treatments, price,
-            dates, patient, modifier)
-    doc, text = populateBottomTable(doc, text, data)
-    doc, text = configureBorders(doc, text, items)
-    saveDocument(doc, url)
+    doc, text = treatmentTable(doc, text, cursor, item_numbers,
+            item_descriptions, item_values,
+            item_dates, patient, item_modifiers)
+    doc, text = populateBottomTable(doc, text, user)
+    doc, text = configureBorders(doc, text, item_numbers)
+    saveDocument(doc, invoice_file_url)
 
 
 if __name__ == '__main__':
@@ -55,14 +55,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Creating an invoice')
     parser.add_argument('to_json', type=json.loads)
     args = parser.parse_args()
-    createTextInvoice(args.to_json['layout'],
-            args.to_json['treatments'],
-            args.to_json["treatment_list"],
-            args.to_json["prices"],
-            args.to_json["dates"],
+    createTextInvoice(
+            args.to_json["user"],
             args.to_json["patient"],
-            args.to_json["modifiers"],
+            args.to_json["item_numbers"],
+            args.to_json["item_descriptions"],
+            args.to_json["item_values"],
+            args.to_json["item_dates"],
+            args.to_json["item_modifiers"],
             args.to_json["invoice_file_url"],
             args.to_json["invoice_id"],
             args.to_json["date_invoice"],
-            args.to_json["data"])
+            )

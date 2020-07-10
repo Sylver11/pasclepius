@@ -1009,8 +1009,6 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
             if('{{loop.index0}}' !== '0'){
                 clone()
             }   
-            // console.log(item_post_value)
-            // console.log(item_value)
             item_value = item_value / 100
             item_post_value = item_post_value / 100 
             if (item_value !== item_post_value){
@@ -1033,31 +1031,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
                 treatment_input.value = item_number
                 description_input.value = item_description
             '{% else %}'
-                // console.log("this ruuuuu")
-                // console.log(item_number)
-                // console.log('select#treatment-{{loop.index0}}')
                 $('#treatment-{{loop.index0}} option[value=' + item_number + ']').attr('selected','selected');
-                console.log($('#treatment-{{loop.index0}}'))
-                // $('select#treatment-{{loop.index0}}').val( item_number )
-                // $('select#treatment-{{loop.index0}} option[value=' + item_number + ']').attr("selected",true);
-
-                // function setSelectedIndex(s, valsearch){
-                //     for (i = 0; i< s.options.length; i++){ 
-                //         if (s.options[i].value == valsearch){
-                //             s.options[i].selected = true;
-                //             break;
-                //         }
-                //     }
-                //     return;
-                // }
-              
-
-
-
-
-
-
-
                 $('#thirty-{{loop.index0}}').show()
                 $('#fourty-{{loop.index0}}').show()
                 $('#modifier-{{loop.index0}}').show()

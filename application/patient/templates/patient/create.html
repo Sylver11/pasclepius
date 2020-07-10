@@ -165,7 +165,7 @@
         {{ form_other.hidden_tag() }}
         <div class="form-row">
             <div class="form-group col-md-4">
-                {{form_other.medical_aid.label(class="required")}}  {{ form_other.medical_aid(class_="form-control") }}
+                {{form_other.medical_aid.label(class="required")}}  {{ form_other.medical_aid(class_="form-control other_medical_aid") }}
             </div>
             <div class="form-group col-md-4">
                 {{ form_other.tariff.label(class="required") }} {{ form_other.tariff(class_="tariff") }}
@@ -283,6 +283,16 @@
             } 
 
         });
+
+        var other_medical_aid_field = document.querySelector('.other_medical_aid');
+        other_medical_aid_field.addEventListener('keypress', function ( e ) {  
+            var key = e.keyCode;
+            if (key === 32) {
+                e.preventDefault();
+                alert("No whitespace please :)");
+            }
+        });
+        
         $('.mva').submit(function (e) {
             var x = document.forms["mva"]["tariff"].value;
             if (x == "") {

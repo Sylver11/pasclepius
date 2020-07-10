@@ -92,7 +92,7 @@ function r_option() {
 
 
 $(document).ready(function(){
-    let criteria = ['None','None','date_created','DESC', 0, 3];
+    let criteria = ['None','None','date_created','DESC', 0, 5];
     dynamic.apply(this, criteria);
 
 function mouse_on_page(){
@@ -115,6 +115,7 @@ function page_click(){
         $('#row_option').text(r_option)
         criteria[1] = r_option; 
         criteria[4] = 0;
+        console.log(criteria)
         dynamic.apply(this, criteria);
         }
 
@@ -151,6 +152,7 @@ function page_click(){
                     success: function (returnData) {
                         $('#column_option').text(c_option)
                         criteria[0] = c_option;
+                        console.log(criteria)
                         div.innerHTML = '';
                         var button = document.createElement("BUTTON");
                         button.addEventListener("click", r_option, false);
@@ -198,7 +200,6 @@ function page_click(){
             if(pages != row_total_count / items_per_site){
                 pages = pages + 1;
             }
-            console.log(pages)
             var ul = document.getElementById("pages")
             ul.innerHTML = '';
             for(var i = 0; i < pages; i++){
@@ -215,8 +216,6 @@ function page_click(){
                 li.appendChild(a)
                 ul.appendChild(li);
             }
-            
-            // console.log(pages)
         });
     }
     

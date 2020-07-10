@@ -129,16 +129,15 @@ def getAllInvoices(uuid, c_option=None, r_option=None,
         r_option = uuid
     if(start and range and focus and order and c_option and r_option):
         sql = """SELECT patient_name, date_created, date_invoice, remind_me, credit,
-        submitted_on, medical_aid, invoice_id,invoice_file_url, `values`, treatments, dates, tariff,
+        submitted_on, medical_aid, invoice_id,invoice_file_url, tariff,
         main_member, patient_birth_date, medical_number, po_number,`case_number`,
-        (SELECT COUNT('patient_name') FROM invoices WHERE uuid_text = '{}' AND {} = '{}' ) 
-        as rowcounter
-        FROM invoices WHERE uuid_text = '{}'
+        (SELECT COUNT('patient_name') FROM invoices WHERE uuid_text = '{}' AND 
+        {} = '{}' ) as rowcounter FROM invoices WHERE uuid_text = '{}'
         AND {} = '{}' ORDER BY {} {} LIMIT {},{}
         """.format(uuid, c_option, r_option, uuid, c_option, r_option, focus, order,  start, range)
     else:
         sql = """SELECT patient_name, date_created, date_invoice, remind_me, credit,
-        submitted_on, medical_aid, invoice_id,invoice_file_url, `values`, treatments, dates, tariff,
+        submitted_on, medical_aid, invoice_id,invoice_file_url, tariff,
         main_member, patient_birth_date, medical_number, po_number,`case_number` FROM invoices WHERE uuid_text = '{}'
         """.format(uuid)
     conn = pool.connection()

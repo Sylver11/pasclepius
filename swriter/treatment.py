@@ -57,10 +57,11 @@ def treatmentTable(doc, text, cursor, items, treatments, price, dates, patient, 
         elif('namaf_orthopaedic_surgeons' in patient['tariff']):
             insertTextIntoCell(table, "A" + str(a[0] + 2), c.zfill(4))
         else:
-            insertTextIntoCell(table, "A" + str(a[0] + 2), c)
+            insertTextIntoCell(table, "A" + str(a[0] + 2), c.zfill(3))
+        units_float = float(a[1]['units']) / 100
         insertTextIntoCell(table, "D" + str(a[0] + 2), b)
         insertTextIntoCell(table, "B" + str(a[0] + 2), a[1]['description'])
-        insertTextIntoCell(table, "C" + str(a[0] + 2), a[1]['units'])
+        insertTextIntoCell(table, "C" + str(a[0] + 2), units_float)
         insertTextIntoCell(table, "E" + str(a[0] + 2), d)
     cell_sum = table.getCellByName("E" + str(2 + unitCount))
     cell_sum.setFormula("=sum <E2:E" + str(1 + unitCount) + ">")

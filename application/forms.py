@@ -3,7 +3,7 @@ import email_validator
 from wtforms import BooleanField, StringField, PasswordField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField, DecimalField, TextAreaField
 from wtforms.fields.html5 import DecimalField
 from wtforms_components.fields import SelectField
-from wtforms.validators import DataRequired, Length, Email, Required, NumberRange, ValidationError
+from wtforms.validators import DataRequired, Length, Email, Required, NumberRange, ValidationError, Regexp
 from wtforms.widgets.html5 import NumberInput
 from wtforms.widgets import TextArea, CheckboxInput
 from wtforms import Form as NoCsrfForm
@@ -234,7 +234,8 @@ class Patient_psemas(FlaskForm):
     submit = SubmitField('Create invoice')
 
 class Patient_other(FlaskForm):
-    medical_aid = StringField('Medical Aid', validators=[DataRequired()])
+    medical_aid = StringField('Medical Aid',validators = [DataRequired(),
+        Regexp('^\w+$', message="Please delete all white spaces before & after the word")])
     patient_name = StringField(u'Full Name', validators=[DataRequired()])
     main_member = StringField(u'Main Member', validators=[DataRequired()])
     medical_number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
