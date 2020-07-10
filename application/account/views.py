@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash
 from flask_login import current_user, login_required
-from application.db_invoice import getAllInvoices, liveSearchInvoices, updateSubmitted, updateCredit, getInvoiceByInvoiceName, queryR
+from application.db_invoice import getItems, getAllInvoices, liveSearchInvoices, updateSubmitted, updateCredit, queryR, getSingleInvoice
 import simplejson as json
 from datetime import datetime
 import datetime as datetime2
@@ -38,12 +38,20 @@ def settings():
 @account_bp.route("/invoice/<medical_aid>/<year>/<index>", methods=['GET'])
 def singleInvoice(medical_aid, year, index):
     invoice_id = medical_aid + "/" + year + "/" + index
-    invoice = getInvoiceByInvoiceName(current_user.uuid, invoice_id)
+    invoice = getSingleInvoice(current_user.uuid, invoice_id)
+    invoice_items = getItems(current_user.uuid, invoice_id)
+    for i in invoice_items:
+        for o in i:
+            if isinstance(i[o], datetime2.datetime):
+                d = datetime.strptime(i[o].__str__(), '%Y-%m-%d %H:%M:%S')
+                date = d.strftime('%d.%m.%Y')
+                i[o] = date
     for o, i in invoice.items():
          if isinstance(i, datetime2.datetime):
              d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
              date = d.strftime('%d.%m.%Y')
              invoice[o] = date
+    invoice['invoice_items'] = invoice_items
     return render_template('account_bp/invoice.html',
             invoice_json = json.dumps(invoice),
             invoice = invoice)
@@ -74,8 +82,8 @@ def submitInvoice():
 @account_bp.route('/add-credit-invoice',methods=['GET'])
 def addCreditInvoice():
     invoice_id = request.args.get('invoice_id')
-    credit = request.args.get('new_credit')
-    status = updateCredit(current_user.uuid, invoice_id, credit)
+    credit_cent = request.args.get('credit')
+    status = updateCredit(current_user.uuid, invoice_id, credit_cent)
     if status:
         return json.dumps(invoice_id + " added credit")
     else:

@@ -120,17 +120,22 @@
 
         var invoice = '{{ invoice_json }}'
         invoice = JSON.parse(invoice.replace(/&#34;/g,'"'))
+        console.log(invoice)
         var patient = invoice["patient_name"];
         var invoice_id = invoice["invoice_id"];
         var date = invoice["date_invoice"];
         var created = invoice["date_created"];
         var submitted_on = invoice['submitted_on'];
-        var credit_cent = invoice["credit"] * 100; 
-        var sumArr = (invoice['values'].split(',')).map(x => x * 100);
-        var debit_cent = sum(sumArr)
+        var credit_cent = invoice["credit"]; 
         if(!(credit_cent)){
             credit_cent = 0
         }
+        var debit_cent = 0;
+        for (let i = 0; i < invoice['invoice_items'].length; i++) {
+            const element = invoice['invoice_items'][i];
+            debit_cent += element['post_value']            
+        }
+
         var balance_cent = debit_cent - credit_cent;
 
         if(check_settled(debit_cent,credit_cent) && submitted_on){
@@ -225,7 +230,7 @@
             $.ajax({
                 type: "GET",
                 url: '/account/add-credit-invoice',
-                data: {invoice_id: invoice_id, new_credit: new_credit_cent / 100}, 
+                data: {invoice_id: invoice_id, new_credit: new_credit_cent}, 
                 dataType: 'json',
                 success: function (returnData) {
                     final_credit_cent = new_credit_cent + credit_cent;

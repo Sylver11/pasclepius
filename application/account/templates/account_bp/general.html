@@ -224,7 +224,7 @@ function page_click(){
                 $("#account_modal").modal();
             };
 
-    function sum(input){
+    function sum_cent(input){
              if (toString.call(input) !== "[object Array]")
                 return false;
                         var total =  0;
@@ -303,7 +303,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
                 var patient_name_from_invoices = [], range = returnData.invoices.length;
                 var arr_unique_patient_name = [];
                 for(i = 0; i < returnData.invoices.length; i++){
-                    patient_name_from_invoices[i] = returnData.invoices[i]['name']
+                    patient_name_from_invoices[i] = returnData.invoices[i]['patient_name']
                     arr_unique_patient_name = uniq_fast(patient_name_from_invoices)
                 }
                 var found_patient_names = [], range = arr_unique_patient_name.length;
@@ -317,7 +317,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
                     invoice_div.innerHTML += "<strong>" + arr_unique_patient_name[i].substr(0, val.length) + "</strong>";
                     invoice_div.innerHTML += arr_unique_patient_name[i].substr(val.length) + "<br>";
                     for(x=0; x < found_patient_names[i].length; x++){
-                        var sumArr = found_patient_names[i][x]['values'].split(',');
+                        var sumArr = found_patient_names[i][x]['item_post_values'].split(',');
                         var flex_wrapper = document.createElement("DIV");
                         flex_wrapper.style.margin = "2rem";
                         var single_balance_wrapper = document.createElement("DIV");
@@ -342,33 +342,32 @@ $(document).on("keyup", ".invoice-search", function (e) {
                         paragraph_invoice_date.style.marginBottom = "0.5rem";
                         paragraph_invoice_date.textContent = "Invoice date: " +found_patient_names[i][x]['date_invoice']
                         paragraph_info_wrapper.appendChild(paragraph_invoice_date)
-                        
-                        var paragraph_invoice_items = document.createElement("P");
-                        paragraph_invoice_items.style.marginBottom = "0.5rem";
-                        paragraph_invoice_items.textContent = "Treatment codes: " +found_patient_names[i][x]['treatments']
-                        paragraph_info_wrapper.appendChild(paragraph_invoice_items)
 
+                        var paragraph_sum_credit = document.createElement("P");
+                        paragraph_sum_credit.style.textAlign = "right";
+                        paragraph_sum_credit.style.marginBottom = "0.5rem";
+                        paragraph_sum_credit.style.color = "green";
                         
                         var paragraph_sum_debit = document.createElement("P");
-                        paragraph_sum_debit.style.textAlign = "right";
-                        paragraph_sum_debit.style.marginBottom = "0.5rem";
-                        paragraph_sum_debit.style.color = "green";
-                        var paragraph_sum_credit = document.createElement("P");
-                        paragraph_sum_credit.style.marginBottom = "0";
-                        paragraph_sum_credit.style.color = "red";
+                        paragraph_sum_debit.style.marginBottom = "0";
+                        paragraph_sum_debit.style.color = "red";
+
                         var paragraph_sum_line = document.createElement("HR");
                         paragraph_sum_line.style.margin = "0";
+
                         var paragraph_balance = document.createElement("P");
                         
                         var input_field = document.createElement("INPUT");
                         input_field.setAttribute("type", "hidden")
                         input_field.value = found_patient_names[i][x]['invoice_id']
                         action_wrapper.appendChild(input_field)
+
                         var open_invoice_button = document.createElement("BUTTON");
                         open_invoice_button .setAttribute("class", "open_invoice_button");
                         open_invoice_button .setAttribute("value", found_patient_names[i][x]['invoice_id']);
                         open_invoice_button.innerHTML = "Open"
                         action_wrapper.appendChild(open_invoice_button)
+
                         if(found_patient_names[i][x]['submitted_on']){ 
                                 var paragraph_submitted_on = document.createElement("P");
                                 paragraph_submitted_on.textContent = "Submitted on: " + found_patient_names[i][x]['submitted_on']
@@ -382,24 +381,25 @@ $(document).on("keyup", ".invoice-search", function (e) {
                             }
 
                         var paid_button = document.createElement("BUTTON");
-                        if(found_patient_names[i][x]['credit']){
-                            var balance = sum(sumArr).toFixed(2) - found_patient_names[i][x]['credit'];
-                            paid_button.setAttribute("value", balance.toFixed(2));
+                        credit = (found_patient_names[i][x]['credit_cent'] / 100).toFixed(2) 
+                        if(credit){
+                            var balance_cent = sum_cent(sumArr) -  found_patient_names[i][x]['credit_cent'];
+                            paid_button.setAttribute("value", balance_cent);
                         }
                         else{
-                            paid_button.setAttribute("value", sum(sumArr).toFixed(2));
+                            paid_button.setAttribute("value", sum_cent(sumArr));
                         }   
                         paid_button.setAttribute("class", "paid_button");
                         paid_button.innerHTML = "Paid";
 
 
-                        if(found_patient_names[i][x]['credit'] == sum(sumArr).toFixed(2)){
+                        if(found_patient_names[i][x]['credit_cent'] == sum_cent(sumArr)){
                             var paragraph_paid = document.createElement("P");
                             paragraph_paid.textContent = "Paid"
                             flex_wrapper.appendChild(paragraph_paid)
                         }
-                        else if(found_patient_names[i][x]['credit'] ){
-                            paragraph_balance.textContent = found_patient_names[i][x]['credit'].toFixed(2)
+                        else if(credit){
+                            paragraph_balance.textContent = credit
                             action_wrapper.appendChild(paid_button)
                         }
                         else{
@@ -407,18 +407,21 @@ $(document).on("keyup", ".invoice-search", function (e) {
                         }
                         
                         
-                        if(found_patient_names[i][x]['credit']){
-                            paragraph_sum_debit.textContent = found_patient_names[i][x]['credit'];
-                            paragraph_balance.textContent = sum(sumArr).toFixed(2) - found_patient_names[i][x]['credit'].toFixed(2);
+                        if(credit){
+                            paragraph_sum_credit.textContent = credit;
+                            balance = ((sum_cent(sumArr) - found_patient_names[i][x]['credit_cent']) / 100 ).toFixed(2)
+                            paragraph_balance.textContent = balance
                         }
                         else{
-                            paragraph_sum_debit.textContent = (0).toFixed(2)
-                            paragraph_balance.textContent = sum(sumArr).toFixed(2)
+                            paragraph_sum_credit.textContent = (0).toFixed(2)
+                            balance = (sum_cent(sumArr) / 100).toFixed(2)
+                            paragraph_balance.textContent = balance
                         }
 
-                        paragraph_sum_credit.textContent = sum(sumArr).toFixed(2)
-                        balance_wrapper.appendChild(paragraph_sum_credit)
+                        paragraph_sum_debit.textContent = (sum_cent(sumArr) / 100).toFixed(2)
                         balance_wrapper.appendChild(paragraph_sum_debit)
+                        balance_wrapper.appendChild(paragraph_sum_credit)
+                       
                         balance_wrapper.appendChild(paragraph_sum_line)
                         balance_wrapper.appendChild(paragraph_balance)
 
