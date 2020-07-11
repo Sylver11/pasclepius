@@ -230,7 +230,7 @@
             $.ajax({
                 type: "GET",
                 url: '/account/add-credit-invoice',
-                data: {invoice_id: invoice_id, new_credit_cent: new_credit_cent}, 
+                data: {invoice_id: invoice_id, credit_cent: new_credit_cent}, 
                 dataType: 'json',
                 success: function (returnData) {
                     final_credit_cent = new_credit_cent + credit_cent;
