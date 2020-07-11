@@ -13,7 +13,7 @@ def getAllTariffs():
 
 
 def getValueTreatments(item, tariff):
-    sql = """SELECT description, value FROM namaf_tariffs WHERE item = {} AND tariff = '{}'""".format(item, tariff)
+    sql = """SELECT description, value_cent FROM namaf_tariffs WHERE item = {} AND tariff = '{}'""".format(item, tariff)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -27,7 +27,7 @@ def getMultipleValues(items, tariff):
     connection = pool.connection()
     cursor = connection.cursor()
     for i in items.split(","):
-        sql = """SELECT description, value FROM namaf_tariffs WHERE item = {} AND tariff = '{}'""".format(i, tariff)
+        sql = """SELECT description, value_cent FROM namaf_tariffs WHERE item = {} AND tariff = '{}'""".format(i, tariff)
         cursor.execute(sql)
         q = cursor.fetchone()
         value_list.append(q)
@@ -108,7 +108,7 @@ def getTreatmentByItem(treatments, tariff):
     connection = pool.connection()
     cursor = connection.cursor()
     for i in treatments:
-        sql = """SELECT description, units, value FROM namaf_tariffs WHERE item = {} AND tariff = '{}'""".format(i, tariff)
+        sql = """SELECT description, units, value_cent FROM namaf_tariffs WHERE item = {} AND tariff = '{}'""".format(i, tariff)
         cursor.execute(sql)
         q = cursor.fetchone()
         treatment_list.append(q)

@@ -15,9 +15,9 @@ def setupTable():
         `procedure` VARCHAR(500),
         units int(11),
         units_specification VARCHAR(255),
-        value int(11),
+        value_cent int(11),
         anaesthetic_units int(11),
-        anaesthetic_value int(11),
+        anaesthetic_value_cent int(11),
         category varchar(255),
         sub_category varchar(255),
         sub_sub_category varchar(255),
@@ -34,8 +34,8 @@ def setupTable():
         units int(11),
         description varchar(500),
         `procedure` VARCHAR(500),
-        value int(11),
-        post_value int(11),
+        value_cent int(11),
+        post_value_cent int(11),
         date DATETIME NOT NULL,
         note varchar(500),
         modifier int(11),
@@ -69,7 +69,7 @@ def setupTable():
         post_op varchar(255),
         submitted_on DATETIME,
         status varchar(255) NOT NULL DEFAULT 'Not submitted',
-        `credit` int(11),
+        credit_cent int(11) NOT NULL DEFAULT 0,
         remind_me DATETIME,
         PRIMARY KEY (id));"""
 
@@ -112,6 +112,17 @@ def setupTable():
         PRIMARY KEY (id));"""
 
 
+
+    create_trigger_status = """CREATE TRIGGER balance_cent_check BEFORE UPDATE ON invoices
+    FOR EACH ROW
+    BEGIN
+    IF NEW.credit_cent + OLD.credit_cent < (SELECT SUM(post_value_cent) FROM invoice_items WHERE uuid_text = OLD.uuid_text AND invoice_id = OLD.invoice_id) THEN
+    SET NEW.status = 'due';
+    ELSEIF NEW.credit_cent + OLD.credit_cent = (SELECT SUM(post_value_cent) FROM invoice_items WHERE uuid_text = OLD.uuid_text AND invoice_id = OLD.invoice_id) THEN
+    SET NEW.status = 'settled';
+    END IF;
+    END;"""
+
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql_drop_table_invoice_items)
@@ -121,6 +132,7 @@ def setupTable():
     cursor.execute(sql_create_table_invoice)
     cursor.execute(sql_drop_table_namaf_tariffs)
     cursor.execute(sql_create_table_namaf_tariffs)
+    cursor.execute(create_trigger_status)
    # cursor.execute(sql_create_table_users)
     cursor.close()
     conn.close()
@@ -135,9 +147,9 @@ def populateTreatment():
                                                  ['item','description',
                                                   'procedure','units',
                                                   'units_specification',
-                                                  'value',
+                                                  'value_cent',
                                                   'anaesthetic_units',
-                                                  'anaesthetic_value', 'category',
+                                                  'anaesthetic_value_cent', 'category',
                                                   'sub_category', 'sub_sub_category',
                                                   'sub_sub_sub_category',
                                                   'note', 'tariff'])
@@ -145,12 +157,12 @@ def populateTreatment():
     df_namaf_tariffs = df_namaf_tariffs.where(pd.notnull(df_namaf_tariffs), None)
     sql_insert_namaf_tariffs =  """INSERT INTO
     namaf_tariffs (item, description, `procedure`, units,
-    units_specification, value, anaesthetic_units,
-    anaesthetic_value, category, sub_category, sub_sub_category,
+    units_specification, value_cent, anaesthetic_units,
+    anaesthetic_value_cent, category, sub_category, sub_sub_category,
     sub_sub_sub_category, note, tariff)
     VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
     for row in df_namaf_tariffs.itertuples():
-        value = row.item, row.description, row.procedure, row.units, row.units_specification, row.value, row.anaesthetic_units, row.anaesthetic_value, row.category, row.sub_category, row.sub_sub_category, row.sub_sub_sub_category, row.note, row.tariff
+        value = row.item, row.description, row.procedure, row.units, row.units_specification, row.value_cent, row.anaesthetic_units, row.anaesthetic_value_cent, row.category, row.sub_category, row.sub_sub_category, row.sub_sub_sub_category, row.note, row.tariff
         cursor.execute(sql_insert_namaf_tariffs, value)
     cursor.close()
     conn.close()

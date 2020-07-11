@@ -22,7 +22,7 @@
         <div id="inside_container" class="align-middle">
         </div>
         <div class="dropdown">
-            <button onclick="ffocus()" id="focus" class="dropbtn">Date created</button>
+            <button onclick="ffocus()" id="focus" class="dropbtn dropdown-toggle">Date created</button>
             <div id="fDropdown" class="dropdown-content">
                 <li class='focus' data-value='date_created'>Date created</li>
                 <li class='focus' data-value='date_invoice'>Invoice date</li>
@@ -33,23 +33,23 @@
                 <li class='focus' data-value='admission_date'>Admission Date</li>
                 <li class='focus' data-value='discharge_date'>Discharge Date</li>
                 <li class='focus' data-value='submitted_on'>Submission Date</li>
-                <li class='focus' data-value='debit'>Value</li>
+                <li class='focus' data-value='debit_cent'>Value</li>
             </div>
           </div> 
         <div class="dropdown">
-            <button onclick="order()" id="order" class="dropbtn">Descending</button>
+            <button onclick="order()" id="order" class="dropbtn dropdown-toggle">Descending</button>
             <div id="oDropdown" class="dropdown-content">
                 <li class='order' data-value='ASC'>Ascending</li>
                 <li class='order' data-value='DESC'>Descending</li>
             </div>
           </div> 
         <div class="dropdown">
-            <button onclick="myFunction()" id="column_option" class="dropbtn">None</button>
+            <button onclick="myFunction()" id="column_option" class="dropbtn dropdown-toggle">None</button>
             <div id="myDropdown" class="dropdown-content">
                 <li class='c_option' data-value='None'>No Criteria</li>
                 <li class='c_option' data-value='medical_aid'>Medical</li>
                 <li class='c_option' data-value='tariff'>Tariff</li>
-                <li class='c_option' data-value='credit'>Credit</li>
+                <li class='c_option' data-value='credit_cent'>Credit</li>
                 <li class='c_option' data-value='status'>Status</li>
                 <li class='c_option' data-value='remind_me'>Remind me</li>
             </div>
@@ -482,11 +482,11 @@ $(document).on("click", ".open_invoice_button", function (e) {
         $(document).on("click", ".paid_button", function (e) {
             e.preventDefault();
             var invoice_id = $(this).siblings('input').val();
-            var credit = $(this).val()
+            var credit_cent = $(this).val()
             $.ajax({
                 type: "GET",
                 url: '/account/add-credit-invoice',
-                data: {invoice_id: invoice_id, credit: credit}, 
+                data: {invoice_id: invoice_id, credit_cent: credit_cent}, 
                 dataType: 'json',
                 success: function (returnData) {
                     console.log(returnData)

@@ -108,7 +108,7 @@ def getValue():
     tariff = session.get('PATIENT')["tariff"]
     item = request.args.get('item', 0, type=int)
     value = getValueTreatments(item, tariff)
-    value_json = json.dumps({'value' : Decimal(value['value']), 'description' :
+    value_json = json.dumps({'value' : Decimal(value['value_cent']), 'description' :
         value['description']}, use_decimal=True)
     return value_json
 

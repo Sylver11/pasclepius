@@ -1,24 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
-<ul id='invoice_list'>
+<div id='invoice_list'></div>
 
-</ul>
 <script>
-    var invoices = '{{ invoices_json }}'
-    invoices = JSON.parse(invoices.replace(/&#34;/g,'"'))
-    // console.log(invoices)
-    var ul = document.getElementById("invoice_list")
+
+function closeDropDown(){
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+        }
+    }
+}
+
+
+    var invoices = '{{ invoices_json }}';
+    invoices = JSON.parse(invoices.replace(/&#34;/g,'"'));
+    var invoice_list = document.getElementById("invoice_list");
+    invoice_list.style.display = "flex";
+    invoice_list.style.flexDirection = "column";
+
     for (let i = 0; i < invoices.length; i++) {
         const element = invoices[i];
-        var li = document.createElement("LI");
-        li.textContent = element['invoice_id']
-        var sub_ul = document.createElement("UL");
-        var sub_li = document.createElement("LI");
-        sub_li.textContent = element['patient_name']
-        sub_ul.appendChild(sub_li);
-        li.appendChild(sub_ul);
-        ul.appendChild(li);
+
+
+        var invoice_wrapper = document.createElement("DIV");
+        invoice_wrapper.style.display = "flex";
+        invoice_wrapper.style.flexDirection = "row";
+        invoice_wrapper.style.justifyContent = "space-between";
+        if(element['status'] == 'Not submitted'){
+            invoice_wrapper.style.backgroundColor = "rgba(0, 0, 255, 0.3)";
+        }
+        else if(element['status'] == 'due'){
+            invoice_wrapper.style.backgroundColor = "rgb(255, 255, 0, 0.3)";
+        }
+        else if(element['status'] == 'overdue'){
+            invoice_wrapper.style.backgroundColor = "rgba(255, 0, 0, 0.3)";
+        }
+        else if(element['status'] == 'settled'){
+            invoice_wrapper.style.backgroundColor = "rgba(0, 255, 0, 0.3)";
+        } 
+        invoice_list.appendChild(invoice_wrapper);
+        
+
+
+        var left_wrapper = document.createElement("DIV");
+        left_wrapper.style.width = "30%";
+        invoice_wrapper.appendChild(left_wrapper);
+
+        var info_wrapper = document.createElement("DIV");
+        left_wrapper.appendChild(info_wrapper);
+
+        var statement_wrapper = document.createElement("DIV");
+        left_wrapper.appendChild(statement_wrapper);
+
+
+
+        var right_wrapper = document.createElement("DIV");
+        right_wrapper.style.width = "20%";
+        invoice_wrapper.appendChild(right_wrapper);
+
+        var action_wrapper = document.createElement("DIV");
+        right_wrapper.appendChild(action_wrapper);
+
+        var status_wrapper = document.createElement("DIV");
+        right_wrapper.appendChild(status_wrapper);
+
+
+
+        var id = document.createElement("DIV");
+
+        var invoice_id = document.createElement("DIV");
+        invoice_id.textContent = element['invoice_id'];
+        id.appendChild(invoice_id);
+
+        var patient_name = document.createElement("DIV");
+        patient_name.textContent = element['patient_name'];
+        id.appendChild(patient_name);
+                        
+        info_wrapper.appendChild(id);
+
+
+        var current_status = document.createElement("DIV");
+
+
+        if(element['submitted_on']){
+            var submitted_on = document.createElement("DIV");
+            submitted_on.textContent = "Submitted on: " + element['submitted_on'];
+            current_status.appendChild(submitted_on);
+        }
+        
+        var invoice_created = document.createElement("DIV");
+        invoice_created.textContent = "Created on: " + element['date_created'];
+        current_status.appendChild(invoice_created);
+                        
+        var invoice_date = document.createElement("DIV");
+        invoice_date.textContent = "Invoice date: " + element['date_invoice'];
+        current_status.appendChild(invoice_date);
+
+        status_wrapper.appendChild(current_status);
+
+
+
+        var debit = document.createElement("DIV");
+        debit.style.color = "red";
+        debit.style.display = "flex"; 
+        debit.style.justifyContent = "flex-end"
+        debit.textContent = (element['debit_cent'] / 100).toFixed(2);
+        statement_wrapper.appendChild(debit);
+        
+        var credit = document.createElement("DIV");
+        credit.style.color = "green";
+        credit.style.display = "flex"; 
+        credit.style.justifyContent = "flex-end"
+        credit.textContent = (element['credit_cent'] / 100).toFixed(2) ;
+        statement_wrapper.appendChild(credit);
+
+        var sum_line = document.createElement("HR");
+        sum_line.style.margin = "0";
+        statement_wrapper.appendChild(sum_line);
+
+        var balance = document.createElement("DIV");
+        balance.style.display = "flex"; 
+        balance.style.justifyContent = "flex-end"
+        balance.textContent = ((element['debit_cent'] / 100)  - (element['credit_cent'] / 100)).toFixed(2);
+        statement_wrapper.appendChild(balance);
+
+
+
+        var dropdown_action = document.createElement("DIV");
+        dropdown_action.setAttribute("class", "dropdown");
+        action_wrapper.appendChild(dropdown_action);
+
+
+        var action_button = document.createElement("BUTTON");
+        action_button.setAttribute("class", "dropbtn dropdown-toggle");
+        action_button.addEventListener("click", function(){
+            closeDropDown()
+            document.getElementById("dropdown_menu_" + i).classList.toggle("show")
+        }); 
+        action_button.textContent = "Select action"
+        dropdown_action.appendChild(action_button);
+
+
+
+        var dropdown_menu = document.createElement("DIV");
+        dropdown_menu.setAttribute("id", "dropdown_menu_" + i);
+        dropdown_menu.setAttribute("class", "dropdown-content");
+        dropdown_action.appendChild(dropdown_menu);
+
+
+        var li_open_invoice = document.createElement("LI");
+        li_open_invoice.textContent = "Open invoice"
+        li_open_invoice.setAttribute("class", "dropdown-item");
+        li_open_invoice.addEventListener("click", function(){
+            window.location.href = "/account/invoice/" + element['invoice_id']
+        }); 
+        li_open_invoice.style.cursor = "pointer";
+        dropdown_menu.appendChild(li_open_invoice);
+        
+
+        if(!(element['submitted_on'])){
+            var submit_invoice = document.createElement("LI");
+            submit_invoice.style.cursor = "pointer";
+            submit_invoice.textContent = "Submit invoice"
+            submit_invoice.addEventListener("click", function(){
+                $.ajax({
+                type: "GET",
+                url: '/account/submit-invoice',
+                data: {invoice_id: element['invoice_id']}, 
+                dataType: 'json',
+                success: function (returnData) {
+                    $('.modal-body').text(returnData)
+                    $("#account_modal").modal();
+                }
+            })
+            })
+            dropdown_menu.appendChild(submit_invoice);
+        }
+
+
+
+        if(element['debit_cent'] != element['credit_cent']){
+            var invoice_paid = document.createElement("LI");
+            invoice_paid.textContent = "Invoice paid"
+            invoice_paid.style.cursor = "pointer";
+            invoice_paid.addEventListener("click", function(){
+            $.ajax({
+                type: "GET",
+                url: '/account/add-credit-invoice',
+                data: {invoice_id: element['invoice_id'], credit_cent: element['debit_cent'] - element['credit_cent']}, 
+                dataType: 'json',
+                success: function (returnData) {
+                    console.log(returnData)
+                    $('.modal-body').text(returnData)
+                    $("#account_modal").modal();
+            
+                }
+            })
+    
+            })
+            dropdown_menu.appendChild(invoice_paid);
+        }
+
     }
     
 </script>

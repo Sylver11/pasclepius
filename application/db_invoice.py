@@ -28,8 +28,23 @@ def liveSearch(uuid, patient_name):
     return data
 
 def liveSearchInvoices(uuid, patient_name):
-    sql = """SELECT * FROM invoices WHERE uuid_text = '{}' AND patient_name LIKE '{}%'
-    """.format(uuid, patient_name)
+    sql = """SELECT any_value(invoices.invoice_id) AS invoice_id,
+    any_value(invoices.patient_name) AS patient_name,
+    any_value(invoices.credit_cent) AS credit_cent,
+    any_value(invoices.submitted_on) AS submitted_on,
+    any_value(invoices.date_created) AS date_created,
+    any_value(invoices.date_invoice) AS date_invoice,
+    group_concat(invoice_items.item) AS item_numbers,
+    group_concat(invoice_items.units) AS item_units,
+    group_concat(invoice_items.description) AS item_descriptions,
+    group_concat(invoice_items.value_cent) AS item_values,
+    group_concat(invoice_items.post_value_cent) AS item_post_values,
+    group_concat(invoice_items.date) AS item_dates,
+    group_concat(invoice_items.status) AS item_status
+    FROM invoices LEFT JOIN invoice_items
+    ON invoice_items.invoice_id = invoices.invoice_id
+    WHERE invoices.uuid_text = '{}' AND invoices.patient_name LIKE '{}%'
+    GROUP BY invoices.invoice_id""".format(uuid, patient_name)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -110,17 +125,17 @@ def getItems(uuid, invoice_id):
     conn.close()
     return items
 
-def getInvoiceByInvoiceName(uuid, invoice_id):
-    sql = """SELECT *
-    FROM invoices WHERE uuid_text = '{}' AND invoice_id = '{}'
-    """.format(uuid, invoice_id)
-    conn = pool.connection()
-    cursor = conn.cursor()
-    cursor.execute(sql)
-    invoice = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return invoice
+#def getInvoiceByInvoiceName(uuid, invoice_id):
+#    sql = """SELECT *
+#    FROM invoices WHERE uuid_text = '{}' AND invoice_id = '{}'
+#    """.format(uuid, invoice_id)
+#    conn = pool.connection()
+#    cursor = conn.cursor()
+#    cursor.execute(sql)
+#    invoice = cursor.fetchone()
+#    cursor.close()
+#    conn.close()
+#    return invoice
 
 def getAllInvoices(uuid, c_option=None, r_option=None, 
         focus= None, order=None, start=None, range=None):
@@ -128,15 +143,17 @@ def getAllInvoices(uuid, c_option=None, r_option=None,
         c_option = 'uuid_text'
         r_option = uuid
     if(start and range and focus and order and c_option and r_option):
-        sql = """SELECT patient_name, date_created, date_invoice, remind_me, credit,
-        submitted_on, medical_aid, invoice_id,invoice_file_url, tariff,
+        sql = """SELECT patient_name, date_created, date_invoice, remind_me, credit_cent,
+        submitted_on, medical_aid, invoice_id,invoice_file_url, tariff, status,
         main_member, patient_birth_date, medical_number, po_number,`case_number`,
         (SELECT COUNT('patient_name') FROM invoices WHERE uuid_text = '{}' AND 
-        {} = '{}' ) as rowcounter FROM invoices WHERE uuid_text = '{}'
+        {} = '{}' ) AS rowcounter,
+        (SELECT SUM(post_value_cent) FROM invoice_items WHERE uuid_text = '{}' AND
+        invoice_id = invoices.invoice_id) AS debit_cent FROM invoices WHERE uuid_text = '{}'
         AND {} = '{}' ORDER BY {} {} LIMIT {},{}
-        """.format(uuid, c_option, r_option, uuid, c_option, r_option, focus, order,  start, range)
+        """.format(uuid, c_option, r_option, uuid, uuid, c_option, r_option, focus, order,  start, range)
     else:
-        sql = """SELECT patient_name, date_created, date_invoice, remind_me, credit,
+        sql = """SELECT patient_name, date_created, date_invoice, remind_me, credit_cent,
         submitted_on, medical_aid, invoice_id,invoice_file_url, tariff,
         main_member, patient_birth_date, medical_number, po_number,`case_number` FROM invoices WHERE uuid_text = '{}'
         """.format(uuid)
@@ -172,10 +189,10 @@ def updateSubmitted(uuid, invoice_id):
     return status
 
 
-def updateCredit(uuid, invoice_id, credit):
-    sql = """UPDATE invoices SET `credit` =  CASE WHEN `credit` IS NOT NULL THEN
-    `credit` + '{}' ELSE '{}' END WHERE uuid_text = '{}' AND invoice_id =
-    '{}'""".format(credit, credit, uuid, invoice_id)
+def updateCredit(uuid, invoice_id, credit_cent):
+    sql = """UPDATE invoices SET credit_cent =  CASE WHEN credit_cent IS NOT NULL THEN
+    credit_cent + '{}' ELSE '{}' END WHERE uuid_text = '{}' AND invoice_id =
+    '{}'""".format(credit_cent, credit_cent, uuid, invoice_id)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -219,12 +236,12 @@ def updateInvoice(user, patient, date_invoice, item_numbers, item_descriptions, 
         item_value_cent = float(item_values[i]) * 100
         list_item.extend((user['uuid_text'], patient['invoice_id'], item_numbers[i],
             item_descriptions[i]['units'], item_descriptions[i]['description'],
-            item_descriptions[i]['value'], item_value_cent, item_dates[i],
+            item_descriptions[i]['value_cent'], item_value_cent, item_dates[i],
             item_modifiers[i]))
         list_item = tuple(list_item)
         list.append(list_item)
     sql_rm_invoice_items = """DELETE FROM invoice_items WHERE uuid_text = '{}' AND invoice_id = '{}'""".format(user['uuid_text'], patient['invoice_id'])
-    sql_add_invoice_items = "INSERT INTO invoice_items (uuid_text, invoice_id, item, units, description, value, post_value, date, modifier) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    sql_add_invoice_items = "INSERT INTO invoice_items (uuid_text, invoice_id, item, units, description, value_cent, post_value_cent, date, modifier) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql_rm_invoice_items)
@@ -294,11 +311,11 @@ def add_invoice(user, patient, invoice_id, invoice_file_url, date_invoice, item_
         item_value_cent = float(item_values[i]) * 100
         list_item.extend((user['uuid_text'], invoice_id, item_numbers[i],
             item_descriptions[i]['units'], item_descriptions[i]['description'],
-            item_descriptions[i]['value'], item_value_cent, item_dates[i],
+            item_descriptions[i]['value_cent'], item_value_cent, item_dates[i],
             item_modifiers[i]))
         list_item = tuple(list_item)
         list.append(list_item)
-    sql_individual_item = "INSERT INTO invoice_items (uuid_text, invoice_id, item, units, description, value, post_value, date, modifier) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    sql_individual_item = "INSERT INTO invoice_items (uuid_text, invoice_id, item, units, description, value_cent, post_value_cent, date, modifier) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
     sql_check_duplicate = """ SELECT * FROM invoices WHERE uuid_text='{}' AND
     patient_name='{}' AND date_created='{}'""".format(user['uuid_text'], patient['patient_name'], date_created)
     conn = pool.connection()

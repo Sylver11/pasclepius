@@ -82,7 +82,7 @@ def submitInvoice():
 @account_bp.route('/add-credit-invoice',methods=['GET'])
 def addCreditInvoice():
     invoice_id = request.args.get('invoice_id')
-    credit_cent = request.args.get('credit')
+    credit_cent = request.args.get('credit_cent')
     status = updateCredit(current_user.uuid, invoice_id, credit_cent)
     if status:
         return json.dumps(invoice_id + " added credit")
