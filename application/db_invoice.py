@@ -190,9 +190,10 @@ def updateSubmitted(uuid, invoice_id):
 
 
 def updateCredit(uuid, invoice_id, credit_cent):
-    sql = """UPDATE invoices SET credit_cent =  CASE WHEN credit_cent IS NOT NULL THEN
-    credit_cent + '{}' ELSE '{}' END WHERE uuid_text = '{}' AND invoice_id =
-    '{}'""".format(credit_cent, credit_cent, uuid, invoice_id)
+    sql = """UPDATE invoices
+    SET credit_cent = credit_cent + '{}'
+    WHERE uuid_text = '{}' AND invoice_id =
+    '{}'""".format(credit_cent, uuid, invoice_id)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)

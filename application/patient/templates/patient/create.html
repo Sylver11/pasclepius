@@ -237,6 +237,29 @@
 <script>
 
     $(document).ready(function() {
+
+        
+        function isValidDate(dateString){
+            if(!/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(dateString))
+                return false;
+
+            var parts = dateString.split(".");
+            var day = parseInt(parts[1], 10);
+            var month = parseInt(parts[0], 10);
+            var year = parseInt(parts[2], 10);
+
+            if(year < 1000 || year > 3000 || month == 0 || month > 12)
+                return false;
+
+            var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+
+            if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+                monthLength[1] = 29;
+
+            return day > 0 && day <= monthLength[month - 1];
+        };
+
+
         $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
         $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
         $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})
@@ -263,8 +286,10 @@
             }
         })
 
-        $('.psemas').submit(function (e) {
-            var x = document.forms["psemas"]["tariff"].value;
+        $('.mva').submit(function (e) {
+            var x = document.forms["mva"]["tariff"].value;
+            
+            
             if (x == "") {
                 e.preventDefault();
                 alert("Tariff must be chosen.");
@@ -273,13 +298,34 @@
             } 
 
         });
-        $('.other').submit(function (e) {
-            var x = document.forms["other"]["tariff"].value;
+
+        $('.psemas').submit(function (e) {
+            var x = document.forms["psemas"]["tariff"].value;
+            var y = document.forms["psemas"]["patient_birth_date"].value;
             if (x == "") {
                 e.preventDefault();
                 alert("Tariff must be chosen.");
-            }else{
-            $(this).submit();
+            }else if(isValidDate(y)){
+                $(this).submit();
+            } 
+            else{
+                e.preventDefault();
+                alert("Patient birth date has an incorrect format. Please use the following format: dd.mm.yyyy");
+            } 
+
+        });
+        $('.other').submit(function (e) {
+            var x = document.forms["other"]["tariff"].value;
+            var y = document.forms["other"]["patient_birth_date"].value;
+            if (x == "") {
+                e.preventDefault();
+                alert("Tariff must be chosen.");
+            }else if(isValidDate(y)){
+                $(this).submit();
+            } 
+            else{
+                e.preventDefault();
+                alert("Patient birth date has an incorrect format. Please use the following format: dd.mm.yyyy");
             } 
 
         });
@@ -293,16 +339,7 @@
             }
         });
         
-        $('.mva').submit(function (e) {
-            var x = document.forms["mva"]["tariff"].value;
-            if (x == "") {
-                e.preventDefault();
-                alert("Tariff must be chosen.");
-            }else{
-            $(this).submit();
-            } 
-
-        });
+        
 
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {

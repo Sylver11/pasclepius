@@ -68,7 +68,7 @@ def setupTable():
         intra_op varchar(255),
         post_op varchar(255),
         submitted_on DATETIME,
-        status varchar(255) NOT NULL DEFAULT 'Not submitted',
+        status varchar(255) NOT NULL DEFAULT 'not-submitted',
         credit_cent int(11) NOT NULL DEFAULT 0,
         remind_me DATETIME,
         PRIMARY KEY (id));"""
@@ -113,15 +113,23 @@ def setupTable():
 
 
 
-    create_trigger_status = """CREATE TRIGGER balance_cent_check BEFORE UPDATE ON invoices
+    create_trigger_status = """CREATE TRIGGER check_settled BEFORE UPDATE ON invoices
     FOR EACH ROW
     BEGIN
-    IF NEW.credit_cent + OLD.credit_cent < (SELECT SUM(post_value_cent) FROM invoice_items WHERE uuid_text = OLD.uuid_text AND invoice_id = OLD.invoice_id) THEN
-    SET NEW.status = 'due';
-    ELSEIF NEW.credit_cent + OLD.credit_cent = (SELECT SUM(post_value_cent) FROM invoice_items WHERE uuid_text = OLD.uuid_text AND invoice_id = OLD.invoice_id) THEN
+    IF NEW.credit_cent = (SELECT SUM(post_value_cent) FROM invoice_items WHERE uuid_text = OLD.uuid_text AND invoice_id = OLD.invoice_id) THEN
     SET NEW.status = 'settled';
+    ELSEIF NEW.credit_cent > (SELECT SUM(post_value_cent)
+    FROM invoice_items WHERE uuid_text = OLD.uuid_text AND invoice_id =
+    OLD.invoice_id) THEN SET NEW.credit_cent = OLD.credit_cent;
     END IF;
     END;"""
+
+
+
+    create_trigger_balance = """ CREATE TRIGGER check_balance BEFORE UPDATE ON invoice_items
+    FOR EACH ROW
+    BEGIN
+    IF """
 
     conn = pool.connection()
     cursor = conn.cursor()

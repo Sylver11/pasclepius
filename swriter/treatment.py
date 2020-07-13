@@ -51,9 +51,9 @@ def treatmentTable(doc, text, cursor, items, treatments, price, dates, patient, 
             modifier.append('')
     for a, b, c, d, e in zip(enumerate(treatments), dates, items, price, modifier):
         if e == '14' or e == '13' or e == '10':
-            insertTextIntoCell(table, "A" + str(a[0] + 2), str(c + " (0" + e + ")"))
+            insertTextIntoCell(table, "A" + str(a[0] + 2), str(c.zfill(3) + " (0" + e + ")"))
         elif e == '6' or e == '8' or e == '9':
-            insertTextIntoCell(table, "A" + str(a[0] + 2), str(c + " (00" + e + ")"))
+            insertTextIntoCell(table, "A" + str(a[0] + 2), str(c.zfill(3) + " (00" + e + ")"))
         elif('namaf_orthopaedic_surgeons' in patient['tariff']):
             insertTextIntoCell(table, "A" + str(a[0] + 2), c.zfill(4))
         else:
