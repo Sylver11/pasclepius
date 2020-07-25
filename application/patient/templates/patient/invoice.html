@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% include 'patient/index.html' %}
 {% block content %}
 <div class="container personal_style" id="container_id">
     <br>
@@ -1006,7 +1006,6 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
     });
 
     if("{{ session['PATIENT']['treatments'] }}"){
-        console.log("thiiii ruuuuning")
        "{% for i in session['PATIENT']['treatments'] %}"
             var item_number = "{{ i['item'] }}"
             var item_description = "{{ i['description'] }}"

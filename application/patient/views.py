@@ -1,5 +1,6 @@
 from flask_login import current_user, login_required
 from flask import render_template, Blueprint, request, session, redirect
+from application.db_workbench import newWork
 from application.db_users import checkUser
 from application.forms import Patient_mva, Patient_psemas, Patient_other,getTreatmentForm
 from application.db_invoice import queryInvoice, getPatient, getSingleInvoice, getItems
@@ -105,9 +106,11 @@ def continueInvoice(patient):
 
 @patient_bp.route('/set-known-invoice',methods=['GET','POST'])
 def knownInvoice():
+    uuid_text = current_user.uuid
     invoice_id = request.args.get('invoice_id')
-    invoice =  getSingleInvoice(current_user.uuid, invoice_id)
-    treatments = getItems(current_user.uuid, invoice_id)
+    invoice =  getSingleInvoice(uuid_text, invoice_id)
+    treatments = getItems(uuid_text, invoice_id)
+    newWork(uuid_text, 'invoice_tab', invoice_id)
     for i in treatments:
         for o in i:
             if isinstance(i[o], datetime2.datetime):

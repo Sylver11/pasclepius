@@ -1,12 +1,16 @@
-import pandas as pd
-from dotenv import load_dotenv
 import os
+import pandas as pd
+from db_utils import pool
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def setupTable():
     sql_drop_table_namaf_tariffs = "DROP TABLE namaf_tariffs"
     sql_drop_table_invoice = "DROP TABLE invoices"
     sql_drop_table_users = "DROP TABLE users"
     sql_drop_table_invoice_items = "DROP TABLE invoice_items"
+    sql_drop_table_user_workbench = "DROP TABLE user_workbench"
 
     sql_create_table_namaf_tariffs = """CREATE TABLE namaf_tariffs  (
         id MEDIUMINT NOT NULL AUTO_INCREMENT,
@@ -111,7 +115,13 @@ def setupTable():
         created_on DATETIME NOT NULL DEFAULT NOW(),
         PRIMARY KEY (id));"""
 
-
+    sql_create_table_user_workbench = """CREATE TABLE user_workbench (
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    uuid_text VARCHAR(36) NOT NULL,
+    work_type VARCHAR(255) NOT NULL,
+    work_quality VARCHAR(255) NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    PRIMARY KEY(id));"""
 
     create_trigger_status = """CREATE TRIGGER check_settled BEFORE UPDATE ON invoices
     FOR EACH ROW
@@ -126,22 +136,24 @@ def setupTable():
 
 
 
-    create_trigger_balance = """ CREATE TRIGGER check_balance BEFORE UPDATE ON invoice_items
-    FOR EACH ROW
-    BEGIN
-    IF """
+    #create_trigger_balance = """ CREATE TRIGGER check_balance BEFORE UPDATE ON invoice_items
+    #FOR EACH ROW
+    #BEGIN
+    #IF """
 
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute(sql_drop_table_invoice_items)
-    cursor.execute(sql_create_table_invoice_items)
-    cursor.execute(sql_drop_table_users)
-    cursor.execute(sql_drop_table_invoice)
-    cursor.execute(sql_create_table_invoice)
+    cursor.execute(sql_drop_table_user_workbench)
+    cursor.execute(sql_create_table_user_workbench)
+    #cursor.execute(sql_drop_table_invoice_items)
+    #cursor.execute(sql_create_table_invoice_items)
+    #cursor.execute(sql_drop_table_users)
+    #cursor.execute(sql_drop_table_invoice)
+    #cursor.execute(sql_create_table_invoice)
     cursor.execute(sql_drop_table_namaf_tariffs)
     cursor.execute(sql_create_table_namaf_tariffs)
-    cursor.execute(create_trigger_status)
-    cursor.execute(sql_create_table_users)
+    #cursor.execute(create_trigger_status)
+    #cursor.execute(sql_create_table_users)
     cursor.close()
     conn.close()
 
@@ -176,8 +188,5 @@ def populateTreatment():
     conn.close()
 
 if __name__ == '__main__':
-    load_dotenv(verbose=True)
-    from db_utils import pool
-    print(os.getenv('DATABASE_USER'))
     setupTable()
     populateTreatment()
