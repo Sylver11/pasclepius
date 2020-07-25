@@ -1,5 +1,5 @@
-from dotenv import load_dotenv
 import pandas as pd
+from dotenv import load_dotenv
 import os
 
 def setupTable():
@@ -135,13 +135,13 @@ def setupTable():
     cursor = conn.cursor()
     cursor.execute(sql_drop_table_invoice_items)
     cursor.execute(sql_create_table_invoice_items)
-   # cursor.execute(sql_drop_table_users)
+    cursor.execute(sql_drop_table_users)
     cursor.execute(sql_drop_table_invoice)
     cursor.execute(sql_create_table_invoice)
     cursor.execute(sql_drop_table_namaf_tariffs)
     cursor.execute(sql_create_table_namaf_tariffs)
     cursor.execute(create_trigger_status)
-   # cursor.execute(sql_create_table_users)
+    cursor.execute(sql_create_table_users)
     cursor.close()
     conn.close()
 
@@ -176,7 +176,8 @@ def populateTreatment():
     conn.close()
 
 if __name__ == '__main__':
-    load_dotenv()
+    load_dotenv(verbose=True)
     from db_utils import pool
+    print(os.getenv('DATABASE_USER'))
     setupTable()
     populateTreatment()

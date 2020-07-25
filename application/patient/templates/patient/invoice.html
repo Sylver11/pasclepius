@@ -156,7 +156,7 @@
                 </tbody>
             </table>
             <br>
-        <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
+        <!-- <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone"> -->
         <br><br>
         {% if session['PATIENT']['treatments'] %}
             <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary', style='background-color:#017B25;', value='Update Invoice') }}</div>
@@ -392,6 +392,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
                         input_field.setAttribute("id", "treatment-list-input-procedure" + index_treatment_procedure)
                         input_field.readOnly = true;
                         input_field.style.cursor = "default";
+                        input_field.style.border =  "none";
                         flex_wrapper.style.display = "flex";
                         flex_wrapper.style.justifyContent = "flex-start";
                         flex_wrapper.style.alignItems = "center";
@@ -1005,6 +1006,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
     });
 
     if("{{ session['PATIENT']['treatments'] }}"){
+        console.log("thiiii ruuuuning")
        "{% for i in session['PATIENT']['treatments'] %}"
             var item_number = "{{ i['item'] }}"
             var item_description = "{{ i['description'] }}"

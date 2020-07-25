@@ -2,10 +2,12 @@ from flask_login import current_user, login_required
 from flask import render_template, Blueprint, request, session, redirect
 from application.db_users import checkUser
 from application.forms import Patient_mva, Patient_psemas, Patient_other,getTreatmentForm
-from application.db_invoice import queryInvoice, getPatient
+from application.db_invoice import queryInvoice, getPatient, getSingleInvoice, getItems
+from datetime import datetime
+import datetime as datetime2
 
-
-patient_bp = Blueprint('patient_bp',__name__, template_folder='templates')
+patient_bp = Blueprint('patient_bp',__name__,
+        template_folder='templates', static_folder='static')
 
 
 @patient_bp.route('/new-patient', methods=('GET', 'POST'))
@@ -32,6 +34,11 @@ def newPatient():
             layout_code = layout_code,
             page_title = 'Create new patient')
 
+@patient_bp.route('/continue', methods=('GET', 'POST'))
+@login_required
+def Continue():
+    return render_template('patient/continue.html',
+            page_title = 'Continue previous invoice')
 
 @patient_bp.route('/<patient>', methods=('GET','POST'))
 @login_required
@@ -77,6 +84,9 @@ def newInvoice(patient):
                 page_title = 'New ' + medical_aid + ' invoice')
 
 
+
+
+
 @patient_bp.route('/<patient>/continue-invoice')
 @login_required
 def continueInvoice(patient):
@@ -89,3 +99,29 @@ def continueInvoice(patient):
                 form = form,
                 layout_code = layout_code,
                 page_title = 'Continue ' + medical_aid + ' invoice')
+
+
+
+
+@patient_bp.route('/set-known-invoice',methods=['GET','POST'])
+def knownInvoice():
+    invoice_id = request.args.get('invoice_id')
+    invoice =  getSingleInvoice(current_user.uuid, invoice_id)
+    treatments = getItems(current_user.uuid, invoice_id)
+    for i in treatments:
+        for o in i:
+            if isinstance(i[o], datetime2.datetime):
+                d = datetime.strptime(i[o].__str__(), '%Y-%m-%d %H:%M:%S')
+                date = d.strftime('%d.%m.%Y')
+                i[o] = date
+
+    for o, i in invoice.items():
+        if i == 'None':
+           invoice[o] = ''
+        if isinstance(i, datetime2.datetime):
+            d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
+            date = d.strftime('%d.%m.%Y')
+            invoice[o] = date
+    invoice['treatments'] = treatments
+    session["PATIENT"] = invoice
+    return 'success'

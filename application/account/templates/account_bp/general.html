@@ -92,7 +92,7 @@ function r_option() {
 
 
 $(document).ready(function(){
-    let criteria = ['None','None','date_created','DESC', 0, 5];
+    let criteria = ['account', 'None','None','date_created','DESC', 0, 5];
     dynamic.apply(this, criteria);
 
 function mouse_on_page(){
@@ -102,9 +102,9 @@ function mouse_off_page(){
     this.setAttribute("style", "background-color:white;")
 }
 function page_click(){
-    current_range = criteria[5];
+    current_range = criteria[6];
     page_requested = this.textContent; 
-    criteria[4] = current_range * (page_requested - 1);
+    criteria[5] = current_range * (page_requested - 1);
     dynamic.apply(this, criteria);
 }
 
@@ -113,8 +113,8 @@ function page_click(){
     function r_option_click() {
         var r_option = $(this).data('value');
         $('#row_option').text(r_option)
-        criteria[1] = r_option; 
-        criteria[4] = 0;
+        criteria[2] = r_option; 
+        criteria[5] = 0;
         console.log(criteria)
         dynamic.apply(this, criteria);
         }
@@ -123,14 +123,14 @@ function page_click(){
     $(document).on("click", ".focus", function (e) {
         var focus = $(this).data('value');
             $('#focus').text(focus)
-            criteria[2] = focus;
+            criteria[3] = focus;
             dynamic.apply(this, criteria);     
     })
 
     $(document).on("click", ".order", function (e) {
         var order = $(this).data('value');
             $('#order').text(order)
-            criteria[3] = order;
+            criteria[4] = order;
             dynamic.apply(this, criteria);     
     })
 
@@ -139,7 +139,7 @@ function page_click(){
         var div = document.getElementById("r_option_div")
         if(c_option == 'None'){
             $('#column_option').text(c_option)
-            criteria[0] = c_option;
+            criteria[1] = c_option;
             dynamic.apply(this, criteria);
             div.innerHTML = '';
         }
@@ -192,10 +192,10 @@ function page_click(){
         }
         } 
 
-    function dynamic(c_option, r_option, focus, order, start, range){
-        $( "#dynamic_list" ).load( "/account/all-invoices/" + c_option + "/" + r_option + '/' + focus + '/' + order + '/' + start + '/' + range, function(){
+    function dynamic(caller_id, c_option, r_option, focus, order, start, range){
+        $( "#dynamic_list" ).load( "/account/all-invoices/" + caller_id + "/" + c_option + "/" + r_option + '/' + focus + '/' + order + '/' + start + '/' + range, function(){
             var row_total_count = invoices[0]['rowcounter'];
-            var items_per_site = criteria[5];
+            var items_per_site = criteria[6];
             var pages = Math.floor(row_total_count / items_per_site)
             if(pages != row_total_count / items_per_site){
                 pages = pages + 1;

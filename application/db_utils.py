@@ -2,7 +2,6 @@ import pymysql
 from DBUtils.PooledDB import PooledDB
 import os
 
-
 pool = PooledDB(creator = pymysql,
                                host= 'localhost',
                                user= os.getenv("DATABASE_USER"),

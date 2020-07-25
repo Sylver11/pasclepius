@@ -1,0 +1,25 @@
+{% extends 'patient/layout.html' %}
+{% block content %}
+<nav class="navbar navbar-expand-sm navbar-dark" style="background-color:#017B25;">
+    <ul class="navbar-nav" id="myTab">
+        <a class="new-patient nav-link nav-item" href="/patient/new-patient">New patient</a>
+        <a class="continue nav-link nav-item" href="/patient/continue">Continue</a>
+        <a class="patient-name nav-link nav-item" href="/patient/">Patient name</a>
+    </ul>
+</nav>
+<script>
+    $(document).ready(function(){
+    
+     if (window.location.href.match('patient/new-patient')){
+       $('.new-patient').addClass('active');
+     }
+     else if (window.location.href.match('/patient/continue')){
+       $('.continue').addClass('active');
+     }
+     else if (window.location.href.match('patient')){
+       $('.patient-name').addClass('active');
+       
+     }
+   })
+</script>
+{% endblock %}

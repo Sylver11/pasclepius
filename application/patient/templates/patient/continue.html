@@ -1,0 +1,193 @@
+{% include 'patient/index.html' %}
+{% block content %}
+<div class="jumbotron jumbotron-fluid" style="height:88%; margin:0">
+    <div class="container">
+        <form autocomplete="off" class="invoice-search">
+            <input id="invoice-search" class="form-control mr-sm-2" name="treatment" type="search" placeholder="Search invoices by patient name">
+        </form>
+        <div id="inside_container" class="align-middle">
+        </div>
+        <div class="dropdown">
+            <button onclick="Ffocus()" id="focus" class="dropbtn dropdown-toggle">Date created</button>
+            <div id="focus_dropdown" class="dropdown-content">
+                <li class='focus' data-value='date_created'>Date created</li>
+                <li class='focus' data-value='date_invoice'>Invoice date</li>
+                <li class='focus' data-value='patient_name'>Patient Name</li>
+                <li class='focus' data-value='main_member'>Main Member</li>        
+                <li class='focus' data-value='procedure_date'>Procedure Date</li>
+                <li class='focus' data-value='diagnosis_date'>Diagnosis Date</li>
+                <li class='focus' data-value='admission_date'>Admission Date</li>
+                <li class='focus' data-value='discharge_date'>Discharge Date</li>
+                <li class='focus' data-value='submitted_on'>Submission Date</li>
+                <li class='focus' data-value='debit_cent'>Value</li>
+            </div>
+          </div> 
+        <div class="dropdown">
+            <button onclick="Order()" id="order" class="dropbtn dropdown-toggle">Descending</button>
+            <div id="order_dropdown" class="dropdown-content">
+                <li class='order' data-value='ASC'>Ascending</li>
+                <li class='order' data-value='DESC'>Descending</li>
+            </div>
+          </div> 
+        <div class="dropdown">
+            <button onclick="ColumnOption()" id="column_option" class="dropbtn dropdown-toggle">None</button>
+            <div id="column_option_dropdown" class="dropdown-content">
+                <li class='c_option' data-value='None'>No Criteria</li>
+                <li class='c_option' data-value='medical_aid'>Medical</li>
+                <li class='c_option' data-value='tariff'>Tariff</li>
+                <li class='c_option' data-value='credit_cent'>Credit</li>
+                <li class='c_option' data-value='status'>Status</li>
+                <li class='c_option' data-value='remind_me'>Remind me</li>
+            </div>
+        </div> 
+        <div id="r_option_div" class="dropdown"></div>
+        <div  style="border: olive;border-style: solid;" id="dynamic_list" class="d-flex flex-column"></div>
+        <div><span style="float: left;">Pages: </span><ul id="pages" style="list-style: none;"></ul></div>
+    </div>
+    
+</div>
+
+<script>
+
+function Ffocus() {
+    closeDropDown()
+    document.getElementById("focus_dropdown").classList.toggle("show");
+    }
+    function Order() {
+        closeDropDown()
+    document.getElementById("order_dropdown").classList.toggle("show");
+    }
+    function ColumnOption() {
+        closeDropDown()
+    document.getElementById("column_option_dropdown").classList.toggle("show");
+    }
+    function RowOption() {
+        closeDropDown()
+    document.getElementById("row_option_dropdown").classList.toggle("show");
+    }
+
+$(document).ready(function(){
+
+
+    function mouse_on_page(){
+        this.setAttribute("style", "background-color:blue;")
+    }
+    function mouse_off_page(){
+        this.setAttribute("style", "background-color:white;")
+    }
+    function page_click(){
+        current_range = criteria[6];
+        page_requested = this.textContent; 
+        criteria[5] = current_range * (page_requested - 1);
+        dynamic.apply(this, criteria);
+    }
+
+
+
+    function RowOptionClick() {
+        var r_option = $(this).data('value');
+        $('#row_option').text(r_option)
+        criteria[2] = r_option; 
+        criteria[5] = 0;
+        console.log(criteria)
+        dynamic.apply(this, criteria);
+        }
+
+
+    $(document).on("click", ".focus", function (e) {
+        var focus = $(this).data('value');
+            $('#focus').text(focus)
+            criteria[3] = focus;
+            dynamic.apply(this, criteria);     
+    })
+
+    $(document).on("click", ".order", function (e) {
+        var order = $(this).data('value');
+            $('#order').text(order)
+            criteria[4] = order;
+            dynamic.apply(this, criteria);     
+    })
+
+
+
+
+
+
+    $(document).on("click", ".c_option", function (e) {
+        var c_option = $(this).data('value');
+        var div = document.getElementById("r_option_div")
+        if(c_option == 'None'){
+            $('#column_option').text(c_option)
+            criteria[1] = c_option;
+            dynamic.apply(this, criteria);
+            div.innerHTML = '';
+        }
+        else{
+            $.ajax({
+                    type: "GET",
+                    url: '/account/check-r-option',
+                    data: {c_option: c_option}, 
+                    dataType: 'json',
+                    success: function (returnData) {
+                        $('#column_option').text(c_option)
+                        criteria[0] = c_option;
+                        console.log(criteria)
+                        div.innerHTML = '';
+                        var button = document.createElement("BUTTON");
+                        button.addEventListener("click", RowOption, false);
+                        button.setAttribute("id", "row_option");
+                        button.setAttribute("class", "dropbtn");
+                        button.textContent = "Row options";
+                        var wrapper_li = document.createElement("DIV");
+                        wrapper_li.setAttribute("id", "row_option_dropdown");
+                        wrapper_li.setAttribute("class", "dropdown-content");
+                        for (let i = 0; i < returnData['r_option'].length; i++) {
+                            const element = returnData['r_option'][i];
+                            var li = document.createElement("LI");
+                            li.setAttribute("class", "r_option")
+                            li.setAttribute("data-value", element[c_option])
+                            li.addEventListener("click", RowOptionClick, false);
+                            li.textContent = element[c_option]
+                            wrapper_li.appendChild(li);
+                        }
+                        div.appendChild(button);
+                        div.appendChild(wrapper_li);
+                    }
+                })
+        }
+    })
+
+
+    let criteria = ['patient', 'None','None','date_created','DESC', 0, 10];
+    dynamic.apply(this, criteria);
+
+
+    function dynamic(caller_id, c_option, r_option, focus, order, start, range){
+        $( "#dynamic_list" ).load( "/account/all-invoices/" + caller_id + "/" + c_option + "/" + r_option + '/' + focus + '/' + order + '/' + start + '/' + range, function(){
+            var row_total_count = invoices[0]['rowcounter'];
+            var items_per_site = criteria[6];
+            var pages = Math.floor(row_total_count / items_per_site)
+            if(pages != row_total_count / items_per_site){
+                pages = pages + 1;
+            }
+            var ul = document.getElementById("pages")
+            ul.innerHTML = '';
+            for(var i = 0; i < pages; i++){
+                var li = document.createElement("LI");
+                var a = document.createElement("A");
+                a.setAttribute("class", "link_pages");
+                li.style.cursor = "pointer";
+                a.addEventListener("mouseover", mouse_on_page, false);
+                a.addEventListener("mouseout", mouse_off_page, false);
+                a.addEventListener("click", page_click, false);
+                li.style.display = "inline";
+                li.style.padding = "5px";
+                a.textContent = i + 1;
+                li.appendChild(a)
+                ul.appendChild(li);
+            }
+        });
+    }
+})
+</script>
+{% endblock %}

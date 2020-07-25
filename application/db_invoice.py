@@ -288,21 +288,6 @@ def add_invoice(user, patient, invoice_id, invoice_file_url, date_invoice, item_
         medical_number = patient['medical_number']
     date_created = datetime.strptime(patient['date_created'], '%d.%m.%Y')
     date_invoice = datetime.strptime(date_invoice[0], '%d.%m.%Y')
-    sql = """INSERT INTO invoices (uuid_text,
-    patient_name, date_created, date_invoice, medical_aid,
-    invoice_id, invoice_file_url, tariff, main_member, patient_birth_date, medical_number, `case_number`, po_number,
-    hospital_name, admission_date, discharge_date, `procedure`,
-    procedure_date, diagnosis, diagnosis_date,
-    implants, intra_op, post_op)
-    VALUES('{0}','{1}','{2}','{3}','{4}','{5}',
-    '{6}','{7}','{8}','{9}','{10}','{11}','{12}',
-    '{13}','{14}','{15}','{16}','{17}','{18}','{19}',
-    '{20}','{21}','{22}')
-    """.format(user['uuid_text'], patient_name, date_created, date_invoice, medical_aid,
-        invoice_id, invoice_file_url, tariff, main_member, patient_birth_date, medical_number, case_number, po_number,
-        hospital_name, admission_date, discharge_date, procedure,
-        procedure_date, diagnosis, diagnosis_date,
-        implants, intra_op, post_op)
     if not item_modifiers:
         item_modifiers = [0] * len(item_numbers)
     item_dates = [d.replace(d, str(datetime.strptime(d, '%d.%m.%Y'))) for d in item_dates]
@@ -324,7 +309,19 @@ def add_invoice(user, patient, invoice_id, invoice_file_url, date_invoice, item_
     cursor.execute(sql_check_duplicate)
     rows = cursor.fetchall()
     if not rows:
-        cursor.execute(sql)
+        cursor.execute("""INSERT INTO invoices (uuid_text,
+    patient_name, date_created, date_invoice, medical_aid,
+    invoice_id, invoice_file_url, tariff, main_member,
+    patient_birth_date, medical_number, `case_number`, po_number,
+    hospital_name, admission_date, discharge_date, `procedure`,
+    procedure_date, diagnosis, diagnosis_date,
+    implants, intra_op, post_op)
+    VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    """,(user['uuid_text'], patient_name, date_created, date_invoice, medical_aid,
+        invoice_id, invoice_file_url, tariff, main_member, patient_birth_date,
+        medical_number, case_number, po_number, hospital_name, admission_date,
+        discharge_date, procedure, procedure_date, diagnosis, diagnosis_date,
+        implants, intra_op, post_op))
         cursor.executemany(sql_individual_item, list)
         status = True
     else:

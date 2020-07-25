@@ -82,7 +82,8 @@ def liveSearchTreatment():
         'categories': data3, 'items': data4})
     return value_json
 
-
+#TODO delete this part also try to get getValue and getTreatmentName moved and 
+#then removed
 @api_bp.route('/set-known-invoice',methods=['GET','POST'])
 def knownInvoice():
     invoice_items = request.args.get('invoice_items')

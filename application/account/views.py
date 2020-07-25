@@ -90,8 +90,8 @@ def addCreditInvoice():
         return json.dumps('Could not add debit to invoice account. Please contact the system administator')
 
 
-@account_bp.route('/all-invoices/<c_option>/<r_option>/<focus>/<order>/<start>/<range>',methods=['GET'])
-def allInvoices(c_option, r_option, focus, order, start, range):
+@account_bp.route('/all-invoices/<caller_id>/<c_option>/<r_option>/<focus>/<order>/<start>/<range>',methods=['GET'])
+def allInvoices(caller_id, c_option, r_option, focus, order, start, range):
     invoices = getAllInvoices(current_user.uuid, c_option,
             r_option, focus, order, start, range)
     for i in invoices:
@@ -100,7 +100,11 @@ def allInvoices(c_option, r_option, focus, order, start, range):
                 d = datetime.strptime(i[o].__str__(), '%Y-%m-%d %H:%M:%S')
                 date = d.strftime('%d.%m.%Y')
                 i[o] = date
-    return render_template('account_bp/all_invoices.html',
+    if caller_id == 'account':
+        return render_template('account_bp/all_invoices.html',
+            invoices_json = json.dumps(invoices))
+    elif caller_id == 'patient':
+        return render_template('patient/all_invoices.html',
             invoices_json = json.dumps(invoices))
 
 

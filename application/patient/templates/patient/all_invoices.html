@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<div id='invoice_list'></div>
+
+<script>
+
+function closeDropDown(){
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+        }
+    }
+}
+
+
+    var invoices = '{{ invoices_json }}';
+    invoices = JSON.parse(invoices.replace(/&#34;/g,'"'));
+    var invoice_list = document.getElementById("invoice_list");
+    invoice_list.style.display = "flex";
+    invoice_list.style.flexDirection = "column";
+
+    for (let i = 0; i < invoices.length; i++) {
+        const element = invoices[i];
+
+
+        var invoice_wrapper = document.createElement("DIV");
+        invoice_wrapper.style.display = "flex";
+        invoice_wrapper.style.flexDirection = "row";
+        invoice_wrapper.style.justifyContent = "space-between";
+        if(element['status'] == 'not-submitted'){
+            invoice_wrapper.style.backgroundColor = "rgba(0, 0, 255, 0.3)";
+        }
+        else if(element['status'] == 'due'){
+            invoice_wrapper.style.backgroundColor = "rgb(255, 255, 0, 0.3)";
+        }
+        else if(element['status'] == 'overdue'){
+            invoice_wrapper.style.backgroundColor = "rgba(255, 0, 0, 0.3)";
+        }
+        else if(element['status'] == 'settled'){
+            invoice_wrapper.style.backgroundColor = "rgba(0, 255, 0, 0.3)";
+        } 
+        invoice_list.appendChild(invoice_wrapper);
+        
+
+
+        var left_wrapper = document.createElement("DIV");
+        left_wrapper.style.width = "30%";
+        invoice_wrapper.appendChild(left_wrapper);
+
+        var info_wrapper = document.createElement("DIV");
+        left_wrapper.appendChild(info_wrapper);
+
+        var statement_wrapper = document.createElement("DIV");
+        left_wrapper.appendChild(statement_wrapper);
+
+
+
+        var right_wrapper = document.createElement("DIV");
+        right_wrapper.style.width = "20%";
+        invoice_wrapper.appendChild(right_wrapper);
+
+        var action_wrapper = document.createElement("DIV");
+        right_wrapper.appendChild(action_wrapper);
+
+        var status_wrapper = document.createElement("DIV");
+        right_wrapper.appendChild(status_wrapper);
+
+
+
+        var id = document.createElement("DIV");
+
+        var invoice_id = document.createElement("DIV");
+        invoice_id.textContent = element['invoice_id'];
+        id.appendChild(invoice_id);
+
+        var patient_name = document.createElement("DIV");
+        patient_name.textContent = element['patient_name'];
+        id.appendChild(patient_name);
+                        
+        info_wrapper.appendChild(id);
+
+
+        var current_status = document.createElement("DIV");
+
+
+        if(element['submitted_on']){
+            var submitted_on = document.createElement("DIV");
+            submitted_on.textContent = "Submitted on: " + element['submitted_on'];
+            current_status.appendChild(submitted_on);
+        }
+        
+        var invoice_created = document.createElement("DIV");
+        invoice_created.textContent = "Created on: " + element['date_created'];
+        current_status.appendChild(invoice_created);
+                        
+        var invoice_date = document.createElement("DIV");
+        invoice_date.textContent = "Invoice date: " + element['date_invoice'];
+        current_status.appendChild(invoice_date);
+
+        status_wrapper.appendChild(current_status);
+
+        var continue_button = document.createElement("BUTTON");
+        continue_button.addEventListener("click", function(){
+            $.ajax({
+                url: '/patient/set-known-invoice',
+                data: {invoice_id: element['invoice_id']},
+                success: function() {
+                    window.location.href = "/patient/" + element['patient_name'] + "/continue-invoice";
+                },
+            });
+        }); 
+        continue_button.textContent = "Continue";
+        action_wrapper.appendChild(continue_button);
+     
+
+    }
+    
+</script>
+</body>
+</html>
