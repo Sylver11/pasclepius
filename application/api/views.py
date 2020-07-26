@@ -84,23 +84,23 @@ def liveSearchTreatment():
 
 #TODO delete this part also try to get getValue and getTreatmentName moved and 
 #then removed
-@api_bp.route('/set-known-invoice',methods=['GET','POST'])
-def knownInvoice():
-    invoice_items = request.args.get('invoice_items')
-    invoice_id = request.args.get('invoice_id')
-    invoice =  getSingleInvoice(current_user.uuid, invoice_id)
-    json_data = json.loads(invoice_items)
-    invoice['treatments'] = json_data
-    for o, i in invoice.items():
-        if i == 'None':
-           invoice[o] = ''
-        if isinstance(i, datetime2.datetime):
-            d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
-            date = d.strftime('%d.%m.%Y')
-            invoice[o] = date
-    session["PATIENT"] = invoice
-    print(invoice)
-    return json.dumps({'message': 'New User Created!'})
+#@api_bp.route('/set-known-invoice',methods=['GET','POST'])
+#def knownInvoice():
+#    invoice_items = request.args.get('invoice_items')
+#    invoice_id = request.args.get('invoice_id')
+#    invoice =  getSingleInvoice(current_user.uuid, invoice_id)
+#    json_data = json.loads(invoice_items)
+#    invoice['treatments'] = json_data
+#    for o, i in invoice.items():
+#        if i == 'None':
+#           invoice[o] = ''
+#        if isinstance(i, datetime2.datetime):
+#            d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
+#            date = d.strftime('%d.%m.%Y')
+#            invoice[o] = date
+#    session["PATIENT"] = invoice
+#    print(invoice)
+#    return json.dumps({'message': 'New User Created!'})
 
 
 @api_bp.route('/get-value',methods=['GET','POST'])
@@ -109,8 +109,8 @@ def getValue():
     tariff = session.get('PATIENT')["tariff"]
     item = request.args.get('item', 0, type=int)
     value = getValueTreatments(item, tariff)
-    value_json = json.dumps({'value' : Decimal(value['value_cent']), 'description' :
-        value['description']}, use_decimal=True)
+    value_json = json.dumps({'value' : value['value_cent'], 'description' :
+        value['description']})
     return value_json
 
 

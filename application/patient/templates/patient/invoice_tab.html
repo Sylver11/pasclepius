@@ -1,0 +1,80 @@
+{% include 'patient/index.html' %}
+{% block content %}
+<div class="jumbotron jumbotron-fluid" style="height:88%; margin:0">
+    <div class="container">
+        <div id="invoice-tab" class="d-flex flex-column"></div>
+    </div>
+</div>
+
+<script>   
+
+$(document).ready(function(){
+
+    $(document).on("click", ".new-patient", function (e) {
+        e.preventDefault();
+        criteria[0] = "/patient/invoice/create";
+        dynamic.apply(this, criteria); 
+        $('.continue').removeClass('active');
+        $('.new-patient').addClass('active');         
+    })
+
+
+    $(document).on("click", ".continue", function (e) {
+        e.preventDefault();
+        criteria[0] = "/patient/invoice/continue";
+        dynamic.apply(this, criteria); 
+        $('.new-patient').removeClass('active');  
+        $('.continue').addClass('active');     
+    })
+
+    
+    $(document).on("click", ".tab", function (e) {
+        var invoice_id = $(this).text();
+        criteria[0] = "/patient/invoice/" + invoice_id;
+        $('.new-patient').removeClass('active'); 
+        $('.continue').removeClass('active');
+        dynamic.apply(this, criteria);     
+    })
+
+
+
+    // if(localStorage.getItem('invoice_draft')){
+    //     var lower_navbar = document.getElementById("myTab")
+    //     console.log("this ruuuuuuuu")
+    //         var tab = document.createElement("BUTTON");
+    //         tab.addEventListener("click", function(e){ 
+    //           e.preventDefault();
+    //           $('#invoice-tab').html(localStorage.getItem("invoice_draft"));
+    //           }, false);
+    //         tab.setAttribute("id", "tab-draft");
+    //         tab.setAttribute("class", "tab");
+    //         tab.textContent = "Draft";
+    //         lower_navbar.appendChild(tab);
+    //       }
+        
+    // function keepState(){
+    //     var invoice_container = document.getElementById("container_id");
+    //     // var htmlContents = document.documentElement.innerHTML;
+    //     localStorage.setItem("invoice_draft", invoice_container.innerHTML);
+    //     // localStorage.setItem('myBook', JSON.stringify(htmlContents ));
+    //     console.log(invoice_container)
+    // }
+
+
+
+    function dynamic(load_content){
+        $( "#invoice-tab" ).load( load_content, function(){
+        });
+    }
+
+    
+
+    let criteria = ["/patient/invoice/create"];
+    $('.new-patient').addClass('active');
+    dynamic.apply(this, criteria);
+    // keepState()
+
+})
+
+</script>
+{% endblock %}

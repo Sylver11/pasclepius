@@ -1,4 +1,3 @@
-{% include 'patient/index.html' %}
 {% block content %}
 <div class="container personal_style" id="container_id">
     <br>
@@ -18,6 +17,7 @@
 
                 <div style="display: flex; justify-content:space-between"><div style="display: flex; align-items: center; flex-shrink: 0;">Discharge Date: <p style = "margin:0 10px 0 10px; align-items: center;">{{ session['PATIENT']['discharge_date'] }}</p></div><div style="width:100%;display:flex; justify-content:right"><button style="float: right;" class="btn unhide_change"><i class="fa fa-edit"></i> Edit</button><input id="discharge_date" class="mva_input" style="display: none;" type="text" name="discharge_date" value="{{ session['PATIENT']['discharge_date'] }}"><input style="display:none;" class="change_session" type="button" value="Change"><input style="display:none;" class="cancel_change" type="button" value="Cancel"></div></div>
             </div>
+
             {% endif %}
 
             {% if 7 <= layout_code <= 12  %}
@@ -204,7 +204,7 @@
     </form> 
     {% endif%} 
     <br><br><br><br>
-</div>
+
 <script>
 $(document).ready(function(){
 
@@ -1049,7 +1049,31 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
             $('#date-{{loop.index0}}').show()
         "{% endfor %}"
     }
+
+
+
+    function keepState(){
+        var invoice_container = document.getElementById("container_id");
+        console.log("is this ruuuuunnng????")   
+        if (document.getElementById("container_id").classList.contains('invoice_draft_class')){
+            // localStorage.clear();
+            // localStorage.removeItem('invoice_draft');
+            var data = $('form').serializeArray();
+            console.log(data)
+            $.each(data, function(){
+                console.log(this)
+                localStorage.setItem(this.name, this.value)
+            })
+            // console.log(data);
+            localStorage.setItem("invoice_draft", invoice_container.outerHTML);
+            setTimeout(keepState,1000);
+            console.log(invoice_container.outerHTML)
+        }
+    }
+    keepState()
+    
 });
 
 </script>
+</div>
 {% endblock %}
