@@ -1,7 +1,4 @@
 {% block content %}
-<div class="container"> 
-    <br>
-    <br>
     <h3>Create new patient</h3> 
     <select class="medical_aid custom-select w-25">
         <option value="0">Select medical aid</option>
@@ -161,60 +158,49 @@
         <br>
         {{ form_other.submit(class_="btn btn-success") }}
     </form>  
-</div>
+
 <script>
+$(document).ready(function() {
 
-    $(document).ready(function() {
-
-        function dynamic(load_content){
+    function dynamic(load_content){
             $( "#invoice-tab" ).load( load_content, function(){
-                var invoice_container = document.getElementById("container_id");
-                document.getElementById("container_id").classList.add('invoice_draft_class');
-                localStorage.setItem("invoice_draft", invoice_container.outerHTML); 
-                // keepState();
-                // setTimeout(keepState,1000);
-        
                 var lower_navbar = document.getElementById("myTab")
                 var tab = document.createElement("BUTTON");  
                 tab.setAttribute("id", "tab-draft");
                 tab.textContent = "Draft";
                 tab.addEventListener("click", function(e){ 
                     e.preventDefault();
-                    document.getElementById("invoice-tab").innerHTML = localStorage.getItem("invoice_draft");
-                    // $('#invoice-tab').html(localStorage.getItem("invoice_draft"));
-                    // console.log(document.getElementById("container_id"))
-                    // setInterval(keepState,1000);
-                    // var invoice_container = document.getElementById("container_id");
-                    // localStorage.setItem("invoice_draft", invoice_container.innerHTML);
-                    }, false);
-                lower_navbar.appendChild(tab);
+                    $.ajax({
+                        type: "GET",
+                        url: '/patient/last-five', 
+                        data: {work_type: "patient_draft"},
+                        success: function (patient) {
+                            patient = JSON.parse(patient);
+                            patient = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
 
+                            let criteria = ["/patient/invoice/new/" + patient["tariff"] + "/continue-draft"];
+                            dynamic.apply(this, criteria);
+                        }
+                    })
+                }, false);
+                lower_navbar.appendChild(tab);
         })
         }
 
-    //     function getLocalStorage(){
-    //     dynamic(localStorage.getItem('invoice_draft'))
-    // }
-
-        function isValidDate(dateString){
+    function isValidDate(dateString){
             if(!/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(dateString))
                 return false;
-
             var parts = dateString.split(".");
             var day = parseInt(parts[0], 10);
             var month = parseInt(parts[1], 10);
             var year = parseInt(parts[2], 10);
-
             if(year < 1000 || year > 3000 || month == 0 || month > 12)
                 return false;
-
             var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
-
             if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
                 monthLength[1] = 29;
-
             return day > 0 && day <= monthLength[month - 1];
-        };
+    };
 
 
         $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
@@ -255,13 +241,19 @@
                 type: "POST",
                 url: url,
                 data: $('.mva').serialize(),
-                success: function (returnData) {
-                    const obj = JSON.parse(returnData)
-                    // console.log(obj)
-                    if(obj == "mva"){
-                        let criteria = ["/patient/invoice/new"];
-                        dynamic.apply(this, criteria);  
-                    }
+                success: function (patient) {
+                    const patient_json_string = JSON.parse(patient)
+                    var url = "{{ url_for('api_bp.newJob') }}";
+                    $.ajax({
+                        type: "GET",
+                        url: url,
+                        data: {work_type: 'patient_draft', work_quality: patient},
+                        success: function () {
+                            let criteria = ["/patient/invoice/new/" + patient_json_string["tariff"] + "/new-draft"];
+                            dynamic.apply(this, criteria);  
+                        
+                            }
+                    });
                 }
             });
             e.preventDefault();
@@ -281,13 +273,19 @@
                 type: "POST",
                 url: url,
                 data: $('.other').serialize() ,
-                success: function (returnData) {
-                    const obj = JSON.parse(returnData)
-                    // console.log(obj)
-                    if(obj == "other"){
-                        let criteria = ["/patient/invoice/new"];
-                        dynamic.apply(this, criteria);  
-                    }
+                success: function (patient) {
+                    const patient_json_string = JSON.parse(patient)
+                    var url = "{{ url_for('api_bp.newJob') }}";
+                        $.ajax({
+                            type: "GET",
+                            url: url,
+                            data: {work_type: 'patient_draft', work_quality: patient},
+                            success: function () {
+                                let criteria = ["/patient/invoice/new/" + patient_json_string["tariff"]  + "/new-draft"];
+                                dynamic.apply(this, criteria);  
+                        
+                            }
+                        });
                 }
             });
             e.preventDefault();
@@ -296,8 +294,8 @@
                 e.preventDefault();
                 alert("Patient birth date has an incorrect format. Please use the following format: dd.mm.yyyy");
             } 
-
         });
+
 
         var other_medical_aid_field = document.querySelector('.other_medical_aid');
         other_medical_aid_field.addEventListener('keypress', function ( e ) {  
@@ -309,7 +307,6 @@
         });
         
         
-
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
                 if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {

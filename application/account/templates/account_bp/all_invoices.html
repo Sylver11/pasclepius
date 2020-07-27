@@ -18,6 +18,7 @@ function closeDropDown(){
 
 
     var invoices = '{{ invoices_json }}';
+    // console.log(invoices)
     invoices = JSON.parse(invoices.replace(/&#34;/g,'"'));
     var invoice_list = document.getElementById("invoice_list");
     invoice_list.style.display = "flex";

@@ -1050,27 +1050,7 @@ $(document).on("keyup", ".treatmentsearch", function (e) {
         "{% endfor %}"
     }
 
-
-
-    function keepState(){
-        var invoice_container = document.getElementById("container_id");
-        console.log("is this ruuuuunnng????")   
-        if (document.getElementById("container_id").classList.contains('invoice_draft_class')){
-            // localStorage.clear();
-            // localStorage.removeItem('invoice_draft');
-            var data = $('form').serializeArray();
-            console.log(data)
-            $.each(data, function(){
-                console.log(this)
-                localStorage.setItem(this.name, this.value)
-            })
-            // console.log(data);
-            localStorage.setItem("invoice_draft", invoice_container.outerHTML);
-            setTimeout(keepState,1000);
-            console.log(invoice_container.outerHTML)
-        }
-    }
-    keepState()
+    
     
 });
 

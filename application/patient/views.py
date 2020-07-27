@@ -7,6 +7,8 @@ from application.db_invoice import queryInvoice, getPatient, getSingleInvoice, g
 from datetime import datetime
 import datetime as datetime2
 import simplejson as json
+import re
+
 
 patient_bp = Blueprint('patient_bp',__name__,
         template_folder='templates', static_folder='static')
@@ -55,10 +57,7 @@ def createPatient():
     form_other = Patient_other()
     if request.method == 'POST' and form_mva.is_submitted() and form_mva.validate_on_submit():
         session["PATIENT"] = form_mva.data
-        return json.dumps('mva')
-#    elif request.method == 'POST' and form_psemas.is_submitted() and form_psemas.validate() and form_psemas.validate_on_submit():
- #       session["PATIENT"] = form_psemas.data
- #       return json.dumps('psemas')
+        return json.dumps(form_mva.data)
     elif request.method == 'POST' and form_other.validate_on_submit():
         session["PATIENT"] = form_other.data
         return json.dumps('other')
@@ -77,22 +76,13 @@ def Continue():
             page_title = 'Continue previous invoice')
 
 
-@patient_bp.route('/invoice/new')
+@patient_bp.route('/invoice/new/<tariff>/<status>')
 @login_required
-def newInvoice():
-    medical_aid = (session.get('PATIENT')["medical_aid"])
-    tariff = (session.get('PATIENT')["tariff"])
-    patient = session.get('PATIENT')['patient_name']
+def newInvoice(tariff, status):
     form = getTreatmentForm(tariff)
-    data = checkUser(current_user.id)
-    layout_code = data['invoice_layout']
-    return render_template('patient/invoice.html',
-                dates = None,
-                treatments = None,
-                form = form,
-                patient = patient,
-                layout_code = layout_code,
-                page_title = 'New ' + medical_aid + ' invoice')
+    return render_template('patient/' + tariff[:-5] + '.html',
+            status = status,
+            form = form)
 
 
 @patient_bp.route('/invoice/<medical_aid>/<year>/<index>')
@@ -130,7 +120,8 @@ def Invoice(medical_aid, year, index):
 
 @patient_bp.route('/last-five')
 def lastFiveTabs():
-    last_five = lastFive(current_user.uuid, 'invoice_tab')
+    work_quality = request.args.get('work_type')
+    last_five = lastFive(current_user.uuid, work_quality)
     return json.dumps(last_five)
 
 #@patient_bp.route('/<patient>/continue-invoice')

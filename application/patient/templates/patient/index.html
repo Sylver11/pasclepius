@@ -12,21 +12,11 @@
      $.ajax({
         type: "GET",
         url: '/patient/last-five', 
+        data: {work_type: "invoice_tab"},
         success: function (returnData) {
           const obj = JSON.parse(returnData)
           var lower_navbar = document.getElementById("myTab")
-          // if(localStorage.getItem('invoice_draft')){
-          //   var tab = document.createElement("BUTTON");
-          //   tab.addEventListener("click", function(e){ 
-          //     e.preventDefault();
-          //     $('#invoice-tab').html(localStorage.getItem("invoice_draft"));
-          //     }, false);
-          //   tab.setAttribute("id", "tab-draft");
-          //   tab.setAttribute("class", "tab");
-          //   tab.textContent = "Draft";
-          //   lower_navbar.appendChild(tab);
-          // }
-          
+
           for (let i = 0; i < obj.length; i++) {
             const element = obj[i];
             var tab = document.createElement("BUTTON");

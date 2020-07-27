@@ -13,6 +13,7 @@ from decimal import *
 import subprocess
 import simplejson as json
 
+from application.db_workbench import newWork
 
 api_bp = Blueprint('api_bp',__name__)
 
@@ -106,22 +107,21 @@ def liveSearchTreatment():
 @api_bp.route('/get-value',methods=['GET','POST'])
 @login_required
 def getValue():
-    tariff = session.get('PATIENT')["tariff"]
+    #tariff = session.get('PATIENT')["tariff"]
     item = request.args.get('item', 0, type=int)
+    tariff = request.args.get('tariff')
     value = getValueTreatments(item, tariff)
     value_json = json.dumps({'value' : value['value_cent'], 'description' :
         value['description']})
     return value_json
 
 
-#@api_bp.route('/get-values',methods=['GET','POST'])
-#@login_required
-#def getValues():
-#    tariff = session.get('PATIENT')["tariff"]
-#    items = session.get('PATIENT')['treatments']
-#    value_list = getMultipleValues(items, tariff)
-#    value_list = json.dumps(value_list)
-#    return value_list
+@api_bp.route('/add-job',methods=['GET','POST'])
+def newJob():
+    work_type = request.args.get('work_type')
+    work_quality = request.args.get('work_quality')
+    status = newWork(current_user.uuid, work_type, work_quality)
+    return json.dumps(status)
 
 
 @api_bp.route('/get-invoice-items',methods=['GET','POST'])

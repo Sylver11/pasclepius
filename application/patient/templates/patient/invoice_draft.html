@@ -1,0 +1,161 @@
+{% block content %}
+
+<div id="patient_info"></div>
+
+<script>
+$(document).ready(function(){
+     
+    function addSubmit(ev) {
+        ev.preventDefault();   
+        if ($('form').data('submitted') === true) {
+            ev.preventDefault();
+            $(this).find('#submit').prop('disabled', true);
+            $(this).find('#submit').css('cursor', 'default');
+            $('#btnAdd_0').css('cursor', 'default');
+            $('#btnAdd_0').prop('disabled', true);
+            $('#treatmentsearch').attr('disabled', true);
+        } else {
+            $.ajax({
+            method: 'POST',
+            url: '/generate-invoice',
+            data: $('form').serialize(),
+            success: function (data) {
+                $('form').data('submitted', true);
+                $('#submit').prop('disabled', true);
+                $('#submit').css('cursor', 'default');
+                $('#btnAdd_0').css('cursor', 'default');
+                $('#btnAdd_0').prop('disabled', true);
+                $('.clone').prop('disabled', true);
+                $('.below').prop('disabled', true);
+                $('.remove').prop('disabled', true);
+                $('#treatmentsearch').attr('disabled', true);
+                addShow(data)
+            }})
+        }
+    }
+
+    $(document).on("click", "#download_invoice", function(){
+        $('head').append('<meta http-equiv="refresh" content="1;url=/download-invoice/' + Math.floor(Math.random() * 10000) + '"/>');
+        })
+
+
+    function addShow(data) {
+        $('#result').text(data);
+        if(data =='success'){
+            $('#download_invoice').css('display', 'block')
+      }
+    }
+
+
+    $('.invoice_form').on('submit', addSubmit);
+
+
+    $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                }
+            }
+        })
+
+
+    $(document).on("click", ".unhide_change", function(event) {
+        event.preventDefault();
+        $(this).hide()
+        $(this).next().next().next().css("display", "inline-block");
+        $(this).next().next().css("display", "inline-block");
+        $(this).next().css("display", "inline-block")
+        $(this).prev().css("margin", "0")
+    });
+
+
+    $(document).on("click", ".change_session", function(e) {
+        e.preventDefault();
+        var change_session_button = $(this);
+        var description = $(this).prev().attr("name")
+        var item = $(this).prev().val()
+        $.ajax({
+            type: "GET",
+            url: '/update-session',
+            data: {description: description, item: item}, 
+            dataType: 'json',
+            success: function (returnData) {
+                alert(returnData);
+                change_session_button.parent().prev().children('p').text(item);
+                change_session_button.hide();
+                change_session_button.next().hide();
+                change_session_button.prev().hide();
+                change_session_button.prev().prev().show()    
+            }
+        })
+    });
+
+
+    $(document).on("click", ".cancel_change", function(event) {
+        event.preventDefault();
+        $(this).hide()
+        $(this).prev().hide();
+        $(this).prev().prev().hide();
+        $(this).prev().prev().prev().show()
+    });
+
+
+    $.ajax({
+                type: "GET",
+                url: '/patient/last-five', 
+                data: {work_type: "patient_draft"},
+                success: function (patient) {
+                    patient = JSON.parse(patient);
+                    patient = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
+                    var div = document.getElementById("patient_info")
+                    for (const [key, value] of Object.entries(patient)) {
+                        if(value != "" && key != "csrf_token"){
+                            var p = document.createElement("P"); 
+                            p.textContent = key + ": " + value
+                            div.appendChild(p)
+                        }               
+                    }
+                    keepState()
+                }
+            })
+
+        
+            
+        function keepState(){
+            var data = $('form').serializeArray();
+            var invoice = {};
+            var treatments = [];
+            var obj = {};
+            var counter = 0; 
+            $.each(data, function(){
+                if(this.name == "treatments" || this.name == "modifier" || this.name == "date" || this.name == "price"){
+                    obj[this.name] = this.value
+                    if (this.name != 'modifier'){
+                        counter++;
+                    }
+                    if(counter == 3){
+                        treatments.push(obj);
+                        obj = {};
+                        counter = 0;
+                    }   
+                }
+                else{
+                    invoice[this.name] = this.value;
+                }
+            })
+            invoice["treatments"] = treatments;
+            var invoice_json_string = JSON.stringify(invoice);
+            var url = "{{ url_for('api_bp.newJob') }}";
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: {work_quality: invoice_json_string, work_type: 'invoice_draft'},
+                success: function () {
+                }
+            });
+            setTimeout(keepState,5000);
+    } 
+});
+
+</script>
+{% endblock %}

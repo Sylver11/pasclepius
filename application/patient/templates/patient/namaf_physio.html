@@ -1,0 +1,378 @@
+{% include 'patient/invoice_draft.html' %}
+{% block content %}
+<form autocomplete="off" id="NewOrderForm" class="form">   
+        {{ form.hidden_tag() }}
+        <div class="form-group float-right">
+        {{ form.date_invoice.label(for="date_invoice") }}
+        {{ form.date_invoice(class_="form-control") }}
+        </div>
+            <table class="table table-striped">
+                <tbody class="tbodyClone">
+                    <tr id="clonedInput0" class="clonedInput form-inline col-md-6">
+                        <th id="row-0" scope="row"><span class="num">1</span></th>
+                        <td class= 'col-md-6'>{{  form.treatments(id='treatment-0', class='treatment form-control')  }}</td>
+                        <td>{{  form.price(id='value-0', class='value form-control w-75')  }}</td>
+                        <td>
+                            <input id="thirty-0" value = "30%" type="button" class="thirty">
+                            <input id="fourty-0" value = "40%" type="button" class="fourty inline"> 
+                        </td>
+                        <td>{{  form.modifier(id='modifier-0', class='modifier form-control w-75')  }}</td>
+                        <td>{{  form.date(id='date-0', class='date form-control', placeholder="DD/MM/YYYY")  }}</td>
+                        <td>
+                            <input id="delete-0" value="Delete" type="button" style="width:100px" class="remove">
+                            <input id="clone-0" value="Clone" type="button" style="width:100px" class="clone">
+                            <input id="below-0" value="Add below" type="button" style="width:100px" class="below">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+        <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
+        <br><br>
+        {% if session['PATIENT']['treatments'] %}
+            <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary', style='background-color:#017B25;', value='Update Invoice') }}</div>
+        {% else %}
+            <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary',style='background-color:#017B25;', value='Create Invoice') }}</div>
+        {% endif %}
+        <div style="display:flex; flex-direction: column; align-items: flex-end;"><span id="result"></span><span><input class="btn btn-secondary" id="download_invoice" value="Download invoice" type="button" style="display:none;"></span></div>
+</form> 
+    
+
+<script>
+$(document).ready(function(){
+
+    $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                }
+            }
+        })
+
+
+    var regex = /^((?=\S*['-])([a-zA-Z'-]+))([0-9][0-9]?)+$/i;
+    var regex_2 = /^(.*)(\d)+$/i;
+    var cloneIndex = $(".clonedInput").length;
+    if ($(".clonedInput").length == 1) {
+        $('.remove').hide();
+    } else {
+        $('.remove').show();
+    }
+
+
+    function clone_insert_below(){
+        $(this).parents(".clonedInput").clone()
+            .insertAfter($(this).parents(".clonedInput"))
+            .attr("id", "clonedInput" + cloneIndex)
+            .find("*")
+            .each(function () { 
+                 var id = this.id || "";
+                 var match = id.match(regex) || [];    
+                 if (match.length == 4) {
+                     this.id = match[1] + (cloneIndex);
+                 }
+                 if (this.className.includes("treatment")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("description")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("date")){
+                    this.value = ''
+                 }  
+                 if (this.className.includes("value")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("thirty")){
+                    this.style.backgroundColor = "white";
+                 } 
+                 if (this.className.includes("fourty")){
+                    this.style.backgroundColor = "white";
+                 } 
+            }            
+            )
+        cloneIndex++;
+        re_number()
+    }
+
+
+    function clone() {
+        if ($(this).parents(".clonedInput").length == 1){
+            $(this).parents(".clonedInput").clone()
+            .appendTo(".tbodyClone")
+            .attr("id", "clonedInput" + cloneIndex)
+            .find("*")
+            .each(function () { 
+                 var id = this.id || "";
+                 var match = id.match(regex) || [];    
+                 if (match.length == 4) {
+                     this.id = match[1] + (cloneIndex);
+                 }
+                 
+                 if (this.className.includes("date")){
+                    this.value = ''
+                 }  
+                 if (this.className.includes("value")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("thirty")){
+                    this.style.backgroundColor = "white";
+                 } 
+                 if (this.className.includes("fourty")){
+                    this.style.backgroundColor = "white";
+                 } 
+            }            
+            )
+            var select_value = $(this).parent().parent().find('.treatment').children().children("option:selected").val()
+            $('#treatment-' + cloneIndex).val(select_value);  
+
+            $.getJSON('/get-value', {
+                item: select_value			
+            }, function(data) {
+                cloneIndex2 = cloneIndex - 1 
+                $('#value-' + cloneIndex2).val(data.value / 100);
+                });
+        }
+        else{
+        $(".clonedInput").last().clone()
+            .appendTo(".tbodyClone")
+            .attr("id", "clonedInput" + cloneIndex)
+            .find("*")
+            .each(function () { 
+                 var id = this.id || "";
+                 var match = id.match(regex) || [];  
+                 if (match.length == 4) {
+                     this.id = match[1] + (cloneIndex);
+                 }
+                 if (this.className.includes("treatment")){
+                    this.value = ''
+                    var elements = this.options
+                    if(elements){
+                        for(var i = 0; i < elements.length; i++){
+                        elements[i].removeAttribute("selected");
+                        }
+                    }
+                 } 
+                 if (this.className.includes("description")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("value")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("thirty") || (this.className.includes("fourty"))){
+                    this.style.backgroundColor = "white";
+                    this.style.display = "none";
+                 } 
+                 if (this.className.includes("modifier")){
+                    this.style.display = "none";
+                 } 
+                 if (this.className.includes("value")){
+                    this.style.display = "none";
+                 } 
+                 if (this.className.includes("date")){
+                    this.style.display = "none";
+                    this.value = ''
+                 } 
+                 if (this.className.includes("clone")){
+                    this.style.display = "none";
+                 } 
+                 if (this.className.includes("row")){
+                    this.remove();
+                 } 
+            })
+        }
+        
+        cloneIndex++;
+
+        if ($(".clonedInput").length == 1) {
+            $('.remove').hide();
+        } else {
+            $('.remove').show();
+        }
+        $(document).scrollTop($(document).height());
+        // re_number()
+    }
+
+
+  
+
+
+    function remove() {        
+        $(this).parents(".clonedInput").remove();
+        re_number()
+
+        if ($(".clonedInput").length == 1) {
+            $('.remove').hide();
+        } else {
+            $('.remove').show();
+        }
+    }
+
+
+    function addPremium(object, id, percent){
+        var current_value = parseFloat(object.parent().parent().children().children(".value").val());
+	   	let plus_premium = current_value.toFixed(3) * percent;
+	  	object.parent().parent().children().children(".value").val(plus_premium.toFixed(2));
+        object.siblings().css('background-color', 'white');
+        object.css('background-color', 'green');
+        value_edit[id] = {
+            id: id,
+            value: current_value,
+            edit: true,
+            last: percent
+        };
+    }
+
+
+    function subtractPremium(object, id){
+        current_value = value_edit[id].value;
+        object.parent().parent().children().children(".value").val(current_value.toFixed(2));
+		object.css('background-color', 'white');
+        object.siblings().css('background-color', 'white');
+ 	    value_edit[id]={
+            id: id,
+            value: current_value,
+            edit: false,
+        }
+    }
+
+
+    function replacePremium(object, id, percent){
+        original_value = value_edit[id].value;
+        let plus_premium = original_value.toFixed(3) * percent;
+	  	object.parent().parent().children().children(".value").val(plus_premium.toFixed(2));
+        object.siblings().css('background-color', 'white');
+        object.css('background-color', 'green');
+        value_edit[id] = {
+            id: id,
+            value: original_value,
+            edit: true,
+            last: percent
+        };
+    }
+
+
+    function setPremium(id, percent, original_value){
+        original_value = parseFloat(original_value)
+        if (percent == 1.4){
+            $('#fourty-' + id).css('background-color', 'green');
+        }
+        else{
+            $('#thirty-' + id).css('background-color', 'green');
+        }
+        value_edit[id] = {
+            id: id,
+            value: original_value,
+            edit: true,
+            last: percent
+        };
+    }
+
+
+    function checkState(object, id, percent){    
+	    if (typeof value_edit[id] !== 'undefined'){
+		    if(value_edit[id].edit == false){
+                addPremium(object, id, percent)
+		    }
+		    else if (value_edit[id].last == percent){
+                subtractPremium(object, id)  
+		    }
+            else{
+                replacePremium(object, id, percent)          
+            }
+		}
+	    else{
+            addPremium(object, id, percent)
+	   }
+    }
+
+    var value_edit = [];
+
+    $(document).on('click', '.thirty', function(){
+        var percent = 1.3;
+        var get_id_from_html = $(this).parent().parent().attr('id');
+        var id = get_id_from_html.match(regex_2)[2]
+        id = parseInt(id)
+        var object = $(this)
+        checkState(object, id, percent)
+    })
+
+
+    $(document).on('click', '.fourty', function(){
+        var percent = 1.4;
+        var get_id_from_html = $(this).parent().parent().attr('id');
+        var id = get_id_from_html.match(regex_2)[2]
+        id = parseInt(id)
+        var object = $(this)
+        checkState(object, id, percent)
+    })
+
+     
+    function newTreatmentLiveSearch(element){
+        element.parentNode.parentNode.childNodes[5].childNodes[0].style.display = "block";
+        element.parentNode.parentNode.childNodes[7].childNodes[0].style.display = "block";
+        element.parentNode.parentNode.childNodes[9].childNodes[0].style.display = "block";
+        if(element.value!= 0){
+            $.getJSON('/get-value', {
+                item: element.value			
+            }, function(data) {
+                element.parentNode.parentNode.childNodes[7].childNodes[0].value = data.value / 100   
+                });
+        }
+    }
+
+    var sibling_of_value = null;
+    $(document).on('change', '.treatment', newTreatment);
+    function newTreatment(event){
+        var id_ = this.id || "";
+        var match_ = id_.match(regex) || [];
+        match_ = parseInt(match_[3])  
+        value_edit.splice(match_, 1);
+        $(this).parent().siblings().find('.value').show()
+        $(this).parent().siblings().find('.thirty').show()
+        $(this).parent().siblings().find('.fourty').show()
+        $(this).parent().siblings().find('.date').show()
+        $(this).parent().siblings().find('.modifier').show()
+        $(this).parent().siblings().find('.clone').show()
+        $(this).parent().siblings().find('.thirty').css('background-color', 'white');
+        $(this).parent().siblings().find('.fourty').css('background-color', 'white');
+		sibling_of_value = $(this);
+        if($(this).val()!= 0){
+            $.getJSON('/get-value', {
+                item: $(this).val()			
+            }, function(data) {
+                $(sibling_of_value).parent().parent().children().children(".value").val(data.value / 100);
+                });
+            }
+            else{
+                $(sibling_of_value).parent().parent().children().children(".value").val("");
+            }
+        return false;
+    };
+
+    let element = document.getElementById('treatment-0');
+    element.value = '';
+    $('#date-0').hide();
+    $('#value-0').hide();
+    $('#modifier-0').hide();
+    $('#clone-0').hide();
+    $('#thirty-0').hide();
+    $('#fourty-0').hide();
+    $('#admission_date').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#discharge_date').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#diagnosis_date').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#date_invoice').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#date_invoice').datepicker("setDate", new Date());
+    $(document).on("click", ".clone", clone);
+    $(document).on("click", ".below", clone_insert_below);
+    $(document).on("click", ".remove", remove);
+    $(document).on("click", ".date", function() {
+        $(this).removeClass('hasDatepicker');
+        $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" )
+    });
+    
+});
+
+</script>
+{% endblock %}
