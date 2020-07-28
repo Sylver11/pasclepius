@@ -330,6 +330,80 @@ def add_invoice(user, patient, invoice_id, invoice_file_url, date_invoice, item_
     conn.close()
     return status
 
+def insertNewInvoice(uuid_text, invoice_id, invoice_file_url, new_invoice_form):
+  #  patient_birth_date = procedure_date = diagnosis_date = admission_date = discharge_date = datetime.strptime('1000-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+    #item_dates = [d.replace(d, str(datetime.strptime(d, '%d.%m.%Y'))) for d in item_dates]
+    list = []
+    print(new_invoice_form.getlist('value'))
+    for i in range(len(new_invoice_form.getlist('treatments'))):
+        list_item = []
+       # item_value_cent = float(new_invoice_form.getList['value'][i]) * 100
+        list_item.extend((uuid_text,
+            invoice_id,
+            new_invoice_form.getlist('treatments')[i],
+            new_invoice_form.getlist('units')[i],
+            new_invoice_form.getlist('description')[i],
+            float(new_invoice_form.getlist('value')[i]) * 100,
+            float(new_invoice_form.getlist('post_value')[i]) * 100,
+            datetime.strptime(new_invoice_form.getlist('date')[i], '%d.%m.%Y'),
+           # new_invoice_form.getlist('modifier')[i]
+            ))
+        list_item = tuple(list_item)
+        list.append(list_item)
+
+    sql_individual_item = """INSERT INTO invoice_items (uuid_text,
+    invoice_id, item, units, description, value_cent, post_value_cent,
+    date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+
+    sql_check_duplicate = """ SELECT * FROM invoices WHERE uuid_text='{}' AND
+    patient_name='{}' AND date_created='{}'""".format(uuid_text,
+            new_invoice_form['patient_name'],
+            datetime.strptime(new_invoice_form['date_created'], '%d.%m.%Y'))
+
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql_check_duplicate)
+    rows = cursor.fetchall()
+    if not rows:
+        cursor.execute("""INSERT INTO invoices (uuid_text,
+    patient_name, date_created, date_invoice, medical_aid,
+    invoice_id, invoice_file_url, tariff, main_member,
+    patient_birth_date, medical_number, `case_number`, po_number,
+    hospital_name, admission_date, discharge_date, `procedure`,
+    procedure_date, diagnosis, diagnosis_date,
+    implants, intra_op, post_op)
+    VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    """,(uuid_text,
+        new_invoice_form['patient_name'],
+        datetime.strptime(new_invoice_form['date_created'], '%d.%m.%Y'),
+        datetime.strptime(new_invoice_form['date_invoice'], '%d.%m.%Y'),
+        new_invoice_form['medical_aid'],
+        invoice_id,
+        invoice_file_url,
+        new_invoice_form['tariff'],
+        new_invoice_form.get('main_member'),
+        new_invoice_form.get('patient_birth_date'),
+        new_invoice_form.get('medical_number'),
+        new_invoice_form.get('case_number'),
+        new_invoice_form.get('po_number'),
+        new_invoice_form.get('hospital_name'),
+        new_invoice_form.get('admission_date'),
+        new_invoice_form.get('discharge_date'),
+        new_invoice_form.get('procedure'),
+        new_invoice_form.get('procedure_date'),
+        new_invoice_form.get('diagnosis'),
+        new_invoice_form.get('diagnosis_date'),
+        new_invoice_form.get('implants'),
+        new_invoice_form.get('intra_op'),
+        new_invoice_form.get('post_op')))
+
+        cursor.executemany(sql_individual_item, list)
+        status = True
+    else:
+        status = False
+    cursor.close()
+    conn.close()
+    return status
 
 if __name__ == '__main__':
     from dotenv import load_dotenv
@@ -348,8 +422,8 @@ if __name__ == '__main__':
     invoice_file_url = '/home/practice/Documents/Juschdus sei super praxis/MVA_Justus2020/7July2020/7_5Thomas Mueller'
     modifiers = []
     treatments = ['503', '773', '1815', '2725']
-    prices = ['3688.10', '1432.30', '3917.30', '447.60']
+    values = ['3688.10', '1432.30', '3917.30', '447.60']
     dates = ['15.07.2020', '22.07.2020', '16.07.2020', '15.07.2020']
     date_invoice = ['07.07.2020']
     uuid = 'E7D76BE4-BA3E-11EA-BCD1-0AE0AFC200E9'
-    add_invoice(layout, patient, invoice_id, invoice_file_url, modifiers, treatments, prices, dates, date_invoice, uuid)
+    add_invoice(layout, patient, invoice_id, invoice_file_url, modifiers, treatments, values, dates, date_invoice, uuid)

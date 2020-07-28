@@ -177,13 +177,18 @@ $(document).ready(function() {
                         success: function (patient) {
                             patient = JSON.parse(patient);
                             patient = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
-
-                            let criteria = ["/patient/invoice/new/" + patient["tariff"] + "/continue-draft"];
+                            let criteria = ["/patient/invoice/new/" + patient["tariff"] + "/continue_draft"];
                             dynamic.apply(this, criteria);
                         }
                     })
                 }, false);
-                lower_navbar.appendChild(tab);
+                if(document.getElementById("tab-draft")){
+                    lower_navbar.replaceChild(tab, document.getElementById("tab-draft"));
+                }
+                else{
+                    var referenceNode = document.getElementById("tab-0")
+                    lower_navbar.insertBefore(tab, referenceNode)
+                }
         })
         }
 
@@ -205,7 +210,6 @@ $(document).ready(function() {
 
         $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
         $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
-        $('.psemas').children('#date_psemas').datepicker({dateFormat: 'dd.mm.yy'})
         $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
         $('#diagnosis_date').datepicker({dateFormat: 'dd.mm.yy'})
         $('#admission_date').datepicker({dateFormat: 'dd.mm.yy'})
@@ -249,7 +253,7 @@ $(document).ready(function() {
                         url: url,
                         data: {work_type: 'patient_draft', work_quality: patient},
                         success: function () {
-                            let criteria = ["/patient/invoice/new/" + patient_json_string["tariff"] + "/new-draft"];
+                            let criteria = ["/patient/invoice/new/" + patient_json_string["tariff"] + "/new_draft"];
                             dynamic.apply(this, criteria);  
                         
                             }
@@ -281,7 +285,7 @@ $(document).ready(function() {
                             url: url,
                             data: {work_type: 'patient_draft', work_quality: patient},
                             success: function () {
-                                let criteria = ["/patient/invoice/new/" + patient_json_string["tariff"]  + "/new-draft"];
+                                let criteria = ["/patient/invoice/new/" + patient_json_string["tariff"]  + "/new_draft"];
                                 dynamic.apply(this, criteria);  
                         
                             }

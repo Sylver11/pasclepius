@@ -16,7 +16,8 @@ from application.db_users import checkUser
 def load_user(id):
     data = checkUser(id)
     if data:
-        return User(id, data["first_name"], data["uuid_text"])
+        return User(id, data["first_name"], data["uuid_text"],
+                data["practice_name"], data["invoice_layout"])
 
 
 def create_app():

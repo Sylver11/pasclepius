@@ -1,9 +1,12 @@
+from application.url_generator import InvoicePath
+from application.name_generator import InvoiceName
+from werkzeug.datastructures import ImmutableMultiDict
 from flask_login import current_user, login_required
 from flask import render_template, Blueprint, request, session, redirect
 from application.db_workbench import newWork, lastFive
 from application.db_users import checkUser
 from application.forms import Patient_mva, Patient_psemas, Patient_other,getTreatmentForm
-from application.db_invoice import queryInvoice, getPatient, getSingleInvoice, getItems
+from application.db_invoice import insertNewInvoice, get_index, queryInvoice, getPatient, getSingleInvoice, getItems
 from datetime import datetime
 import datetime as datetime2
 import simplejson as json
@@ -123,6 +126,46 @@ def lastFiveTabs():
     work_quality = request.args.get('work_type')
     last_five = lastFive(current_user.uuid, work_quality)
     return json.dumps(last_five)
+
+
+
+
+@patient_bp.route('/generate-new-invoice', methods=['POST'])
+def NewInvoice():
+    if request.form:
+        new_invoice_form = request.form
+        item_modifiers = [] 
+        invoice_index = get_index(current_user.uuid, new_invoice_form['medical_aid'], new_invoice_form['date_created'])
+        print(invoice_index)
+        invoice_file_url = InvoicePath(new_invoice_form, invoice_index,
+                current_user.first_name, current_user.practice_name)
+        invoice_file_url = invoice_file_url.generate()
+        invoice_id = InvoiceName(new_invoice_form, invoice_index, item_modifiers)
+        invoice_id = invoice_id.generate()
+        print(invoice_id)
+        print(invoice_file_url)
+        status = insertNewInvoice(current_user.uuid, invoice_id, invoice_file_url, new_invoice_form)
+
+#      if status:
+   #         res_dict = {
+    #                "user" : user,
+     #               "patient" : patient,
+      #              "item_numbers" : item_numbers,
+       #             "item_descriptions" : item_descriptions,
+        #            "item_values" : item_values,
+         #           "item_dates" : item_dates,
+          #          "item_modifiers" : item_modifiers,
+           #         "invoice_file_url" : invoice_file_url,
+            #        "invoice_id" : invoice_id,
+             #       "date_invoice" : date_invoice
+              #      }
+           # to_json = json.dumps(res_dict)
+           # subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
+           #                 '/swriter/main.py', to_json])
+        return json.dumps("success")
+    return json.dumps('error')
+
+
 
 #@patient_bp.route('/<patient>/continue-invoice')
 #@login_required

@@ -1,9 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<body>
 <div id='invoice_list'></div>
 
 <script>
+
+function dynamic(load_content){
+        $( "#invoice-tab" ).load( load_content, function(){
+        });
+    }
 
 function closeDropDown(){
     var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -23,7 +25,7 @@ function closeDropDown(){
     invoice_list.style.display = "flex";
     invoice_list.style.flexDirection = "column";
 
-    for (let i = 0; i < invoices.length; i++) {
+for (let i = 0; i < invoices.length; i++) {
         const element = invoices[i];
 
 
@@ -105,20 +107,13 @@ function closeDropDown(){
 
         var continue_button = document.createElement("BUTTON");
         continue_button.addEventListener("click", function(){
-            $.ajax({
-                url: '/patient/set-known-invoice',
-                data: {invoice_id: element['invoice_id']},
-                success: function() {
-                    window.location.href = "/patient/" + element['patient_name'] + "/continue-invoice";
-                },
+            let criteria = ["/patient/invoice/" + element['invoice_id']]; 
+            $('.new-patient').removeClass('active'); 
+            $('.continue').removeClass('active');
+            dynamic.apply(this, criteria);  
             });
-        }); 
         continue_button.textContent = "Continue";
         action_wrapper.appendChild(continue_button);
-     
-
     }
-    
+
 </script>
-</body>
-</html>

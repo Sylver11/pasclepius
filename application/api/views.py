@@ -13,21 +13,22 @@ from decimal import *
 import subprocess
 import simplejson as json
 
-from application.db_workbench import newWork
+from application.db_workbench import newWork, removeWork
 
 api_bp = Blueprint('api_bp',__name__)
 
 
 @api_bp.route('/generate-invoice', methods=['POST'])
 def generateInvoice():
+    print(request.form)
     user = checkUser(current_user.id)
     patient = session.get('PATIENT')
     form = getTreatmentForm(patient['tariff'])
-    if form.treatments.data:
+    if request.form:
         item_dates = request.form.getlist('date')
         item_numbers = request.form.getlist('treatments')
         item_modifiers = request.form.getlist('modifier')
-        item_values = request.form.getlist('price')
+        item_values = request.form.getlist('value')
         item_descriptions = getTreatmentByItem(item_numbers, patient['tariff'])
         date_invoice = request.form.getlist('date_invoice')
         invoice_file_url = invoice_id = status = None
@@ -61,7 +62,8 @@ def generateInvoice():
             return jsonify("success")
         else:
             return jsonify('Error: Entry already exists. Have a look at past invoices to continue this invoice.')
-        return jsonify('error')
+       # return jsonify('error')
+    return jsonify('error')
 
 
 @api_bp.route('/live-search',methods=['GET','POST'])
@@ -123,6 +125,14 @@ def newJob():
     status = newWork(current_user.uuid, work_type, work_quality)
     return json.dumps(status)
 
+
+
+@api_bp.route('/remove-job',methods=['GET','POST'])
+def removeJob():
+    work_type = request.args.get('work_type')
+    work_quality = request.args.get('work_quality')
+    status = removeWork(current_user.uuid, work_type, work_quality)
+    return json.dumps(status)
 
 @api_bp.route('/get-invoice-items',methods=['GET','POST'])
 def getTreatmentName():

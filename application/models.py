@@ -3,9 +3,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(UserMixin):
 
-    def __init__(self, id, first_name='', uuid='', active=True):
+    def __init__(self, id, first_name='', uuid='', practice_name='',
+            invoice_layout='', active=True):
         self.uuid = uuid
         self.first_name = first_name
+        self.practice_name = practice_name
+        self.invoice_layout = invoice_layout
         self.id = id
         self.active = active
 

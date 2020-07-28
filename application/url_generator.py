@@ -8,13 +8,13 @@ import os
 
 class InvoicePath(object):
 
-    def __init__(self, patient, index, data):
+    def __init__(self, patient, index, first_name, practice_name):
         self.date = patient['date_created']
         self.medical_aid = patient['medical_aid'].strip()
         self.patient_name = patient['patient_name'].strip()
         self.index = index
-        self.first_name = data['first_name'].strip()
-        self.practice_name = data['practice_name'].strip()
+        self.first_name = first_name.strip()
+        self.practice_name = practice_name.strip()
 
     def convert(self):
         self.date  =  datetime.strptime(self.date, '%d.%m.%Y')

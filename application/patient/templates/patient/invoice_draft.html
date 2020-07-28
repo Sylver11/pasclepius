@@ -1,6 +1,6 @@
 {% block content %}
 
-<div id="patient_info"></div>
+<form id="patient_info"></form>
 
 <script>
 $(document).ready(function(){
@@ -17,8 +17,8 @@ $(document).ready(function(){
         } else {
             $.ajax({
             method: 'POST',
-            url: '/generate-invoice',
-            data: $('form').serialize(),
+            url: '/patient/generate-new-invoice',
+            data: $('.invoice_form').serialize()+ "&" + $("#patient_info").serialize(),
             success: function (data) {
                 $('form').data('submitted', true);
                 $('#submit').prop('disabled', true);
@@ -110,51 +110,22 @@ $(document).ready(function(){
                     var div = document.getElementById("patient_info")
                     for (const [key, value] of Object.entries(patient)) {
                         if(value != "" && key != "csrf_token"){
-                            var p = document.createElement("P"); 
-                            p.textContent = key + ": " + value
-                            div.appendChild(p)
+                            var input = document.createElement("INPUT"); 
+                            input.value = value
+                            input.name = key;
+                            var label = document.createElement("Label");
+                            label.htmlFor = key;
+                            label.innerHTML= key;
+                            div.appendChild(label)
+                            div.appendChild(input)
                         }               
                     }
-                    keepState()
                 }
             })
 
         
-            
-        function keepState(){
-            var data = $('form').serializeArray();
-            var invoice = {};
-            var treatments = [];
-            var obj = {};
-            var counter = 0; 
-            $.each(data, function(){
-                if(this.name == "treatments" || this.name == "modifier" || this.name == "date" || this.name == "price"){
-                    obj[this.name] = this.value
-                    if (this.name != 'modifier'){
-                        counter++;
-                    }
-                    if(counter == 3){
-                        treatments.push(obj);
-                        obj = {};
-                        counter = 0;
-                    }   
-                }
-                else{
-                    invoice[this.name] = this.value;
-                }
-            })
-            invoice["treatments"] = treatments;
-            var invoice_json_string = JSON.stringify(invoice);
-            var url = "{{ url_for('api_bp.newJob') }}";
-            $.ajax({
-                type: "GET",
-                url: url,
-                data: {work_quality: invoice_json_string, work_type: 'invoice_draft'},
-                success: function () {
-                }
-            });
-            setTimeout(keepState,5000);
-    } 
+
+
 });
 
 </script>
