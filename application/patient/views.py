@@ -3,7 +3,7 @@ from application.name_generator import InvoiceName
 from werkzeug.datastructures import ImmutableMultiDict
 from flask_login import current_user, login_required
 from flask import render_template, Blueprint, request, session, redirect
-from application.db_workbench import newWork, lastFive
+from application.db_workbench import newWork, lastFive, removeWork
 from application.db_users import checkUser
 from application.forms import Patient_mva, Patient_psemas, Patient_other,getTreatmentForm
 from application.db_invoice import insertNewInvoice, get_index, queryInvoice, getPatient, getSingleInvoice, getItems
@@ -11,7 +11,8 @@ from datetime import datetime
 import datetime as datetime2
 import simplejson as json
 import re
-
+import subprocess
+import os
 
 patient_bp = Blueprint('patient_bp',__name__,
         template_folder='templates', static_folder='static')
@@ -20,7 +21,7 @@ patient_bp = Blueprint('patient_bp',__name__,
 @patient_bp.route('')
 @login_required
 def invoiceTab():
-    return render_template('patient/invoice_tab.html')
+    return render_template('patient/tab_bar.html')
 
 
 @patient_bp.route('/<patient>', methods=('GET','POST'))
@@ -110,14 +111,10 @@ def Invoice(medical_aid, year, index):
             date = d.strftime('%d.%m.%Y')
             invoice[o] = date
     invoice['treatments'] = treatments
-    session['PATIENT'] = invoice
-    data = checkUser(current_user.id)
-    layout_code = data['invoice_layout']
-#    medical_aid = (session.get('PATIENT')["medical_aid"])
-    tariff = (session.get('PATIENT')["tariff"])
-    form = getTreatmentForm(tariff) 
-    return render_template('patient/invoice.html',
-            layout_code = layout_code,
+    form = getTreatmentForm(invoice['tariff'])
+    return render_template('patient/' + invoice['tariff'][:-5] + '.html',
+            invoice = json.dumps(invoice),
+            status = 'continue_invoice',
             form = form)
 
 
@@ -136,34 +133,34 @@ def NewInvoice():
         new_invoice_form = request.form
         item_modifiers = [] 
         invoice_index = get_index(current_user.uuid, new_invoice_form['medical_aid'], new_invoice_form['date_created'])
-        print(invoice_index)
         invoice_file_url = InvoicePath(new_invoice_form, invoice_index,
                 current_user.first_name, current_user.practice_name)
         invoice_file_url = invoice_file_url.generate()
         invoice_id = InvoiceName(new_invoice_form, invoice_index, item_modifiers)
         invoice_id = invoice_id.generate()
-        print(invoice_id)
-        print(invoice_file_url)
         status = insertNewInvoice(current_user.uuid, invoice_id, invoice_file_url, new_invoice_form)
+        if status == 'Success':
+            user = checkUser(current_user.id)
+            res_dict = {
+                "user" : user,
+                "invoice": request.form,
+                "invoice_id" : invoice_id,
+                "invoice_file_url" : invoice_file_url,
+                "treatments": request.form.getlist('treatments'),
+                "descriptions": request.form.getlist('description'),
+                "units": request.form.getlist('units'),
+                "post_values": request.form.getlist('post_value'),
+                "dates": request.form.getlist('date')
+                  }
+            to_json = json.dumps(res_dict)
+            print(to_json)
+            subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
+                            '/swriter/main.py', to_json])
+            removeWork(current_user.uuid, 'invoice_draft', 'any')
 
-#      if status:
-   #         res_dict = {
-    #                "user" : user,
-     #               "patient" : patient,
-      #              "item_numbers" : item_numbers,
-       #             "item_descriptions" : item_descriptions,
-        #            "item_values" : item_values,
-         #           "item_dates" : item_dates,
-          #          "item_modifiers" : item_modifiers,
-           #         "invoice_file_url" : invoice_file_url,
-            #        "invoice_id" : invoice_id,
-             #       "date_invoice" : date_invoice
-              #      }
-           # to_json = json.dumps(res_dict)
-           # subprocess.call([os.getenv("LIBPYTHON"), os.getenv("APP_URL") +
-           #                 '/swriter/main.py', to_json])
-        return json.dumps("success")
-    return json.dumps('error')
+            return json.dumps({'status': status, 'invoice_id': invoice_id})
+        return json.dumps({'status': status})
+    return json.dumps({'status': 'Fatal error. Could not read form data.'})
 
 
 

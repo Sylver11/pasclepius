@@ -71,6 +71,7 @@ def setupTable():
         intra_op varchar(255),
         post_op varchar(255),
         submitted_on DATETIME,
+        invoice_layout int(11),
         status varchar(255) NOT NULL DEFAULT 'not-submitted',
         credit_cent int(11) NOT NULL DEFAULT 0,
         remind_me DATETIME,
@@ -131,34 +132,20 @@ def setupTable():
     END IF;
     END;"""
 
-    create_trigger_invoice_draft = """CREATE TRIGGER maxFiveRows AFTER INSERT
-    ON user_workbench
-    FOR EACH ROW
-    BEGIN
-    IF (SELECT COUNT(*) FROM user_workbench WHERE uuid_text = NEW.uuid_text AND
-    work_type = 'invoice_tab') = 6 THEN
-        DELETE FROM user_workbench
-        WHERE uuid_text = NEW.uuid_text
-        AND work_type = 'invoice_tab'
-        ORDER BY created_on ASC
-        LIMIT 1;
-    END IF;
-    END; """
 
 
     conn = pool.connection()
     cursor = conn.cursor()
-   # cursor.execute(sql_drop_table_user_workbench)
-   # cursor.execute(sql_create_table_user_workbench)
-   # cursor.execute(sql_drop_table_invoice_items)
-   # cursor.execute(sql_create_table_invoice_items)
+    cursor.execute(sql_drop_table_user_workbench)
+    cursor.execute(sql_create_table_user_workbench)
+    cursor.execute(sql_drop_table_invoice_items)
+    cursor.execute(sql_create_table_invoice_items)
     #cursor.execute(sql_drop_table_users)
-   # cursor.execute(sql_drop_table_invoice)
-   # cursor.execute(sql_create_table_invoice)
+    cursor.execute(sql_drop_table_invoice)
+    cursor.execute(sql_create_table_invoice)
     cursor.execute(sql_drop_table_namaf_tariffs)
     cursor.execute(sql_create_table_namaf_tariffs)
-   # cursor.execute(create_trigger_status)
-   # cursor.execute(create_trigger_invoice_draft)
+    cursor.execute(create_trigger_status)
     #cursor.execute(sql_create_table_users)
     cursor.close()
     conn.close()

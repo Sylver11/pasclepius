@@ -110,6 +110,62 @@ for (let i = 0; i < invoices.length; i++) {
             let criteria = ["/patient/invoice/" + element['invoice_id']]; 
             $('.new-patient').removeClass('active'); 
             $('.continue').removeClass('active');
+
+            var lower_navbar = document.getElementById("myTab")
+            var tabs = lower_navbar.getElementsByTagName('BUTTON');
+
+            var tab_does_not_exists = true;
+            for (var i = 0; i < tabs.length; i++) {
+                if(tabs[i].textContent.match(element['invoice_id'])){
+                    tabs[i].className += " active";
+                    tab_does_not_exists = false;
+                }
+            } 
+      
+            if(tab_does_not_exists){
+   
+                var tab = document.createElement("BUTTON");
+                tab.setAttribute("id", "tab-" + i);
+                tab.className += " btn";
+                tab.className += " btn-secondary "
+                tab.className += " btn-sm "
+                tab.className += element['invoice_id'];
+                tab.className += " tab";
+                tab.style.marginLeft = "2em";
+                tab.textContent =element['invoice_id'];
+
+                var favi = document.createElement("I");
+                favi.setAttribute("id" , "favi-" + i)
+                favi.setAttribute("class" , "fa fa-remove favi")
+                favi.style.paddingLeft ="5px";
+                favi.addEventListener("click", function(e){
+                    e.preventDefault();
+                    $.ajax({
+                            type: "GET",
+                            url: '/remove-job', 
+                            data: {work_type: "invoice_tab", work_quality: element['invoice_id']},
+                            success: function (status) {
+                                favi_to_be_removed = document.getElementById("favi-" + i)
+                                favi_to_be_removed.remove();
+                                tab_to_be_removed = document.getElementById("tab-" + i)
+                                tab_to_be_removed.remove();
+                            }
+                        }) 
+                });
+
+                var  number_of_already_existing_tabs= document.getElementsByClassName("tab");
+                var  number_of_already_existing_favis= document.getElementsByClassName("favi");
+                if(number_of_already_existing_tabs.length > 4){
+                    number_of_already_existing_tabs[4].remove();
+                    number_of_already_existing_favis[4].remove();
+                    lower_navbar.insertBefore(favi, number_of_already_existing_tabs[0])
+                    lower_navbar.insertBefore(tab, favi)
+                }
+                else{
+                    lower_navbar.insertBefore(favi, number_of_already_existing_tabs[0])
+                    lower_navbar.insertBefore(tab, favi)    
+                }
+            }
             dynamic.apply(this, criteria);  
             });
         continue_button.textContent = "Continue";

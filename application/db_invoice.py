@@ -331,13 +331,10 @@ def add_invoice(user, patient, invoice_id, invoice_file_url, date_invoice, item_
     return status
 
 def insertNewInvoice(uuid_text, invoice_id, invoice_file_url, new_invoice_form):
-  #  patient_birth_date = procedure_date = diagnosis_date = admission_date = discharge_date = datetime.strptime('1000-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
-    #item_dates = [d.replace(d, str(datetime.strptime(d, '%d.%m.%Y'))) for d in item_dates]
     list = []
     print(new_invoice_form.getlist('value'))
     for i in range(len(new_invoice_form.getlist('treatments'))):
         list_item = []
-       # item_value_cent = float(new_invoice_form.getList['value'][i]) * 100
         list_item.extend((uuid_text,
             invoice_id,
             new_invoice_form.getlist('treatments')[i],
@@ -346,7 +343,6 @@ def insertNewInvoice(uuid_text, invoice_id, invoice_file_url, new_invoice_form):
             float(new_invoice_form.getlist('value')[i]) * 100,
             float(new_invoice_form.getlist('post_value')[i]) * 100,
             datetime.strptime(new_invoice_form.getlist('date')[i], '%d.%m.%Y'),
-           # new_invoice_form.getlist('modifier')[i]
             ))
         list_item = tuple(list_item)
         list.append(list_item)
@@ -398,9 +394,9 @@ def insertNewInvoice(uuid_text, invoice_id, invoice_file_url, new_invoice_form):
         new_invoice_form.get('post_op')))
 
         cursor.executemany(sql_individual_item, list)
-        status = True
+        status = 'Success'
     else:
-        status = False
+        status = 'A very similiar invoice already exists. Please check your past invoices for ' + new_invoice_form['patient_name'] + ' created on the ' + new_invoice_form['date_created']
     cursor.close()
     conn.close()
     return status

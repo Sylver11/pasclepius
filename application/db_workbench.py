@@ -10,6 +10,8 @@ def newWork(uuid_text, work_type, work_quality):
         cursor.execute(sql_check_duplicate)
         row = cursor.fetchone()
         if(row):
+            cursor.close()
+            conn.close()
             return 'success'
         sql_tab_count = """SELECT COUNT(*) FROM user_workbench WHERE uuid_text
         = '{}' AND work_type = 'invoice_tab'""".format(uuid_text)
@@ -18,7 +20,7 @@ def newWork(uuid_text, work_type, work_quality):
         if (rows['COUNT(*)'] > 4):
             num_to_delete = rows['COUNT(*)'] - 4
             sql_max_five = """DELETE FROM user_workbench WHERE uuid_text = '{}' AND
-            work_type = 'invoice_tab' ORDER BY created_on DESC LIMIT
+            work_type = 'invoice_tab' ORDER BY created_on ASC LIMIT
             {}""".format(uuid_text, num_to_delete)
             cursor.execute(sql_max_five)
     if(work_type == 'invoice_draft'):
@@ -39,6 +41,14 @@ def newWork(uuid_text, work_type, work_quality):
 def removeWork(uuid_text, work_type, work_quality):
     conn = pool.connection()
     cursor = conn.cursor()
+    if work_type == 'invoice_draft':
+        sql = """DELETE FROM user_workbench WHERE uuid_text = '{0}' AND
+        (work_type = 'invoice_draft' OR work_type = 'patient_draft')""".format(uuid_text)
+        cursor.execute(sql)
+        cursor.close()
+        conn.close()
+        return 'success'
+
     sql_delete = """DELETE FROM user_workbench WHERE uuid_text = '{0}' AND
         work_type = '{1}' AND work_quality = '{2}'""".format(uuid_text,
                 work_type, work_quality)

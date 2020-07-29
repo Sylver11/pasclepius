@@ -3,12 +3,12 @@ from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK, APPEND_PARAGRAPH
 from com.sun.star.awt.FontWeight import BOLD as FW_BOLD, NORMAL, LIGHT
 
 
-def patientTable(doc, text, cursor, patient, invoice_id, date_invoice):
+def patientTable(doc, text, cursor, patient, invoice_id):
     cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
     text.insertControlCharacter(cursor, PARAGRAPH_BREAK, False)
     cursor.setPropertyValue( "CharHeight", 12.0 )
     cursor.setPropertyValue( "ParaAdjust", RIGHT)
-    text.insertString(cursor, date_invoice[0], 0)
+    text.insertString(cursor, patient['date_invoice'], 0)
     text.insertControlCharacter(cursor, PARAGRAPH_BREAK, False)
     cursor.setPropertyValue( "ParaAdjust", CENTER )
     cursor.setPropertyValue( "CharHeight", 18.0 )

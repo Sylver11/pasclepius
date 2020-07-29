@@ -1,9 +1,9 @@
-{% include 'patient/invoice_draft.html' %}
 {% block content %}
-<form autocomplete="off" class="treatmentsearch-draft">
-    <input id="treatmentsearch-draft" class="form-control mr-sm-2" name="treatment" type="search" placeholder="Search treatments">
+<form id="patient_info"></form>
+<form autocomplete="off" class="treatmentsearch">
+    <input id="treatmentsearch" class="form-control mr-sm-2" name="treatment" type="search" placeholder="Search treatments">
 </form>
-<form autocomplete="off" class="invoice_form invoice_draft" id="namaf_orthopaedic_surgoens" >   
+<form autocomplete="off" class="invoice_form" id="namaf_orthopaedic_surgoens" >   
         {{ form.hidden_tag() }}
         <div class="form-group float-right">
         {{ form.date_invoice.label(for="date_invoice") }}
@@ -85,10 +85,326 @@ $(document).ready(function(){
 
 
 
-    $(document).on("keyup", ".treatmentsearch-draft", function (e) {
+    
+
+
+    var regex = /^((?=\S*['-])([a-zA-Z'-]+))([0-9][0-9]?)+$/i;
+    var regex_2 = /^(.*)(\d)+$/i;
+    var cloneIndex = $(".clonedInput").length;
+    if ($(".clonedInput").length == 1) {
+        $('.remove').hide();
+    } else {
+        $('.remove').show();
+    }
+
+
+    function clone() {
+        $(".clonedInput").last().clone()
+            .appendTo(".tbodyClone")
+            .attr("id", "clonedInput" + cloneIndex)
+            .find("*")
+            .each(function () { 
+                 var id = this.id || "";
+                 var match = id.match(regex) || [];  
+                 if (match.length == 4) {
+                     this.id = match[1] + (cloneIndex);
+                 }
+                 if (this.className.includes("treatment")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("description")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("value")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("postvalue")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("date")){
+                    this.value = ''
+                 } 
+                 if (this.className.includes("row")){
+                    this.remove();
+                 } 
+            })
+
+        cloneIndex++;
+
+        if ($(".clonedInput").length == 1) {
+            $('.remove').hide();
+        } else {
+            $('.remove').show();
+        }
+        $(document).scrollTop($(document).height());
+        re_number()
+    }
+
+
+  function re_number(){
+        $('table').find('tr').each(function(i, v) {
+            '{% if "namaf_orthopaedic_surgeons" in session["PATIENT"]["tariff"] %}'
+            $(v).find('span.num').text(i);
+            '{% else %}'
+            $(v).find('span.num').text(i + 1);
+            '{% endif %}'
+        });
+    }
+
+
+    function remove() {        
+        $(this).parents(".clonedInput").remove();
+        re_number()
+
+        if ($(".clonedInput").length == 1) {
+            $('.remove').hide();
+        } else {
+            $('.remove').show();
+        }
+    }
+
+
+    $('#admission_date').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#discharge_date').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#diagnosis_date').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#date_invoice').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#date_invoice').datepicker("setDate", new Date());
+    $(document).on("click", ".date", function() {
+        $(this).removeClass('hasDatepicker');
+        $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" )
+    });
+    '{% if status == "continue_invoice" %}'
+        var invoice = '{{ invoice }}';
+        invoice = JSON.parse(invoice.replace(/&#34;/g,'"'));
+        console.log(invoice);
+        // var treatment_search = document.getElementById("treatment_search");
+        var forms = document.getElementsByTagName('FORM');
+        // console.log(forms[3])
+        var treatment_search_string_for_class = invoice["invoice_id"] + "_treatment_search";
+        treatment_search_string_for_class = treatment_search_string_for_class.replace(/\//g, "");
+        console.log(treatment_search_string_for_class);
+        forms[2].classList.add(treatment_search_string_for_class);
+        forms[3].classList.add(invoice["invoice_id"] + "_invoice_form");
+
+        // var lower_navbar = document.getElementById("myTab");
+        
+        // console.log(invoice["invoice_id"])
+
+        for (let i = 0; i < invoice.treatments.length; i++) {
+                            const element = invoice.treatments[i];
+                            var item_number = element["item"]
+                            var item_description = element["description"]
+                            var item_units = element["units"]
+                            var item_date = element["date"]
+                            var post_item_value = element["post_value_cent"]
+                            var item_value = element["value"]
+                            if(i !== 0){
+                                clone()
+                            }   
+                            $('#postvalue-' + i).val(post_item_value / 100)
+                            $('#value-' + i).val(item_value)
+                            $('#units-' + i).val(item_units)
+                            $('#date-' + i).removeClass('hasDatepicker');
+                            $('#date-' + i).datepicker({dateFormat: 'dd.mm.yy'})
+                            $('#date-' + i).datepicker("setDate", item_date);
+            
+                            treatment_input = document.getElementById("treatment-" + i);
+                            description_input = document.getElementById("description-" + i);
+                            treatment_input.value = item_number
+                            description_input.value = item_description
+                            
+                                     
+                        }
+                        var div = document.getElementById("patient_info")
+        for (const [key, value] of Object.entries(invoice)) {
+                        if(value && key != "csrf_token" && key != "treatments" && key != "invoice_file_url" && key != "uuid_text" && key != "id"  ){//value != "" && value ){// || key != "csrf_token"){
+                            var input = document.createElement("INPUT"); 
+                            input.value = value
+                            input.name = key;
+                            var label = document.createElement("Label");
+                            label.htmlFor = key;
+                            label.innerHTML= key;
+                            div.appendChild(label)
+                            div.appendChild(input)
+                        }               
+                    }
+
+    '{% elif status == "continue_draft" %}'
+            $.ajax({
+                type: "GET",
+                url: '/patient/last-five', 
+                data: {work_type: "invoice_draft"},
+                success: function (invoice) {
+                    if(invoice.length > 2){
+                        invoice = JSON.parse(invoice);
+                        invoice = JSON.parse(invoice[0]["work_quality"].replace(/\\"/g, '"'));
+                        for (let i = 0; i < invoice.treatments.length; i++) {
+                            const element = invoice.treatments[i];
+                            var item_number = element["treatments"]
+                            var item_description = element["description"]
+                            var item_units = element["units"]
+                            var item_date = element["date"]
+                            var post_item_value = element["post_value"]
+                            var item_value = element["value"]
+                            if(i !== 0){
+                                clone()
+                            }   
+                            $('#postvalue-' + i).val(post_item_value)
+                            $('#value-' + i).val(item_value)
+                            $('#units-' + i).val(item_units)
+                            $('#date-' + i).removeClass('hasDatepicker');
+                            $('#date-' + i).datepicker({dateFormat: 'dd.mm.yy'})
+                            $('#date-' + i).datepicker("setDate", item_date);
+            
+                            treatment_input = document.getElementById("treatment-" + i);
+                            description_input = document.getElementById("description-" + i);
+                            treatment_input.value = item_number
+                            description_input.value = item_description
+                            
+                                     
+                        }
+                        keepState() 
+                    }
+                    else{
+                        keepState() 
+                    }
+                }
+            })
+
+            $.ajax({
+                type: "GET",
+                url: '/patient/last-five', 
+                data: {work_type: "patient_draft"},
+                success: function (patient) {
+                    patient = JSON.parse(patient);
+                    patient = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
+                    var div = document.getElementById("patient_info")
+                    for (const [key, value] of Object.entries(patient)) {
+                        if(value != "" && key != "csrf_token"){
+                            var input = document.createElement("INPUT"); 
+                            input.value = value
+                            input.name = key;
+                            var label = document.createElement("Label");
+                            label.htmlFor = key;
+                            label.innerHTML= key;
+                            div.appendChild(label)
+                            div.appendChild(input)
+                        }               
+                    }
+                }
+            })
+    '{% else %}'
+        keepState();
+    '{% endif %}'
+
+
+    function keepState(){
+        var data = $('.invoice_form').serializeArray();
+        var invoice = {};
+        var treatments = [];
+        var obj = {};
+        var counter = 0; 
+        if(data != 'undefined' && data.length !== 0){
+
+            if(data[2]["value"] != ""){
+
+                $.each(data, function(){
+                    if(this.name == "treatments" || this.name == "description" || this.name == "date" || this.name == "value" || this.name == "post_value" || this.name == "units"){
+                    obj[this.name] = this.value
+                    counter++;
+                        if(counter == 6){
+                            treatments.push(obj);
+                            obj = {};
+                            counter = 0;
+                        }      
+                    }
+                    else{
+                    invoice[this.name] = this.value;
+                    }
+                })
+
+                invoice["treatments"] = treatments;
+                var invoice_json_string = JSON.stringify(invoice);
+                var url = "{{ url_for('api_bp.newJob') }}";
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    data: {work_quality: invoice_json_string, work_type: 'invoice_draft'},
+                    success: function () {
+                    }
+                });
+            }   
+        }  
+        setTimeout(keepState,5000);
+    }
+
+
+    function addSubmit(ev) {
+        ev.preventDefault();   
+        if ($('form').data('submitted') === true) {
+            ev.preventDefault();
+            $(this).find('#submit').prop('disabled', true);
+            $(this).find('#submit').css('cursor', 'default');
+            $('#btnAdd_0').css('cursor', 'default');
+            $('#btnAdd_0').prop('disabled', true);
+            $('#treatmentsearch').attr('disabled', true);
+        } else {
+            $.ajax({
+            method: 'POST',
+            url: '/patient/generate-new-invoice',
+            data: $('.invoice_form').serialize()+ "&" + $("#patient_info").serialize(),
+            success: function (data) {
+                data = JSON.parse(data);
+                if(data["status"] == "Success"){
+                    $('form').data('submitted', true);
+                    $('#submit').prop('disabled', true);
+                    $('#submit').css('cursor', 'default');
+                    $('#btnAdd_0').css('cursor', 'default');
+                    $('#btnAdd_0').prop('disabled', true);
+                    $('.clone').prop('disabled', true);
+                    $('.below').prop('disabled', true);
+                    $('.remove').prop('disabled', true);
+                    $('#treatmentsearch').attr('disabled', true);
+                    $('#tab-draft').text(data['invoice_id'])
+                    $('#tab-draft').attr('disabled', true);
+                    $('#tab-draft').addClass('active');
+                }
+                addShow(data["status"]) 
+            }})
+        }
+    }
+
+
+    $(document).on("click", "#download_invoice", function(){
+        $('head').append('<meta http-equiv="refresh" content="1;url=/download-invoice/' + Math.floor(Math.random() * 10000) + '"/>');
+        })
+
+
+    function addShow(data) {
+        $('#result').text(data);
+        if(data =='success'){
+            $('#download_invoice').css('display', 'block')
+      }
+    }
+
+
+    $('.invoice_form').on('submit', addSubmit);
+
+
+    $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                }
+            }
+        })
+
+
+    $(document).on("keyup", '.' + treatment_search_string_for_class, function (e) {
         e.preventDefault();
         var currentFocus;
-        var input_element = document.getElementById("treatmentsearch-draft")
+        var input_element = document.getElementById("treatmentsearch")
         var url = "/live-search-treatment";
         var a, b, i, val = input_element.value;
         var search_item = input_element.value
@@ -486,187 +802,11 @@ $(document).ready(function(){
                 }
                 document.addEventListener("click", function (e) {
                     closeAllLists(e.target);
-                    $('#treatmentsearch-draft').val('');
+                    $('#treatmentsearch').val('');
                 })
             }
         })
     })
-
-
-    var regex = /^((?=\S*['-])([a-zA-Z'-]+))([0-9][0-9]?)+$/i;
-    var regex_2 = /^(.*)(\d)+$/i;
-    var cloneIndex = $(".clonedInput").length;
-    if ($(".clonedInput").length == 1) {
-        $('.remove').hide();
-    } else {
-        $('.remove').show();
-    }
-
-
-    function clone() {
-        $(".clonedInput").last().clone()
-            .appendTo(".tbodyClone")
-            .attr("id", "clonedInput" + cloneIndex)
-            .find("*")
-            .each(function () { 
-                 var id = this.id || "";
-                 var match = id.match(regex) || [];  
-                 if (match.length == 4) {
-                     this.id = match[1] + (cloneIndex);
-                 }
-                 if (this.className.includes("treatment")){
-                    this.value = ''
-                 } 
-                 if (this.className.includes("description")){
-                    this.value = ''
-                 } 
-                 if (this.className.includes("value")){
-                    this.value = ''
-                 } 
-                 if (this.className.includes("postvalue")){
-                    this.value = ''
-                 } 
-                 if (this.className.includes("date")){
-                    this.value = ''
-                 } 
-                //  if (this.className.includes("clone")){
-                //     this.style.display = "none";
-                //  } 
-                 if (this.className.includes("row")){
-                    this.remove();
-                 } 
-            })
-
-        cloneIndex++;
-
-        if ($(".clonedInput").length == 1) {
-            $('.remove').hide();
-        } else {
-            $('.remove').show();
-        }
-        $(document).scrollTop($(document).height());
-        re_number()
-    }
-
-
-  function re_number(){
-        $('table').find('tr').each(function(i, v) {
-            '{% if "namaf_orthopaedic_surgeons" in session["PATIENT"]["tariff"] %}'
-            $(v).find('span.num').text(i);
-            '{% else %}'
-            $(v).find('span.num').text(i + 1);
-            '{% endif %}'
-        });
-    }
-
-
-    function remove() {        
-        $(this).parents(".clonedInput").remove();
-        re_number()
-
-        if ($(".clonedInput").length == 1) {
-            $('.remove').hide();
-        } else {
-            $('.remove').show();
-        }
-    }
-
-
-    $('#admission_date').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#discharge_date').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#diagnosis_date').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#date_invoice').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#date_invoice').datepicker("setDate", new Date());
-    $(document).on("click", ".date", function() {
-        $(this).removeClass('hasDatepicker');
-        $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" )
-    });
-
-  
-    '{% if status == "continue_draft" %}'
-            $.ajax({
-                type: "GET",
-                url: '/patient/last-five', 
-                data: {work_type: "invoice_draft"},
-                success: function (invoice) {
-                    if(invoice){
-                        invoice = JSON.parse(invoice);
-                        invoice = JSON.parse(invoice[0]["work_quality"].replace(/\\"/g, '"'));
-                        for (let i = 0; i < invoice.treatments.length; i++) {
-                            const element = invoice.treatments[i];
-                            var item_number = element["treatments"]
-                            var item_description = element["description"]
-                            var item_units = element["units"]
-                            var item_date = element["date"]
-                            var post_item_value = element["post_value"]
-                            var item_value = element["value"]
-                            if(i !== 0){
-                                clone()
-                            }   
-                            $('#postvalue-' + i).val(post_item_value)
-                            $('#value-' + i).val(item_value)
-                            $('#units-' + i).val(item_units)
-                            $('#date-' + i).removeClass('hasDatepicker');
-                            $('#date-' + i).datepicker({dateFormat: 'dd.mm.yy'})
-                            $('#date-' + i).datepicker("setDate", item_date);
-            
-                            treatment_input = document.getElementById("treatment-" + i);
-                            description_input = document.getElementById("description-" + i);
-                            treatment_input.value = item_number
-                            description_input.value = item_description
-                            
-                            keepState()              
-                        }
-                    }
-                }
-            })
-    '{% else %}'
-        keepState();
-    '{% endif %}'
-
-
-    function keepState(){
-        var data = $('.invoice_draft').serializeArray();
-        var invoice = {};
-        var treatments = [];
-        var obj = {};
-        var counter = 0; 
-        if(data != 'undefined' && data.length !== 0){
-
-            if(data[2]["value"] != ""){
-
-                $.each(data, function(){
-                    if(this.name == "treatments" || this.name == "description" || this.name == "date" || this.name == "value" || this.name == "post_value" || this.name == "units"){
-                    obj[this.name] = this.value
-                    console.log(this)
-                    counter++;
-                        if(counter == 6){
-                            treatments.push(obj);
-                            obj = {};
-                            counter = 0;
-                        }      
-                    }
-                    else{
-                    invoice[this.name] = this.value;
-                    }
-                })
-
-                invoice["treatments"] = treatments;
-                var invoice_json_string = JSON.stringify(invoice);
-                var url = "{{ url_for('api_bp.newJob') }}";
-                console.log(invoice);
-                $.ajax({
-                    type: "GET",
-                    url: url,
-                    data: {work_quality: invoice_json_string, work_type: 'invoice_draft'},
-                    success: function () {
-                    }
-                });
-            }   
-        }  
-        setTimeout(keepState,5000);
-    }
             
     
 });

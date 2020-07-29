@@ -1,0 +1,143 @@
+{% block content %}
+
+<form id="patient_info"></form>
+
+<script>
+$(document).ready(function(){
+     
+    // function addSubmit(ev) {
+    //     ev.preventDefault();   
+    //     if ($('form').data('submitted') === true) {
+    //         ev.preventDefault();
+    //         $(this).find('#submit').prop('disabled', true);
+    //         $(this).find('#submit').css('cursor', 'default');
+    //         $('#btnAdd_0').css('cursor', 'default');
+    //         $('#btnAdd_0').prop('disabled', true);
+    //         $('#treatmentsearch').attr('disabled', true);
+    //     } else {
+    //         $.ajax({
+    //         method: 'POST',
+    //         url: '/patient/generate-new-invoice',
+    //         data: $('.invoice_form').serialize()+ "&" + $("#patient_info").serialize(),
+    //         success: function (data) {
+    //             data = JSON.parse(data);
+    //             if(data["status"] == "Success"){
+    //                 $('form').data('submitted', true);
+    //                 $('#submit').prop('disabled', true);
+    //                 $('#submit').css('cursor', 'default');
+    //                 $('#btnAdd_0').css('cursor', 'default');
+    //                 $('#btnAdd_0').prop('disabled', true);
+    //                 $('.clone').prop('disabled', true);
+    //                 $('.below').prop('disabled', true);
+    //                 $('.remove').prop('disabled', true);
+    //                 $('#treatmentsearch').attr('disabled', true);
+    //                 $('#tab-draft').text(data['invoice_id'])
+    //                 $('#tab-draft').attr('disabled', true);
+    //                 $('#tab-draft').addClass('active');
+    //             }
+    //             addShow(data["status"]) 
+    //         }})
+    //     }
+    // }
+
+    // $(document).on("click", "#download_invoice", function(){
+    //     $('head').append('<meta http-equiv="refresh" content="1;url=/download-invoice/' + Math.floor(Math.random() * 10000) + '"/>');
+    //     })
+
+
+    // function addShow(data) {
+    //     $('#result').text(data);
+    //     if(data =='success'){
+    //         $('#download_invoice').css('display', 'block')
+    //   }
+    // }
+
+
+    // $('.invoice_form').on('submit', addSubmit);
+
+
+    // $.ajaxSetup({
+    //         beforeSend: function(xhr, settings) {
+    //             if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+    //                 xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+    //             }
+    //         }
+    //     })
+
+
+    $(document).on("click", ".unhide_change", function(event) {
+        event.preventDefault();
+        $(this).hide()
+        $(this).next().next().next().css("display", "inline-block");
+        $(this).next().next().css("display", "inline-block");
+        $(this).next().css("display", "inline-block")
+        $(this).prev().css("margin", "0")
+    });
+
+
+    $(document).on("click", ".change_session", function(e) {
+        e.preventDefault();
+        var change_session_button = $(this);
+        var description = $(this).prev().attr("name")
+        var item = $(this).prev().val()
+        $.ajax({
+            type: "GET",
+            url: '/update-session',
+            data: {description: description, item: item}, 
+            dataType: 'json',
+            success: function (returnData) {
+                alert(returnData);
+                change_session_button.parent().prev().children('p').text(item);
+                change_session_button.hide();
+                change_session_button.next().hide();
+                change_session_button.prev().hide();
+                change_session_button.prev().prev().show()    
+            }
+        })
+    });
+
+
+    $(document).on("click", ".cancel_change", function(event) {
+        event.preventDefault();
+        $(this).hide()
+        $(this).prev().hide();
+        $(this).prev().prev().hide();
+        $(this).prev().prev().prev().show()
+    });
+
+    // '{% if status == "continue_invoice" %}'
+    // var invoice = '{{ invoice }}';
+    // invoice = JSON.parse(invoice.replace(/&#34;/g,'"'));
+    // console.log(invoice);
+    // '{% else %}'
+    // $.ajax({
+    //             type: "GET",
+    //             url: '/patient/last-five', 
+    //             data: {work_type: "patient_draft"},
+    //             success: function (patient) {
+    //                 patient = JSON.parse(patient);
+    //                 patient = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
+    //                 var div = document.getElementById("patient_info")
+    //                 for (const [key, value] of Object.entries(patient)) {
+    //                     if(value != "" && key != "csrf_token"){
+    //                         var input = document.createElement("INPUT"); 
+    //                         input.value = value
+    //                         input.name = key;
+    //                         var label = document.createElement("Label");
+    //                         label.htmlFor = key;
+    //                         label.innerHTML= key;
+    //                         div.appendChild(label)
+    //                         div.appendChild(input)
+    //                     }               
+    //                 }
+    //             }
+    //         })
+    //     '{% endif %}'
+
+        
+
+
+});
+
+</script>
+{% endblock %}
