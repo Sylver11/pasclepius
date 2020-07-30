@@ -17,6 +17,7 @@ def getTreatmentForm(tariff = None):
                     validators=[DataRequired()])
             date = TextField('Date', validators=[DataRequired()])
             value = DecimalField(u'Value')
+            post_value = DecimalField(u'Value')
             modifier = SelectField(u'Modifier', choices= 
                     [(0, 'None'),(6, '006 - Emergency treatment'),
                         (8, '008 - More than one procedure'), 

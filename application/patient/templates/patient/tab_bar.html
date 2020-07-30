@@ -25,7 +25,7 @@ $(document).ready(function(){
     $.ajax({
         type: "GET",
         url: '/patient/last-five', 
-        data: {work_type: "patient_draft"},
+        data: {work_type: "invoice_draft"},
         success: function (patient) {
             if(patient.length > 2){
                 var lower_navbar = document.getElementById("myTab")
@@ -49,12 +49,13 @@ $(document).ready(function(){
                     $.ajax({
                         type: "GET",
                         url: '/patient/last-five', 
-                        data: {work_type: "patient_draft"},
+                        data: {work_type: "invoice_draft"},
                         success: function (patient) {
                             patient = JSON.parse(patient);
                             patient = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
-                            let criteria = ["/patient/invoice/new/" + patient["tariff"] + "/continue_draft"];
-                            dynamic.apply(this, criteria);
+                            $.get( "/patient/invoice/new", {"tariff": patient["tariff"], "status": "continue_draft"}, function( data ) {
+                                    $( "#invoice-tab" ).html( data );
+                                });
                         }
                     })
                 }, false);

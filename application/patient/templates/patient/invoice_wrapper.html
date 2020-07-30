@@ -65,45 +65,45 @@ $(document).ready(function(){
     //     })
 
 
-    $(document).on("click", ".unhide_change", function(event) {
-        event.preventDefault();
-        $(this).hide()
-        $(this).next().next().next().css("display", "inline-block");
-        $(this).next().next().css("display", "inline-block");
-        $(this).next().css("display", "inline-block")
-        $(this).prev().css("margin", "0")
-    });
+    // $(document).on("click", ".unhide_change", function(event) {
+    //     event.preventDefault();
+    //     $(this).hide()
+    //     $(this).next().next().next().css("display", "inline-block");
+    //     $(this).next().next().css("display", "inline-block");
+    //     $(this).next().css("display", "inline-block")
+    //     $(this).prev().css("margin", "0")
+    // });
 
 
-    $(document).on("click", ".change_session", function(e) {
-        e.preventDefault();
-        var change_session_button = $(this);
-        var description = $(this).prev().attr("name")
-        var item = $(this).prev().val()
-        $.ajax({
-            type: "GET",
-            url: '/update-session',
-            data: {description: description, item: item}, 
-            dataType: 'json',
-            success: function (returnData) {
-                alert(returnData);
-                change_session_button.parent().prev().children('p').text(item);
-                change_session_button.hide();
-                change_session_button.next().hide();
-                change_session_button.prev().hide();
-                change_session_button.prev().prev().show()    
-            }
-        })
-    });
+    // $(document).on("click", ".change_session", function(e) {
+    //     e.preventDefault();
+    //     var change_session_button = $(this);
+    //     var description = $(this).prev().attr("name")
+    //     var item = $(this).prev().val()
+    //     $.ajax({
+    //         type: "GET",
+    //         url: '/update-session',
+    //         data: {description: description, item: item}, 
+    //         dataType: 'json',
+    //         success: function (returnData) {
+    //             alert(returnData);
+    //             change_session_button.parent().prev().children('p').text(item);
+    //             change_session_button.hide();
+    //             change_session_button.next().hide();
+    //             change_session_button.prev().hide();
+    //             change_session_button.prev().prev().show()    
+    //         }
+    //     })
+    // });
 
 
-    $(document).on("click", ".cancel_change", function(event) {
-        event.preventDefault();
-        $(this).hide()
-        $(this).prev().hide();
-        $(this).prev().prev().hide();
-        $(this).prev().prev().prev().show()
-    });
+    // $(document).on("click", ".cancel_change", function(event) {
+    //     event.preventDefault();
+    //     $(this).hide()
+    //     $(this).prev().hide();
+    //     $(this).prev().prev().hide();
+    //     $(this).prev().prev().prev().show()
+    // });
 
     // '{% if status == "continue_invoice" %}'
     // var invoice = '{{ invoice }}';

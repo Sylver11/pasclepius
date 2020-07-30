@@ -8,10 +8,10 @@ import os
 
 class InvoicePath(object):
 
-    def __init__(self, patient, index, first_name, practice_name):
-        self.date = patient['date_created']
-        self.medical_aid = patient['medical_aid'].strip()
-        self.patient_name = patient['patient_name'].strip()
+    def __init__(self, date_created, medical_aid, patient_name, index, first_name, practice_name):
+        self.date = date_created
+        self.medical_aid = medical_aid.strip()
+        self.patient_name = patient_name.strip()
         self.index = index
         self.first_name = first_name.strip()
         self.practice_name = practice_name.strip()

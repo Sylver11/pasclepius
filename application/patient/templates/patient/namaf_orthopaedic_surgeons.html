@@ -174,22 +174,16 @@ $(document).ready(function(){
         $(this).removeClass('hasDatepicker');
         $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" )
     });
+
+
     '{% if status == "continue_invoice" %}'
         var invoice = '{{ invoice }}';
         invoice = JSON.parse(invoice.replace(/&#34;/g,'"'));
-        console.log(invoice);
-        // var treatment_search = document.getElementById("treatment_search");
+        // console.log(invoice);
         var forms = document.getElementsByTagName('FORM');
-        // console.log(forms[3])
         var treatment_search_string_for_class = invoice["invoice_id"] + "_treatment_search";
         treatment_search_string_for_class = treatment_search_string_for_class.replace(/\//g, "");
-        console.log(treatment_search_string_for_class);
         forms[2].classList.add(treatment_search_string_for_class);
-        forms[3].classList.add(invoice["invoice_id"] + "_invoice_form");
-
-        // var lower_navbar = document.getElementById("myTab");
-        
-        // console.log(invoice["invoice_id"])
 
         for (let i = 0; i < invoice.treatments.length; i++) {
                             const element = invoice.treatments[i];
@@ -198,12 +192,12 @@ $(document).ready(function(){
                             var item_units = element["units"]
                             var item_date = element["date"]
                             var post_item_value = element["post_value_cent"]
-                            var item_value = element["value"]
+                            var item_value = element["value_cent"]
                             if(i !== 0){
                                 clone()
                             }   
                             $('#postvalue-' + i).val(post_item_value / 100)
-                            $('#value-' + i).val(item_value)
+                            $('#value-' + i).val(item_value / 100)
                             $('#units-' + i).val(item_units)
                             $('#date-' + i).removeClass('hasDatepicker');
                             $('#date-' + i).datepicker({dateFormat: 'dd.mm.yy'})
@@ -218,27 +212,66 @@ $(document).ready(function(){
                         }
                         var div = document.getElementById("patient_info")
         for (const [key, value] of Object.entries(invoice)) {
-                        if(value && key != "csrf_token" && key != "treatments" && key != "invoice_file_url" && key != "uuid_text" && key != "id"  ){//value != "" && value ){// || key != "csrf_token"){
-                            var input = document.createElement("INPUT"); 
-                            input.value = value
-                            input.name = key;
-                            var label = document.createElement("Label");
-                            label.htmlFor = key;
-                            label.innerHTML= key;
-                            div.appendChild(label)
-                            div.appendChild(input)
-                        }               
-                    }
+            if(value && key != "treatments"){
+                var input = document.createElement("INPUT"); 
+                input.value = value
+                input.name = key;
+                var label = document.createElement("Label");
+                label.htmlFor = key;
+                label.innerHTML= key;
+                if(key == "csrf_token" || key == "invoice_file_url" || key == "uuid_text" || key == "id"  ){
+                    input.style.display = "none";
+                    label.style.display = "none";        
+                }            
+                div.appendChild(label)
+                div.appendChild(input)
+            }
+        }
 
-    '{% elif status == "continue_draft" %}'
+    '{% else %}'
+        $.ajax({
+            type: "GET",
+            url: '/patient/last-five', 
+            data: {work_type: "invoice_draft"},
+            success: function (invoice_draft) {
+                invoice_draft = JSON.parse(invoice_draft);
+                invoice_draft = JSON.parse(invoice_draft[0]["work_quality"].replace(/\\"/g, '"'));
+                var div = document.getElementById("patient_info");
+                for (const [key, value] of Object.entries(invoice_draft)) {
+                    if(value != "" && key != "csrf_token"){
+                        var input = document.createElement("INPUT"); 
+                        input.value = value;
+                        input.name = key;
+                        var label = document.createElement("Label");
+                        label.htmlFor = key;
+                        label.innerHTML= key;
+                        div.appendChild(label);
+                        div.appendChild(input);
+                    }               
+                }
+                var status = document.createElement("INPUT"); 
+                status.value = "New invoice";
+                status.name = "status";
+                var label = document.createElement("Label");
+                label.htmlFor = "status";
+                label.innerHTML= "Status";
+                div.appendChild(label);
+                div.appendChild(status);
+            }
+        })
+        var forms = document.getElementsByTagName('FORM');
+        var treatment_search_string_for_class = "draft_treatment_search";
+        forms[2].classList.add(treatment_search_string_for_class);
+
+        '{% if status == "continue_draft" %}'
             $.ajax({
                 type: "GET",
                 url: '/patient/last-five', 
                 data: {work_type: "invoice_draft"},
                 success: function (invoice) {
-                    if(invoice.length > 2){
-                        invoice = JSON.parse(invoice);
-                        invoice = JSON.parse(invoice[0]["work_quality"].replace(/\\"/g, '"'));
+                    invoice = JSON.parse(invoice);
+                    invoice = JSON.parse(invoice[0]["work_quality"].replace(/\\"/g, '"'));
+                    if(invoice.treatments){
                         for (let i = 0; i < invoice.treatments.length; i++) {
                             const element = invoice.treatments[i];
                             var item_number = element["treatments"]
@@ -271,36 +304,16 @@ $(document).ready(function(){
                     }
                 }
             })
+            
+        '{% elif status == "new_draft" %}'
+            keepState();
+        '{% endif %}'
 
-            $.ajax({
-                type: "GET",
-                url: '/patient/last-five', 
-                data: {work_type: "patient_draft"},
-                success: function (patient) {
-                    patient = JSON.parse(patient);
-                    patient = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
-                    var div = document.getElementById("patient_info")
-                    for (const [key, value] of Object.entries(patient)) {
-                        if(value != "" && key != "csrf_token"){
-                            var input = document.createElement("INPUT"); 
-                            input.value = value
-                            input.name = key;
-                            var label = document.createElement("Label");
-                            label.htmlFor = key;
-                            label.innerHTML= key;
-                            div.appendChild(label)
-                            div.appendChild(input)
-                        }               
-                    }
-                }
-            })
-    '{% else %}'
-        keepState();
     '{% endif %}'
 
 
     function keepState(){
-        var data = $('.invoice_form').serializeArray();
+        var data = $('.invoice_form').serializeArray().concat($("#patient_info").serializeArray());
         var invoice = {};
         var treatments = [];
         var obj = {};
@@ -352,11 +365,11 @@ $(document).ready(function(){
         } else {
             $.ajax({
             method: 'POST',
-            url: '/patient/generate-new-invoice',
+            url: '/patient/invoice/generate',
             data: $('.invoice_form').serialize()+ "&" + $("#patient_info").serialize(),
             success: function (data) {
                 data = JSON.parse(data);
-                if(data["status"] == "Success"){
+                if(data){
                     $('form').data('submitted', true);
                     $('#submit').prop('disabled', true);
                     $('#submit').css('cursor', 'default');
@@ -370,7 +383,7 @@ $(document).ready(function(){
                     $('#tab-draft').attr('disabled', true);
                     $('#tab-draft').addClass('active');
                 }
-                addShow(data["status"]) 
+                addShow(data) 
             }})
         }
     }
@@ -382,7 +395,13 @@ $(document).ready(function(){
 
 
     function addShow(data) {
-        $('#result').text(data);
+        for (const [key, value] of Object.entries(data)) {
+            console.log("the key data things runs");
+            var message = document.getElementById("result")
+            var status = document.createElement("P"); 
+            status.innerHTML = key + ": " + value          
+            message.appendChild(status)
+            }
         if(data =='success'){
             $('#download_invoice').css('display', 'block')
       }
@@ -674,7 +693,6 @@ $(document).ready(function(){
                                 description_text = document.getElementById("treatment-list-description"+ index).textContent;
                                 next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_text
 
-                                // next_empty_treatment_input.value = this.getElementsByTagName("input")[0].value;
                                 item_num = document.getElementById("treatment-list-input" + index).value
                                 next_empty_treatment_input.value = item_num
 

@@ -43,7 +43,7 @@ def removeWork(uuid_text, work_type, work_quality):
     cursor = conn.cursor()
     if work_type == 'invoice_draft':
         sql = """DELETE FROM user_workbench WHERE uuid_text = '{0}' AND
-        (work_type = 'invoice_draft' OR work_type = 'patient_draft')""".format(uuid_text)
+        work_type = 'invoice_draft'""".format(uuid_text)
         cursor.execute(sql)
         cursor.close()
         conn.close()
