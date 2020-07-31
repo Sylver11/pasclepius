@@ -3,23 +3,25 @@ from com.sun.star.text.ControlCharacter import PARAGRAPH_BREAK, APPEND_PARAGRAPH
 from com.sun.star.awt.FontWeight import BOLD as FW_BOLD, NORMAL, LIGHT
 
 
-def patientTable(doc, text, cursor, patient, invoice_id):
+def patientTable(doc, text, cursor, patient):
     cursor.setPropertyValue( "CharFontName", "Liberation Serif" )
     text.insertControlCharacter(cursor, PARAGRAPH_BREAK, False)
     cursor.setPropertyValue( "CharHeight", 12.0 )
     cursor.setPropertyValue( "ParaAdjust", RIGHT)
-    text.insertString(cursor, patient['date_invoice'], 0)
+    text.insertString(cursor, str(patient['date_invoice']), 0)
     text.insertControlCharacter(cursor, PARAGRAPH_BREAK, False)
     cursor.setPropertyValue( "ParaAdjust", CENTER )
     cursor.setPropertyValue( "CharHeight", 18.0 )
     text.insertString( cursor, "Invoice", 0 )
     middle_table = doc.createInstance( "com.sun.star.text.TextTable" )
+    print(patient['medical_aid'])
     if (patient['medical_aid'] == 'mva'):
         middle_table.initialize(2,3)
         middle_table.setName('patient_table')
         text.insertTextContent( cursor, middle_table, 1 )
         first_middle_table_text = middle_table.getCellByName("C2")
-        first_middle_table_text.setString("Invoice No: " + str(invoice_id))
+        first_middle_table_text.setString("Invoice No: "
+                + str(patient['invoice_id']))
         second_middle_table_text = middle_table.getCellByName("A2")
         second_middle_table_text.setString("Patient Name: "
                 + str(patient['patient_name'])
@@ -42,7 +44,8 @@ def patientTable(doc, text, cursor, patient, invoice_id):
         middle_table.setName('patient_table')
         text.insertTextContent( cursor, middle_table, 1 )
         first_middle_table_text = middle_table.getCellByName("C3")
-        first_middle_table_text.setString("Invoice No: " + str(invoice_id))
+        first_middle_table_text.setString("Invoice No: "
+                + str(patient['invoice_id']))
         range_left = middle_table.getCellRangeByName("A1:A2")
         range_left.setPropertyValue( "ParaAdjust", LEFT )
         second_middle_table_text = middle_table.getCellByName("A2")

@@ -40,6 +40,7 @@
                         <td>{{  form.post_value(style='width:100%',id='postvalue-0', class='postvalue')  }}</td>
                         <td style="display:none">{{  form.value(style='width:100%',id='value-0', class='value')  }}</td>
                         <td>{{  form.date(style='width:100%',id='date-0', class='date datepicker', placeholder="DD/MM/YYYY")  }}</td>
+                        <td style="display:none">{{  form.modifier(id='modifier-0', class='modifier', value='0')  }}</td>
                         <td>
                             <input id="delete-0" value="Delete" type="button" style="width:100px" class="remove">
                         </td>
@@ -175,15 +176,28 @@ $(document).ready(function(){
         $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" )
     });
 
+    
+    var current_patient_form;
+    var current_search_form;
+    var current_form;
 
     '{% if status == "continue_invoice" %}'
         var invoice = '{{ invoice }}';
         invoice = JSON.parse(invoice.replace(/&#34;/g,'"'));
-        // console.log(invoice);
+
         var forms = document.getElementsByTagName('FORM');
-        var treatment_search_string_for_class = invoice["invoice_id"] + "_treatment_search";
-        treatment_search_string_for_class = treatment_search_string_for_class.replace(/\//g, "");
-        forms[2].classList.add(treatment_search_string_for_class);
+        current_patient_form = invoice["invoice_id"] + "_current_patient_form";
+        current_patient_form = current_patient_form.replace(/\//g, "");
+        forms[1].classList.add(current_patient_form);
+
+        current_search_form = invoice["invoice_id"] + "_current_search_form";
+        current_search_form = current_search_form.replace(/\//g, "");
+        forms[2].classList.add(current_search_form);
+
+        current_form = invoice["invoice_id"] + "_current_form";
+        current_form = current_form.replace(/\//g, "");
+        forms[3].classList.add(current_form);
+        forms[3].addEventListener("submit", addSubmit);
 
         for (let i = 0; i < invoice.treatments.length; i++) {
                             const element = invoice.treatments[i];
@@ -198,7 +212,7 @@ $(document).ready(function(){
                             }   
                             $('#postvalue-' + i).val(post_item_value / 100)
                             $('#value-' + i).val(item_value / 100)
-                            $('#units-' + i).val(item_units)
+                            $('#units-' + i).val(item_units / 100)
                             $('#date-' + i).removeClass('hasDatepicker');
                             $('#date-' + i).datepicker({dateFormat: 'dd.mm.yy'})
                             $('#date-' + i).datepicker("setDate", item_date);
@@ -259,9 +273,20 @@ $(document).ready(function(){
                 div.appendChild(status);
             }
         })
+
         var forms = document.getElementsByTagName('FORM');
-        var treatment_search_string_for_class = "draft_treatment_search";
-        forms[2].classList.add(treatment_search_string_for_class);
+        current_patient_form = invoice_draft["invoice_id"] + "_current_patient_form";
+        current_patient_form = current_form.replace(/\//g, "");
+        forms[1].classList.add(current_patient_form);
+
+        current_search_form = invoice_draft["invoice_id"] + "_current_search_form";
+        current_search_form = current_search_form.replace(/\//g, "");
+        forms[2].classList.add(current_search_form);
+
+        current_form = invoice_draft["invoice_id"] + "_current_form";
+        current_form = current_form.replace(/\//g, "");
+        forms[3].classList.add(current_form);
+        forms[3].addEventListener("submit", addSubmit);
 
         '{% if status == "continue_draft" %}'
             $.ajax({
@@ -313,7 +338,7 @@ $(document).ready(function(){
 
 
     function keepState(){
-        var data = $('.invoice_form').serializeArray().concat($("#patient_info").serializeArray());
+        var data = $('.' + current_form).serializeArray().concat($("." + current_patient_form).serializeArray());
         var invoice = {};
         var treatments = [];
         var obj = {};
@@ -354,8 +379,9 @@ $(document).ready(function(){
 
 
     function addSubmit(ev) {
-        ev.preventDefault();   
-        if ($('form').data('submitted') === true) {
+        ev.preventDefault();  
+        console.log("clicking in ortho"); 
+        if ($('.' + current_form).data('submitted') === true) {
             ev.preventDefault();
             $(this).find('#submit').prop('disabled', true);
             $(this).find('#submit').css('cursor', 'default');
@@ -366,7 +392,7 @@ $(document).ready(function(){
             $.ajax({
             method: 'POST',
             url: '/patient/invoice/generate',
-            data: $('.invoice_form').serialize()+ "&" + $("#patient_info").serialize(),
+            data: $('.' + current_form).serialize()+ "&" + $("." + current_patient_form).serialize(),
             success: function (data) {
                 data = JSON.parse(data);
                 if(data){
@@ -396,7 +422,6 @@ $(document).ready(function(){
 
     function addShow(data) {
         for (const [key, value] of Object.entries(data)) {
-            console.log("the key data things runs");
             var message = document.getElementById("result")
             var status = document.createElement("P"); 
             status.innerHTML = key + ": " + value          
@@ -408,8 +433,8 @@ $(document).ready(function(){
     }
 
 
-    $('.invoice_form').on('submit', addSubmit);
-
+    // $('.' + current_form).on('submit', addSubmit);
+    // $('.form').on('submit', addSubmit);
 
     $.ajaxSetup({
             beforeSend: function(xhr, settings) {
@@ -420,7 +445,7 @@ $(document).ready(function(){
         })
 
 
-    $(document).on("keyup", '.' + treatment_search_string_for_class, function (e) {
+    $(document).on("keyup", '.' + current_search_form, function (e) {
         e.preventDefault();
         var currentFocus;
         var input_element = document.getElementById("treatmentsearch")
@@ -621,7 +646,7 @@ $(document).ready(function(){
                                         next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_procedures
 
                                         units_procedures = document.getElementById("treatment-list-units-input-procedure" + index).value;
-                                        next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].value = units_procedures
+                                        next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].value = units_procedures / 100
 
                                         value_procedures = document.getElementById("treatment-list-value-input-procedure" + index).value;
                                         next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].value = value_procedures / 100
@@ -698,7 +723,7 @@ $(document).ready(function(){
 
 
                                 var units_procedures = document.getElementById("treatment-list-units-input"+ index).value;
-                                next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].value = units_procedures
+                                next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].value = units_procedures / 100
 
                                 value_procedures = document.getElementById("treatment-list-value-input-procedure" + index).value;
                                 next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].value = value_procedures / 100

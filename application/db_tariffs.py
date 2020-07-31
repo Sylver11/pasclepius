@@ -13,7 +13,7 @@ def getAllTariffs():
 
 
 def getValueTreatments(item, tariff):
-    sql = """SELECT description, value_cent FROM namaf_tariffs WHERE item = {} AND tariff = '{}'""".format(item, tariff)
+    sql = """SELECT * FROM namaf_tariffs WHERE item = {} AND tariff = '{}'""".format(item, tariff)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)

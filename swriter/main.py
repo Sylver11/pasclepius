@@ -3,7 +3,7 @@ import uno
 from footer import populateBottomTable
 from header import populateTopText
 from patient import patientTable
-from treatment_tables import namaf_orthopaedic_surgeons
+from treatment_tables import namaf_orthopaedic_surgeons, namaf_physio
 from treatment import treatmentTable
 from identity import identityTable
 from hospital import hospitalTable
@@ -31,24 +31,28 @@ def setupConnection():
     return doc, text
 
 
-def createTextInvoice(user, invoice, invoice_id, invoice_file_url, treatments,
-        descriptions, units, post_values, dates):
+def createTextInvoice(user, invoice, treatments, descriptions, units,
+        post_values, dates, modifiers):
     doc, text = setupConnection()
     cursor = text.createTextCursor()
     doc, text, cursor = populateTopText(cursor, doc, text, user)
     doc, text, cursor = identityTable(doc, text, cursor,  user, invoice)
-    doc, text, cursor = patientTable(doc, text, cursor, invoice, invoice_id)
-    if 4 <= user['invoice_layout'] <= 9:
+    doc, text, cursor = patientTable(doc, text, cursor, invoice)
+    if 4 <= int(invoice['invoice_layout']) <= 9:
         doc, text, cursor = hospitalTable(doc, text, cursor, invoice)
-    if 7 <= user['invoice_layout'] <= 12:
+    if 7 <= int(invoice['invoice_layout']) <= 12:
         doc, text, cursor = diagnosisTable(doc, text, cursor, invoice)
     if 'orthopaedic_surgeons' in invoice['tariff']:
         doc, text = namaf_orthopaedic_surgeons.treatmentTable(doc,
                 text, cursor, treatments, descriptions,
                 units, post_values, dates)
+    elif 'physio' in invoice['tariff']:
+        doc, text = namaf_physio.treatmentTable(doc,
+                text, cursor, treatments, descriptions,
+                units, post_values, dates, modifiers)
     doc, text = populateBottomTable(doc, text, user)
     doc, text = configureBorders(doc, text, treatments)
-    saveDocument(doc, invoice_file_url)
+    saveDocument(doc, invoice['invoice_file_url'])
 
 
 if __name__ == '__main__':
@@ -60,11 +64,10 @@ if __name__ == '__main__':
     createTextInvoice(
             args.to_json["user"],
             args.to_json["invoice"],
-            args.to_json["invoice_id"],
-            args.to_json["invoice_file_url"],
             args.to_json["treatments"],
             args.to_json["descriptions"],
             args.to_json["units"],
             args.to_json["post_values"],
-            args.to_json["dates"]
+            args.to_json["dates"],
+            args.to_json["modifiers"]
             )

@@ -43,14 +43,21 @@ def insertTextIntoCell( table, cellName, text, color = None ):
         cursor.setPropertyValue( "CharColor", color )
     tableText.setString( text )
 
-def treatmentTable(doc, text, cursor, treatments, descriptions, units,
-        post_values, dates):
-    table  = createTable(doc, text, cursor, len(treatments))
-    counter = 2;
-    for treatment, description, unit, post_value, date in zip(treatments,
-            descriptions, units, post_values, dates):
-
-        insertTextIntoCell(table, "A" + str(counter), treatment.zfill(4))
+def treatmentTable(doc, text, cursor, treatments, descriptions, units, post_values, dates,
+        modifiers):
+    table = createTable(doc, text, cursor, len(treatments))
+    counter =  2
+    for treatment, description, unit, post_value, date, modifier in zip(treatments, descriptions, units, post_values, dates, modifiers):
+        if modifier == '14' or modifier == '13' or modifier == '10':
+            insertTextIntoCell(table,
+                    "A" + str(counter),
+                    str(treatment.zfill(3) + " (0" + modifier + ")"))
+        elif modifier == '6' or modifier == '8' or modifier == '9':
+            insertTextIntoCell(table,
+                    "A" + str(counter),
+                    str(treatment.zfill(3) + " (00" + modifier + ")"))
+        else:
+            insertTextIntoCell(table, "A" + str(counter), treatment.zfill(3))
         insertTextIntoCell(table, "B" + str(counter), description)
         insertTextIntoCell(table, "C" + str(counter), unit)
         insertTextIntoCell(table, "D" + str(counter), date)
@@ -58,7 +65,7 @@ def treatmentTable(doc, text, cursor, treatments, descriptions, units,
         counter += 1
     cell_sum = table.getCellByName("E" + str(counter))
     cell_sum.setFormula("=sum <E2:E" + str(counter - 1) + ">")
-    cRange = table.getCellRangeByName("E2:E" + str(counter))
+    cRange = table.getCellRangeByName("E2:E" + str(counter) )
     xNumberFormats = doc.NumberFormats
     xLocale = Locale('en', 'US', '')
     format_string = '#,##0.00#'#[$€-407];[RED]-#,##0.00 [$€-407]'

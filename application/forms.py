@@ -16,6 +16,8 @@ def getTreatmentForm(tariff = None):
             treatments = SelectField(u'Treatments',coerce=int,
                     validators=[DataRequired()])
             date = TextField('Date', validators=[DataRequired()])
+            description = TextField()
+            units = DecimalField(u'Units')
             value = DecimalField(u'Value')
             post_value = DecimalField(u'Value')
             modifier = SelectField(u'Modifier', choices= 
@@ -32,6 +34,7 @@ def getTreatmentForm(tariff = None):
             description = TextField('Description')
             units = DecimalField(u'Units')
             date = TextField('Date', validators=[DataRequired()])
+            modifier = DecimalField(u'modifier')
             value = DecimalField(u'Value')
             post_value = DecimalField(u'Value')
             date_invoice =  TextField('Invoice date', validators=[DataRequired()])

@@ -54,14 +54,12 @@ def invoiceOption(patient):
 @patient_bp.route('/invoice/create', methods=('GET', 'POST'))
 @login_required
 def createPatient():
-    data = checkUser(current_user.id)
-    layout_code = data['invoice_layout']
     form_mva = Patient_mva()
     form_other = Patient_other()
     return render_template('patient/create.html',
             form_mva = form_mva,
             form_other = form_other,
-            layout_code = layout_code,
+            layout_code = current_user.invoice_layout,
             page_title = 'Create new patient')
 
 
@@ -94,6 +92,7 @@ def newInvoice():
         invoice_id = invoice_id.generate()
         patient_info['invoice_id'] = invoice_id
         patient_info['invoice_file_url'] = invoice_file_url
+        patient_info['invoice_layout'] = current_user.invoice_layout
         newWork(current_user.uuid, 'invoice_draft', json.dumps(patient_info))
         form = getTreatmentForm(tariff)
         status = 'new_draft'
@@ -144,42 +143,26 @@ def lastFiveTabs():
 @patient_bp.route('/invoice/generate', methods=['POST'])
 def NewInvoice():
     if request.form:
-        invoice_form = request.form.to_dict(flat=False)
-        print(request.form)
-        print(invoice_form)
-
-        if request.form['status'] == 'New invoice':
-
-            removeWork(current_user.uuid, 'invoice_draft', 'any')
-
-            item_modifiers = []
-
-            invoice_index = get_index(current_user.uuid,
-                    request.form['medical_aid'][0],
-                    request.form['date_created'][0])
-
-            invoice_file_url = InvoicePath(request.form,
-                    invoice_index,
-                    current_user.first_name,
-                    current_user.practice_name)
-            invoice_form['invoice_file_url'][0] = invoice_file_url.generate()
-
-            invoice_id = InvoiceName(request.form, invoice_index, item_modifiers)
-            invoice_form['invoice_id'][0] = invoice_id.generate()
-
-        status = insertInvoice(current_user.uuid, invoice_form)
-        if status['db_status'] == 'Success':
+        status = {}
+       # try:
+        status = insertInvoice(current_user.uuid, request.form)
+       # except Exception as e:
+       #     status['db_status'] = 'Error'
+       #     status['db_description'] = 'Exit code: ' + str(e)
+       #     return json.dumps(status)
+        method = None
+        print(request.form.get('method'))
+        if status['db_status'] == 'Success' and request.form.get('method'):
             user = checkUser(current_user.id)
             res_dict = {
                 "user" : user,
-                "invoice": invoice_form,
-                "invoice_id" : invoice_form['invoice_id'],
-                "invoice_file_url" : invoice_form['invoice_file_url'],
-                "treatments": invoice_form.get('treatments'),
-                "descriptions": invoice_form.get('description'),
-                "units": invoice_form.get('units'),
-                "post_values": invoice_form.get('post_value'),
-                "dates": invoice_form.get('date')
+                "invoice": request.form,
+                "treatments": request.form.getlist('treatments'),
+                "descriptions": request.form.getlist('description'),
+                "units": request.form.getlist('units'),
+                "post_values": request.form.getlist('post_value'),
+                "dates": request.form.getlist('date'),
+                "modifiers": request.form.getlist('modifier')
                   }
             to_json = json.dumps(res_dict)
             try:
@@ -192,10 +175,8 @@ def NewInvoice():
                 else:
                     status['swriter_description'] = 'Exit code: ' + e.returncode
                 return json.dumps(status)
-
             status['swriter_status'] = 'Success'
             status['swriter_description'] = 'Invoice file created'
         return json.dumps(status)
     return json.dumps({'status': 'Fatal error. Could not read form data.'})
-
 

@@ -1,6 +1,90 @@
 {% block content %}
 
 <form id="patient_info"></form>
+{% if 4 <= layout_code <= 9 %}
+<div class="form-row">
+    <div class="form-group col-md-4">
+        {{ form_other.hospital_name.label }} {{ form_mva.hospital_name(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_other.admission_date.label }} {{ form_mva.admission_date(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_other.discharge_date.label }} {{ form_mva.discharge_date(class_="form-control") }}
+    </div>
+</div>
+{% endif %}
+{% if 7 <= layout_code <= 12 %}
+<div class="form-row">
+    <div class="form-group col-md-8">
+        {{ form_other.diagnosis.label }} {{ form_mva.diagnosis(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_other.diagnosis_date.label }} {{ form_mva.diagnosis_date(class_="form-control") }}
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group col-md-8">
+        {{ form_other.procedure.label }} {{ form_mva.procedure(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_other.procedure_date.label }} {{ form_mva.procedure_date(class_="form-control") }}
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group col-md-4">
+        {{ form_other.implants.label }} {{ form_mva.implants(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_other.intra_op.label }} {{ form_mva.intra_op(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_other.post_op.label }} {{ form_mva.post_op(class_="form-control") }}
+    </div>
+</div>
+{% endif %}
+{% if 4 <= layout_code <= 9 %}
+<div class="form-row">
+    <div class="form-group col-md-4">
+        {{ form_mva.hospital_name.label }} {{ form_mva.hospital_name(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_mva.admission_date.label }} {{ form_mva.admission_date(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_mva.discharge_date.label }} {{ form_mva.discharge_date(class_="form-control") }}
+    </div>
+</div>
+{% endif %}
+{% if 7 <= layout_code <= 12 %}
+<div class="form-row">
+    <div class="form-group col-md-8">
+        {{ form_mva.diagnosis.label }} {{ form_mva.diagnosis(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_mva.diagnosis_date.label }} {{ form_mva.diagnosis_date(class_="form-control") }}
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group col-md-8">
+        {{ form_mva.procedure.label }} {{ form_mva.procedure(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_mva.procedure_date.label }} {{ form_mva.procedure_date(class_="form-control") }}
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group col-md-4">
+        {{ form_mva.implants.label }} {{ form_mva.implants(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_mva.intra_op.label }} {{ form_mva.intra_op(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_mva.post_op.label }} {{ form_mva.post_op(class_="form-control") }}
+    </div>
+</div>
+{% endif %}
 
 <script>
 $(document).ready(function(){

@@ -51,8 +51,6 @@ def testing():
     createTextInvoice(
             data["user"],
             data["invoice"],
-            data["invoice_id"],
-            data["invoice_file_url"],
             data["treatments"],
             data["descriptions"],
             data["units"],

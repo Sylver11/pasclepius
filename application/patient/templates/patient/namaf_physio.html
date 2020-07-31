@@ -1,5 +1,5 @@
 {% block content %}
-<form id="patient_info"></form>
+<form name="patient_info" id="patient_info"></form>
 <form autocomplete="off" id="NewOrderForm" class="form invoice_form">   
         {{ form.hidden_tag() }}
         <div class="form-group float-right">
@@ -11,7 +11,9 @@
                     <tr id="clonedInput0" class="clonedInput form-inline col-md-6">
                         <th id="row-0" scope="row"><span class="num">1</span></th>
                         <td class= 'col-md-6'>{{  form.treatments(id='treatment-0', class='treatment form-control')  }}</td>
-                        <td>{{  form.value(style='display:none', id='value-0', class='value form-control w-75')  }}</td>
+                        <td>{{  form.description(id='description-0', class='description form-control')  }}</td>
+                        <td style='display:none'>{{  form.units(id='units-0', class='units form-control w-75')  }}</td>
+                        <td style='display:none'>{{  form.value(id='value-0', class='value form-control w-75')  }}</td>
                         <td>{{  form.post_value(id='postvalue-0', class='postvalue form-control w-75')  }}</td>
                         <td>
                             <input id="thirty-0" value = "30%" type="button" class="thirty">
@@ -29,20 +31,22 @@
             </table>
             <br>
         <input id="btnAdd_0" value="Add treatment" type="button" style="widows: 200pxpx" class="clone">
+        <br>
+        <input id="method" name="method" value="write" type="checkbox">
+        
+        <label for="method">Create Invoice File</label>
         <br><br>
-        {% if session['PATIENT']['treatments'] %}
-            <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary', style='background-color:#017B25;', value='Update Invoice') }}</div>
-        {% else %}
-            <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary',style='background-color:#017B25;', value='Create Invoice') }}</div>
-        {% endif %}
+     
+            <div style="display:flex; justify-content: right;">{{ form.submit(class='btn btn-primary', style='background-color:#017B25;', value='Save') }}</div>
+
+            <!-- <div style="display:flex; justify-content: right;">{{ form.submit(class='save_invoice btn btn-primary',style='background-color:#017B25;', value='Save Invoice') }}</div> -->
+      
         <div style="display:flex; flex-direction: column; align-items: flex-end;"><span id="result"></span><span><input class="btn btn-secondary" id="download_invoice" value="Download invoice" type="button" style="display:none;"></span></div>
 </form> 
     
 
 <script>
 $(document).ready(function(){
-
-   
 
 
     var regex = /^((?=\S*['-])([a-zA-Z'-]+))([0-9][0-9]?)+$/i;
@@ -328,8 +332,10 @@ $(document).ready(function(){
                 item: $(this).val(),	
                 tariff: $("#tariff").val()		
             }, function(data) {
-                $(sibling_of_value).parent().parent().children().children(".value").val(data.value / 100);
-                $(sibling_of_value).parent().parent().children().children(".postvalue").val(data.value / 100);
+                $(sibling_of_value).parent().parent().children().children(".description").val(data.description);
+                $(sibling_of_value).parent().parent().children().children(".value").val(data.value_cent / 100);
+                $(sibling_of_value).parent().parent().children().children(".postvalue").val(data.value_cent / 100);
+                $(sibling_of_value).parent().parent().children().children(".units").val(data.units / 100);
                 });
             }
             else{
@@ -338,8 +344,8 @@ $(document).ready(function(){
         return false;
     };
 
-    let element = document.getElementById('treatment-0');
-    element.value = '';
+    // let element = document.getElementById('treatment-0');
+    // element.value = '';
     // $('#date-0').hide();
     // $('#value-0').hide();
     // $('#modifier-0').hide();
@@ -369,44 +375,81 @@ $(document).ready(function(){
     '{% if status == "continue_invoice" %}'
         var invoice = '{{ invoice }}';
         invoice = JSON.parse(invoice.replace(/&#34;/g,'"'));
+        var forms = document.getElementsByTagName('FORM');
+
+        current_patient_form = invoice["invoice_id"] + "_current_patient_form";
+        current_patient_form= current_patient_form.replace(/\//g, "");
+        forms[1].classList.add(current_patient_form);
+
+        current_form = invoice["invoice_id"] + "_current_form";
+        current_form = current_form.replace(/\//g, "");
+        forms[2].classList.add(current_form);
+        forms[2].addEventListener("submit", addSubmit);
 
         for (let i = 0; i < invoice.treatments.length; i++) {
-                            const element = invoice.treatments[i];
-                            var item_number = element["item"]
-                            var item_date = element["date"]
-                            var post_item_value = element["post_value_cent"]
-                            var item_value = element["value_cent"]
-                            if(i !== 0){
-                                clone()
-                            }   
-                            $('#postvalue-' + i).val(post_item_value / 100)
-                            $('#value-' + i).val(item_value / 100)
-                            $('#date-' + i).removeClass('hasDatepicker');
-                            $('#date-' + i).datepicker({dateFormat: 'dd.mm.yy'})
-                            $('#date-' + i).datepicker("setDate", item_date);
-                            $('#treatment-' + i + ' option[value=' + item_number + ']').attr('selected','selected');
-                            $('#thirty-' + i).show()
-                            $('#fourty-' + i).show()
-                            $('#modifier-' + i).show()
-                            $('#modifier-' + i).val(item_modifier);  
-                                     
-                        }
+            const element = invoice.treatments[i];
+            var item_number = element["item"]
+            var item_description = element["description"]
+            var item_units = element["units"]
+            var item_modifier = element["modifier"]
+            var item_date = element["date"]
+            var post_item_value = element["post_value_cent"]
+            var item_value = element["value_cent"]
+            if(i !== 0){
+                clone()
+            }   
+            $('#description-' + i).val(item_description);
+            $('#units-' + i).val(item_units / 100)
+            $('#postvalue-' + i).val(post_item_value / 100)
+            $('#value-' + i).val(item_value / 100)
+            $('#date-' + i).removeClass('hasDatepicker');
+            $('#date-' + i).datepicker({dateFormat: 'dd.mm.yy'})
+            $('#date-' + i).datepicker("setDate", item_date);
+            $('#treatment-' + i + ' option[value=' + item_number + ']').attr('selected','selected');
+            $('#thirty-' + i).show()
+            $('#fourty-' + i).show()
+            $('#modifier-' + i).show()
+            $('#modifier-' + i).val(item_modifier);  
+        }
+
         var div = document.getElementById("patient_info")
+        var invoice_layout = 1;
         for (const [key, value] of Object.entries(invoice)) {
-            if(value && key != "treatments"){
+            if(value && key != "treatments" && key != "date_invoice"){
                 var input = document.createElement("INPUT"); 
                 input.value = value
                 input.name = key;
+                input.id = key;
                 var label = document.createElement("Label");
                 label.htmlFor = key;
                 label.innerHTML= key;
                 if(key == "csrf_token" || key == "invoice_file_url" || key == "uuid_text" || key == "id"  ){
                     input.style.display = "none";
                     label.style.display = "none";        
-                }            
+                } 
+                if(key == "invoice_layout") {
+                    invoice_layout = value;
+                }          
                 div.appendChild(label)
                 div.appendChild(input)
             }
+            else {
+                var input = document.createElement("INPUT"); 
+                input.value = value
+                input.name = key;
+                input.id = key
+                input.style.display = "none";
+                var label = document.createElement("Label");
+                label.htmlFor = key;
+                label.innerHTML= key;
+                label.id = key
+                label.style.display = "none";
+             
+            }
+        }
+        if(invoice_layout >= 4  && invoice_layout <= 9){
+            var admission = document.getElementById("admission");
+            admission.style.display = "block";
         }
 
     '{% else %}'
@@ -417,24 +460,86 @@ $(document).ready(function(){
             success: function (invoice_draft) {
                 invoice_draft = JSON.parse(invoice_draft);
                 invoice_draft = JSON.parse(invoice_draft[0]["work_quality"].replace(/\\"/g, '"'));
-                var div = document.getElementById("patient_info");
+                // console.log(invoice_draft);
+                var form = document.getElementById("patient_info");
+                
+                
+
+                var invoice_layout = 1;
                 for (const [key, value] of Object.entries(invoice_draft)) {
-                    if(value != "" && key != "csrf_token" && key != "treatments"){
-                        var input = document.createElement("INPUT"); 
-                        input.value = value;
-                        input.name = key;
-                        input.id = key;
-                        var label = document.createElement("Label");
-                        label.htmlFor = key;
-                        label.innerHTML= key;
-                        div.appendChild(label);
-                        div.appendChild(input);
-                    }               
+
+                    var div = document.createElement("DIV");
+                    div.className += "form-group ";
+                    div.className += "row";
+                    form.appendChild(div);
+
+                    var label = document.createElement("Label");
+                    label.htmlFor = key;
+                    label.innerHTML= key; 
+                    label.className = "col-sm-2" 
+                    label.className += " col-form-label";
+                    div.appendChild(label);
+
+                    var input_div = document.createElement("DIV");
+                    input_div.className = "col-sm-10"
+                    div.appendChild(input_div);
+
+                    var input = document.createElement("INPUT"); 
+                    input.value = value;
+                    input.name = key;
+                    input.id = key;
+                    input.className = "form-control";
+                    input.setAttribute("type", "text")
+                    input_div.appendChild(input);
+                   
+
+                    
+                    
+
+                    if(key == "admission_date" || key == "discharge_date" || key == "hospital_name"){
+                        input.className += " hospital";
+                        label.className += " hospital";
+                    }
+                    else if(key == "invoice_file_url" || key == "invoice_layout"){
+                        div.style.display = "none"; 
+                    }
+                    else if(value && key != "csrf_token" && key != "treatments"){
+                        input.disabled = true;
+                        input.className = "form-control-plaintext";
+                        var hidden_input = document.createElement("INPUT");
+                        hidden_input.setAttribute("type", "hidden")
+                        hidden_input.value = value;
+                        hidden_input.name = key;
+                        input_div.appendChild(hidden_input);
+
+
+                        if(key == "Status" || key == "invoice_id" || key == "date_created"){
+                            console.log("soemthing");
+                        }   
+                        if(key == "invoice_layout") {
+                            invoice_layout = value;
+                        }           
+                    }
+                    else{
+                        div.style.display = "none"; 
+                    }                                  
                 }
+
+
+                // if(invoice_layout >= 4  && invoice_layout <= 9){
+                //     var hospital = document.getElementsByClassName("hospital");
+                //     for (let i = 0; i < hospital.length; i++) {
+                //         const element = hospital[i];
+                //         element.style.display = "block";  
+                //     }
+                // }
+
+
                 var forms = document.getElementsByTagName('FORM');
                 current_form = invoice_draft["invoice_id"] + "_current_form";
                 current_form = current_form.replace(/\//g, "");
                 forms[2].classList.add(current_form);
+                forms[2].addEventListener("submit", addSubmit);
 
                 current_patient_form = invoice_draft["invoice_id"] + "_current_patient_form";
                 current_patient_form = current_patient_form.replace(/\//g, "");
@@ -459,10 +564,13 @@ $(document).ready(function(){
                 success: function (invoice) {
                     invoice = JSON.parse(invoice);
                     invoice = JSON.parse(invoice[0]["work_quality"].replace(/\\"/g, '"'));
+                    // console.log(invoice);
                     if(invoice.treatments){
                         for (let i = 0; i < invoice.treatments.length; i++) {
                             const element = invoice.treatments[i];
                             var item_number = element["treatments"]
+                            var item_description = element["description"]
+                            var item_units = element["units"]
                             var item_modifier = element["modifier"]
                             var item_date = element["date"]
                             var post_item_value = element["post_value"]
@@ -470,6 +578,8 @@ $(document).ready(function(){
                             if(i !== 0){
                                 clone()
                             }   
+                            $('#description-' + i).val(item_description);
+                            $('#units-' + i).val(item_units)
                             $('#postvalue-' + i).val(post_item_value)
                             $('#value-' + i).val(item_value)
                             $('#date-' + i).removeClass('hasDatepicker');
@@ -506,10 +616,10 @@ $(document).ready(function(){
             if(data[2]["value"] != ""){
 
                 $.each(data, function(){
-                    if(this.name == "treatments" || this.name == "date" || this.name == "value" || this.name == "post_value" || this.name == "modifier"){
+                    if(this.name == "treatments" || this.name == "description" || this.name == "units" || this.name == "date" || this.name == "value" || this.name == "post_value" || this.name == "modifier"){
                     obj[this.name] = this.value
                     counter++;
-                        if(counter == 5){
+                        if(counter == 7){
                             treatments.push(obj);
                             obj = {};
                             counter = 0;
@@ -552,8 +662,11 @@ $(document).ready(function(){
     $(document).on("click", "#download_invoice", function(){
         $('head').append('<meta http-equiv="refresh" content="1;url=/download-invoice/' + Math.floor(Math.random() * 10000) + '"/>');
     })
-
-    $('.invoice_form').on('submit', addSubmit);
+    // console.log('.' + current_form); 
+    // $(document).on("click", '.' + current_form, addSubmit)
+    // $('.save_invoice').on('click', addSubmit);
+    // save_invoice
+    // $('form').on('submit', addSubmit);
 
     function addSubmit(ev) {
         ev.preventDefault();   
@@ -565,28 +678,47 @@ $(document).ready(function(){
             $('#btnAdd_0').prop('disabled', true);
             $('#treatmentsearch').attr('disabled', true);
         } else {
-            $.ajax({
-            method: 'POST',
-            url: '/patient/invoice/generate',
-            data: $('.invoice_form').serialize()+ "&" + $("#patient_info").serialize(),
-            success: function (data) {
-                data = JSON.parse(data);
-                if(data){
-                    $('form').data('submitted', true);
-                    $('#submit').prop('disabled', true);
-                    $('#submit').css('cursor', 'default');
-                    $('#btnAdd_0').css('cursor', 'default');
-                    $('#btnAdd_0').prop('disabled', true);
-                    $('.clone').prop('disabled', true);
-                    $('.below').prop('disabled', true);
-                    $('.remove').prop('disabled', true);
-                    $('#treatmentsearch').attr('disabled', true);
-                    $('#tab-draft').text(data['invoice_id'])
-                    $('#tab-draft').attr('disabled', true);
-                    $('#tab-draft').addClass('active');
+            console.log(document.getElementById('method'));
+            if(document.getElementById('method').checked){
+                console.log("methode was checked");
+                var form = document.getElementById("patient_info") 
+                inputs = form.getElementsByTagName("input")
+                for(var i = 0, len = inputs.length; i < len; i++) {
+                    input = inputs[i];
+                    if(!input.value) {
+                        alert("Please fill all the inputs");
+                        e.preventDefault();
+                        break;
+                    }
                 }
-                addShow(data) 
-            }})
+            }
+            else {         
+                $(this).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
+                console.log($('.' + current_form).serialize()+ "&" + $("." + current_patient_form).serialize());
+            }
+                $.ajax({
+                method: 'POST',
+                url: '/patient/invoice/generate',
+                data: $('.' + current_form).serialize()+ "&" + $("." + current_patient_form).serialize(),
+                success: function (data) {
+                    data = JSON.parse(data);
+                    if(data){
+                        $('form').data('submitted', true);
+                        $('#submit').prop('disabled', true);
+                        $('#submit').css('cursor', 'default');
+                        $('#btnAdd_0').css('cursor', 'default');
+                        $('#btnAdd_0').prop('disabled', true);
+                        $('.clone').prop('disabled', true);
+                        $('.below').prop('disabled', true);
+                        $('.remove').prop('disabled', true);
+                        $('#treatmentsearch').attr('disabled', true);
+                        $('#tab-draft').text(data['invoice_id'])
+                        $('#tab-draft').attr('disabled', true);
+                        $('#tab-draft').addClass('active');
+                    }
+                    addShow(data) 
+                }})
+        
         }
     }
 
