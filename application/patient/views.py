@@ -129,7 +129,7 @@ def Invoice(medical_aid, year, index):
     form = getTreatmentForm(invoice['tariff'])
     return render_template('patient/' + invoice['tariff'][:-5] + '.html',
             invoice = json.dumps(invoice),
-            status = 'continue_invoice',
+            status = invoice['status'],
             form = form)
 
 
@@ -144,14 +144,13 @@ def lastFiveTabs():
 def NewInvoice():
     if request.form:
         status = {}
-       # try:
-        status = insertInvoice(current_user.uuid, request.form)
-       # except Exception as e:
-       #     status['db_status'] = 'Error'
-       #     status['db_description'] = 'Exit code: ' + str(e)
-       #     return json.dumps(status)
+        try:
+            status = insertInvoice(current_user.uuid, request.form)
+        except Exception as e:
+            status['db_status'] = 'Error'
+            status['db_description'] = 'Exit code: ' + str(e)
+            return json.dumps(status)
         method = None
-        print(request.form.get('method'))
         if status['db_status'] == 'Success' and request.form.get('method'):
             user = checkUser(current_user.id)
             res_dict = {

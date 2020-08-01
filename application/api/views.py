@@ -2,7 +2,7 @@ import os
 from flask import Blueprint, request, session, send_file, jsonify
 from application.forms import getTreatmentForm
 from application.db_tariffs import getTreatmentByItem, getValueTreatments, getMultipleValues, getTreatmentByGroup, liveSearchTreatments
-from application.db_invoice import get_index, add_invoice, getInvoiceURL, getSingleInvoice, updateInvoice, liveSearch, getItems
+from application.db_invoice import get_index, getInvoiceURL, getSingleInvoice, liveSearch, getItems
 from application.db_users import checkUser
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
