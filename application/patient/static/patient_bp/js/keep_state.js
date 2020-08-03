@@ -6,6 +6,9 @@ function keepState(patient_form, treatment_form){
     var counter = 0; 
     if(data != 'undefined' && data.length !== 0){
         if(data[2]["value"] != ""){
+            var tab_draft = document.getElementById("tab-draft");
+            var original_text = tab_draft.innerHTML
+            tab_draft.innerHTML = "Saving draft .."
             $.each(data, function(){
                 if(this.name == "treatments" || this.name == "description" || this.name == "date" || this.name == "value" || this.name == "post_value" || this.name == "units"){
                 obj[this.name] = this.value
@@ -28,8 +31,11 @@ function keepState(patient_form, treatment_form){
                 url: url,
                 data: {work_quality: invoice_json_string, work_type: 'invoice_draft'},
                 success: function () {
+                    setTimeout(function(){tab_draft.innerHTML = original_text}, 500)
+                    
                 }
             });
+            
         }   
     }  
 }

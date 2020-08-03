@@ -90,37 +90,6 @@ $(document).ready(function(){
     });
 
 
-
-
-    function addUniqueClasses(){
-        var forms = document.getElementsByTagName('FORM');
-        current_patient_form = current_invoice["invoice_id"] + "_current_patient_form";
-        current_patient_form = current_patient_form.replace(/\//g, "");
-        forms[1].classList.add(current_patient_form);
-        forms[1].addEventListener("input", function () {
-            keepState(forms[1], forms[3]);
-        });
-
-        current_search_form = current_invoice["invoice_id"] + "_current_search_form";
-        current_search_form = current_search_form.replace(/\//g, "");
-        forms[2].classList.add(current_search_form);
-        forms[2].addEventListener("keyup", event => {
-            if (event.isComposing || event.keyCode === 229) {
-                return;
-            }
-            liveSearch(event)
-        })
-
-        current_form = current_invoice["invoice_id"] + "_current_form";
-        current_form = current_form.replace(/\//g, "");
-        forms[3].classList.add(current_form);
-        forms[3].addEventListener("input", function () {
-            keepState(forms[1], forms[3]);
-        });
-        forms[3].addEventListener("submit", addSubmit);
-
-    }
-
     '{% if status == "new_draft" %}'
         $.ajax({
             type: "GET",
@@ -129,7 +98,8 @@ $(document).ready(function(){
             success: function (new_invoice) {
                 current_invoice = JSON.parse(new_invoice);
                 current_invoice = JSON.parse(current_invoice[0]["work_quality"].replace(/\\"/g, '"'));
-                addUniqueClasses()
+                var forms = document.getElementsByTagName('FORM');
+                addUniqueClasses(forms[1],forms[3], forms[2])         
                 populatePatient()
 
                 var form = document.getElementById("patient_info");
@@ -172,7 +142,9 @@ $(document).ready(function(){
                 success: function (invoice) {
                     current_invoice = JSON.parse(invoice);
                     current_invoice = JSON.parse(current_invoice[0]["work_quality"].replace(/\\"/g, '"'));
-                    addUniqueClasses()
+                    // addUniqueClasses()
+                    var forms = document.getElementsByTagName('FORM');
+                    addUniqueClasses(forms[1],forms[3], forms[2])
                     populatePatient()
                     if(current_invoice.treatments){
                         for (let i = 0; i < current_invoice.treatments.length; i++) {
@@ -206,7 +178,8 @@ $(document).ready(function(){
     '{% else %}'
         current_invoice = '{{ invoice }}';
         current_invoice = JSON.parse(current_invoice.replace(/&#34;/g,'"'));
-        addUniqueClasses()
+        var forms = document.getElementsByTagName('FORM');
+        addUniqueClasses(forms[1],forms[3], forms[2])
         populatePatient()
         
 
@@ -239,10 +212,10 @@ $(document).ready(function(){
 
 })
 
-window.onclick = function(event) {
-    var forms = document.getElementsByTagName('FORM');
-    keepState(forms[1], forms[3]);
-        }
+// window.onclick = function(event) {
+//     var forms = document.getElementsByTagName('FORM');
+//     keepState(forms[1], forms[3]);
+// }
             
 
 $.ajaxSetup({
@@ -259,6 +232,7 @@ $.ajaxSetup({
 <script src="{{url_for('.static', filename='patient_bp/js/keep_state.js')}}"></script>
 <script src="{{url_for('.static', filename='patient_bp/js/clone.js')}}"></script>
 <script src="{{url_for('.static', filename='patient_bp/js/live_search.js')}}"></script>
+<script src="{{url_for('.static', filename='patient_bp/js/unique_classes.js')}}"></script>
 <script src="{{url_for('.static', filename='patient_bp/js/populate_patient.js')}}"></script>
 <script src="{{url_for('.static', filename='patient_bp/js/submit.js')}}"></script>
 

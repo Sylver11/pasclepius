@@ -50,11 +50,12 @@
             <br>
         <input id="btnAdd_0" value="Add treatment" type="button" class="clone">
         <br>
-        <input id="method" name="method" value="write" type="checkbox">
         
-        <label for="method">Create Invoice File</label>
         <br><br>
         <button id="submit" type="submit" class="btn btn-primary save_invoice" style="background-color:#017B25;">Save</button>
+        <br>
+        <input id="method" name="method" value="write" type="checkbox">
+        <label for="method">Create Invoice File</label>
         <div style="display:flex; flex-direction: column; align-items: flex-end;"><span id="result"></span><span><input class="btn btn-secondary" id="download_invoice" value="Download invoice" type="button" style="display:none;"></span></div>
 </form> 
     
@@ -401,9 +402,14 @@ $(document).ready(function(){
             url: '/patient/last-five', 
             data: {work_type: "invoice_draft"},
             success: function (new_invoice) {
+                // window.onclick = function(event) {
+                //     var forms = document.getElementsByTagName('FORM');
+                //     keepState(forms[1], forms[2]);
+                // }
                 current_invoice = JSON.parse(new_invoice);
                 current_invoice = JSON.parse(current_invoice[0]["work_quality"].replace(/\\"/g, '"'));
-                addUniqueClasses()
+                var forms = document.getElementsByTagName('FORM');
+                addUniqueClasses(forms[1],forms[2])
                 populatePatient()
 
                 var form = document.getElementById("patient_info");
@@ -435,8 +441,6 @@ $(document).ready(function(){
                 hidden_input.value = "new_draft";
                 hidden_input.name = "status";
                 input_div.appendChild(hidden_input);
-
-                keepState() 
             }
         })
 
@@ -446,11 +450,15 @@ $(document).ready(function(){
                 url: '/patient/last-five', 
                 data: {work_type: "invoice_draft"},
                 success: function (invoice_draft) {
+                    // window.onclick = function(event) {
+                    //     var forms = document.getElementsByTagName('FORM');
+                    //     keepState(forms[1], forms[2]);
+                    // }
                     current_invoice = JSON.parse(invoice_draft);
                     current_invoice = JSON.parse(current_invoice[0]["work_quality"].replace(/\\"/g, '"'));
-                    addUniqueClasses()
+                    var forms = document.getElementsByTagName('FORM');
+                    addUniqueClasses(forms[1],forms[2])
                     populatePatient()
-                    // console.log(current_invoice);
                     if(current_invoice.treatments){
                         for (let i = 0; i < current_invoice.treatments.length; i++) {
                             const element = current_invoice.treatments[i];
@@ -478,7 +486,6 @@ $(document).ready(function(){
                             $('#modifier-' + i).val(item_modifier);  
                         }
                     }
-                    keepState() 
                 }
             })
             
@@ -487,7 +494,8 @@ $(document).ready(function(){
         current_invoice = '{{ invoice }}';
         current_invoice = JSON.parse(current_invoice.replace(/&#34;/g,'"'));
 
-        addUniqueClasses()
+        var forms = document.getElementsByTagName('FORM');
+        addUniqueClasses(forms[1],forms[2])
         populatePatient()
 
         for (let i = 0; i < current_invoice.treatments.length; i++) {
@@ -518,8 +526,24 @@ $(document).ready(function(){
 
     '{% endif %}'
 
+   
 
-    function keepState(){
+
+   
+
+
+    $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+                }
+            }
+    })
+    
+});
+
+function keepState(){
+        console.log("this runs");
         var data = $('.' + current_form).serializeArray().concat($("." + current_patient_form).serializeArray()) ;
         current_invoice = {};
         var treatments = [];
@@ -555,19 +579,9 @@ $(document).ready(function(){
                 });
             }   
         }  
-        setTimeout(keepState,5000);
     }
 
 
-    $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
-                }
-            }
-    })
-    
-});
 
 </script>
 

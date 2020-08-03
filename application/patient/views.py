@@ -3,7 +3,7 @@ from application.name_generator import InvoiceName
 from werkzeug.datastructures import ImmutableMultiDict
 from flask_login import current_user, login_required
 from flask import render_template, Blueprint, request, session, redirect
-from application.db_workbench import newWork, lastFive, removeWork
+from application.db_workbench import removeWork, newWork, lastFive, removeWork
 from application.db_users import checkUser
 from application.forms import Patient_mva, Patient_psemas, Patient_other,getTreatmentForm
 from application.db_invoice import insertInvoice, get_index, queryInvoice, getPatient, getSingleInvoice, getItems
@@ -143,6 +143,8 @@ def lastFiveTabs():
 @patient_bp.route('/invoice/generate', methods=['POST'])
 def NewInvoice():
     if request.form:
+        if request.form['status'] == 'new_draft' or request.form['status'] == 'continue_draft':
+            removeWork(current_user.uuid, 'invoice_draft', 'any')
         status = {}
         try:
             status = insertInvoice(current_user.uuid, request.form)
