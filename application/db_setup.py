@@ -10,6 +10,7 @@ def setupTable():
     sql_drop_table_users = "DROP TABLE users"
     sql_drop_table_invoice_items = "DROP TABLE invoice_items"
     sql_drop_table_user_workbench = "DROP TABLE user_workbench"
+    sql_drop_table_patients = "DROP TABLE patients"
 
     sql_create_table_namaf_tariffs = """CREATE TABLE namaf_tariffs  (
         id MEDIUMINT NOT NULL AUTO_INCREMENT,
@@ -49,7 +50,7 @@ def setupTable():
         id MEDIUMINT NOT NULL AUTO_INCREMENT,
         uuid_text varchar(36) NOT NULL,
         patient_name varchar(255) NOT NULL,
-        date_created DATETIME NOT NULL,
+        date_created DATETIME NOT NULL DEFAULT NOW(),
         date_invoice DATETIME NOT NULL,
         medical_aid varchar(255) NOT NULL,
         invoice_id varchar(255) NOT NULL,
@@ -76,6 +77,21 @@ def setupTable():
         credit_cent int(11) NOT NULL DEFAULT 0,
         remind_me DATETIME,
         PRIMARY KEY (id));"""
+
+
+    sql_create_table_patients = """ CREATE TABLE patients (
+        id int(11) NOT NULL AUTO_INCREMENT,
+        uuid_text varchar(36) NOT NULL,
+        patient_name varchar(255) NOT NULL,
+        medical_aid varchar(255) NOT NULL,
+        main_member varchar(255),
+        patient_birth_date DATE NULL,
+        medical_number varchar(255),
+        case_number varchar(255),
+        patient_note varchar(500),
+        created_on DATETIME NOT NULL DEFAULT NOW(),
+        PRIMARY KEY (id));"""
+
 
 
     sql_create_table_users = """CREATE TABLE users (
@@ -140,6 +156,8 @@ def setupTable():
     cursor.execute(sql_create_table_user_workbench)
     cursor.execute(sql_drop_table_invoice_items)
     cursor.execute(sql_create_table_invoice_items)
+    cursor.execute(sql_drop_table_patients)
+    cursor.execute(sql_create_table_patients)
     #cursor.execute(sql_drop_table_users)
     cursor.execute(sql_drop_table_invoice)
     cursor.execute(sql_create_table_invoice)

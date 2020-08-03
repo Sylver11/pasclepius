@@ -1,11 +1,11 @@
-from datetime import datetime
+from datetime import date
 import calendar
 import os
 
 class InvoiceName(object):
 
-    def __init__(self, medical_aid, date_created, index, modifier):
-        self.date = date_created
+    def __init__(self, medical_aid, index, modifier):
+        self.today = date.today()
         self.medical_aid = medical_aid.strip()
         self.index = index
         if '14' in modifier:
@@ -19,12 +19,12 @@ class InvoiceName(object):
 
     def date_digits(self, date_component):
         if date_component == 'year':
-            return self.date.year
+            return self.today.year
         elif date_component == 'month':
-            return self.date.month
+            return self.today.month
 
     def generate(self):
-        self.date = self.convert()
+       # self.date = self.convert()
         self.invoice_id = str(self.medical_aid).upper() +'/' + str(self.date_digits('year')) + '/' + str(self.modifier) + str(self.date_digits('month')) + '-' + str(self.index)  
         return self.invoice_id
 

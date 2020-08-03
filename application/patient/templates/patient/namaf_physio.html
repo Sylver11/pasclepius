@@ -217,7 +217,7 @@ $(document).ready(function(){
 
     function re_number(){
         $('table').find('tr').each(function(i, v) {
-            $(v).find('span.num').text(i + 1);
+            $(v).find('span.num').text(i);
         });
     }
   
@@ -526,10 +526,6 @@ $(document).ready(function(){
 
     '{% endif %}'
 
-   
-
-
-   
 
 
     $.ajaxSetup({

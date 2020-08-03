@@ -75,8 +75,9 @@
     </div>
 </div>
 {% endif %}
-
-        {{ form_mva.date_created.label(class="required") }} {{ form_mva.date_created(id='date_mva', class_="form-control w-25 p-3") }}
+<br>
+    <input id="save_patient" name="save_patient" value="save_patient" type="checkbox" onclick="toggleOptions()">       
+    <label for="save_patient">Only save patient</label>
         <br>
         {{ form_mva.submit(class_="btn btn-success") }}
     </form>  
@@ -153,12 +154,21 @@
     </div>
 </div>
 {% endif %}
-        {{ form_other.date_created.label(class="required")  }} {{ form_other.date_created(id='date_other', class_="form-control w-25 p-3") }}
-        <br>
-        {{ form_other.submit(class_="btn btn-success") }}
-    </form>  
+<br>
+    <input id="save_patient" name="save_patient" value="save_patient" type="checkbox" onclick="toggleOptions()">       
+    <label for="save_patient">Only save patient</label>
+    <br>
+    {{ form_other.submit(class_="btn btn-success") }}
+</form>  
 
 <script>
+function toggleOptions(){
+    if (document.getElementById('save_patient').checked) {
+        alert("checked");
+    } else {
+        alert("You didn't check it! Let me check it for you.");
+    }
+}
 $(document).ready(function() {
 
     function isValidDate(dateString){
@@ -176,7 +186,7 @@ $(document).ready(function() {
             return day > 0 && day <= monthLength[month - 1];
     };
 
-
+    
         $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
         $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
         $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
@@ -218,7 +228,6 @@ $(document).ready(function() {
                     draft_button.className += " btn";
                     draft_button.className += " btn-secondary "
                     draft_button.className += " btn-sm "
-                    draft_button.className += " fade "
                     
                     draft_button.style.marginLeft = "2em";
                     draft_button.textContent = "Draft";
@@ -242,6 +251,10 @@ $(document).ready(function() {
                                 $.get( "/patient/invoice/new", {"tariff": patient["tariff"], "status": "continue_draft"}, function( data ) {
                                     $( "#invoice-tab" ).html( data );
                                 });
+                            },
+                            error: function(xhr, status, error){
+                                var errorMessage = xhr.status + ': ' + xhr.statusText;
+                                alert('Error - ' + errorMessage);
                             }
                         })
                     }, false);
@@ -261,6 +274,10 @@ $(document).ready(function() {
                                 favi_to_be_removed.remove();
                                 tab_to_be_removed = document.getElementById("tab-draft");
                                 tab_to_be_removed.remove();
+                            },
+                            error: function(xhr, status, error){
+                                var errorMessage = xhr.status + ': ' + xhr.statusText;
+                                alert('Error - ' + errorMessage);
                             }
                         }) 
                     });
@@ -273,6 +290,10 @@ $(document).ready(function() {
                         lower_navbar.insertBefore(draft_button, referenceNode)
                         lower_navbar.insertBefore(favi, referenceNode)
                     }         
+                })
+                .fail(function(xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText;
+                    alert('Error - ' + errorMessage);
                 })
             } 
         });
@@ -316,6 +337,10 @@ $(document).ready(function() {
                                 $.get( "/patient/invoice/new", {"tariff": patient["tariff"], "status": "continue_draft"}, function( data ) {
                                     $( "#invoice-tab" ).html( data );
                                 });
+                            },
+                            error: function(xhr, status, error){
+                                var errorMessage = xhr.status + ': ' + xhr.statusText;
+                                alert('Error - ' + errorMessage);
                             }
                         })
                     }, false);
@@ -335,6 +360,10 @@ $(document).ready(function() {
                                 favi_to_be_removed.remove();
                                 tab_to_be_removed = document.getElementById("tab-draft");
                                 tab_to_be_removed.remove();
+                            },
+                            error: function(xhr, status, error){
+                                var errorMessage = xhr.status + ': ' + xhr.statusText;
+                                alert('Error - ' + errorMessage);
                             }
                         }) 
                     });
@@ -348,12 +377,53 @@ $(document).ready(function() {
                         lower_navbar.insertBefore(favi, referenceNode)
                     }
                 })
+                .fail(function(xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText;
+                    alert('Error - ' + errorMessage);
+                })
             } 
             else{
                 e.preventDefault();
                 alert("Patient birth date has an incorrect format. Please use the following format: dd.mm.yyyy");
             } 
         });
+
+
+        // var remember = document.getElementById("save_patient");
+        // console.log(remember);
+        //     if (remember.checked) {
+        //         alert("checked");
+        //     } 
+
+        // function validate() {
+            
+        //     }
+
+
+        // function toggleOptions(){
+        //     if (document.getElementById('save_patient').checked) {
+        //         alert("checked");
+        //     } else {
+        //         alert("You didn't check it! Let me check it for you.");
+        //     }
+        // }
+        // function validate() {
+        //     if (document.getElementById('save_patient').checked) {
+        //         alert("checked");
+        //     } else {
+        //         alert("You didn't check it! Let me check it for you.");
+        //     }
+        // }
+
+        // if (document.getElementById('save_patient').checked) {
+        //     alert("checked");
+        // } 
+        // if (document.getElementById('save_patient').is(':checked')){
+        //     alert("You didn't check it! Let me check it for you.");
+        // }
+        // else {
+        //     alert("You didn't check it! Let me check it for you.");
+        // }
 
 
         var other_medical_aid_field = document.querySelector('.other_medical_aid');

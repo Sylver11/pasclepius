@@ -5,6 +5,7 @@ from flask_login import current_user, login_required
 from flask import render_template, Blueprint, request, session, redirect
 from application.db_workbench import removeWork, newWork, lastFive, removeWork
 from application.db_users import checkUser
+from application.db_patient import insertPatient, checkDuplicate
 from application.forms import Patient_mva, Patient_psemas, Patient_other,getTreatmentForm
 from application.db_invoice import insertInvoice, get_index, queryInvoice, getPatient, getSingleInvoice, getItems
 from datetime import datetime
@@ -74,22 +75,27 @@ def Continue():
 @login_required
 def newInvoice():
     if request.method == 'POST':
-        patient_info = request.form.to_dict()
+        row = checkDuplicate(current_user.uuid, request.form)
+        if row:
+            return 'Patient already exists.'
+        insertPatient(current_user.uuid, request.form)
+        if request.form.get('save_patient'):
+            return 'Patient saved'
         patient_name = request.form['patient_name']
         medical_aid = request.form['medical_aid']
-        date_created = request.form['date_created']
         tariff = request.form['tariff']
         item_modifiers = []
-        invoice_index = get_index(current_user.uuid, medical_aid, date_created)
-        invoice_file_url = InvoicePath(date_created,
+        invoice_index = get_index(current_user.uuid, medical_aid)
+        invoice_file_url = InvoicePath(
                 medical_aid,
                 patient_name,
                 invoice_index,
                 current_user.first_name,
                 current_user.practice_name)
         invoice_file_url = invoice_file_url.generate()
-        invoice_id = InvoiceName(medical_aid, date_created, invoice_index, item_modifiers)
+        invoice_id = InvoiceName(medical_aid, invoice_index, item_modifiers)
         invoice_id = invoice_id.generate()
+        patient_info = request.form.to_dict()
         patient_info['invoice_id'] = invoice_id
         patient_info['invoice_file_url'] = invoice_file_url
         patient_info['invoice_layout'] = current_user.invoice_layout

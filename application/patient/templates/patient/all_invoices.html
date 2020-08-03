@@ -118,6 +118,7 @@ for (let i = 0; i < invoices.length; i++) {
             for (var i = 0; i < tabs.length; i++) {
                 if(tabs[i].textContent.match(element['invoice_id'])){
                     tabs[i].className += " active";
+                    tabs[i].disabled = false;
                     tab_does_not_exists = false;
                 }
             } 

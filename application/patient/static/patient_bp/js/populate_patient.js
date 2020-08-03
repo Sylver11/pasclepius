@@ -10,6 +10,9 @@ function populatePatient(){
 
     var form_row_procedure_2 = document.createElement("DIV");
     form_row_procedure_2.className += "form-row ";
+
+    var form_row_procedure_3 = document.createElement("DIV");
+    form_row_procedure_3.className += "form-row ";
    
     for (const [key, value] of Object.entries(current_invoice)) {
 
@@ -32,8 +35,7 @@ function populatePatient(){
             input.name = key;
             input.id = key;
             input.className = "form-control";
-            form_group.appendChild(input);
-            
+            form_group.appendChild(input);     
         }
         else if(key == "procedure" || key == "procedure_date" ||key == "diagnosis" || key == "diagnosis_date" || key == "implants" || key == "intra_op" || key == "post_op" ){
             
@@ -66,10 +68,25 @@ function populatePatient(){
                     form_group.className += "col-md-3";
                 }
 
-            }
-            
-
-            
+            }else if(key == "diagnosis" || key == "diagnosis_date"){
+                form_row_procedure_2.appendChild(form_group);
+                
+                if(key == "diagnosis"){
+                    form_group.className += "col-md-9";
+                }
+                else{
+                    form_group.className += "col-md-3";
+                }
+            }else{
+                form_row_procedure_2.appendChild(form_group);
+                
+                if(key == "implants"){
+                    form_group.className += "col-md-6";
+                }
+                else{
+                    form_group.className += "col-md-3";
+                }
+            }            
         }
         else if(value && key != "csrf_token" && key != "treatments" && key != "date_invoice" && key != "modifier"){
             var div = document.createElement("DIV");
@@ -119,21 +136,16 @@ function populatePatient(){
         }                                 
     }
 
-
-
     if(invoice_layout >= 4  && invoice_layout <= 9){
         form.appendChild(form_row_hospitial);
         $('#admission_date').datepicker({dateFormat: 'dd.mm.yy'})
         $('#discharge_date').datepicker({dateFormat: 'dd.mm.yy'})      
     }
     if(invoice_layout >= 7  && invoice_layout <= 12){
-        var procedure = document.getElementsByClassName("procedure");
-        for (let i = 0; i < procedure.length; i++) {
-            const element = procedure[i];
-            element.style.display = "block";  
-            input = element.getElementsByTagName("INPUT")[0]
-            input.disabled = false; 
-        }
+        form.appendChild(form_row_procedure_1);
+        form.appendChild(form_row_procedure_2);
+        form.appendChild(form_row_procedure_3);
         $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
+        $('#diagnosis_date').datepicker({dateFormat: 'dd.mm.yy'})
     }
 }

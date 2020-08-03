@@ -1,11 +1,13 @@
 from application.db_utils import pool
+from datetime import date
 from datetime import datetime
 import simplejson as json
 
-def get_index(uuid, medical_aid, date):
-    date = datetime.strptime(date, '%d.%m.%Y')
-    month = date.month
-    year = date.year
+def get_index(uuid, medical_aid):
+    #date = datetime.strptime(date, '%d.%m.%Y')
+    today = date.today()
+    month = today.month
+    year = today.year
     sql = """SELECT COUNT(*) FROM invoices WHERE uuid_text = '{}' AND  medical_aid = '{}' AND YEAR
     (date_created) = '{}' AND MONTH(date_created) = '{}'""".format(uuid, medical_aid, year, month)
     conn = pool.connection()
@@ -201,26 +203,16 @@ def insertInvoice(uuid_text, invoice_form):
     AND invoice_id = '{}'""".format(uuid_text, invoice_form['invoice_id'])
     cursor.execute(sql_rm_invoice)
     deleted_row_count = cursor.rowcount
-    row = None
-    if not deleted_row_count:
-        sql_check_duplicate = """ SELECT * FROM invoices WHERE uuid_text='{}' AND
-            patient_name='{}' AND date_created='{}'""".format(uuid_text,
-            invoice_form['patient_name'],
-            datetime.strptime(invoice_form['date_created'], '%d.%m.%Y'))
-        cursor.execute(sql_check_duplicate)
-        row = cursor.fetchone()
-    if not row:
-        cursor.execute("""INSERT INTO invoices (uuid_text,
-        patient_name, date_created, date_invoice, medical_aid,
+    cursor.execute("""INSERT INTO invoices (uuid_text,
+        patient_name, date_invoice, medical_aid,
         invoice_id, invoice_file_url, tariff, invoice_layout, main_member,
         patient_birth_date, medical_number, `case_number`, po_number,
         hospital_name, admission_date, discharge_date, `procedure`,
         procedure_date, diagnosis, diagnosis_date,
         implants, intra_op, post_op)
-        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """,(uuid_text,
         invoice_form['patient_name'],
-        datetime.strptime(invoice_form['date_created'], '%d.%m.%Y'),
         datetime.strptime(invoice_form['date_invoice'], '%d.%m.%Y'),
         invoice_form['medical_aid'],
         invoice_form['invoice_id'],
@@ -243,41 +235,37 @@ def insertInvoice(uuid_text, invoice_form):
         invoice_form.get('intra_op') or None,
         invoice_form.get('post_op') or None))
 
-        sql_rm_invoice_items = """DELETE FROM invoice_items WHERE uuid_text = '{}'
-        AND invoice_id = '{}'""".format(uuid_text,
+    sql_rm_invoice_items = """DELETE FROM invoice_items WHERE uuid_text = '{}'
+    AND invoice_id = '{}'""".format(uuid_text,
                 invoice_form['invoice_id'])
-        cursor.execute(sql_rm_invoice_items)
-        list = []
-        for i in range(len(invoice_form.getlist('treatments'))):
-            list_item = []
-            list_item.extend((uuid_text,
-                invoice_form['invoice_id'],
-                invoice_form.getlist('treatments')[i],
-                float(invoice_form.getlist('units')[i]) * 100,
-                invoice_form.getlist('description')[i],
-                float(invoice_form.getlist('value')[i]) * 100,
-                float(invoice_form.getlist('post_value')[i]) * 100,
-                datetime.strptime(invoice_form.getlist('date')[i], '%d.%m.%Y'),
-                invoice_form.getlist('modifier')[i]))
-            list_item = tuple(list_item)
-            list.append(list_item)
-        sql_individual_item = """INSERT INTO invoice_items (uuid_text,
+    cursor.execute(sql_rm_invoice_items)
+    list = []
+    for i in range(len(invoice_form.getlist('treatments'))):
+        list_item = []
+        list_item.extend((uuid_text,
+            invoice_form['invoice_id'],
+            invoice_form.getlist('treatments')[i],
+            float(invoice_form.getlist('units')[i]) * 100,
+            invoice_form.getlist('description')[i],
+            float(invoice_form.getlist('value')[i]) * 100,
+            float(invoice_form.getlist('post_value')[i]) * 100,
+            datetime.strptime(invoice_form.getlist('date')[i], '%d.%m.%Y'),
+            invoice_form.getlist('modifier')[i]))
+        list_item = tuple(list_item)
+        list.append(list_item)
+    sql_individual_item = """INSERT INTO invoice_items (uuid_text,
         invoice_id, item, units, description, value_cent, post_value_cent,
         date, modifier) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-        cursor.executemany(sql_individual_item, list)
+    cursor.executemany(sql_individual_item, list)
 
-        if deleted_row_count:
-            status['db_status'] =  'Success'
-            status['db_description'] = 'Updated invoice'
-            status['invoice_id'] = invoice_form['invoice_id']
-        else:
-            status['db_status'] = 'Success'
-            status['db_description'] = 'New invoice created ' + invoice_form['invoice_id']
-            status['invoice_id'] = invoice_form['invoice_id']
+    if deleted_row_count:
+        status['db_status'] =  'Success'
+        status['db_description'] = 'Updated invoice'
+        status['invoice_id'] = invoice_form['invoice_id']
     else:
-        status['db_status'] = 'Error'
-        status['db_description'] = 'Very similiar invoice already exists. Check past invoices for ' + row['invoice_id']
-        status['invoice_id'] = row['invoice_id']
+        status['db_status'] = 'Success'
+        status['db_description'] = 'New invoice created ' + invoice_form['invoice_id']
+        status['invoice_id'] = invoice_form['invoice_id']
     cursor.close()
     conn.close()
     return status
