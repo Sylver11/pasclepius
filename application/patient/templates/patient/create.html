@@ -17,68 +17,70 @@
         <div class="form-row">
             {{ form_mva.hidden_tag() }}
             {{ form_mva.medical_aid(value='mva', style='display:none') }}
-            <div class="form-group col-md-4">
-                {{ form_mva.tariff.label(class="required") }} {{ form_mva.tariff(class_="tariff form-control") }}
-            </div>
+            
             <div class="form-group col-md-4">
                 {{ form_mva.patient_name.label(class="required",  for="patient_name") }} {{ form_mva.patient_name(class_="form-control") }}
             </div>
-        </div>  
-        <div class="form-row">
             <div class="form-group col-md-4">
                 {{ form_mva.case_number.label(class="required",  for="case_number") }} {{ form_mva.case_number(class_="form-control") }}
             </div>
+        </div>  
+        <div class="form-row">
+            
             <div class="form-group col-md-4">
-                {{ form_mva.po_number.label(class="required") }} {{ form_mva.po_number(class_="form-control") }}
+                {{ form_mva.tariff.label(class="required", id="tariff_label", class="tariff_label") }} {{ form_mva.tariff(class_="tariff form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.po_number.label(class="required", id="po_label") }} {{ form_mva.po_number(class_="form-control") }}
             </div>
         </div>
 
         {% if 4 <= layout_code <= 9 %}
-<div class="form-row">
-    <div class="form-group col-md-4">
-        {{ form_mva.hospital_name.label }} {{ form_mva.hospital_name(class_="form-control") }}
-    </div>
-    <div class="form-group col-md-4">
-        {{ form_mva.admission_date.label }} {{ form_mva.admission_date(class_="form-control") }}
-    </div>
-    <div class="form-group col-md-4">
-        {{ form_mva.discharge_date.label }} {{ form_mva.discharge_date(class_="form-control") }}
-    </div>
-</div>
-{% endif %}
-{% if 7 <= layout_code <= 12 %}
-<div class="form-row">
-    <div class="form-group col-md-8">
-        {{ form_mva.diagnosis.label }} {{ form_mva.diagnosis(class_="form-control") }}
-    </div>
-    <div class="form-group col-md-4">
-        {{ form_mva.diagnosis_date.label }} {{ form_mva.diagnosis_date(class_="form-control") }}
-    </div>
-</div>
-<div class="form-row">
-    <div class="form-group col-md-8">
-        {{ form_mva.procedure.label }} {{ form_mva.procedure(class_="form-control") }}
-    </div>
-    <div class="form-group col-md-4">
-        {{ form_mva.procedure_date.label }} {{ form_mva.procedure_date(class_="form-control") }}
-    </div>
-</div>
-<div class="form-row">
-    <div class="form-group col-md-4">
-        {{ form_mva.implants.label }} {{ form_mva.implants(class_="form-control") }}
-    </div>
-    <div class="form-group col-md-4">
-        {{ form_mva.intra_op.label }} {{ form_mva.intra_op(class_="form-control") }}
-    </div>
-    <div class="form-group col-md-4">
-        {{ form_mva.post_op.label }} {{ form_mva.post_op(class_="form-control") }}
-    </div>
-</div>
-{% endif %}
-<br>
-    <input id="save_patient" name="save_patient" value="save_patient" type="checkbox" onclick="toggleOptions()">       
-    <label for="save_patient">Only save patient</label>
-        <br>
+            <div class="form-row hospital_mva">
+                <div class="form-group col-md-4">
+                    {{ form_mva.hospital_name.label(id="hospital_name_label") }} {{ form_mva.hospital_name(class_="form-control") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form_mva.admission_date.label(id="admission_date_label") }} {{ form_mva.admission_date(class_="form-control") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form_mva.discharge_date.label(id="discharge_date_label") }} {{ form_mva.discharge_date(class_="form-control") }}
+                </div>
+            </div>
+            {% endif %}
+            {% if 7 <= layout_code <= 12 %}
+            <div class="form-row procedure_other">
+                <div class="form-group col-md-8">
+                    {{ form_mva.diagnosis.label(id="diagnosis_label") }} {{ form_mva.diagnosis(class_="form-control") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form_mva.diagnosis_date.label(id="diagnosis_date_label") }} {{ form_mva.diagnosis_date(class_="form-control") }}
+                </div>
+            </div>
+            <div class="form-row procedure_other">
+                <div class="form-group col-md-8">
+                    {{ form_mva.procedure.label(id="procedure_label") }} {{ form_mva.procedure(class_="form-control") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form_mva.procedure_date.label(id="procedure_date_label") }} {{ form_mva.procedure_date(class_="form-control") }}
+                </div>
+            </div>
+            <div class="form-row procedure_other">
+                <div class="form-group col-md-4">
+                    {{ form_mva.implants.label(id="implants_label") }} {{ form_mva.implants(class_="form-control") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form_mva.intra_op.label(id="intra_op_label") }} {{ form_mva.intra_op(class_="form-control") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form_mva.post_op.label(id="post_op_label") }} {{ form_mva.post_op(class_="form-control") }}
+                </div>
+            </div>
+        {% endif %}
+            <br>
+            <input class="save_patient" id="save_patient" name="save_patient" value="save_patient" type="checkbox" onclick="toggleOptions()">       
+            <label for="save_patient">Only save patient</label>
+            <br>
         {{ form_mva.submit(class_="btn btn-success") }}
     </form>  
     <form  method=post autocomplete="off" id="newInvoice_other" class="other" name="other" style="display:none">  
@@ -93,7 +95,7 @@
                 {{form_other.medical_aid.label(class="required")}}  {{ form_other.medical_aid(class_="form-control other_medical_aid") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_other.tariff.label(class="required") }} {{ form_other.tariff(class_="tariff") }}
+                {{ form_other.tariff.label(class="required", id="tariff_label", class="tariff_label") }} {{ form_other.tariff(class_="tariff") }}
             </div>
         </div>
         <div class="form-row">
@@ -113,49 +115,49 @@
             </div>
         </div>
         {% if 4 <= layout_code <= 9 %}
-<div class="form-row">
+<div class="form-row hospital_other">
     <div class="form-group col-md-4">
-        {{ form_other.hospital_name.label }} {{ form_mva.hospital_name(class_="form-control") }}
+        {{ form_other.hospital_name.label(id="hospital_name_label") }} {{ form_mva.hospital_name(class_="form-control") }}
     </div>
     <div class="form-group col-md-4">
-        {{ form_other.admission_date.label }} {{ form_mva.admission_date(class_="form-control") }}
+        {{ form_other.admission_date.label(id="admission_date_label") }} {{ form_mva.admission_date(class_="form-control") }}
     </div>
     <div class="form-group col-md-4">
-        {{ form_other.discharge_date.label }} {{ form_mva.discharge_date(class_="form-control") }}
+        {{ form_other.discharge_date.label(id="discharge_date_label") }} {{ form_mva.discharge_date(class_="form-control") }}
     </div>
 </div>
 {% endif %}
 {% if 7 <= layout_code <= 12 %}
-<div class="form-row">
+<div class="form-row procedure_other">
     <div class="form-group col-md-8">
-        {{ form_other.diagnosis.label }} {{ form_mva.diagnosis(class_="form-control") }}
+        {{ form_other.diagnosis.label(id="diagnosis_label") }} {{ form_mva.diagnosis(class_="form-control") }}
     </div>
     <div class="form-group col-md-4">
-        {{ form_other.diagnosis_date.label }} {{ form_mva.diagnosis_date(class_="form-control") }}
+        {{ form_other.diagnosis_date.label(id="diagnosis_date_label") }} {{ form_mva.diagnosis_date(class_="form-control") }}
     </div>
 </div>
-<div class="form-row">
+<div class="form-row procedure_other">
     <div class="form-group col-md-8">
-        {{ form_other.procedure.label }} {{ form_mva.procedure(class_="form-control") }}
+        {{ form_other.procedure.label(id="procedure_label") }} {{ form_mva.procedure(class_="form-control") }}
     </div>
     <div class="form-group col-md-4">
-        {{ form_other.procedure_date.label }} {{ form_mva.procedure_date(class_="form-control") }}
+        {{ form_other.procedure_date.label(id="procedure_date_label") }} {{ form_mva.procedure_date(class_="form-control") }}
     </div>
 </div>
-<div class="form-row">
+<div class="form-row procedure_other">
     <div class="form-group col-md-4">
-        {{ form_other.implants.label }} {{ form_mva.implants(class_="form-control") }}
+        {{ form_other.implants.label(id="implants_label") }} {{ form_mva.implants(class_="form-control") }}
     </div>
     <div class="form-group col-md-4">
-        {{ form_other.intra_op.label }} {{ form_mva.intra_op(class_="form-control") }}
+        {{ form_other.intra_op.label(id="intra_op_label") }} {{ form_mva.intra_op(class_="form-control") }}
     </div>
     <div class="form-group col-md-4">
-        {{ form_other.post_op.label }} {{ form_mva.post_op(class_="form-control") }}
+        {{ form_other.post_op.label(id="post_op_label") }} {{ form_mva.post_op(class_="form-control") }}
     </div>
 </div>
 {% endif %}
 <br>
-    <input id="save_patient" name="save_patient" value="save_patient" type="checkbox" onclick="toggleOptions()">       
+    <input class="save_patient" id="save_patient" name="save_patient" value="save_patient" type="checkbox" onclick="toggleOptions()">       
     <label for="save_patient">Only save patient</label>
     <br>
     {{ form_other.submit(class_="btn btn-success") }}
@@ -163,21 +165,40 @@
 
 <script>
 function toggleOptions(){
-    if (document.getElementById('save_patient').checked) {
-        alert("checked");
+    
+    if ($(".save_patient").is(":checked")) {
+        $(".hospital_mva").hide()
+        $(".hospital_other").hide()
+        $(".tariff").hide()
+        $(".tariff_label").hide()
+        $(".procedure_mva").hide()
+        $(".procedure_other").hide()
+        $("#po_number").hide()
+        $("#po_number").prop('disabled', true);
+        $("#po_label").hide()
+
     } else {
-        alert("You didn't check it! Let me check it for you.");
+        $(".tariff").show()
+        $(".tariff_label").show()
+        $(".hospital_mva").show()
+        $(".hospital_other").show()
+        $(".procedure_mva").show()
+        $(".procedure_other").show()
+        $("#po_number").show()
+        $("#po_label").show()
+        $("#po_number").prop('disabled', false);
     }
 }
+
 $(document).ready(function() {
 
     function isValidDate(dateString){
-            if(!/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(dateString))
+            if(!/^\d{4}\-\d{1,2}\-\d{1,2}$/.test(dateString))
                 return false;
-            var parts = dateString.split(".");
-            var day = parseInt(parts[0], 10);
+            var parts = dateString.split("-");
+            var day = parseInt(parts[2], 10);
             var month = parseInt(parts[1], 10);
-            var year = parseInt(parts[2], 10);
+            var year = parseInt(parts[0], 10);
             if(year < 1000 || year > 3000 || month == 0 || month > 12)
                 return false;
             var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
@@ -187,12 +208,12 @@ $(document).ready(function() {
     };
 
     
-        $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
-        $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
-        $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
-        $('#diagnosis_date').datepicker({dateFormat: 'dd.mm.yy'})
-        $('#admission_date').datepicker({dateFormat: 'dd.mm.yy'})
-        $('#discharge_date').datepicker({dateFormat: 'dd.mm.yy'})
+        // $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
+        // $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
+        $('#procedure_date').datepicker({dateFormat: 'yy-mm-dd'})
+        $('#diagnosis_date').datepicker({dateFormat: 'yy-mm-dd'})
+        $('#admission_date').datepicker({dateFormat: 'yy-mm-dd'})
+        $('#discharge_date').datepicker({dateFormat: 'yy-mm-dd'})
         $(document).on('change', '.medical_aid',function() {
             var selection = $(this).val()
             if(selection == 'mva'){
@@ -206,7 +227,6 @@ $(document).ready(function() {
                 $('.other').css("display","block")
             }
             else{
-                console.log(selection);
                 $('.other_medical_aid').val(selection)
                 $('.mva').css("display","none")
                 $('.other').css("display","block")
@@ -214,11 +234,14 @@ $(document).ready(function() {
         })
 
         $('.mva').submit(function (e) {
-            var x = document.forms["mva"]["tariff"].value; 
-            if (x == "") {
-                e.preventDefault();
-                alert("Tariff must be chosen.");
-            }else{
+            if (!$(".save_patient").is(":checked")){
+                var x = document.forms["mva"]["tariff"].value; 
+                if (x == "") {
+                    e.preventDefault();
+                    alert("Tariff must be chosen.");
+                    return
+                }
+            }
                 e.preventDefault();
                 $.post( "/patient/invoice/new", $('.mva').serialize(), function( data ) {
                     $( "#invoice-tab" ).html( data );
@@ -295,17 +318,21 @@ $(document).ready(function() {
                     var errorMessage = xhr.status + ': ' + xhr.statusText;
                     alert('Error - ' + errorMessage);
                 })
-            } 
         });
 
 
         $('.other').submit(function (e) {
-            var x = document.forms["other"]["tariff"].value;
+            if (!$(".save_patient").is(":checked")){
+                var x = document.forms["other"]["tariff"].value; 
+                if (x == "") {
+                    e.preventDefault();
+                    alert("Tariff must be chosen.");
+                    return
+                }
+            }
+
             var y = document.forms["other"]["patient_birth_date"].value;
-            if (x == "") {
-                e.preventDefault();
-                alert("Tariff must be chosen.");
-            }else if(isValidDate(y)){
+            if(isValidDate(y)){
                 e.preventDefault();
                 $.post( "/patient/invoice/new", $('.other').serialize(), function( data ) {
                     $( "#invoice-tab" ).html( data );
@@ -384,46 +411,9 @@ $(document).ready(function() {
             } 
             else{
                 e.preventDefault();
-                alert("Patient birth date has an incorrect format. Please use the following format: dd.mm.yyyy");
+                alert("Patient birth date has an incorrect format. Please use the following format: yyyy-mm-dd");
             } 
         });
-
-
-        // var remember = document.getElementById("save_patient");
-        // console.log(remember);
-        //     if (remember.checked) {
-        //         alert("checked");
-        //     } 
-
-        // function validate() {
-            
-        //     }
-
-
-        // function toggleOptions(){
-        //     if (document.getElementById('save_patient').checked) {
-        //         alert("checked");
-        //     } else {
-        //         alert("You didn't check it! Let me check it for you.");
-        //     }
-        // }
-        // function validate() {
-        //     if (document.getElementById('save_patient').checked) {
-        //         alert("checked");
-        //     } else {
-        //         alert("You didn't check it! Let me check it for you.");
-        //     }
-        // }
-
-        // if (document.getElementById('save_patient').checked) {
-        //     alert("checked");
-        // } 
-        // if (document.getElementById('save_patient').is(':checked')){
-        //     alert("You didn't check it! Let me check it for you.");
-        // }
-        // else {
-        //     alert("You didn't check it! Let me check it for you.");
-        // }
 
 
         var other_medical_aid_field = document.querySelector('.other_medical_aid');

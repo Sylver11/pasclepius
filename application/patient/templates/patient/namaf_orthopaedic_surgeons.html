@@ -77,15 +77,15 @@ $(document).ready(function(){
     }
 
     $(document).on("click", ".remove", remove);
-    $('#admission_date').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#discharge_date').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#diagnosis_date').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#date_invoice').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#admission_date').datepicker({dateFormat: 'yy-mm-dd'})
+    $('#discharge_date').datepicker({dateFormat: 'yy-mm-dd'})
+    $('#procedure_date').datepicker({dateFormat: 'yy-mm-dd'})
+    $('#diagnosis_date').datepicker({dateFormat: 'yy-mm-dd'})
+    $('#date_invoice').datepicker({dateFormat: 'yy-mm-dd'})
     $('#date_invoice').datepicker("setDate", new Date());
     $(document).on("click", ".date", function() {
         $(this).removeClass('hasDatepicker');
-        $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" )
+        $(this).datepicker({dateFormat: 'yy-mm-dd'}).datepicker( "show" )
     });
 
 
@@ -141,7 +141,6 @@ $(document).ready(function(){
                 success: function (invoice) {
                     current_invoice = JSON.parse(invoice);
                     current_invoice = JSON.parse(current_invoice[0]["work_quality"].replace(/\\"/g, '"'));
-                    // addUniqueClasses()
                     var forms = document.getElementsByTagName('FORM');
                     addUniqueClasses(forms[1],forms[3], forms[2])
                     populatePatient()
@@ -161,7 +160,7 @@ $(document).ready(function(){
                             $('#value-' + i).val(item_value)
                             $('#units-' + i).val(item_units)
                             $('#date-' + i).removeClass('hasDatepicker');
-                            $('#date-' + i).datepicker({dateFormat: 'dd.mm.yy'})
+                            $('#date-' + i).datepicker({dateFormat: 'yy-mm-dd'})
                             $('#date-' + i).datepicker("setDate", item_date);
             
                             treatment_input = document.getElementById("treatment-" + i);
@@ -197,7 +196,7 @@ $(document).ready(function(){
                     $('#value-' + i).val(item_value / 100)
                     $('#units-' + i).val(item_units / 100)
                     $('#date-' + i).removeClass('hasDatepicker');
-                    $('#date-' + i).datepicker({dateFormat: 'dd.mm.yy'})
+                    $('#date-' + i).datepicker({dateFormat: 'yy-mm-dd'})
                     $('#date-' + i).datepicker("setDate", item_date);
     
                     treatment_input = document.getElementById("treatment-" + i);
@@ -210,12 +209,7 @@ $(document).ready(function(){
     '{% endif %}'
 
 })
-
-// window.onclick = function(event) {
-//     var forms = document.getElementsByTagName('FORM');
-//     keepState(forms[1], forms[3]);
-// }
-            
+     
 
 $.ajaxSetup({
             beforeSend: function(xhr, settings) {

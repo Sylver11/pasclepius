@@ -94,19 +94,16 @@ def addCreditInvoice():
 def allInvoices(caller_id, c_option, r_option, focus, order, start, range):
     invoices = getAllInvoices(current_user.uuid, c_option,
             r_option, focus, order, start, range)
-    for i in invoices:
-        for o in i:
-            if isinstance(i[o], datetime2.datetime):
-                d = datetime.strptime(i[o].__str__(), '%Y-%m-%d %H:%M:%S')
-                date = d.strftime('%d.%m.%Y')
-                i[o] = date
     if caller_id == 'account':
         return render_template('account_bp/all_invoices.html',
-            invoices_json = json.dumps(invoices))
+            invoices_json = json.dumps(invoices,
+                sort_keys=True,
+                default=str))
     elif caller_id == 'patient':
         return render_template('patient/all_invoices.html',
-            invoices_json = json.dumps(invoices))
-
+            invoices_json = json.dumps(invoices,
+                sort_keys=True,
+                default=str))
 
 
 @account_bp.route('/check-r-option',methods=['GET'])
@@ -114,6 +111,4 @@ def checkR():
     c_option = request.args.get('c_option')
     r_option = queryR(current_user.uuid, c_option)
     return json.dumps({'c_option': c_option, 'r_option' : r_option})
-
-
 

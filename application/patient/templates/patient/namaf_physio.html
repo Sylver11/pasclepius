@@ -211,7 +211,6 @@ $(document).ready(function(){
         } else {
             $('.remove').show();
         }
-        // $(document).scrollTop($(document).height());
         re_number()
     }
 
@@ -376,18 +375,18 @@ $(document).ready(function(){
     // $('#clone-0').hide();
     // $('#thirty-0').hide();
     // $('#fourty-0').hide();
-    $('#admission_date').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#discharge_date').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#diagnosis_date').datepicker({dateFormat: 'dd.mm.yy'})
-    $('#date_invoice').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#admission_date').datepicker({dateFormat: 'yy-mm-dd'})
+    $('#discharge_date').datepicker({dateFormat: 'yy-mm-dd'})
+    $('#procedure_date').datepicker({dateFormat: 'yy-mm-dd'})
+    $('#diagnosis_date').datepicker({dateFormat: 'yy-mm-dd'})
+    $('#date_invoice').datepicker({dateFormat: 'yy-mm-dd'})
     $('#date_invoice').datepicker("setDate", new Date());
     document.getElementById("btnAdd_0").addEventListener("click", clone);
     $(document).on("click", ".below", clone_insert_below);
     $(document).on("click", ".remove", remove);
     $(document).on("click", ".date", function() {
         $(this).removeClass('hasDatepicker');
-        $(this).datepicker({dateFormat: 'dd.mm.yy'}).datepicker( "show" )
+        $(this).datepicker({dateFormat: 'yy-mm-dd'}).datepicker( "show" )
     });
 
 
@@ -477,7 +476,7 @@ $(document).ready(function(){
                             $('#postvalue-' + i).val(post_item_value)
                             $('#value-' + i).val(item_value)
                             $('#date-' + i).removeClass('hasDatepicker');
-                            $('#date-' + i).datepicker({dateFormat: 'dd.mm.yy'})
+                            $('#date-' + i).datepicker({dateFormat: 'yy-mm-dd'})
                             $('#date-' + i).datepicker("setDate", item_date);
                             $('#treatment-' + i + ' option[value=' + item_number + ']').attr('selected','selected');
                             $('#thirty-' + i).show()
@@ -515,7 +514,7 @@ $(document).ready(function(){
             $('#postvalue-' + i).val(post_item_value / 100)
             $('#value-' + i).val(item_value / 100)
             $('#date-' + i).removeClass('hasDatepicker');
-            $('#date-' + i).datepicker({dateFormat: 'dd.mm.yy'})
+            $('#date-' + i).datepicker({dateFormat: 'yy-mm-dd'})
             $('#date-' + i).datepicker("setDate", item_date);
             $('#treatment-' + i + ' option[value=' + item_number + ']').attr('selected','selected');
             $('#thirty-' + i).show()
@@ -539,7 +538,6 @@ $(document).ready(function(){
 });
 
 function keepState(){
-        console.log("this runs");
         var data = $('.' + current_form).serializeArray().concat($("." + current_patient_form).serializeArray()) ;
         current_invoice = {};
         var treatments = [];

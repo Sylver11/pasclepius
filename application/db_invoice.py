@@ -73,7 +73,6 @@ def getPatient(uuid, patient_name):
 
 
 def getInvoiceURL(uuid, name_patient, date):
-    date = datetime.strptime(date, '%d.%m.%Y')
     sql = """SELECT invoice_file_url FROM invoices WHERE uuid_text = '{}' AND name_patient = '{}'
     AND date_created = '{}'""".format(uuid, name_patient, date)
     conn = pool.connection()
@@ -138,7 +137,7 @@ def getAllInvoices(uuid, c_option=None, r_option=None,
         sql = """SELECT patient_name, date_created, date_invoice, remind_me, credit_cent,
         submitted_on, medical_aid, invoice_id,invoice_file_url, tariff, status,
         main_member, patient_birth_date, medical_number, po_number,`case_number`,
-        (SELECT COUNT('patient_name') FROM invoices WHERE uuid_text = '{}' AND 
+        (SELECT COUNT('patient_name') FROM invoices WHERE uuid_text = '{}' AND
         {} = '{}' ) AS rowcounter,
         (SELECT SUM(post_value_cent) FROM invoice_items WHERE uuid_text = '{}' AND
         invoice_id = invoices.invoice_id) AS debit_cent FROM invoices WHERE uuid_text = '{}'
@@ -213,7 +212,7 @@ def insertInvoice(uuid_text, invoice_form):
         VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """,(uuid_text,
         invoice_form['patient_name'],
-        datetime.strptime(invoice_form['date_invoice'], '%d.%m.%Y'),
+        invoice_form['date_invoice'],
         invoice_form['medical_aid'],
         invoice_form['invoice_id'],
         invoice_form['invoice_file_url'],
@@ -249,7 +248,7 @@ def insertInvoice(uuid_text, invoice_form):
             invoice_form.getlist('description')[i],
             float(invoice_form.getlist('value')[i]) * 100,
             float(invoice_form.getlist('post_value')[i]) * 100,
-            datetime.strptime(invoice_form.getlist('date')[i], '%d.%m.%Y'),
+            invoice_form.getlist('date')[i],
             invoice_form.getlist('modifier')[i]))
         list_item = tuple(list_item)
         list.append(list_item)

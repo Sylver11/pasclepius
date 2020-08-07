@@ -70,10 +70,11 @@ def getTreatmentName():
     invoice_id = request.args.get('invoice_id')
     uuid = request.args.get('uuid')
     invoice_items = getItems(uuid, invoice_id)
+    print(invoice_items)
     for i in invoice_items:
         for o in i:
             if isinstance(i[o], datetime2.datetime):
-                d = datetime.strptime(i[o].__str__(), '%Y-%m-%d %H:%M:%S')
+                d = datetime.strptime(i[o].__str__(), '%Y-%m-%d')
                 date = d.strftime('%d.%m.%Y')
                 i[o] = date
     return json.dumps(invoice_items)
@@ -88,18 +89,3 @@ def downloadInvoice(random):
     path = str(invoice_file_url['invoice_file_url']) + ".odt"
     return send_file(path, as_attachment=True)
 
-
-#@api_bp.route('/update-session', methods=['GET'])
-#def updateSession():
-#    if 'GET' == request.method:
-#        description = request.args.get('description')
-#        item = request.args.get('item')
-#        session_data = session['PATIENT']
-#        session_data[description] = item
-#        session['PATIENT'] = session_data
-#        return json.dumps('success')
-
-
-#@api_bp.route('/session')
-#def sessionValues():
-#    return str(session.get('PATIENT'))

@@ -34,9 +34,9 @@ def invoiceOption(patient):
     if request.method == 'POST' and form_mva.validate_on_submit():
         session["PATIENT"] = form_mva.data
         return redirect('/patient/' + form_mva.patient_name.data + '/new-invoice')
-    elif request.method == 'POST' and form_psemas.validate_on_submit():
-        session["PATIENT"] = form_psemas.data
-        return redirect('/patient/' + form_psemas.patient_name.data + '/new-invoice')
+   # elif request.method == 'POST' and form_psemas.validate_on_submit():
+   #     session["PATIENT"] = form_psemas.data
+   #     return redirect('/patient/' + form_psemas.patient_name.data + '/new-invoice')
     elif request.method == 'POST' and form_other.validate_on_submit():
         session["PATIENT"] = form_other.data
         return redirect('/patient/' + form_other.patient_name.data + '/new-invoice')
@@ -117,24 +117,10 @@ def Invoice(medical_aid, year, index):
     invoice = getSingleInvoice(current_user.uuid, invoice_id)
     treatments = getItems(current_user.uuid, invoice_id)
     newWork(current_user.uuid, 'invoice_tab', invoice_id)
-    for i in treatments:
-        for o in i:
-            if isinstance(i[o], datetime2.datetime):
-                d = datetime.strptime(i[o].__str__(), '%Y-%m-%d %H:%M:%S')
-                date = d.strftime('%d.%m.%Y')
-                i[o] = date
-
-    for o, i in invoice.items():
-        if i == 'None':
-           invoice[o] = ''
-        if isinstance(i, datetime2.datetime):
-            d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
-            date = d.strftime('%d.%m.%Y')
-            invoice[o] = date
     invoice['treatments'] = treatments
     form = getTreatmentForm(invoice['tariff'])
     return render_template('patient/' + invoice['tariff'][:-5] + '.html',
-            invoice = json.dumps(invoice),
+            invoice = json.dumps(invoice, sort_keys=True, default=str),
             status = invoice['status'],
             form = form)
 

@@ -2,17 +2,22 @@ function addUniqueClasses(patient_form, treatment_form, search_form = false){
     
     current_patient_form = current_invoice["invoice_id"] + "_current_patient_form";
     current_patient_form = current_patient_form.replace(/\//g, "");
-    patient_form.addEventListener("input", function () {
-        keepState(patient_form, treatment_form);
-    });
+    if(current_invoice["status"] == "invoice_draft" || current_invoice["status"] == "new_draft"){
+        patient_form.addEventListener("input", function () {
+            keepState(patient_form, treatment_form);
+        });
+    }
+    
     patient_form.classList.add(current_patient_form);
     
     current_form = current_invoice["invoice_id"] + "_current_form";
     current_form = current_form.replace(/\//g, "");
     treatment_form.classList.add(current_form);
-    treatment_form.addEventListener("input", function () {
-        keepState(patient_form, treatment_form);
-    });
+    if(current_invoice["status"] == "invoice_draft" || current_invoice["status"] == "new_draft"){
+        treatment_form.addEventListener("input", function () {
+            keepState(patient_form, treatment_form);
+        });
+    }
     treatment_form.addEventListener("submit", addSubmit);
 
     if(search_form){

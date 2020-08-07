@@ -1,5 +1,5 @@
 from application.db_utils import pool
-#from datetime import datetime
+from datetime import datetime
 
 def checkDuplicate(uuid, patient):
     sql = """SELECT * FROM patients WHERE uuid_text = '{}' AND
