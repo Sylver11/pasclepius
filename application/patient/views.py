@@ -1,15 +1,12 @@
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
-from werkzeug.datastructures import ImmutableMultiDict
 from flask_login import current_user, login_required
 from flask import render_template, Blueprint, request, session, redirect
-from application.db_workbench import removeWork, newWork, lastFive, removeWork
+from application.db_workbench import removeWork, newWork, lastFive
 from application.db_users import checkUser
-from application.db_patient import insertPatient, checkDuplicate
+from application.db_patient import insertPatient, checkDuplicate, patientSearch
 from application.forms import Patient_mva, Patient_psemas, Patient_other,getTreatmentForm
-from application.db_invoice import insertInvoice, get_index, queryInvoice, getPatient, getSingleInvoice, getItems
-from datetime import datetime
-import datetime as datetime2
+from application.db_invoice import insertInvoice, get_index, queryInvoices, getPatient, getSingleInvoice, getItems
 import simplejson as json
 import re
 import subprocess
@@ -22,35 +19,38 @@ patient_bp = Blueprint('patient_bp',__name__,
 @patient_bp.route('')
 @login_required
 def invoiceTab():
-    return render_template('patient/tab_bar.html')
+    return render_template('patient/tab_bar.html',
+            request_args = json.dumps(request.args,
+                sort_keys=True,
+                default=str))
 
 
-@patient_bp.route('/<patient>', methods=('GET','POST'))
+@patient_bp.route('/<patient_id>', methods=('GET','POST'))
 @login_required
-def invoiceOption(patient):
+def invoiceOption(patient_id):
     form_mva = Patient_mva()
-    form_psemas = Patient_psemas()
     form_other = Patient_other()
-    if request.method == 'POST' and form_mva.validate_on_submit():
-        session["PATIENT"] = form_mva.data
-        return redirect('/patient/' + form_mva.patient_name.data + '/new-invoice')
-   # elif request.method == 'POST' and form_psemas.validate_on_submit():
-   #     session["PATIENT"] = form_psemas.data
-   #     return redirect('/patient/' + form_psemas.patient_name.data + '/new-invoice')
-    elif request.method == 'POST' and form_other.validate_on_submit():
-        session["PATIENT"] = form_other.data
-        return redirect('/patient/' + form_other.patient_name.data + '/new-invoice')
-    data = queryInvoice(current_user.uuid, patient)
-    patient_data = getPatient(current_user.uuid, patient)
+    previous_invoices = queryInvoices(current_user.uuid, patient_id)
     return render_template('patient/patient.html',
-            patient_data = patient_data,
-            data = data,
-            patient = patient,
+            previous_invoices = previous_invoices,
+            layout_code = current_user.invoice_layout,
             form_mva = form_mva,
-            form_psemas = form_psemas,
-            form_other = form_other,
-            page_title = 'Continue previous')
+            form_other = form_other)
 
+
+@patient_bp.route('/patient/search', methods=('GET','POST'))
+def searchPatient():
+    search_term = request.args.get('search_term')
+    patients = patientSearch(current_user.uuid, search_term)
+    return json.dumps(patients, sort_keys=True, default=str)
+
+
+@patient_bp.route('/add-work', methods=('GET','POST'))
+def addWork():
+    work_quality = request.args.get('work_quality')
+    work_type = request.args.get('work_type')
+    newWork(current_user.uuid, work_type, work_quality)
+    return 'success'
 
 @patient_bp.route('/invoice/create', methods=('GET', 'POST'))
 @login_required

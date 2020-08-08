@@ -16,7 +16,15 @@ def checkDuplicate(uuid, patient):
 
 
 def patientSearch(uuid, patient_name):
-    sql = """SELECT *  FROM patients WHERE uuid_text = '{}' AND patient_name LIKE '%{}%'
+    sql = """SELECT any_value(patients.patient_name) AS patient_name,
+    any_value(patients.medical_aid) AS medical_aid,
+    any_value(patients.main_member) AS main_member,
+    any_value(patients.patient_birth_date) AS patient_birth_date,
+    any_value(patients.medical_number) AS medical_number,
+    any_value(patients.case_number) AS case_number,
+    any_value(patients.patient_note) AS patient_note,
+    any_value(patients.created_on) AS created_on
+    FROM patients WHERE uuid_text = '{}' AND patient_name LIKE '%{}%'
     GROUP BY medical_number, case_number
     """.format(uuid, patient_name)
     conn = pool.connection()

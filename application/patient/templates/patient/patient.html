@@ -1,113 +1,170 @@
-{% include 'patient/index.html' %}
 {% block content %}
-<div class="container">
-    <br>
-    <br>
-    <h3>{{patient}}</h3>
-    <br>
 
-    <h4>Patients</h4>  
-    <div class="list-group">
-        {% for i in patient_data %} 
-        {% if i['medical_aid'] == 'mva'%}
-        <div class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">{{i['patient_name']}}</h5>
-                <small>
-                    <span style="text-transform: uppercase;">{{i['medical_aid']}}</span>
-                </small>
+<h4>Create new invoice</h4>
+<form method=post autocomplete="off" id="newInvoice_mva" name="mva" class="mva" style="display:none">  
+        {% for field, errors in form_mva.errors.items() %}
+        <div class="alert alert-error">
+            {{ form_mva[field].label }}: {{ ', '.join(errors) }}
+        </div>
+        {% endfor %}  
+        <div class="form-row">
+            {{ form_mva.hidden_tag() }}
+            {{ form_mva.medical_aid(value='mva', style='display:none') }}
+            
+            <div class="form-group col-md-4">
+                {{ form_mva.patient_name.label(class="required",  for="patient_name") }} {{ form_mva.patient_name(class_="form-control") }}
             </div>
-            <form method=post autocomplete="off" id="continue_mva_{{loop.index}}" class="mva" >  
-                    {{ form_mva.hidden_tag() }}
-                    {{ form_mva.medical_aid(style='display:none', value=i['medical_aid']) }}
-                    {{ form_mva.tariff(class_="tariff", style="display: none;", id='tariff_' ~ loop.index) }}
-                    {{ form_mva.patient_name(value=i['patient_name'], style="display: none") }}
-                    {{ form_mva.case_number(style="display: none;", value=i['case_number']) }}
-                    {{ form_mva.po_number.label(class_="required") }} {{ form_mva.po_number(class_="form-control w-25") }}
-                    {{ form_mva.date_created.label(for="date_mva_" ~ loop.index, class_="required") }} {{ form_mva.date_created(id='date_mva_' ~ loop.index, class_="form-control w-25 p-3" ) }}
-                    <br>
-                    {{ form_mva.submit(class_="btn btn-success") }}
-            </form>  
-            <small>Tariff: {{i['tariff']}} <br> Case Number: {{i['case_number']}}</small>
+            <div class="form-group col-md-4">
+                {{ form_mva.case_number.label(class="required",  for="case_number") }} {{ form_mva.case_number(class_="form-control") }}
+            </div>
+        </div>  
+        <div class="form-row">
+            
+            <div class="form-group col-md-4">
+                {{ form_mva.tariff.label(class="required", id="tariff_label", class="tariff_label") }} {{ form_mva.tariff(class_="tariff form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_mva.po_number.label(class="required", id="po_label") }} {{ form_mva.po_number(class_="form-control") }}
+            </div>
         </div>
-        <br>
 
-    {% elif i['medical_aid'] == 'psemas'%}
-    <div  class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">{{i['name_patient']}}</h5>
-            <small>
-                <span style="text-transform: uppercase;">{{i['medical_aid']}}</span>
-            </small>
-        </div>
-        <form method=post autocomplete="off" id="continue_psemas_{{loop.index}}" class="psemas" >  
-            {{ form_psemas.hidden_tag() }}
-            {{ form_psemas.medical_aid(value=i['medical_aid'], style="display: none;") }}
-            {{ form_psemas.tariff(id='tariff_' ~ loop.index, style="display: none;") }}
-            {{ form_psemas.patient_name(value=i['patient_name'], style="display: none")  }}
-            {{ form_psemas.main_member(value=i['main_member'], style="display: none") }}
-            {{ form_psemas.patient_birth_date(value=i['patient_birth_date'].strftime('%d.%m.%Y'), style="display: none") }}
-            {{ form_psemas.medical_number(value=i['medical_number'], style="display: none") }}
-            {{ form_psemas.date_created.label(class_="required") }} {{ form_psemas.date_created(id='date_psemas_' ~ loop.index, class_="form-control w-25 p-3") }}
-        <br>
-        {{ form_mva.submit(class_="btn btn-success") }}
-        </form>
-        <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['medical_number']}} <br>Main Member: {{i['main_member']}} <br>Date of Birth: {{ i['patient_birth_date'].strftime('%d.%m.%Y') }}</small>
-    </div>
-    <br>
-
-        {% else %}
-        <div  class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">{{i['patient_name']}}</h5>
-                <small>
-                    <span style="text-transform: uppercase;">{{i['medical_aid']}}</span>
-            </small>
-        </div>
-        <form  method=post autocomplete="off" id="continue_other_{{loop.index}}" class="other" >  
-            {{ form_other.hidden_tag() }}
-            {{ form_other.medical_aid(value=i['medical_aid'], style="display: none") }}  
-            {{ form_other.tariff(id='tariff_' ~ loop.index, style="display: none") }}
-            {{ form_other.patient_name(value=i['patient_name'], style="display: none")  }}
-            {{ form_other.main_member(value=i['main_member'], style="display: none") }}
-            {{ form_other.patient_birth_date(value=i['patient_birth_date'].strftime('%d.%m.%Y'), style="display: none") }}
-            {{ form_other.medical_number(value=i['medical_number'], style="display: none") }}
-            {{ form_other.date_created.label(class_="required") }} {{ form_other.date_created(id='date_other_' ~ loop.index, class_="form-control w-25 p-3") }}
-        <br>
-        {{ form_other.submit(class_="btn btn-success") }}
-        </form>  
-        <small>Tariff: {{i['tariff']}} <br> Medical Number: {{i['medical_number']}} <br>Main Member: {{i['main_member']}} <br>Date of Birth: {{i['patient_birth_date'].strftime('%d.%m.%Y')}}</small>
-    </div>
-    <br>
-
+        {% if 4 <= layout_code <= 9 %}
+            <div class="form-row hospital_mva">
+                <div class="form-group col-md-4">
+                    {{ form_mva.hospital_name.label(id="hospital_name_label") }} {{ form_mva.hospital_name(class_="form-control") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form_mva.admission_date.label(id="admission_date_label") }} {{ form_mva.admission_date(class_="form-control") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form_mva.discharge_date.label(id="discharge_date_label") }} {{ form_mva.discharge_date(class_="form-control") }}
+                </div>
+            </div>
+            {% endif %}
+            {% if 7 <= layout_code <= 12 %}
+            <div class="form-row procedure_other">
+                <div class="form-group col-md-8">
+                    {{ form_mva.diagnosis.label(id="diagnosis_label") }} {{ form_mva.diagnosis(class_="form-control") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form_mva.diagnosis_date.label(id="diagnosis_date_label") }} {{ form_mva.diagnosis_date(class_="form-control") }}
+                </div>
+            </div>
+            <div class="form-row procedure_other">
+                <div class="form-group col-md-8">
+                    {{ form_mva.procedure.label(id="procedure_label") }} {{ form_mva.procedure(class_="form-control") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form_mva.procedure_date.label(id="procedure_date_label") }} {{ form_mva.procedure_date(class_="form-control") }}
+                </div>
+            </div>
+            <div class="form-row procedure_other">
+                <div class="form-group col-md-4">
+                    {{ form_mva.implants.label(id="implants_label") }} {{ form_mva.implants(class_="form-control") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form_mva.intra_op.label(id="intra_op_label") }} {{ form_mva.intra_op(class_="form-control") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form_mva.post_op.label(id="post_op_label") }} {{ form_mva.post_op(class_="form-control") }}
+                </div>
+            </div>
         {% endif %}
-        <script>
-            selectElement('tariff_{{ loop.index }}', '{{ i["tariff"] }}')
-            function selectElement(id, valueToSelect) {    
-                let element = document.getElementById(id);
-                element.value = valueToSelect;
-                $('.other').children('#date_other_{{loop.index}}').datepicker({dateFormat: 'dd.mm.yy'})
-                $('.other').children('#date_other_{{loop.index}}').datepicker("setDate", new Date());
-                $('.mva').children('#date_mva_{{loop.index}}').datepicker({dateFormat: 'dd.mm.yy'})
-                $('.mva').children('#date_mva_{{loop.index}}').datepicker("setDate", new Date());
-                $('.psemas').children('#date_psemas_{{loop.index}}').datepicker({dateFormat: 'dd.mm.yy'})
-                $('.psemas').children('#date_psemas_{{loop.index}}').datepicker("setDate", new Date());
-            }
-        </script>
-    {% endfor %}
-    </div>    
-    <br><br>
+
+            <br>
+        {{ form_mva.submit(class_="btn btn-success") }}
+    </form>  
+    <form  method=post autocomplete="off" id="newInvoice_other" class="other" name="other" style="display:none">  
+        {% for field, errors in form_other.errors.items() %}
+        <div class="alert alert-error">
+            {{ form_other[field].label }}: {{ ', '.join(errors) }}
+        </div>
+        {% endfor %}
+        {{ form_other.hidden_tag() }}
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{form_other.medical_aid.label(class="required")}}  {{ form_other.medical_aid(class_="form-control other_medical_aid") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_other.tariff.label(class="required", id="tariff_label", class="tariff_label") }} {{ form_other.tariff(class_="tariff") }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_other.patient_name.label(class="required") }} {{ form_other.patient_name(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_other.main_member.label(class="required") }} {{ form_other.main_member(class_="form-control") }}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form_other.patient_birth_date.label(class="required") }} {{ form_other.patient_birth_date(class_="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form_other.medical_number.label(class="required") }} {{ form_other.medical_number(class_="form-control") }}
+            </div>
+        </div>
+        {% if 4 <= layout_code <= 9 %}
+<div class="form-row hospital_other">
+    <div class="form-group col-md-4">
+        {{ form_other.hospital_name.label(id="hospital_name_label") }} {{ form_mva.hospital_name(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_other.admission_date.label(id="admission_date_label") }} {{ form_mva.admission_date(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_other.discharge_date.label(id="discharge_date_label") }} {{ form_mva.discharge_date(class_="form-control") }}
+    </div>
+</div>
+{% endif %}
+{% if 7 <= layout_code <= 12 %}
+<div class="form-row procedure_other">
+    <div class="form-group col-md-8">
+        {{ form_other.diagnosis.label(id="diagnosis_label") }} {{ form_mva.diagnosis(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_other.diagnosis_date.label(id="diagnosis_date_label") }} {{ form_mva.diagnosis_date(class_="form-control") }}
+    </div>
+</div>
+<div class="form-row procedure_other">
+    <div class="form-group col-md-8">
+        {{ form_other.procedure.label(id="procedure_label") }} {{ form_mva.procedure(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_other.procedure_date.label(id="procedure_date_label") }} {{ form_mva.procedure_date(class_="form-control") }}
+    </div>
+</div>
+<div class="form-row procedure_other">
+    <div class="form-group col-md-4">
+        {{ form_other.implants.label(id="implants_label") }} {{ form_mva.implants(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_other.intra_op.label(id="intra_op_label") }} {{ form_mva.intra_op(class_="form-control") }}
+    </div>
+    <div class="form-group col-md-4">
+        {{ form_other.post_op.label(id="post_op_label") }} {{ form_mva.post_op(class_="form-control") }}
+    </div>
+</div>
+{% endif %}
+<br>
+
+    {{ form_other.submit(class_="btn btn-success") }}
+</form>  
+       
+
+ 
+  
     <h4>Past invoice</h4>  
-    <ul class="list-group">
-        {% for i in data %} 
-        <li class="invoice_list list-group-item" ><span>{{i['patient_name']}}</span> {{i['medical_aid']}} {{i['date_created'].strftime('%d.%m.%Y')}}</li>
-        <ul class="list-group-item" id="treatment-list-{{loop.index}}" style="display:none;">
+    <!-- <ul class="list-group">
+
+        <ul class="list-group-item" id="treatment-list- style="display:none;">
                 <script>
                     $.getJSON('/get-invoice-items', {
-                        invoice_id: '{{ i["invoice_id"] }}',
-                        uuid: '{{ i["uuid_text"] }}'
+                        invoice_id: "somethon",
+                        uuid: "spmt",
                     }, function(invoice_items) {
-                        var el = document.getElementById('treatment-list-{{loop.index}}')
+                        
                         for (i = 0; i < invoice_items.length; i++) {
                             var node = document.createElement("li");
                             node.classList.add('list-group-item');
@@ -116,14 +173,14 @@
                         }
                         var button = document.createElement("button");
                         button.innerHTML = "Continue Invoice";
-                        button.classList.add("continue" + '{{loop.index}}')
+                      
                         el.appendChild(button);
-                        $('.continue' + '{{loop.index}}').click(function(){
+                        $('.continue').click(function(){
                             $.ajax({
                                 url: '/set-known-invoice',
-                                data: {invoice_id: "{{ i['invoice_id'] }}", invoice_items:  JSON.stringify(invoice_items)},
+                                data: {invoice_items:  JSON.stringify(invoice_items)},
                                 success: function() {
-                                    window.location.href = "/patient/" + '{{i["patient_name"]}}' + "/continue-invoice";
+                                    window.location.href = "/patient/"
                                 },
                             });
                          
@@ -131,28 +188,69 @@
                         
                     });
             </script>
-        </ul>
-        {% endfor %}
-    </ul>
-    <br><br><br>    
-</div>
+        </ul> -->
+
+    <!-- </ul>   -->
+<!-- </div> -->
 
 
 <script>
 
-    $(document).ready(function() {
-        $('.invoice_list').click(function() {
-            $(this).next().css("display", "block");
-        });
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", "{{ form_mva.csrf_token._value() }}")
-                }
+
+$(document).ready(function() {
+
+        // $('.invoice_list').click(function() {
+        //     $(this).next().css("display", "block");
+        // });
+   
+
+    // $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
+    // $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
+    $('#procedure_date').datepicker({dateFormat: 'yy-mm-dd'})
+    $('#diagnosis_date').datepicker({dateFormat: 'yy-mm-dd'})
+    $('#admission_date').datepicker({dateFormat: 'yy-mm-dd'})
+    $('#discharge_date').datepicker({dateFormat: 'yy-mm-dd'})
+    // $(document).on('change', '.medical_aid',function() {
+        // var selection = $(this).val()
+        if(request_args["medical_aid"] == 'mva'){
+            $('.other').css("display","none")
+            $('.mva').css("display","block")
+
+        }
+        else{
+            // $('.other_medical_aid').val('')
+            $('.mva').css("display","none")
+            $('.other').css("display","block")
+        }
+        // else{
+        //     $('.other_medical_aid').val(selection)
+        //     $('.mva').css("display","none")
+        //     $('.other').css("display","block")
+        // }
+    // })
+
+    
+    
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ form_mva.csrf_token._value() }}")
             }
-        })
-    });
+        }
+    })
+
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", "{{ form_other.csrf_token._value() }}")
+            }
+        }
+    })
+});
 
 </script>
+<script src="{{url_for('.static', filename='patient_bp/js/mva_submit.js')}}"></script>
+<script src="{{url_for('.static', filename='patient_bp/js/other_submit.js')}}"></script>
 
  {% endblock %}

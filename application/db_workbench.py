@@ -31,6 +31,10 @@ def newWork(uuid_text, work_type, work_quality):
         sql_delete_patient_draft =  """DELETE FROM user_workbench WHERE uuid_text = '{0}' AND
         work_type = 'patient_draft'""".format(uuid_text)
         cursor.execute(sql_delete_patient_draft)
+    elif(work_type == 'patient_tab'):
+        sql_delete_patient_tab =  """DELETE FROM user_workbench WHERE uuid_text = '{0}' AND
+        work_type = 'patient_tab'""".format(uuid_text)
+        cursor.execute(sql_delete_patient_tab)
     cursor.execute("""INSERT INTO user_workbench (uuid_text, work_type,
     work_quality) VALUES (%s, %s, %s)""",(uuid_text, work_type, work_quality))
     cursor.close()
@@ -41,18 +45,18 @@ def newWork(uuid_text, work_type, work_quality):
 def removeWork(uuid_text, work_type, work_quality):
     conn = pool.connection()
     cursor = conn.cursor()
+    sql = ''
     if work_type == 'invoice_draft':
         sql = """DELETE FROM user_workbench WHERE uuid_text = '{0}' AND
         work_type = 'invoice_draft'""".format(uuid_text)
-        cursor.execute(sql)
-        cursor.close()
-        conn.close()
-        return 'success'
-
-    sql_delete = """DELETE FROM user_workbench WHERE uuid_text = '{0}' AND
+    elif work_type == 'patient_tab':
+        sql = """DELETE FROM user_workbench WHERE uuid_text = '{}' AND
+        work_type = 'patient_tab'""".format(uuid_text)
+    else:
+        sql = """DELETE FROM user_workbench WHERE uuid_text = '{0}' AND
         work_type = '{1}' AND work_quality = '{2}'""".format(uuid_text,
                 work_type, work_quality)
-    cursor.execute(sql_delete)
+    cursor.execute(sql)
     cursor.close()
     conn.close()
     return 'success'

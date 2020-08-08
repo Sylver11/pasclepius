@@ -3,7 +3,7 @@
 <nav class="navbar navbar-expand-sm navbar-dark" style="background-color:#017B25;">
     <ul class="navbar-nav" id="myTab">
         <a class="new-patient nav-link nav-item" href="/patient/">New patient</a>
-        <a class="continue nav-link nav-item" href="/patient/">Continue</a>
+        <a id="invoices" class="invoices nav-link nav-item" href="/patient/">Invoices</a>
     </ul>
 </nav>
 <div class="jumbotron jumbotron-fluid" style="height:88%; margin:0">
@@ -14,13 +14,14 @@
 
 <script>   
 
+var request_args;
+
 $(document).ready(function(){
 
     function dynamic(load_content){
         $( "#invoice-tab" ).load( load_content, function(){
         });
     }
-
 
     $.ajax({
         type: "GET",
@@ -150,12 +151,12 @@ $(document).ready(function(){
         for (var i = 0; i < tabs.length; i++) {
             tabs[i].classList.remove("active");
         }
-        $('.continue').removeClass('active');
+        $('.invoices').removeClass('active');
         $('.new-patient').addClass('active');         
     })
 
 
-    $(document).on("click", ".continue", function (e) {
+    $(document).on("click", ".invoices", function (e) {
         e.preventDefault();
         criteria[0] = "/patient/invoice/continue";
         dynamic.apply(this, criteria); 
@@ -165,7 +166,7 @@ $(document).ready(function(){
             tabs[i].classList.remove("active");
         }
         $('.new-patient').removeClass('active');  
-        $('.continue').addClass('active');     
+        $('.invoices').addClass('active');     
     })
 
     
@@ -180,13 +181,176 @@ $(document).ready(function(){
             tabs[i].classList.remove("active");
         }
         $('.new-patient').removeClass('active'); 
-        $('.continue').removeClass('active');
+        $('.invoices').removeClass('active');
         $(this).addClass('active');  
     })
 
+    // $(document).on("click", "#patient_tab", function (e) {  
+    //     e.preventDefault();   
+    //     var invoice_id = $(this).text();
+    //     criteria[0] = "/patient/invoice/" + invoice_id;
+    //     dynamic.apply(this, criteria); 
+    //     var lower_navbar = document.getElementById("myTab");
+    //     var tabs = lower_navbar.getElementsByTagName('BUTTON');
+    //     for (var i = 0; i < tabs.length; i++) {
+    //         tabs[i].classList.remove("active");
+    //     }
+    //     $('.new-patient').removeClass('active'); 
+    //     $('.invoices').removeClass('active');
+    //     $(this).addClass('active');  
+    // })
 
-    let criteria = ["/patient/invoice/create"];
-    $('.new-patient').addClass('active');
+
+    let criteria =[];
+    request_args = '{{ request_args }}';
+    request_args = JSON.parse(request_args.replace(/&#34;/g,'"'));
+    if(Object.keys(request_args).length > 1 && request_args.constructor === Object){
+
+        var patient_id;
+        if(request_args["medical_number"]){
+              patient_id = request_args["medical_number"]
+          }
+          else{
+              patient_id = request_args["case_number"]
+          }
+
+        $.ajax({
+            type: "GET",
+            url: '/patient/add-work', 
+            data: {work_type: "patient_tab", work_quality: JSON.stringify(request_args)},
+            success: function (returnData) {
+                console.log(returnData);
+
+            }
+        })
+
+        criteria = ["/patient/" + request_args["medical_number"]];
+        
+        var patient_button = document.createElement("BUTTON");  
+        patient_button.setAttribute("id", "patient_tab");
+        patient_button.className += " btn";
+        patient_button.className += " btn-secondary "
+        patient_button.className += " btn-sm "
+        patient_button.style.marginLeft = "2em";
+        patient_button.value = patient_id;
+        patient_button.textContent = request_args["patient_name"]
+        patient_button.addEventListener("click", function(e){
+            e.preventDefault();   
+            // var patient_id = $(this).value();
+            // console.log(patient_id);
+            criteria = ["/patient/" + patient_id];
+            dynamic.apply(this, criteria); 
+            // var lower_navbar = document.getElementById("myTab");
+            // var tabs = lower_navbar.getElementsByTagName('BUTTON');
+            // for (var i = 0; i < tabs.length; i++) {
+            //     tabs[i].classList.remove("active");
+            // }
+            // $('.new-patient').removeClass('active'); 
+            // $('.invoices').removeClass('active');
+            // $(this).addClass('active');  
+
+        })
+
+        var favi = document.createElement("I");
+        favi.setAttribute("class" , "fa fa-remove")
+        favi.setAttribute("id" , "patient_delete_favi")
+        favi.style.paddingLeft ="5px";
+        favi.addEventListener("click", function(e){
+            e.preventDefault();
+            $.ajax({
+                type: "GET",
+                url: '/remove-job', 
+                data: {work_type: "patient_tab", work_quality: "any"},
+                success: function (status) {
+                    favi_to_be_removed = document.getElementById("patient_delete_favi");
+                    favi_to_be_removed.remove();
+                    tab_to_be_removed = document.getElementById("patient_tab");
+                    tab_to_be_removed.remove();
+                },
+                error: function(xhr, status, error){
+                    var errorMessage = xhr.status + ': ' + xhr.statusText;
+                    alert('Error - ' + errorMessage);
+                }
+            }) 
+        });
+
+        var referenceNode = document.getElementById("invoices") 
+        referenceNode.parentNode.insertBefore(favi, referenceNode.nextSibling);      
+        referenceNode.parentNode.insertBefore(patient_button, referenceNode.nextSibling);
+   
+        $('#patient_tab').addClass('active');
+    }
+
+    else{
+
+        $.ajax({
+        type: "GET",
+        url: '/patient/last-five', 
+        data: {work_type: "patient_tab"},
+        success: function (patient) {
+            patient = JSON.parse(patient);
+            request_args  = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
+
+            if(Object.keys(request_args).length > 1 && request_args.constructor === Object){
+
+                var patient_id;
+                if(request_args["medical_number"]){
+                    patient_id = request_args["medical_number"]
+                }
+                else{
+                    patient_id = request_args["case_number"]
+                }
+                
+                var patient_button = document.createElement("BUTTON");  
+                patient_button.setAttribute("id", "patient_tab");
+                patient_button.className += " btn";
+                patient_button.className += " btn-secondary ";
+                patient_button.className += " btn-sm ";
+                patient_button.style.marginLeft = "2em";
+                patient_button.value = patient_id;
+                patient_button.textContent = request_args["patient_name"];
+                patient_button.addEventListener("click", function(e){
+                    e.preventDefault();   
+                    criteria = ["/patient/" + patient_id];
+                    dynamic.apply(this, criteria); 
+                })
+
+                var favi = document.createElement("I");
+                favi.setAttribute("class" , "fa fa-remove")
+                favi.setAttribute("id" , "patient_delete_favi")
+                favi.style.paddingLeft ="5px";
+                favi.addEventListener("click", function(e){
+                    e.preventDefault();
+                    $.ajax({
+                        type: "GET",
+                        url: '/remove-job', 
+                        data: {work_type: "patient_tab", work_quality: "any"},
+                        success: function (status) {
+                            favi_to_be_removed = document.getElementById("patient_delete_favi");
+                            favi_to_be_removed.remove();
+                            tab_to_be_removed = document.getElementById("patient_tab");
+                            tab_to_be_removed.remove();
+                        },
+                        error: function(xhr, status, error){
+                            var errorMessage = xhr.status + ': ' + xhr.statusText;
+                            alert('Error - ' + errorMessage);
+                        }
+                    }) 
+                });
+
+                var referenceNode = document.getElementById("invoices") 
+                referenceNode.parentNode.insertBefore(favi, referenceNode.nextSibling);      
+                referenceNode.parentNode.insertBefore(patient_button, referenceNode.nextSibling);       
+          }
+        }
+      })
+
+
+        criteria = ["/patient/invoice/create"];
+        $('.new-patient').addClass('active');
+    }
+    
+    
     dynamic.apply(this, criteria);
 
 })

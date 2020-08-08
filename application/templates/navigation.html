@@ -79,13 +79,6 @@
       }
 
 
-      $('.search').on("submit", function(e) {
-        e.preventDefault()
-        var data = $(".search :input").serializeArray();
-        var patient_name = data[0]['value']
-         window.location.href = "/patient/" + patient_name
-        });
-
 
         function removeActive(x) {
             for (var i = 0; i < x.length; i++) {
@@ -107,15 +100,16 @@
             e.preventDefault();
             var currentFocus;
             var input_element = document.getElementById("patient_name")
-            var url = "{{ url_for('api_bp.liveSearchPatient') }}";
+            var url = "{{ url_for('patient_bp.searchPatient') }}";
             var a, b, i, val = input_element.value;
             var name = input_element.value
                 $.ajax({
                 type: "GET",
                 url: url,
-                data: {patient_name: name}, 
+                data: {search_term: name}, 
                 dataType: 'json',
                 success: function (returnData) {
+                  console.log(returnData);
                     if (returnData.length <= 5){
                       var names = [], range = returnData.length;
                     }
@@ -123,7 +117,7 @@
                      var names = [], range = 5
                     }
                     for (i = 0; i < range; i++) {
-                        names[i] = returnData[i]['patient_name']
+                        names[i] = returnData[i]['patient_name'];
                     }
                     closeAllLists();
                     if (!val) { return false;}
@@ -140,11 +134,19 @@
                             b.style.alignItems = "center";
                             b.innerHTML = "<strong>" + names[i].substr(0, val.length) + "</strong>";
                             b.innerHTML += names[i].substr(val.length);
-                            b.innerHTML += "<input type='hidden' value='" + names[i] + "'>";
+                            for (const [key, value] of Object.entries(returnData[i])){
+                              b.innerHTML += "<input type='hidden' value='" + value + "' name='" + key + "'>";
+                            }
                             b.addEventListener("click", function(e) {
-                                input_element.value = this.getElementsByTagName("input")[0].value;
+                              var patient_details = {};
+                              var inputCollection = this.getElementsByTagName("input")
+                              for (let i = 0; i < inputCollection.length; i++) {
+                                const element = inputCollection[i];
+                                patient_details[element.name] = element.value
+                              }
                                 closeAllLists();
-                                $('.search').submit();
+                                var uri = xwwwfurlenc(patient_details);
+                                window.location.href = "/patient?" + uri
                             });
                             a.appendChild(b);
                         }
@@ -167,6 +169,24 @@
             });
         });
     })
+
+
+
+    function xwwwfurlenc(srcjson){
+    if(typeof srcjson !== "object")
+      if(typeof console !== "undefined"){
+        console.log("\"srcjson\" is not a JSON object");
+        return null;
+      }
+    u = encodeURIComponent;
+    var urljson = "";
+    var keys = Object.keys(srcjson);
+    for(var i=0; i <keys.length; i++){
+        urljson += u(keys[i]) + "=" + u(srcjson[keys[i]]);
+        if(i < (keys.length-1))urljson+="&";
+    }
+    return urljson;
+}
 
   </script>
 </header>
