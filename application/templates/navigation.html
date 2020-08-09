@@ -109,7 +109,6 @@
                 data: {search_term: name}, 
                 dataType: 'json',
                 success: function (returnData) {
-                  console.log(returnData);
                     if (returnData.length <= 5){
                       var names = [], range = returnData.length;
                     }
@@ -175,7 +174,7 @@
     function xwwwfurlenc(srcjson){
     if(typeof srcjson !== "object")
       if(typeof console !== "undefined"){
-        console.log("\"srcjson\" is not a JSON object");
+        // console.log("\"srcjson\" is not a JSON object");
         return null;
       }
     u = encodeURIComponent;

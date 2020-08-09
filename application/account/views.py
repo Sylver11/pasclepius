@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash
 from flask_login import current_user, login_required
-from application.db_invoice import getItems, getAllInvoices, liveSearchInvoices, updateSubmitted, updateCredit, queryR, getSingleInvoice
+from application.db_invoice import getItems, queryInvoices, liveSearchInvoices, updateSubmitted, updateCredit, queryR, getSingleInvoice
 import simplejson as json
 from datetime import datetime
 import datetime as datetime2
@@ -92,7 +92,7 @@ def addCreditInvoice():
 
 @account_bp.route('/all-invoices/<caller_id>/<c_option>/<r_option>/<focus>/<order>/<start>/<range>',methods=['GET'])
 def allInvoices(caller_id, c_option, r_option, focus, order, start, range):
-    invoices = getAllInvoices(current_user.uuid, c_option,
+    invoices = queryInvoices(current_user.uuid, c_option,
             r_option, focus, order, start, range)
     if caller_id == 'account':
         return render_template('account_bp/all_invoices.html',
@@ -100,7 +100,7 @@ def allInvoices(caller_id, c_option, r_option, focus, order, start, range):
                 sort_keys=True,
                 default=str))
     elif caller_id == 'patient':
-        return render_template('patient/all_invoices.html',
+        return render_template('patient/invoices.html',
             invoices_json = json.dumps(invoices,
                 sort_keys=True,
                 default=str))

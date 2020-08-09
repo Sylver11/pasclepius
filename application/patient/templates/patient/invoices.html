@@ -1,0 +1,173 @@
+<div id='invoice_list'></div>
+<script>
+
+function dynamic(load_content){
+        $( "#invoice-tab" ).load( load_content, function(){
+        });
+    }
+
+function closeDropDown(){
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+        }
+    }
+}
+
+    var invoices = '{{ invoices_json }}';
+    invoices = JSON.parse(invoices.replace(/&#34;/g,'"'));
+    var invoice_list = document.getElementById("invoice_list");
+    invoice_list.style.display = "flex";
+    invoice_list.style.flexDirection = "column";
+
+for (let i = 0; i < invoices.length; i++) {
+
+        const element = invoices[i];
+        $.getJSON('/get-invoice-items', {
+            invoice_id: element["invoice_id"],
+            uuid: element["uuid_text"],
+        }, function(invoice_items) {
+
+            var card = document.createElement("DIV");
+            card.classList.add("card")
+            card.classList.add("mb-3");
+            // if(element['status'] == 'not-submitted'){
+            //     card.style.backgroundColor = "rgba(0, 0, 255, 0.3)";
+            // }
+            // else if(element['status'] == 'due'){
+            //     card.style.backgroundColor = "rgb(255, 255, 0, 0.3)";
+            // }
+            // else if(element['status'] == 'overdue'){
+            //     card.style.backgroundColor = "rgba(255, 0, 0, 0.3)";
+            // }
+            // else if(element['status'] == 'settled'){
+            //     card.style.backgroundColor = "rgba(0, 255, 0, 0.3)";
+            // } 
+            invoice_list.appendChild(card);
+            
+
+
+            var card_header = document.createElement("DIV");
+            card_header.textContent = element['patient_name'];
+            card_header.classList.add("card-header");
+            card.appendChild(card_header);
+
+            var card_body= document.createElement("DIV");
+            card_body.classList.add("card-body");
+            card.appendChild(card_body);
+
+            var card_title = document.createElement("h5");
+            card_title.classList.add("card-title");
+            card_title.textContent = element['invoice_id'];
+            card_body.appendChild(card_title);
+
+            var card_text = document.createElement("P");
+            card_text.classList.add("card-text");
+            card_text.textContent = "Created on: " + element['date_created']
+            card_body.appendChild(card_text);
+
+
+            var continue_button = document.createElement("BUTTON");
+            continue_button.textContent = "Continue";
+            continue_button.classList.add("btn");
+            continue_button.classList.add("btn-primary");
+            continue_button.setAttribute("type", "button");
+            continue_button.classList.add("mr-2");
+            continue_button.addEventListener("click", function(){
+                let criteria = ["/patient/invoice/" + element['invoice_id']]; 
+                $('.new-patient').removeClass('active'); 
+                $('.continue').removeClass('active');
+
+                var lower_navbar = document.getElementById("myTab")
+                var tabs = lower_navbar.getElementsByTagName('BUTTON');
+
+                var tab_does_not_exists = true;
+                for (var i = 0; i < tabs.length; i++) {
+                    if(tabs[i].textContent.match(element['invoice_id'])){
+                        tabs[i].className += " active";
+                        tabs[i].disabled = false;
+                        tab_does_not_exists = false;
+                    }
+                } 
+        
+                if(tab_does_not_exists){
+    
+                    var tab = document.createElement("BUTTON");
+                    tab.setAttribute("id", "tab-" + i);
+                    tab.className += " btn";
+                    tab.className += " btn-secondary "
+                    tab.className += " btn-sm "
+                    tab.className += element['invoice_id'];
+                    tab.className += " tab";
+                    tab.style.marginLeft = "2em";
+                    tab.textContent =element['invoice_id'];
+
+                    var favi = document.createElement("I");
+                    favi.setAttribute("id" , "favi-" + i)
+                    favi.setAttribute("class" , "fa fa-remove favi")
+                    favi.style.paddingLeft ="5px";
+                    favi.addEventListener("click", function(e){
+                        e.preventDefault();
+                        $.ajax({
+                                type: "GET",
+                                url: '/remove-job', 
+                                data: {work_type: "invoice_tab", work_quality: element['invoice_id']},
+                                success: function (status) {
+                                    favi_to_be_removed = document.getElementById("favi-" + i)
+                                    favi_to_be_removed.remove();
+                                    tab_to_be_removed = document.getElementById("tab-" + i)
+                                    tab_to_be_removed.remove();
+                                }
+                            }) 
+                    });
+
+                    var  number_of_already_existing_tabs= document.getElementsByClassName("tab");
+                    var  number_of_already_existing_favis= document.getElementsByClassName("favi");
+                    if(number_of_already_existing_tabs.length > 4){
+                        number_of_already_existing_tabs[4].remove();
+                        number_of_already_existing_favis[4].remove();
+                        lower_navbar.insertBefore(favi, number_of_already_existing_tabs[0])
+                        lower_navbar.insertBefore(tab, favi)
+                    }
+                    else{
+                        lower_navbar.insertBefore(favi, number_of_already_existing_tabs[0])
+                        lower_navbar.insertBefore(tab, favi)    
+                    }
+                }
+                dynamic.apply(this, criteria);  
+            });   
+
+
+            var popover_button = document.createElement("A");
+            popover_button.textContent = "Show treatments";
+            popover_button.setAttribute("role", "button");
+            popover_button.setAttribute("title", "Treatments:");
+            popover_button.setAttribute("data-trigger", "focus");
+            popover_button.setAttribute("tabindex", "0");
+            popover_button.setAttribute("data-toggle", "popover");
+            popover_button.setAttribute("data-html", "true");
+            popover_button.classList.add("btn");
+            popover_button.classList.add("btn-secondary");
+
+            var html_treatment_list = "<ul>";
+            for (i = 0; i < invoice_items.length; i++) {
+                var li = "<li>" + invoice_items[i]['description'] + "</li>"
+                html_treatment_list += li;
+            }
+            html_treatment_list += "</ul>";
+            popover_button.setAttribute("data-content", html_treatment_list);        
+            card_body.appendChild(continue_button);
+            card_body.appendChild(popover_button);
+
+            $('.popover-dismiss').popover({
+                trigger: 'focus'
+            })
+            $('[data-toggle="popover"]').popover();
+
+        });
+    }
+
+</script>

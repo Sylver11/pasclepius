@@ -77,6 +77,7 @@
                 </div>
             </div>
         {% endif %}
+        {{ form_mva.status(type="hidden", value="draft") }}
             <br>
             <input class="save_patient" id="save_patient" name="save_patient" value="save_patient" type="checkbox" onclick="toggleOptions()">       
             <label for="save_patient">Only save patient</label>
@@ -156,6 +157,7 @@
     </div>
 </div>
 {% endif %}
+{{ form_other.status(type="hidden", value="draft") }}
 <br>
     <input class="save_patient" id="save_patient" name="save_patient" value="save_patient" type="checkbox" onclick="toggleOptions()">       
     <label for="save_patient">Only save patient</label>
@@ -208,8 +210,6 @@ $(document).ready(function() {
     };
 
     
-        // $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
-        // $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
         $('#procedure_date').datepicker({dateFormat: 'yy-mm-dd'})
         $('#diagnosis_date').datepicker({dateFormat: 'yy-mm-dd'})
         $('#admission_date').datepicker({dateFormat: 'yy-mm-dd'})
@@ -242,8 +242,8 @@ $(document).ready(function() {
                     return
                 }
             }
-                e.preventDefault();
-                $.post( "/patient/invoice/new", $('.mva').serialize(), function( data ) {
+            e.preventDefault();
+            $.post( "/patient/invoice/new", $('.mva').serialize(), function( data ) {
                     $( "#invoice-tab" ).html( data );
                     var lower_navbar = document.getElementById("myTab")
                     var draft_button = document.createElement("BUTTON");  
@@ -260,7 +260,7 @@ $(document).ready(function() {
                         for (var i = 0; i < tabs.length; i++) {
                             tabs[i].classList.remove("active");
                         }
-                        $('.continue').removeClass('active');
+                        $('.invoices').removeClass('active');
                         $('.new-patient').removeClass('active'); 
                         $(this).addClass('active'); 
 
@@ -350,7 +350,7 @@ $(document).ready(function() {
                         for (var i = 0; i < tabs.length; i++) {
                             tabs[i].classList.remove("active");
                         }
-                        $('.continue').removeClass('active');
+                        $('.invoices').removeClass('active');
                         $('.new-patient').removeClass('active'); 
                         $(this).addClass('active'); 
 
@@ -411,7 +411,7 @@ $(document).ready(function() {
             } 
             else{
                 e.preventDefault();
-                alert("Patient birth date has an incorrect format. Please use the following format: yyyy-mm-dd");
+                alert("Incorrect format for patient birth date. Please use the following format: yyyy-mm-dd");
             } 
         });
 

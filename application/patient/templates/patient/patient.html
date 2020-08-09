@@ -12,10 +12,10 @@
             {{ form_mva.medical_aid(value='mva', style='display:none') }}
             
             <div class="form-group col-md-4">
-                {{ form_mva.patient_name.label(class="required",  for="patient_name") }} {{ form_mva.patient_name(class_="form-control") }}
+                {{ form_mva.patient_name.label(class="required",  for="patient_name") }} {{ form_mva.patient_name(class_="form-control patient_name") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_mva.case_number.label(class="required",  for="case_number") }} {{ form_mva.case_number(class_="form-control") }}
+                {{ form_mva.case_number.label(class="required",  for="case_number") }} {{ form_mva.case_number(class_="form-control case_number") }}
             </div>
         </div>  
         <div class="form-row">
@@ -151,68 +151,69 @@
 
     {{ form_other.submit(class_="btn btn-success") }}
 </form>  
+<h4>Past invoice</h4>  
+<div id="continue-invoices"></div>
+<div><span style="float: left;">Pages: </span><ul id="pages" style="list-style: none;"></ul></div>
        
-
- 
-  
-    <h4>Past invoice</h4>  
-    <!-- <ul class="list-group">
-
-        <ul class="list-group-item" id="treatment-list- style="display:none;">
-                <script>
-                    $.getJSON('/get-invoice-items', {
-                        invoice_id: "somethon",
-                        uuid: "spmt",
-                    }, function(invoice_items) {
-                        
-                        for (i = 0; i < invoice_items.length; i++) {
-                            var node = document.createElement("li");
-                            node.classList.add('list-group-item');
-                            node.innerText = invoice_items[i]['description'];
-                            el.appendChild(node);
-                        }
-                        var button = document.createElement("button");
-                        button.innerHTML = "Continue Invoice";
-                      
-                        el.appendChild(button);
-                        $('.continue').click(function(){
-                            $.ajax({
-                                url: '/set-known-invoice',
-                                data: {invoice_items:  JSON.stringify(invoice_items)},
-                                success: function() {
-                                    window.location.href = "/patient/"
-                                },
-                            });
-                         
-                        })
-                        
-                    });
-            </script>
-        </ul> -->
-
-    <!-- </ul>   -->
-<!-- </div> -->
-
-
 <script>
 
 
 $(document).ready(function() {
 
-        // $('.invoice_list').click(function() {
-        //     $(this).next().css("display", "block");
-        // });
-   
+    function mouse_on_page(){
+        this.setAttribute("style", "background-color:blue;")
+    }
+    function mouse_off_page(){
+        this.setAttribute("style", "background-color:white;")
+    }
+    function page_click(){
+        current_range = criteria[6];
+        page_requested = this.textContent; 
+        criteria[5] = current_range * (page_requested - 1);
+        dynamic_continue.apply(this, criteria);
+    }
 
-    // $('.other').children('#date_other').datepicker({dateFormat: 'dd.mm.yy'})
-    // $('.mva').children('#date_mva').datepicker({dateFormat: 'dd.mm.yy'})
+    let criteria = ['patient', 'patient_id', '{{ patient_id }}', 'date_created', 'DESC', 0, 10];
+    dynamic_continue.apply(this, criteria);
+
+
+    function dynamic_continue(caller_id, c_option, r_option, focus, order, start, range){
+        $( "#continue-invoices" ).load( "/account/all-invoices/" + caller_id + "/" + c_option + "/" + r_option + '/' + focus + '/' + order + '/' + start + '/' + range, function(){
+            console.log(invoices);
+            $(".patient_name").val(invoices[0]['patient_name'])
+            $(".case_number").val(invoices[0]['case_number'])
+            $(".tariff").val(invoices[0]['tariff'])
+            var row_total_count = invoices[0]['rowcounter'];
+            var items_per_site = criteria[6];
+            var pages = Math.floor(row_total_count / items_per_site)
+            if(pages != row_total_count / items_per_site){
+                pages = pages + 1;
+            }
+            var ul = document.getElementById("pages")
+            ul.innerHTML = '';
+            for(var i = 0; i < pages; i++){
+                var li = document.createElement("LI");
+                var a = document.createElement("A");
+                a.setAttribute("class", "link_pages");
+                li.style.cursor = "pointer";
+                a.addEventListener("mouseover", mouse_on_page, false);
+                a.addEventListener("mouseout", mouse_off_page, false);
+                a.addEventListener("click", page_click, false);
+                li.style.display = "inline";
+                li.style.padding = "5px";
+                a.textContent = i + 1;
+                li.appendChild(a)
+                ul.appendChild(li);
+            }
+        });
+    }
+
     $('#procedure_date').datepicker({dateFormat: 'yy-mm-dd'})
     $('#diagnosis_date').datepicker({dateFormat: 'yy-mm-dd'})
     $('#admission_date').datepicker({dateFormat: 'yy-mm-dd'})
     $('#discharge_date').datepicker({dateFormat: 'yy-mm-dd'})
-    // $(document).on('change', '.medical_aid',function() {
-        // var selection = $(this).val()
-        if(request_args["medical_aid"] == 'mva'){
+
+    if(request_args["medical_aid"] == 'mva'){
             $('.other').css("display","none")
             $('.mva').css("display","block")
 
@@ -222,12 +223,6 @@ $(document).ready(function() {
             $('.mva').css("display","none")
             $('.other').css("display","block")
         }
-        // else{
-        //     $('.other_medical_aid').val(selection)
-        //     $('.mva').css("display","none")
-        //     $('.other').css("display","block")
-        // }
-    // })
 
     
     

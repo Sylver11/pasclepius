@@ -16,7 +16,9 @@ def checkDuplicate(uuid, patient):
 
 
 def patientSearch(uuid, patient_name):
-    sql = """SELECT any_value(patients.patient_name) AS patient_name,
+    sql = """SELECT 
+    any_value(patients.patient_id) AS patient_id,
+    any_value(patients.patient_name) AS patient_name,
     any_value(patients.medical_aid) AS medical_aid,
     any_value(patients.main_member) AS main_member,
     any_value(patients.patient_birth_date) AS patient_birth_date,

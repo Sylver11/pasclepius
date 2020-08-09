@@ -1,3 +1,15 @@
+function firstLetterCapitalise(str) {
+    str = str.replace(/_/g, "&nbsp;")
+    return str.replace(
+        /\w\S*/g,
+        function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        }
+    );
+}
+
+
+
 function populatePatient(){
     var form = document.getElementById("patient_info");
     var invoice_layout = 1;
@@ -25,7 +37,7 @@ function populatePatient(){
 
             var label = document.createElement("Label");
             label.htmlFor = key;
-            label.innerHTML= key; 
+            label.innerHTML= firstLetterCapitalise(key); 
             label.className = "col-sm-2" 
             label.className += " col-form-label";
             form_group.appendChild(label);
@@ -44,7 +56,7 @@ function populatePatient(){
 
             var label = document.createElement("Label");
             label.htmlFor = key;
-            label.innerHTML= key; 
+            label.innerHTML= firstLetterCapitalise(key);   
             label.className = "col-sm-2" 
             label.className += " col-form-label";
             form_group.appendChild(label);
@@ -88,7 +100,7 @@ function populatePatient(){
                 }
             }            
         }
-        else if(value && key != "csrf_token" && key != "treatments" && key != "date_invoice" && key != "modifier"){
+        else if(value && key != "csrf_token" && key != "treatments" && key != "date_invoice" && key != "modifier" && key.indexOf(".") === -1){
             var div = document.createElement("DIV");
             div.className += "form-group ";
             div.className += "row";
@@ -97,7 +109,7 @@ function populatePatient(){
 
             var label = document.createElement("Label");
             label.htmlFor = key;
-            label.innerHTML= key; 
+            label.innerHTML= firstLetterCapitalise(key);  
             label.className = "col-sm-2" 
             label.className += " col-form-label";
             div.appendChild(label);
@@ -125,6 +137,15 @@ function populatePatient(){
             hidden_input.value = value;
             hidden_input.name = key;
             input_div.appendChild(hidden_input);
+
+            if(key == "case_number" || key == "medical_number"){
+                var hidden_input = document.createElement("INPUT");
+                hidden_input.setAttribute("type", "hidden")
+                hidden_input.value = value;
+                hidden_input.name = "patient_id";
+                input_div.appendChild(hidden_input);
+
+            }
 
             if(key == "invoice_layout") {
                 invoice_layout = value;

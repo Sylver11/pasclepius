@@ -5,15 +5,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def setupTable():
-    sql_drop_table_namaf_tariffs = "DROP TABLE namaf_tariffs"
-    sql_drop_table_invoice = "DROP TABLE invoices"
-    sql_drop_table_users = "DROP TABLE users"
-    sql_drop_table_invoice_items = "DROP TABLE invoice_items"
-    sql_drop_table_user_workbench = "DROP TABLE user_workbench"
-    sql_drop_table_patients = "DROP TABLE patients"
+    sql_drop_table_namaf_tariffs = "DROP TABLE IF EXISTS namaf_tariffs"
+    sql_drop_table_invoice = "DROP TABLE IF EXISTS invoices"
+    sql_drop_table_users = "DROP TABLE IF EXISTS users"
+    sql_drop_table_invoice_items = "DROP TABLE IF EXISTS invoice_items"
+    sql_drop_table_user_workbench = "DROP TABLE IF EXISTS user_workbench"
+    sql_drop_table_patients = "DROP TABLE IF EXISTS patients"
 
     sql_create_table_namaf_tariffs = """CREATE TABLE namaf_tariffs  (
-        id MEDIUMINT NOT NULL AUTO_INCREMENT,
+        id int(11) NOT NULL AUTO_INCREMENT,
         item int(11) NOT NULL,
         description VARCHAR(500) NOT NULL,
         `procedure` VARCHAR(500),
@@ -31,7 +31,7 @@ def setupTable():
         PRIMARY KEY (id));"""
 
     sql_create_table_invoice_items = """CREATE TABLE invoice_items (
-        id MEDIUMINT NOT NULL AUTO_INCREMENT,
+        id int(11) NOT NULL AUTO_INCREMENT,
         uuid_text varchar(36) NOT NULL,
         invoice_id varchar(255) NOT NULL,
         item int(11) NOT NULL,
@@ -47,19 +47,15 @@ def setupTable():
         PRIMARY KEY (id))"""
 
     sql_create_table_invoice = """CREATE TABLE invoices (
-        id MEDIUMINT NOT NULL AUTO_INCREMENT,
+        id int(11) NOT NULL AUTO_INCREMENT,
         uuid_text varchar(36) NOT NULL,
-        patient_name varchar(255) NOT NULL,
+        patient_id varchar(255) NOT NULL,
+        medical_aid varchar(255) NOT NULL,
         date_created DATETIME NOT NULL DEFAULT NOW(),
         date_invoice DATE NOT NULL,
-        medical_aid varchar(255) NOT NULL,
         invoice_id varchar(255) NOT NULL,
         invoice_file_url varchar(255) NOT NULL,
         tariff varchar(255) NOT NULL,
-        main_member varchar(255),
-        patient_birth_date DATE,
-        medical_number varchar(255),
-        case_number varchar(255),
         po_number int(11),
         hospital_name varchar(255),
         admission_date DATE,
@@ -82,6 +78,9 @@ def setupTable():
     sql_create_table_patients = """ CREATE TABLE patients (
         id int(11) NOT NULL AUTO_INCREMENT,
         uuid_text varchar(36) NOT NULL,
+        patient_id varchar(255) GENERATED ALWAYS AS
+            (CASE WHEN medical_number IS NULL THEN case_number ELSE
+            medical_number END) VIRTUAL,
         patient_name varchar(255) NOT NULL,
         medical_aid varchar(255) NOT NULL,
         main_member varchar(255),
@@ -95,7 +94,7 @@ def setupTable():
 
 
     sql_create_table_users = """CREATE TABLE users (
-        id MEDIUMINT NOT NULL AUTO_INCREMENT,
+        id int(11) NOT NULL AUTO_INCREMENT,
         uuid_bin binary(16),
         uuid_text varchar(36) generated always as
             (insert(

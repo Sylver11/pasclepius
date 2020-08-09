@@ -44,7 +44,7 @@ $('.other').submit(function (e) {
                 for (var i = 0; i < tabs.length; i++) {
                     tabs[i].classList.remove("active");
                 }
-                $('.continue').removeClass('active');
+                $('.invoices').removeClass('active');
                 $('.new-patient').removeClass('active'); 
                 $(this).addClass('active'); 
 

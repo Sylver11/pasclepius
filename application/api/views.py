@@ -2,7 +2,7 @@ import os
 from flask import Blueprint, request, session, send_file, jsonify
 from application.forms import getTreatmentForm
 from application.db_tariffs import getTreatmentByItem, getValueTreatments, getMultipleValues, getTreatmentByGroup, liveSearchTreatments
-from application.db_invoice import get_index, getInvoiceURL, getSingleInvoice, liveSearch, getItems
+from application.db_invoice import get_index, getInvoiceURL, getSingleInvoice, getItems
 from application.db_users import checkUser
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
@@ -19,13 +19,13 @@ api_bp = Blueprint('api_bp',__name__)
 
 
 
-@api_bp.route('/live-search',methods=['GET','POST'])
-@login_required
-def liveSearchPatient():
-    patient_name = request.args.get('patient_name')
-    data = liveSearch(current_user.uuid, patient_name)
-    value_json = json.dumps(data)
-    return value_json
+#@api_bp.route('/live-search',methods=['GET','POST'])
+#@login_required
+#def liveSearchPatient():
+#    patient_name = request.args.get('patient_name')
+#    data = liveSearch(current_user.uuid, patient_name##)
+#    value_json = json.dumps(data)
+#    return value_json
 
 
 @api_bp.route('/live-search-treatment',methods=['GET','POST'])
@@ -70,14 +70,9 @@ def getTreatmentName():
     invoice_id = request.args.get('invoice_id')
     uuid = request.args.get('uuid')
     invoice_items = getItems(uuid, invoice_id)
-    print(invoice_items)
-    for i in invoice_items:
-        for o in i:
-            if isinstance(i[o], datetime2.datetime):
-                d = datetime.strptime(i[o].__str__(), '%Y-%m-%d')
-                date = d.strftime('%d.%m.%Y')
-                i[o] = date
-    return json.dumps(invoice_items)
+    return json.dumps(invoice_items,
+                sort_keys=True,
+                default=str)
 
 
 @api_bp.route('/download-invoice/<random>')

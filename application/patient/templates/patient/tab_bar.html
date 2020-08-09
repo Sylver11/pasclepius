@@ -185,34 +185,10 @@ $(document).ready(function(){
         $(this).addClass('active');  
     })
 
-    // $(document).on("click", "#patient_tab", function (e) {  
-    //     e.preventDefault();   
-    //     var invoice_id = $(this).text();
-    //     criteria[0] = "/patient/invoice/" + invoice_id;
-    //     dynamic.apply(this, criteria); 
-    //     var lower_navbar = document.getElementById("myTab");
-    //     var tabs = lower_navbar.getElementsByTagName('BUTTON');
-    //     for (var i = 0; i < tabs.length; i++) {
-    //         tabs[i].classList.remove("active");
-    //     }
-    //     $('.new-patient').removeClass('active'); 
-    //     $('.invoices').removeClass('active');
-    //     $(this).addClass('active');  
-    // })
-
-
     let criteria =[];
     request_args = '{{ request_args }}';
     request_args = JSON.parse(request_args.replace(/&#34;/g,'"'));
     if(Object.keys(request_args).length > 1 && request_args.constructor === Object){
-
-        var patient_id;
-        if(request_args["medical_number"]){
-              patient_id = request_args["medical_number"]
-          }
-          else{
-              patient_id = request_args["case_number"]
-          }
 
         $.ajax({
             type: "GET",
@@ -224,7 +200,7 @@ $(document).ready(function(){
             }
         })
 
-        criteria = ["/patient/" + request_args["medical_number"]];
+        criteria = ["/patient/" + request_args["patient_id"]];
         
         var patient_button = document.createElement("BUTTON");  
         patient_button.setAttribute("id", "patient_tab");
@@ -232,22 +208,20 @@ $(document).ready(function(){
         patient_button.className += " btn-secondary "
         patient_button.className += " btn-sm "
         patient_button.style.marginLeft = "2em";
-        patient_button.value = patient_id;
+        patient_button.value = request_args["patient_id"];
         patient_button.textContent = request_args["patient_name"]
         patient_button.addEventListener("click", function(e){
             e.preventDefault();   
-            // var patient_id = $(this).value();
-            // console.log(patient_id);
-            criteria = ["/patient/" + patient_id];
+            criteria = ["/patient/" + request_args["patient_id"]];
             dynamic.apply(this, criteria); 
-            // var lower_navbar = document.getElementById("myTab");
-            // var tabs = lower_navbar.getElementsByTagName('BUTTON');
-            // for (var i = 0; i < tabs.length; i++) {
-            //     tabs[i].classList.remove("active");
-            // }
-            // $('.new-patient').removeClass('active'); 
-            // $('.invoices').removeClass('active');
-            // $(this).addClass('active');  
+            var lower_navbar = document.getElementById("myTab");
+            var tabs = lower_navbar.getElementsByTagName('BUTTON');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            $('.new-patient').removeClass('active'); 
+            $('.invoices').removeClass('active');
+            $(this).addClass('active');  
 
         })
 
@@ -293,26 +267,26 @@ $(document).ready(function(){
 
             if(Object.keys(request_args).length > 1 && request_args.constructor === Object){
 
-                var patient_id;
-                if(request_args["medical_number"]){
-                    patient_id = request_args["medical_number"]
-                }
-                else{
-                    patient_id = request_args["case_number"]
-                }
-                
                 var patient_button = document.createElement("BUTTON");  
                 patient_button.setAttribute("id", "patient_tab");
                 patient_button.className += " btn";
                 patient_button.className += " btn-secondary ";
                 patient_button.className += " btn-sm ";
                 patient_button.style.marginLeft = "2em";
-                patient_button.value = patient_id;
+                patient_button.value = request_args["patient_id"];
                 patient_button.textContent = request_args["patient_name"];
                 patient_button.addEventListener("click", function(e){
                     e.preventDefault();   
-                    criteria = ["/patient/" + patient_id];
+                    criteria = ["/patient/" + request_args["patient_id"]];
                     dynamic.apply(this, criteria); 
+                    var lower_navbar = document.getElementById("myTab");
+                    var tabs = lower_navbar.getElementsByTagName('BUTTON');
+                    for (var i = 0; i < tabs.length; i++) {
+                        tabs[i].classList.remove("active");
+                    }
+                    $('.new-patient').removeClass('active'); 
+                    $('.invoices').removeClass('active');
+                    $(this).addClass('active'); 
                 })
 
                 var favi = document.createElement("I");

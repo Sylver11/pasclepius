@@ -2,7 +2,7 @@ function addUniqueClasses(patient_form, treatment_form, search_form = false){
     
     current_patient_form = current_invoice["invoice_id"] + "_current_patient_form";
     current_patient_form = current_patient_form.replace(/\//g, "");
-    if(current_invoice["status"] == "invoice_draft" || current_invoice["status"] == "new_draft"){
+    if(current_invoice["status"] == "draft"){
         patient_form.addEventListener("input", function () {
             keepState(patient_form, treatment_form);
         });
@@ -13,7 +13,8 @@ function addUniqueClasses(patient_form, treatment_form, search_form = false){
     current_form = current_invoice["invoice_id"] + "_current_form";
     current_form = current_form.replace(/\//g, "");
     treatment_form.classList.add(current_form);
-    if(current_invoice["status"] == "invoice_draft" || current_invoice["status"] == "new_draft"){
+    console.log(current_invoice);
+    if(current_invoice["status"] == "draft"){
         treatment_form.addEventListener("input", function () {
             keepState(patient_form, treatment_form);
         });

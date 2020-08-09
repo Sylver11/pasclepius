@@ -5,8 +5,8 @@ from flask import render_template, Blueprint, request, session, redirect
 from application.db_workbench import removeWork, newWork, lastFive
 from application.db_users import checkUser
 from application.db_patient import insertPatient, checkDuplicate, patientSearch
-from application.forms import Patient_mva, Patient_psemas, Patient_other,getTreatmentForm
-from application.db_invoice import insertInvoice, get_index, queryInvoices, getPatient, getSingleInvoice, getItems
+from application.forms import Patient_mva, Patient_other,getTreatmentForm
+from application.db_invoice import insertInvoice, get_index, queryInvoices, getSingleInvoice, getItems
 import simplejson as json
 import re
 import subprocess
@@ -30,9 +30,8 @@ def invoiceTab():
 def invoiceOption(patient_id):
     form_mva = Patient_mva()
     form_other = Patient_other()
-    previous_invoices = queryInvoices(current_user.uuid, patient_id)
     return render_template('patient/patient.html',
-            previous_invoices = previous_invoices,
+            patient_id = patient_id,
             layout_code = current_user.invoice_layout,
             form_mva = form_mva,
             form_other = form_other)
@@ -104,7 +103,7 @@ def newInvoice():
         status = 'new_draft'
     else:
         tariff = request.args.get('tariff')
-        status = request.args.get('status')
+        status = 'continue_draft'
         form = getTreatmentForm(tariff)
     return render_template('patient/' + tariff[:-5] + '.html',
                 status = status,

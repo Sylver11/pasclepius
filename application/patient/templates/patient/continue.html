@@ -1,6 +1,7 @@
 {% block content %}
 
 <div id="inside_container" class="align-middle"></div>
+
         
 <div class="dropdown">
             <button onclick="Ffocus()" id="focus" class="dropbtn dropdown-toggle">Date created</button>
@@ -36,7 +37,7 @@
             </div>
         </div> 
         <div id="r_option_div" class="dropdown"></div>
-        <div  style="border: olive;border-style: solid;" id="dynamic_list" class="d-flex flex-column"></div>
+        <div  id="dynamic_list" class="d-flex flex-column"></div>
         <div><span style="float: left;">Pages: </span><ul id="pages" style="list-style: none;"></ul></div>
 
 
@@ -120,7 +121,7 @@ $(document).ready(function(){
                     success: function (returnData) {
                         $('#column_option').text(c_option)
                         criteria[0] = c_option;
-                        console.log(criteria)
+                        // console.log(criteria)
                         div.innerHTML = '';
                         var button = document.createElement("BUTTON");
                         button.addEventListener("click", RowOption, false);
