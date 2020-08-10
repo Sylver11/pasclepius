@@ -40,7 +40,6 @@
                         <td>{{  form.modifier(style='max-width:80px;', id='modifier-0', class='modifier')  }}</td>
                         <td>{{  form.date(style='max-width:100px;', id='date-0', class='date', placeholder="DD/MM/YYYY")  }}</td>
                         <td>
-                            <input id="clone-0" value="Clone" type="button" style="width:100px" class="clone">
                             <input id="below-0" value="Add below" type="button" style="width:100px" class="below">
                             <input id="delete-0" value="Delete" type="button" style="width:100px" class="remove">
                         </td>
@@ -367,8 +366,8 @@ $(document).ready(function(){
         return false;
     };
 
-    // let element = document.getElementById('treatment-0');
-    // element.value = '';
+    let element = document.getElementById('treatment-0');
+    element.value = '';
     // $('#date-0').hide();
     // $('#value-0').hide();
     // $('#modifier-0').hide();
@@ -521,7 +520,6 @@ $(document).ready(function(){
 });
 
 function keepState(){
-    console.log("keep state of pyhsio runs");
         var data = $('.' + current_form).serializeArray().concat($("." + current_patient_form).serializeArray()) ;
         current_invoice = {};
         var treatments = [];

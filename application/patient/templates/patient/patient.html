@@ -12,10 +12,10 @@
             {{ form_mva.medical_aid(value='mva', style='display:none') }}
             
             <div class="form-group col-md-4">
-                {{ form_mva.patient_name.label(class="required",  for="patient_name") }} {{ form_mva.patient_name(class_="form-control patient_name") }}
+                {{ form_mva.patient_name.label(class="required",  for="patient_name") }} {{ form_mva.patient_name(class_="form-control patient_name", readonly="readonly") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_mva.case_number.label(class="required",  for="case_number") }} {{ form_mva.case_number(class_="form-control case_number") }}
+                {{ form_mva.case_number.label(class="required",  for="case_number") }} {{ form_mva.case_number(class_="form-control case_number", readonly="readonly") }}
             </div>
         </div>  
         <div class="form-row">
@@ -70,6 +70,8 @@
                 </div>
             </div>
         {% endif %}
+        {{ form_mva.status(type="hidden", value="draft") }}
+        <input name="continue_patient" style="display: none;" value="continue_patient" type="checkbox" checked>
 
             <br>
         {{ form_mva.submit(class_="btn btn-success") }}
@@ -83,7 +85,7 @@
         {{ form_other.hidden_tag() }}
         <div class="form-row">
             <div class="form-group col-md-4">
-                {{form_other.medical_aid.label(class="required")}}  {{ form_other.medical_aid(class_="form-control other_medical_aid") }}
+                {{form_other.medical_aid.label(class="required")}}  {{ form_other.medical_aid(class_="form-control other_medical_aid", readonly="readonly") }}
             </div>
             <div class="form-group col-md-4">
                 {{ form_other.tariff.label(class="required", id="tariff_label", class="tariff_label") }} {{ form_other.tariff(class_="tariff") }}
@@ -91,18 +93,18 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                {{ form_other.patient_name.label(class="required") }} {{ form_other.patient_name(class_="form-control") }}
+                {{ form_other.patient_name.label(class="required") }} {{ form_other.patient_name(class_="form-control patient_name", readonly="readonly") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_other.main_member.label(class="required") }} {{ form_other.main_member(class_="form-control") }}
+                {{ form_other.main_member.label(class="required") }} {{ form_other.main_member(class_="form-control main_member", readonly="readonly") }}
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                {{ form_other.patient_birth_date.label(class="required") }} {{ form_other.patient_birth_date(class_="form-control") }}
+                {{ form_other.patient_birth_date.label(class="required") }} {{ form_other.patient_birth_date(class_="form-control patient_birth_date", readonly="readonly") }}
             </div>
             <div class="form-group col-md-4">
-                {{ form_other.medical_number.label(class="required") }} {{ form_other.medical_number(class_="form-control") }}
+                {{ form_other.medical_number.label(class="required") }} {{ form_other.medical_number(class_="form-control medical_number", readonly="readonly") }}
             </div>
         </div>
         {% if 4 <= layout_code <= 9 %}
@@ -147,10 +149,13 @@
     </div>
 </div>
 {% endif %}
+{{ form_other.status(type="hidden", value="draft") }}
+<input name="continue_patient" style="display: none;" value="continue_patient" type="checkbox" checked>
 <br>
 
     {{ form_other.submit(class_="btn btn-success") }}
 </form>  
+<br><br>
 <h4>Past invoice</h4>  
 <div id="continue-invoices"></div>
 <div><span style="float: left;">Pages: </span><ul id="pages" style="list-style: none;"></ul></div>
@@ -179,10 +184,13 @@ $(document).ready(function() {
 
     function dynamic_continue(caller_id, c_option, r_option, focus, order, start, range){
         $( "#continue-invoices" ).load( "/account/all-invoices/" + caller_id + "/" + c_option + "/" + r_option + '/' + focus + '/' + order + '/' + start + '/' + range, function(){
-            console.log(invoices);
+            $(".other_medical_aid").val(invoices[0]['medical_aid'])
             $(".patient_name").val(invoices[0]['patient_name'])
             $(".case_number").val(invoices[0]['case_number'])
             $(".tariff").val(invoices[0]['tariff'])
+            $(".main_member").val(invoices[0]['main_member'])
+            $(".patient_birth_date").val(invoices[0]['patient_birth_date'])
+            $(".medical_number").val(invoices[0]['medical_number'])
             var row_total_count = invoices[0]['rowcounter'];
             var items_per_site = criteria[6];
             var pages = Math.floor(row_total_count / items_per_site)
@@ -219,7 +227,6 @@ $(document).ready(function() {
 
         }
         else{
-            // $('.other_medical_aid').val('')
             $('.mva').css("display","none")
             $('.other').css("display","block")
         }

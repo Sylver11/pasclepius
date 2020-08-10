@@ -2,8 +2,8 @@
 
 <div id="inside_container" class="align-middle"></div>
 
-        
-<div class="dropdown">
+<div style="display: flex; margin-bottom: 2em;"> 
+    <div class="dropdown">
             <button onclick="Ffocus()" id="focus" class="dropbtn dropdown-toggle">Date created</button>
             <div id="focus_dropdown" class="dropdown-content">
                 <li class='focus' data-value='date_created'>Date created</li>
@@ -37,11 +37,27 @@
             </div>
         </div> 
         <div id="r_option_div" class="dropdown"></div>
-        <div  id="dynamic_list" class="d-flex flex-column"></div>
-        <div><span style="float: left;">Pages: </span><ul id="pages" style="list-style: none;"></ul></div>
+    </div>
+    
+    <div id="dynamic_list" class="d-flex flex-column"></div>
+    <div><span style="float: left;">Pages: </span><ul id="pages" style="list-style: none;"></ul></div>
 
 
 <script>
+
+
+window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+            }
+        }
+        } 
 
 function Ffocus() {
     closeDropDown()
@@ -83,7 +99,6 @@ $(document).ready(function(){
         $('#row_option').text(r_option)
         criteria[2] = r_option; 
         criteria[5] = 0;
-        console.log(criteria)
         dynamic_continue.apply(this, criteria);
         }
 
@@ -121,7 +136,6 @@ $(document).ready(function(){
                     success: function (returnData) {
                         $('#column_option').text(c_option)
                         criteria[0] = c_option;
-                        // console.log(criteria)
                         div.innerHTML = '';
                         var button = document.createElement("BUTTON");
                         button.addEventListener("click", RowOption, false);

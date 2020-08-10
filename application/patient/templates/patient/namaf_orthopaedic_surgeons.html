@@ -101,35 +101,6 @@ $(document).ready(function(){
                 addUniqueClasses(forms[1],forms[3], forms[2])         
                 populatePatient()
 
-                var form = document.getElementById("patient_info");
-                var div = document.createElement("DIV");
-                div.className += "form-group ";
-                div.className += "row";
-                form.appendChild(div);
-
-                var label = document.createElement("Label");
-                label.htmlFor = "status";
-                label.innerHTML=  "Status"; 
-                label.className = "col-sm-2" 
-                label.className += " col-form-label";
-                div.appendChild(label);
-
-                var input_div = document.createElement("DIV");
-                input_div.className = "col-sm-10"
-                div.appendChild(input_div);
-
-                var input = document.createElement("INPUT"); 
-                input.value = "new_draft";
-                input.name = "status";
-                input.disabled = true;
-                input.className = "form-control-plaintext";
-                input_div.appendChild(input);
-
-                var hidden_input = document.createElement("INPUT");
-                hidden_input.setAttribute("type", "hidden")
-                hidden_input.value = "new_draft";
-                hidden_input.name = "status";
-                input_div.appendChild(hidden_input);
             }
         })
 

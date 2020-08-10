@@ -76,10 +76,12 @@ def newInvoice():
     if request.method == 'POST':
         row = checkDuplicate(current_user.uuid, request.form)
         if row:
-            return 'Patient already exists.'
-        insertPatient(current_user.uuid, request.form)
-        if request.form.get('save_patient'):
-            return 'Patient saved'
+            if not request.form.get('continue_patient'):
+                return 'Patient already exists.'
+        else:
+            insertPatient(current_user.uuid, request.form)
+            if request.form.get('save_patient'):
+                return 'Patient saved'
         patient_name = request.form['patient_name']
         medical_aid = request.form['medical_aid']
         tariff = request.form['tariff']
@@ -134,7 +136,7 @@ def lastFiveTabs():
 @patient_bp.route('/invoice/generate', methods=['POST'])
 def NewInvoice():
     if request.form:
-        if request.form['status'] == 'new_draft' or request.form['status'] == 'continue_draft':
+        if request.form['status'] == 'draft':
             removeWork(current_user.uuid, 'invoice_draft', 'any')
         status = {}
         try:

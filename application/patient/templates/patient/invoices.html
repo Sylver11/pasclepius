@@ -79,7 +79,7 @@ for (let i = 0; i < invoices.length; i++) {
             continue_button.addEventListener("click", function(){
                 let criteria = ["/patient/invoice/" + element['invoice_id']]; 
                 $('.new-patient').removeClass('active'); 
-                $('.continue').removeClass('active');
+                $('.invoices').removeClass('active');
 
                 var lower_navbar = document.getElementById("myTab")
                 var tabs = lower_navbar.getElementsByTagName('BUTTON');
@@ -91,6 +91,9 @@ for (let i = 0; i < invoices.length; i++) {
                         tabs[i].disabled = false;
                         tab_does_not_exists = false;
                     }
+                    else{
+                        tabs[i].classList.remove("active")
+                    }
                 } 
         
                 if(tab_does_not_exists){
@@ -100,6 +103,7 @@ for (let i = 0; i < invoices.length; i++) {
                     tab.className += " btn";
                     tab.className += " btn-secondary "
                     tab.className += " btn-sm "
+                    tab.className += " active "
                     tab.className += element['invoice_id'];
                     tab.className += " tab";
                     tab.style.marginLeft = "2em";

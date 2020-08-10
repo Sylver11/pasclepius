@@ -13,7 +13,6 @@ function addUniqueClasses(patient_form, treatment_form, search_form = false){
     current_form = current_invoice["invoice_id"] + "_current_form";
     current_form = current_form.replace(/\//g, "");
     treatment_form.classList.add(current_form);
-    console.log(current_invoice);
     if(current_invoice["status"] == "draft"){
         treatment_form.addEventListener("input", function () {
             keepState(patient_form, treatment_form);

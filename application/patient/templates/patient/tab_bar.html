@@ -43,7 +43,7 @@ $(document).ready(function(){
                     for (var i = 0; i < tabs.length; i++) {
                         tabs[i].classList.remove("active");
                     }
-                    $('.continue').removeClass('active');
+                    $('.invoices').removeClass('active');
                     $('.new-patient').removeClass('active'); 
                     $(this).addClass('active'); 
 
@@ -195,7 +195,6 @@ $(document).ready(function(){
             url: '/patient/add-work', 
             data: {work_type: "patient_tab", work_quality: JSON.stringify(request_args)},
             success: function (returnData) {
-                console.log(returnData);
 
             }
         })
