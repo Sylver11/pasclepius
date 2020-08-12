@@ -31,8 +31,9 @@ api_bp = Blueprint('api_bp',__name__)
 @api_bp.route('/live-search-treatment',methods=['GET','POST'])
 @login_required
 def liveSearchTreatment():
+    tariff = request.args.get('tariff')
     treatment = request.args.get('treatment')
-    tariff = session.get('PATIENT')['tariff']
+#    tariff = session.get('PATIENT')['tariff']
     data, data2, data3, data4 = liveSearchTreatments(treatment, tariff)
     value_json = json.dumps({'treatments' : data, 'procedures': data2,
         'categories': data3, 'items': data4})

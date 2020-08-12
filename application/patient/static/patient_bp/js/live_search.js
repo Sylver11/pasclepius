@@ -38,9 +38,10 @@ function liveSearch (e) {
     $.ajax({
         type: "GET",
         url: url,
-        data: {treatment: search_item}, 
+        data: {treatment: search_item, tariff: current_invoice["tariff"]}, 
         dataType: 'json',
         success: function (returnData) {
+            // console.log("how many times");
             if (returnData.treatments.length <= 20){
             var names = [], range = returnData.treatments.length;
             }
@@ -69,8 +70,8 @@ function liveSearch (e) {
             a.setAttribute("id", "autocomplete-list2");
             a.setAttribute("class", "autocomplete-items2");
             input_element.parentNode.insertBefore(a, input_element.nextSibling);
-            for (i = 0; i < items.length; i++) {
-                if (items[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+            for (z = 0; z < items.length; z++) {
+                if (items[z].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
                     var b = document.createElement("DIV");
                     var wrapper_b = document.createElement("DIV");
                     b.setAttribute('class','treatment-divs')
@@ -78,14 +79,15 @@ function liveSearch (e) {
                     wrapper_b.style.display = "flex";
                     wrapper_b.style.justifyContent = "flex-start";
                     wrapper_b.style.alignItems = "center";
-                    var category = returnData.items[i]['category'];
-                    var sub_category = returnData.items[i]['sub_category'];
-                    var sub_sub_category = returnData.items[i]['sub_sub_category']
-                    var sub_sub_sub_category = returnData.items[i]['sub_sub_sub_category']
-                    var procedure = returnData.items[i]['procedure']
-                    var item = returnData.items[i]['item']
-                    var description = returnData.items[i]['description'];
-                    var units = returnData.items[i]['units'];
+                    var category = returnData.items[z]['category'];
+                    var sub_category = returnData.items[z]['sub_category'];
+                    var sub_sub_category = returnData.items[z]['sub_sub_category']
+                    var sub_sub_sub_category = returnData.items[z]['sub_sub_sub_category']
+                    var procedure = returnData.items[z]['procedure']
+                    var item = returnData.items[z]['item']
+                    var description = returnData.items[z]['description'];
+                    var units = returnData.items[z]['units'];
+                    var value = returnData.items[z]['value_cent']
                     if(sub_category) {
                         if(sub_sub_category) {
                             if(sub_sub_sub_category) {
@@ -105,24 +107,36 @@ function liveSearch (e) {
                     if (procedure){
                         b.innerHTML += "<p style='font-style: italic;'>" + procedure + "</p>";
                     }
-                    wrapper_b.innerHTML += "<p style='margin:0;'id='items-list-item"+ i +"'><strong>" + items[i].substr(0, val.length) + "</strong>" + items[i].substr(val.length) + "</p>";
-                    wrapper_b.innerHTML += "<p style='margin:0;'id='items-list-description"+ i +"'>&nbsp;" + description + "</p>";
-                    wrapper_b.innerHTML += "<input type='hidden';'id='treatment-list-input" + i + "'  value='" + item + "'>";
+                    wrapper_b.innerHTML += "<p style='margin:0;'id='items-list-item"+ z +"'><strong>" + items[z].substr(0, val.length) + "</strong>" + items[z].substr(val.length) + "</p>";
+                    wrapper_b.innerHTML += "<p style='margin:0;'id='items-list-description"+ z +"'>&nbsp;" + description + "</p>";
+                    wrapper_b.innerHTML += "<input type='hidden' id='items-list-input" + z + "'  value='" + item + "'>";
+                    wrapper_b.innerHTML += "<input type='hidden' id='items-list-input-units" + z + "'  value='" + units + "'>";
+                    wrapper_b.innerHTML += "<input type='hidden' id='items-list-input-value" + z + "'  value='" + value + "'>";
                     b.appendChild(wrapper_b);
                     (function(index){
                         b.addEventListener("click", function() {
                             var value_of_value = document.getElementById("value-0").value
                             if(value_of_value){
                                 clone()
-                            }      
+                            }    
                             next_empty_treatment_input = document.getElementById("tbodyClone").lastElementChild.childNodes[3].firstChild
-                            description_text = document.getElementById("items-list-description"+ index).textContent;
-                            next_empty_treatment_input.value = this.getElementsByTagName("input")[0].value;
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_text
-                            newTreatmentLiveSearch(next_empty_treatment_input)
+                          
+                            item_num = document.getElementById("items-list-input" + index).value;
+                            next_empty_treatment_input.value = item_num;
+
+                            description_text = document.getElementById("items-list-description" + index).textContent;
+                            next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_text;
+
+                            units = document.getElementById("items-list-input-units" + index).value;
+                            next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].value = units / 100;
+
+                            value = document.getElementById("items-list-input-value" + index).value;
+                            next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].value = value / 100;
+                            next_empty_treatment_input.parentNode.parentNode.childNodes[11].childNodes[0].value = value / 100;
+
                             closeAllLists();
                         })
-                    })(i)
+                    })(z)
                     a.appendChild(b);
                 }
             }
@@ -135,8 +149,8 @@ function liveSearch (e) {
                 var procedures_from_procedures = [], range = procedures_length;
                 var arr_unique = [];
                 for(i = 0; i < procedures_length; i++){
-                    procedures_from_procedures[i] = returnData.procedures[i]['procedure']
-                    arr_unique = uniq_fast(procedures_from_procedures)
+                    procedures_from_procedures[i] = returnData.procedures[i]['procedure'];
+                    arr_unique = uniq_fast(procedures_from_procedures);
                 }
                 var found = [], range = arr_unique.length;
                 for(i = 0; i < arr_unique.length; i++){
@@ -307,9 +321,9 @@ function liveSearch (e) {
                             var units_procedures = document.getElementById("treatment-list-units-input"+ index).value;
                             next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].value = units_procedures / 100
 
-                            value_procedures = document.getElementById("treatment-list-value-input-procedure" + index).value;
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].value = value_procedures / 100
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[11].childNodes[0].value = value_procedures / 100
+                            value_cent = document.getElementById("treatment-list-value-input" + index).value;
+                            next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].value = value_cent / 100
+                            next_empty_treatment_input.parentNode.parentNode.childNodes[11].childNodes[0].value = value_cent / 100
                             
                             next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].style.display = "block";
                             next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].style.display = "block";
@@ -387,9 +401,19 @@ function liveSearch (e) {
 
                             var value_input_field = document.createElement("INPUT");
                             value_input_field.setAttribute("id", "category-list-input-value" + x)
+                            value_input_field.setAttribute("type", "hidden")
                             value_input_field.value = found_items_from_category[i][x]['value_cent'];
-                            value_input_field.style.display = "none"; 
+                            console.log(found_items_from_category[i][x]['value_cent']);
+                            // value_input_field.style.display = "n"; 
                             flex_wrapper.appendChild(value_input_field);
+
+
+                            var units_input_field = document.createElement("INPUT");
+                            units_input_field.setAttribute("id", "category-list-input-units" + x)
+                            units_input_field.setAttribute("type", "hidden")
+                            units_input_field.value = found_items_from_category[i][x]['units'];
+                            // value_input_field.style.display = "n"; 
+                            flex_wrapper.appendChild(units_input_field);
                             
                             (function(index){
                                     paragraph_field.addEventListener("click", function() {
@@ -401,16 +425,26 @@ function liveSearch (e) {
                                         /////////////////////////////////
                                         /////////////////////////////
                                         next_empty_treatment_input = document.getElementById("tbodyClone").lastElementChild.childNodes[3].firstChild
+
                                         item_num = document.getElementById("category-list-input-items" + index).value
                                         next_empty_treatment_input.value = item_num
-                                        description_procedures = document.getElementById("category-list-description" + index).textContent;
-                                        next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_procedures
+
+                                        description_categories = document.getElementById("category-list-description" + index).textContent;
+                                        next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_categories
+
+                                        var units_item = document.getElementById("category-list-input-units" + index).value;
+                                        next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].value = units_item / 100
 
                                         var value_item = document.getElementById("category-list-input-value" + index).value;
-                                        next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].value = value_item / 100
+                                        next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].value = value_item / 100
+                                        next_empty_treatment_input.parentNode.parentNode.childNodes[11].childNodes[0].value = value_item / 100
+
+                                        
+                                        
+
                                         next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].style.display = "block";
                                         next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].style.display = "block";
-                                        next_empty_treatment_inputparentNode.parentNode.childNodes[9].childNodes[0].style.display = "block";
+                                        next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].style.display = "block";
                                         closeAllLists();
                                     })
                                 })(x);     
