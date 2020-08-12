@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from flask import render_template, Blueprint, request, session, redirect
 from application.db_workbench import removeWork, newWork, lastFive
 from application.db_users import checkUser
-from application.db_patient import insertPatient, checkDuplicate, patientSearch
+from application.db_patient import insertPatient, checkDuplicate, patientSearch, removePatient
 from application.forms import Patient_mva, Patient_other,getTreatmentForm
 from application.db_invoice import insertInvoice, get_index, queryInvoices, getSingleInvoice, getItems
 import simplejson as json
@@ -42,6 +42,16 @@ def searchPatient():
     search_term = request.args.get('search_term')
     patients = patientSearch(current_user.uuid, search_term)
     return json.dumps(patients, sort_keys=True, default=str)
+
+
+@patient_bp.route('/patient/delete', methods = ['POST'])
+def deletePatient():
+    patient_id = request.form.get('patient_id')
+    status = removePatient(current_user.uuid, patient_id)
+    removeWork(current_user.uuid, 'patient_tab', 'any')
+    if status:
+        return json.dumps('success')
+    return json.dumps('Unable to delelet patient. Please contact system administrator')
 
 
 @patient_bp.route('/add-work', methods=('GET','POST'))

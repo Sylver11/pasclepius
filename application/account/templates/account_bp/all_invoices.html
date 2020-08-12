@@ -18,7 +18,6 @@ function closeDropDown(){
 
 
     var invoices = '{{ invoices_json }}';
-    // console.log(invoices)
     invoices = JSON.parse(invoices.replace(/&#34;/g,'"'));
     var invoice_list = document.getElementById("invoice_list");
     invoice_list.style.display = "flex";
@@ -196,7 +195,6 @@ function closeDropDown(){
                 data: {invoice_id: element['invoice_id'], credit_cent: element['debit_cent'] - element['credit_cent']}, 
                 dataType: 'json',
                 success: function (returnData) {
-                    console.log(returnData)
                     $('.modal-body').text(returnData)
                     $("#account_modal").modal();
             

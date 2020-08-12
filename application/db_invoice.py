@@ -57,18 +57,6 @@ def getInvoiceURL(uuid, name_patient, date):
     return invoice_file_url
 
 
-#def queryInvoices(uuid, patient_id):
-#    sql = """SELECT * FROM invoices WHERE uuid_text = '{}' AND patient_id = '{}'
-#    """.format(uuid, patient_id)
-#    conn = pool.connection()
-#    cursor = conn.cursor()
-#    cursor.execute(sql)
-#    invoices = cursor.fetchall()
-#    cursor.close()
-#    conn.close()
-#    return invoices
-
-
 def getSingleInvoice(uuid, invoice_id):
     sql = """SELECT invoices.*, patients.*
         FROM invoices

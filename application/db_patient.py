@@ -37,6 +37,17 @@ def patientSearch(uuid, patient_name):
     conn.close()
     return patients
 
+def removePatient(uuid_text, patient_id):
+    conn = pool.connection()
+    cursor = conn.cursor()
+    sql = """ DELETE FROM patients WHERE uuid_text = '{}' AND
+    patient_id = '{}'""".format(uuid_text, patient_id)
+    cursor.execute(sql)
+    cursor.close()
+    conn.close()
+    status = True
+    return status
+
 
 def insertPatient(uuid_text, patient):
     conn = pool.connection()

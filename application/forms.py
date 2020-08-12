@@ -210,37 +210,6 @@ class Patient_mva(FlaskForm):
     submit = SubmitField('Create invoice')
 
 
-#class Patient_psemas(FlaskForm):
-#    medical_aid = StringField('Medical Aid')
-#    patient_name = StringField(u'Full Name', validators=[DataRequired()])
-#    main_member = StringField(u'Main Member', validators=[DataRequired()])
-#    medical_number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
-#    patient_birth_date = StringField(u'Date of Birth', validators=[DataRequired()])
-#    tariffs = getAllTariffs()
-#    choices = []
-#    for x in tariffs:
-#        _tariff = x['tariff']
-#        tariff_ = _tariff.replace('_', ' ')
-#        _tariff_ = tariff_.upper()
-#        choices.append((_tariff, _tariff_))
-#    choices.append(('', 'Choose Tariff'))
-#    tariff = SelectField(u'Tariff', choices = choices,
-#                         validators=[DataRequired()] , default='')
-#    date_created =  StringField(u'Invoice created', validators=[DataRequired()])
-#    hospital_name = StringField('Hospital')
-#    admission_date = StringField('Date of admission')
-#    discharge_date = StringField('Date of discharge')
-#    diagnosis = StringField('Diagnosis')
-#    diagnosis_date = StringField('Date of diagnosis')
-#    procedure = StringField('Procedure')
-#    procedure_date = StringField('Date of procedure')
-#    implants = StringField('Implants')
-#    intra_op = SelectField('Intra-OP imaging', choices =
-#            [('',''),('yes','Yes'),('no','No')], default='')
-#    post_op =  StringField('Post-OP imaging')
-#    status = TextField('Status')
-#    submit = SubmitField('Create invoice')
-
 class Patient_other(FlaskForm):
     medical_aid = StringField('Medical Aid',validators = [DataRequired(),
         Regexp('^\w+$', message="Please delete all white spaces before & after the word")])

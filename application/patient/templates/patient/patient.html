@@ -1,4 +1,18 @@
 {% block content %}
+<div id="patient_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Success</h5>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <h4>Create new invoice</h4>
 <form method=post autocomplete="off" id="newInvoice_mva" name="mva" class="mva" style="display:none">  
@@ -159,6 +173,9 @@
 <h4>Past invoice</h4>  
 <div id="continue-invoices"></div>
 <div><span style="float: left;">Pages: </span><ul id="pages" style="list-style: none;"></ul></div>
+
+<h4>Danger Zone:</h4>
+<button id="delete-patient" class="btn btn-danger" type="button" value='{{ patient_id }}'>Delete Patient</button>
        
 <script>
 
@@ -191,6 +208,7 @@ $(document).ready(function() {
             $(".main_member").val(invoices[0]['main_member'])
             $(".patient_birth_date").val(invoices[0]['patient_birth_date'])
             $(".medical_number").val(invoices[0]['medical_number'])
+            // $("#delete-patient").val(invoices[0]["patient_id"])
             var row_total_count = invoices[0]['rowcounter'];
             var items_per_site = criteria[6];
             var pages = Math.floor(row_total_count / items_per_site)
@@ -215,7 +233,27 @@ $(document).ready(function() {
             }
         });
     }
+    $(document).on("click", "#delete-patient", function (e) {
+        // var this_item = this;
+        var patient_id = $(this).val()
+        $.ajax({
+            type: "POST",
+                    url: '/patient/patient/delete',
+                    data: {patient_id: patient_id}, 
+                    success: function (returnData) {
+                        $('.modal-body').text(returnData)
+                        $("#patient_modal").modal();
+                        favi_to_be_removed = document.getElementById("patient_delete_favi");
+                        favi_to_be_removed.remove();
+                        tab_to_be_removed = document.getElementById("patient_tab");
+                        tab_to_be_removed.remove();
+                        $("#patient_modal").on("hidden.bs.modal", function () {
+                            window.location.href = "/patient";
+                        });
 
+                    }
+                })
+    })
     $('#procedure_date').datepicker({dateFormat: 'yy-mm-dd'})
     $('#diagnosis_date').datepicker({dateFormat: 'yy-mm-dd'})
     $('#admission_date').datepicker({dateFormat: 'yy-mm-dd'})

@@ -120,7 +120,6 @@
 
         var invoice = '{{ invoice_json }}'
         invoice = JSON.parse(invoice.replace(/&#34;/g,'"'))
-        console.log(invoice)
         var patient = invoice["patient_name"];
         var invoice_id = invoice["invoice_id"];
         var date = invoice["date_invoice"];

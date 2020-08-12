@@ -115,7 +115,6 @@ function page_click(){
         $('#row_option').text(r_option)
         criteria[2] = r_option; 
         criteria[5] = 0;
-        console.log(criteria)
         dynamic.apply(this, criteria);
         }
 
@@ -152,7 +151,6 @@ function page_click(){
                     success: function (returnData) {
                         $('#column_option').text(c_option)
                         criteria[0] = c_option;
-                        console.log(criteria)
                         div.innerHTML = '';
                         var button = document.createElement("BUTTON");
                         button.addEventListener("click", r_option, false);
@@ -489,7 +487,6 @@ $(document).on("click", ".open_invoice_button", function (e) {
                 data: {invoice_id: invoice_id, credit_cent: credit_cent}, 
                 dataType: 'json',
                 success: function (returnData) {
-                    console.log(returnData)
                     $('.modal-body').text(returnData)
                     $("#account_modal").modal();
             
