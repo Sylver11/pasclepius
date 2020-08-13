@@ -28,7 +28,15 @@ function uniq_fast(a) {
 }
 
 function liveSearch (e) {     
+
     e.preventDefault();
+    var key = e.keyCode || e.which;
+    if((key === 38 || key === 40) && !e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey){
+        console.log("aarro key pressed ");
+        /////////////////////////////////////////////
+        //TODO add func for skipping the list down using arrow keys
+        /////////////////////////////////////////////
+    }
     var currentFocus;
     var input_element = document.getElementById("treatmentsearch")
     var url = "/live-search-treatment";
@@ -41,7 +49,6 @@ function liveSearch (e) {
         data: {treatment: search_item, tariff: current_invoice["tariff"]}, 
         dataType: 'json',
         success: function (returnData) {
-            // console.log("how many times");
             if (returnData.treatments.length <= 20){
             var names = [], range = returnData.treatments.length;
             }
@@ -403,8 +410,6 @@ function liveSearch (e) {
                             value_input_field.setAttribute("id", "category-list-input-value" + x)
                             value_input_field.setAttribute("type", "hidden")
                             value_input_field.value = found_items_from_category[i][x]['value_cent'];
-                            console.log(found_items_from_category[i][x]['value_cent']);
-                            // value_input_field.style.display = "n"; 
                             flex_wrapper.appendChild(value_input_field);
 
 
@@ -412,7 +417,6 @@ function liveSearch (e) {
                             units_input_field.setAttribute("id", "category-list-input-units" + x)
                             units_input_field.setAttribute("type", "hidden")
                             units_input_field.value = found_items_from_category[i][x]['units'];
-                            // value_input_field.style.display = "n"; 
                             flex_wrapper.appendChild(units_input_field);
                             
                             (function(index){
@@ -421,9 +425,6 @@ function liveSearch (e) {
                                         if(value_of_value){
                                             clone()
                                         } 
-                                        ////////////////TODO//////////////
-                                        /////////////////////////////////
-                                        /////////////////////////////
                                         next_empty_treatment_input = document.getElementById("tbodyClone").lastElementChild.childNodes[3].firstChild
 
                                         item_num = document.getElementById("category-list-input-items" + index).value

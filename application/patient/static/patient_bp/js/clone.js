@@ -38,5 +38,10 @@ function clone() {
             $(v).find('span.num').text(i);
            
         });
+
+    $('.popover-dismiss').popover({
+            trigger: 'focus'
+    })
+    $('[data-toggle="popover"]').popover();
     // $(document).scrollTop($(document).height());
 }
