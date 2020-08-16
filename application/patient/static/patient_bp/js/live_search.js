@@ -1,8 +1,9 @@
 function removeActive(x) {
     for (var i = 0; i < x.length; i++) {
         x[i].classList.remove("autocomplete-active");
-        }
-    }   
+    }
+}   
+
 
 function addActive(x) {
     if (!x) return false;
@@ -11,6 +12,7 @@ function addActive(x) {
     if (currentFocus < 0) currentFocus = (x.length - 1);
     x[currentFocus].classList.add("autocomplete-active");
 }
+
 
 function uniq_fast(a) {
     var seen = {};
@@ -27,12 +29,34 @@ function uniq_fast(a) {
     return out;
 }
 
+
+function insertSelection(item_number, item_description, item_units, item_value){
+    var value_of_value = document.getElementById("value-0").value
+    if(value_of_value){
+        clone()
+    } 
+    var next_empty_treatment_input = document.getElementById("tbodyClone").lastElementChild.childNodes[3].firstChild;
+    var id_string = next_empty_treatment_input.id;
+    var match = id_string.match(regex) || [];
+    var index = match[3];
+    next_empty_treatment_input.value = item_number;
+    description_field = document.getElementById("description-" + index)
+    description_field.value = item_description
+    item_units_field = document.getElementById("units-" + index);
+    item_units_field.value = item_units / 100
+    item_value_field = document.getElementById("value-" + index);
+    item_value_field.value = item_value / 100;
+    item_postvalue_field = document.getElementById("postvalue-" + index);
+    item_postvalue_field.value = item_value / 100;
+}
+
+
 function liveSearch (e) {     
 
     e.preventDefault();
     var key = e.keyCode || e.which;
     if((key === 38 || key === 40) && !e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey){
-        console.log("aarro key pressed ");
+        console.log("arrow key pressed");
         /////////////////////////////////////////////
         //TODO add func for skipping the list down using arrow keys
         /////////////////////////////////////////////
@@ -58,8 +82,6 @@ function liveSearch (e) {
             for (i = 0; i < range; i++) {
                 names[i] = returnData.treatments[i]['description']
             }
-
-
             if (returnData.items.length <= 9){
             var items = [], range = returnData.items.length;
             }
@@ -121,26 +143,12 @@ function liveSearch (e) {
                     wrapper_b.innerHTML += "<input type='hidden' id='items-list-input-value" + z + "'  value='" + value + "'>";
                     b.appendChild(wrapper_b);
                     (function(index){
-                        b.addEventListener("click", function() {
-                            var value_of_value = document.getElementById("value-0").value
-                            if(value_of_value){
-                                clone()
-                            }    
-                            next_empty_treatment_input = document.getElementById("tbodyClone").lastElementChild.childNodes[3].firstChild
-                          
-                            item_num = document.getElementById("items-list-input" + index).value;
-                            next_empty_treatment_input.value = item_num;
-
-                            description_text = document.getElementById("items-list-description" + index).textContent;
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_text;
-
-                            units = document.getElementById("items-list-input-units" + index).value;
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].value = units / 100;
-
-                            value = document.getElementById("items-list-input-value" + index).value;
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].value = value / 100;
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[11].childNodes[0].value = value / 100;
-
+                        b.addEventListener("click", function() {           
+                            item_number = document.getElementById("items-list-input" + index).value;
+                            item_description = document.getElementById("items-list-description" + index).textContent;
+                            item_units = document.getElementById("items-list-input-units" + index).value;
+                            item_value = document.getElementById("items-list-input-value" + index).value;
+                            insertSelection(item_number, item_description, item_units, item_value)
                             closeAllLists();
                         })
                     })(z)
@@ -233,32 +241,11 @@ function liveSearch (e) {
 
                         (function(index){
                                 paragraph_field.addEventListener("click", function() {
-
-                                    //TODO this needs a better solution
-                                    var value_of_value = document.getElementById("value-0").value
-                                    if(value_of_value){
-                                        clone()
-                                    } 
-
-                                    next_empty_treatment_input = document.getElementById("tbodyClone").lastElementChild.childNodes[3].firstChild
-
-                                    item_num = document.getElementById("treatment-list-input-procedure" + index).value
-                                    next_empty_treatment_input.value = item_num
-
-                                    description_procedures = document.getElementById("procedure-list-description" + index).textContent;
-                                    next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_procedures
-
-                                    units_procedures = document.getElementById("treatment-list-units-input-procedure" + index).value;
-                                    next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].value = units_procedures / 100
-
-                                    value_procedures = document.getElementById("treatment-list-value-input-procedure" + index).value;
-                                    next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].value = value_procedures / 100
-                                    next_empty_treatment_input.parentNode.parentNode.childNodes[11].childNodes[0].value = value_procedures / 100
-
-                                    next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].style.display = "block";
-                                    next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].style.display = "block";
-                                    next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].style.display = "block";
-
+                                    item_number = document.getElementById("treatment-list-input-procedure" + index).value
+                                    item_description = document.getElementById("procedure-list-description" + index).textContent;
+                                    item_units = document.getElementById("treatment-list-units-input-procedure" + index).value;
+                                    item_value = document.getElementById("treatment-list-value-input-procedure" + index).value;
+                                    insertSelection(item_number, item_description, item_units, item_value)
                                     closeAllLists();
                                 })
                             })(index_treatment_procedure)     
@@ -312,31 +299,11 @@ function liveSearch (e) {
 
                     (function(index){
                         b.addEventListener("click", function() {
-                            var value_of_value = document.getElementById("value-0").value
-                            if(value_of_value){
-                                clone()
-                            }      
-                            next_empty_treatment_input = document.getElementById("tbodyClone").lastElementChild.childNodes[3].firstChild
-
-                            description_text = document.getElementById("treatment-list-description"+ index).textContent;
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_text
-
-                            item_num = document.getElementById("treatment-list-input" + index).value
-                            next_empty_treatment_input.value = item_num
-
-
-                            var units_procedures = document.getElementById("treatment-list-units-input"+ index).value;
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].value = units_procedures / 100
-
-                            value_cent = document.getElementById("treatment-list-value-input" + index).value;
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].value = value_cent / 100
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[11].childNodes[0].value = value_cent / 100
-                            
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].style.display = "block";
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].style.display = "block";
-                            next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].style.display = "block";
-                            
-
+                            var item_number = document.getElementById("treatment-list-input" + index).value
+                            var item_description = document.getElementById("treatment-list-description"+ index).textContent;
+                            var item_units = document.getElementById("treatment-list-units-input"+ index).value;
+                            var item_value = document.getElementById("treatment-list-value-input" + index).value;
+                            insertSelection(item_number, item_description, item_units, item_value)
                             closeAllLists();
                         })
                     })(i)
@@ -421,31 +388,11 @@ function liveSearch (e) {
                             
                             (function(index){
                                     paragraph_field.addEventListener("click", function() {
-                                        var value_of_value = document.getElementById("value-0").value
-                                        if(value_of_value){
-                                            clone()
-                                        } 
-                                        next_empty_treatment_input = document.getElementById("tbodyClone").lastElementChild.childNodes[3].firstChild
-
-                                        item_num = document.getElementById("category-list-input-items" + index).value
-                                        next_empty_treatment_input.value = item_num
-
-                                        description_categories = document.getElementById("category-list-description" + index).textContent;
-                                        next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].value = description_categories
-
-                                        var units_item = document.getElementById("category-list-input-units" + index).value;
-                                        next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].value = units_item / 100
-
-                                        var value_item = document.getElementById("category-list-input-value" + index).value;
-                                        next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].value = value_item / 100
-                                        next_empty_treatment_input.parentNode.parentNode.childNodes[11].childNodes[0].value = value_item / 100
-
-                                        
-                                        
-
-                                        next_empty_treatment_input.parentNode.parentNode.childNodes[5].childNodes[0].style.display = "block";
-                                        next_empty_treatment_input.parentNode.parentNode.childNodes[7].childNodes[0].style.display = "block";
-                                        next_empty_treatment_input.parentNode.parentNode.childNodes[9].childNodes[0].style.display = "block";
+                                        var item_number = document.getElementById("category-list-input-items" + index).value
+                                        var item_description = document.getElementById("category-list-description" + index).textContent;
+                                        var item_units = document.getElementById("category-list-input-units" + index).value;
+                                        var item_value = document.getElementById("category-list-input-value" + index).value;
+                                        insertSelection(item_number, item_description, item_units, item_value)
                                         closeAllLists();
                                     })
                                 })(x);     

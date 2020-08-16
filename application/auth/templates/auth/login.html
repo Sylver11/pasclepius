@@ -28,12 +28,12 @@
                 <img  class="mb-4" src="{{ url_for('static', filename='img/green-leaf.png') }}" alt="" width="72" height="72">
                 <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
                 {{ form.email.label(for="email",class="sr-only") }}
-                {{ form.email(class_="form-control") }}
+                {{ form.email(class_="form-control", placeholder="Email") }}
                 {% for error in form.email.errors %}
                     <span style="color: red;">{{ error }}</span>
                 {% endfor %}
                 {{ form.password.label(for="password", class="sr-only") }}
-                {{ form.password(class_="form-control") }}
+                {{ form.password(class_="form-control", placeholder="Password") }}
                 <div class="checkbox mb-3">
                         {{ form.remember_me }}
                         {{ form.remember_me.label }}

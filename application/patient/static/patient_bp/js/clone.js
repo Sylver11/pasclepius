@@ -28,20 +28,16 @@ function clone() {
                 this.remove();
              } 
         })
-    cloneIndex++;
+    
     if ($(".clonedInput").length == 1) {
         $('.remove').hide();
     } else {
         $('.remove').show();
     }
-        $('table').find('tr').each(function(i, v) {
-            $(v).find('span.num').text(i);
-           
-        });
-
-    $('.popover-dismiss').popover({
-            trigger: 'focus'
-    })
-    $('[data-toggle="popover"]').popover();
-    // $(document).scrollTop($(document).height());
+    $('table').find('tr').each(function(i, v) {
+        $(v).find('span.num').text(i);    
+    });
+    popOver();
+    
+      cloneIndex++;
 }

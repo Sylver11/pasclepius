@@ -33,6 +33,7 @@ function populatePatient(){
             var form_group = document.createElement("DIV");
             form_group.className += "form-group ";
             form_group.className += "col-md-4";
+            form_group.style.marginBottom = "0";
             form_row_hospitial.appendChild(form_group);
 
             var label = document.createElement("Label");
@@ -53,6 +54,7 @@ function populatePatient(){
             
             var form_group = document.createElement("DIV");
             form_group.className += "form-group ";
+            form_group.style.marginBottom = "0";
 
             var label = document.createElement("Label");
             label.htmlFor = key;

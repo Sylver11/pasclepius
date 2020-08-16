@@ -51,9 +51,37 @@ for (let i = 0; i < invoices.length; i++) {
 
 
             var card_header = document.createElement("DIV");
-            card_header.textContent = element['patient_name'];
             card_header.classList.add("card-header");
             card.appendChild(card_header);
+
+            var card_header_text = document.createElement("P");
+            card_header_text.textContent = element['patient_name'];
+            card_header_text.style.display =  "inline-block";
+            card_header_text.style.margin = "0"
+            card_header.appendChild(card_header_text);
+            
+            var popover_button = document.createElement("I");
+            popover_button.setAttribute("title", "Treatments:");
+            popover_button.setAttribute("data-trigger", "hover");
+            popover_button.setAttribute("data-toggle", "popover");
+            popover_button.setAttribute("data-html", "true");
+            popover_button.classList.add("fa");
+            popover_button.classList.add("fa-info-circle");
+            popover_button.style.float ="right";
+            var html_treatment_list = "<ul>";
+            for (i = 0; i < invoice_items.length; i++) {
+                var li = "<li>" + invoice_items[i]['description'] + "</li>"
+                html_treatment_list += li;
+            }
+            html_treatment_list += "</ul>";
+            popover_button.setAttribute("data-content", html_treatment_list);        
+            card_header.appendChild(popover_button);
+
+            $('.popover-dismiss').popover({
+                trigger: 'focus'
+            })
+            $('[data-toggle="popover"]').popover();
+
 
             var card_body= document.createElement("DIV");
             card_body.classList.add("card-body");
@@ -143,34 +171,8 @@ for (let i = 0; i < invoices.length; i++) {
                 }
                 dynamic.apply(this, criteria);  
             });   
-
-
-            var popover_button = document.createElement("A");
-            popover_button.textContent = "Show treatments";
-            popover_button.setAttribute("role", "button");
-            popover_button.setAttribute("title", "Treatments:");
-            popover_button.setAttribute("data-trigger", "focus");
-            popover_button.setAttribute("tabindex", "0");
-            popover_button.setAttribute("data-toggle", "popover");
-            popover_button.setAttribute("data-html", "true");
-            popover_button.classList.add("btn");
-            popover_button.classList.add("btn-secondary");
-            popover_button.classList.add("text-white");
-
-            var html_treatment_list = "<ul>";
-            for (i = 0; i < invoice_items.length; i++) {
-                var li = "<li>" + invoice_items[i]['description'] + "</li>"
-                html_treatment_list += li;
-            }
-            html_treatment_list += "</ul>";
-            popover_button.setAttribute("data-content", html_treatment_list);        
+       
             card_body.appendChild(continue_button);
-            card_body.appendChild(popover_button);
-
-            $('.popover-dismiss').popover({
-                trigger: 'focus'
-            })
-            $('[data-toggle="popover"]').popover();
 
         });
     }

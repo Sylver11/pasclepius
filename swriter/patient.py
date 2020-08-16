@@ -14,7 +14,6 @@ def patientTable(doc, text, cursor, patient):
     cursor.setPropertyValue( "CharHeight", 18.0 )
     text.insertString( cursor, "Invoice", 0 )
     middle_table = doc.createInstance( "com.sun.star.text.TextTable" )
-    print(patient['medical_aid'])
     if (patient['medical_aid'] == 'mva'):
         middle_table.initialize(2,3)
         middle_table.setName('patient_table')

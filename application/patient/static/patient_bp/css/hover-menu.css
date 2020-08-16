@@ -41,3 +41,35 @@
 
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 .show {display:block;}
+
+.popover {
+  max-width: 500px;
+}
+
+/* .popover{
+  max-width: 100%; /* Max Width of the popover (depending on the container!) */
+/* } */ 
+
+/* .info_button {
+  position: absolute; 
+        top: 0; 
+        border-radius: 5px; 
+        right: 0px; 
+        z-index: 2; 
+        border: none; 
+        top: 2px; 
+        height: 30px; 
+        cursor: pointer; 
+        color: white; 
+        background-color: #1e90ff; 
+        transform: translateX(2px);
+}
+
+.description {
+  margin: 0px; 
+        padding: 0px; 
+        width: 100%; 
+        outline: none; 
+        height: 30px; 
+        border-radius: 5px;
+} */

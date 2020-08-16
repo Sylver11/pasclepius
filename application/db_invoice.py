@@ -107,7 +107,6 @@ def queryInvoices(uuid, c_option, r_option, focus, order, start, range):
     invoices = cursor.fetchall()
     cursor.close()
     conn.close()
-    print(invoices)
     return invoices
 
 def queryR(uuid, c_option):

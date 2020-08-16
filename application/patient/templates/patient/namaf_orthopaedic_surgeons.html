@@ -13,12 +13,12 @@
             <table style="width:100%">
                 <colgroup>
                     <col span="1" style="width: 3%;">
-                    <col span="1" style="width: 7%;">
+                    <col span="1" style="width: 10%;">
                     <col span="1" style="width: 40%;">
-                    <col span="1" style="width: 7%;">
-                    <col span="1" style="width: 12%;">
-                    <col span="1" style="width: 12%;">
-                    <col span="1" style="width: 20%;">
+                    <col span="1" style="width: 10%;">
+                    <col span="1" style="width: 15%;">
+                    <col span="1" style="width: 15%;">
+                    <col span="1" style="width: 10%;">
                  </colgroup>
                  <thead>
                     <tr>
@@ -34,15 +34,20 @@
                 <tbody class="tbodyClone" id="tbodyClone">
                     <tr id="clonedInput0" class="clonedInput">
                         <th id="row-0" scope="row"><span class="num">1</span></th>
-                        <td>{{  form.treatments(style='width:100%',id='treatment-0', class='treatment_orthopaedic_surgeons')  }}</td>
-                        <td>{{  form.description(style='width:100%',id='description-0', class='description')  }}</td>
-                        <td>{{  form.units(style='width:100%',id='units-0', class='units')  }}</td>
-                        <td>{{  form.post_value(style='width:100%',id='postvalue-0', class='postvalue')  }}</td>
+                        <td>{{  form.treatments(style='width:100%',id='treatment-0', class='treatment_orthopaedic_surgeons form-control')  }}</td>
+                        <td>
+                            <div class="input-group">{{  form.description(style='width:100%',id='description-0', class='description form-control')  }}
+                                <div class="input-group-prepend">    
+                                    <span class="input-group-text"><i class="fa fa-info-circle info_treatment" id="infofavi-0" aria-hidden="true"></i></span>   
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{  form.units(style='width:100%',id='units-0', class='units form-control')  }}</td>
+                        <td>{{  form.post_value(style='width:100%',id='postvalue-0', class='postvalue form-control')  }}</td>
                         <td style="display:none">{{  form.value(style='width:100%',id='value-0', class='value')  }}</td>
-                        <td>{{  form.date(style='width:100%',id='date-0', class='date datepicker', placeholder="DD/MM/YYYY")  }}</td>
+                        <td>{{  form.date(style='width:100%',id='date-0', class='form-control date datepicker', placeholder="DD/MM/YYYY")  }}</td>
                         <td style="display:none">{{  form.modifier(id='modifier-0', class='modifier', value='0')  }}</td>
                         <td>
-                            <a data-html="true" id="addon-0"   data-trigger="focus" tabindex= "0" data-toggle= "popover" role="button" class="addon btn btn-secondary text-white">Mark-up</a>
                             <input id="delete-0" value="Delete" type="button" class="remove btn btn-danger">
                         </td>
                     </tr>
@@ -67,16 +72,136 @@ var cloneIndex = 1;
 var regex = /^((?=\S*['-])([a-zA-Z'-]+))([0-9][0-9]?)+$/i;
 var regex_2 = /^(.*)(\d)+$/i;
 
+
+
+function addAmount(event){
+    var index = event.target.id;
+    var original_value = document.getElementById("value-" + index);
+    var post_value = document.getElementById("postvalue-" + index);
+    var new_post_value;
+    if(original_value.value == post_value.value){
+        new_post_value = (original_value.value * 2.25).toFixed(2);
+    }
+    else{
+        new_post_value = original_value.value
+    }
+    
+    post_value.value = new_post_value;
+}
+
+
+
+
+function popOver() {
+    $('.postvalue').popover({
+                trigger: "manual",
+                html: true, 
+                animation: false,
+                sanitize: false,
+                title:'Add markup:',
+                content: function(){ 
+                    var id = $(this).attr('id');
+                    var match = id.match(regex) || [];
+                    var index = match[3]
+                    var value = document.getElementById("value-" + index).value;
+                    var post_value = document.getElementById("postvalue-" + index).value;
+                    var end_string;
+                    if(value != post_value){
+                        end_string = ' class="btn btn-success active" >125%</a></div>'
+                    }
+                    else{
+                        end_string = ' class="btn btn-success">125%</a></div>'
+                    }
+                    var html_string = '<div><a id="' + index + '" onclick="addAmount(event);return false;" href="#" role="button" ' + end_string;
+                    return html_string
+                }
+            })
+            .on("mouseenter", function() {
+            var _this = this;
+            $(this).popover("show");
+            $(".popover").on("mouseleave", function() {
+            $(_this).popover('hide');
+            });
+            }).on("mouseleave", function() {
+                var _this = this;
+                setTimeout(function() {
+                if (!$(".popover:hover").length) {
+                    $(_this).popover("hide");
+                }
+                }, 50);
+            }); 
+}
+
+
+
+
+function details_in_popup(item_number, div_id){
+    $.ajax({
+            type: "GET",
+            url: '/get-value', 
+            data: {item: item_number, tariff: current_invoice["tariff"]},
+            success: function (info) {
+                var info = JSON.parse(info.replace(/\\"/g, '"'));
+                var form = document.createElement("FORM");
+                for (const [key, value] of Object.entries(info)) {
+                    if(value && key != "id" && key != "item" && key != "description" && key != "value_cent" && key != "tariff" && key != "units" ){
+                        var div = document.createElement("DIV");
+                div.className += "form-group ";
+                div.className += "row";
+                div.style.marginBottom = "0";
+                form.appendChild(div);
+
+
+                var label = document.createElement("Label");
+                label.htmlFor = key;
+                label.innerHTML= firstLetterCapitalise(key);  
+                label.className = "col-sm-5" 
+                label.className += " col-form-label";
+                label.style.paddingBottom = "0";
+                label.style.paddingTop = "0";
+                div.appendChild(label);
+
+                var input_div = document.createElement("DIV");
+                input_div.className = "col-sm-10"
+                div.appendChild(input_div);
+
+                var input = document.createElement("INPUT"); 
+                input.value = value;
+                input.name = key;
+                input.id = key;
+                input.disabled = true;
+                input.className = "form-control-plaintext";
+                input.style.paddingBottom = "0";
+                input.style.paddingTop = "0";
+                input.className = "form-control";
+                input.setAttribute("type", "text")
+                input_div.appendChild(input); 
+                    }
+
+                  
+            }          
+            $('#'+div_id).html(form);
+        }
+    })
+    return '<div style="min-height: 450px" id="'+ div_id +'">Loading...</div>';
+}
+
 $(document).ready(function(){
 
-    $('.popover-dismiss').popover({
-                trigger: 'focus'
-    })
-    $('[data-toggle="popover"]').popover({
-    html: true, 
-    title:'Add markup:',
-	content: '<div><a role="button" class="btn btn-success" href="#" class="pull-left">215%</a></div>'
-});
+    $("body").popover({ 
+        selector: '.info_treatment',
+        trigger: 'hover focus',   
+        html: true, 
+        sanitize: false, 
+        content: function(){          
+            var id = $(this).attr('id');
+            var match = id.match(regex) || [];
+            var index = match[3]
+            var item_number = document.getElementById("treatment-" + index).value;
+            var div_id =  "tmp-id-" + $.now();
+            return details_in_popup(item_number, div_id);     
+        }})
+
 
     function remove() {        
         $(this).parents(".clonedInput").remove();
@@ -147,7 +272,8 @@ $(document).ready(function(){
                             treatment_input = document.getElementById("treatment-" + i);
                             description_input = document.getElementById("description-" + i);
                             treatment_input.value = item_number
-                            description_input.value = item_description                
+                            description_input.value = item_description  
+                            
                         }
                     }
                 }
@@ -163,30 +289,30 @@ $(document).ready(function(){
         
 
         for (let i = 0; i < current_invoice.treatments.length; i++) {
-                    const element = current_invoice.treatments[i];
-                    var item_number = element["item"]
-                    var item_description = element["description"]
-                    var item_units = element["units"]
-                    var item_date = element["date"]
-                    var post_item_value = element["post_value_cent"]
-                    var item_value = element["value_cent"]
-                    if(i !== 0){
-                        clone()
-                    }   
-                    $('#postvalue-' + i).val(post_item_value / 100)
-                    $('#value-' + i).val(item_value / 100)
-                    $('#units-' + i).val(item_units / 100)
-                    $('#date-' + i).removeClass('hasDatepicker');
-                    $('#date-' + i).datepicker({dateFormat: 'yy-mm-dd'})
-                    $('#date-' + i).datepicker("setDate", item_date);
+            const element = current_invoice.treatments[i];
+            var item_number = element["item"]
+            var item_description = element["description"]
+            var item_units = element["units"]
+            var item_date = element["date"]
+            var post_item_value = element["post_value_cent"]
+            var item_value = element["value_cent"]
+            if(i !== 0){
+                clone()
+            }   
+            $('#postvalue-' + i).val(post_item_value / 100)
+            $('#value-' + i).val(item_value / 100)
+            $('#units-' + i).val(item_units / 100)
+            $('#date-' + i).removeClass('hasDatepicker');
+            $('#date-' + i).datepicker({dateFormat: 'yy-mm-dd'})
+            $('#date-' + i).datepicker("setDate", item_date);
     
-                    treatment_input = document.getElementById("treatment-" + i);
-                    description_input = document.getElementById("description-" + i);
-                    treatment_input.value = item_number
-                    description_input.value = item_description
-                    
-                             
+            treatment_input = document.getElementById("treatment-" + i);
+            description_input = document.getElementById("description-" + i);
+            treatment_input.value = item_number
+            description_input.value = item_description
+                     
         }
+ 
     '{% endif %}'
 
 })
