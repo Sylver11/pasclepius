@@ -198,16 +198,18 @@ $(document).ready(function() {
     let criteria = ['patient', 'patient_id', '{{ patient_id }}', 'date_created', 'DESC', 0, 10];
     dynamic_continue.apply(this, criteria);
 
+    $(".other_medical_aid").val(request_args['medical_aid'])
+    $(".patient_name").val(request_args['patient_name'])
+    $(".case_number").val(request_args['case_number'])
+    $(".tariff").val(request_args['tariff'])
+    $(".main_member").val(request_args['main_member'])
+    $(".patient_birth_date").val(request_args['patient_birth_date'])
+    $(".medical_number").val(request_args['medical_number'])
+
 
     function dynamic_continue(caller_id, c_option, r_option, focus, order, start, range){
         $( "#continue-invoices" ).load( "/account/all-invoices/" + caller_id + "/" + c_option + "/" + r_option + '/' + focus + '/' + order + '/' + start + '/' + range, function(){
-            $(".other_medical_aid").val(invoices[0]['medical_aid'])
-            $(".patient_name").val(invoices[0]['patient_name'])
-            $(".case_number").val(invoices[0]['case_number'])
-            $(".tariff").val(invoices[0]['tariff'])
-            $(".main_member").val(invoices[0]['main_member'])
-            $(".patient_birth_date").val(invoices[0]['patient_birth_date'])
-            $(".medical_number").val(invoices[0]['medical_number'])
+            if(Object.keys(invoices).length > 1 && invoices.constructor === Object){
             var row_total_count = invoices[0]['rowcounter'];
             var items_per_site = criteria[6];
             var pages = Math.floor(row_total_count / items_per_site)
@@ -229,6 +231,8 @@ $(document).ready(function() {
                 a.textContent = i + 1;
                 li.appendChild(a)
                 ul.appendChild(li);
+            }
+
             }
         });
     }
