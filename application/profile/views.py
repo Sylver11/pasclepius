@@ -1,114 +1,98 @@
 from flask import Blueprint, render_template, Response, request, session, redirect, url_for, send_file, flash
 from flask_login import current_user, login_required, fresh_login_required
-from application.db_users import checkUser, updateUserLayout, updateUserPassword, updateUserPersonal, updateUserPractice, updateUserBanking
-from application.forms import updateBankingForm, updatePracticeForm, updatePasswordForm, updatePersonalForm,  updateLayoutForm
-
+from application.db_users import checkUser, getPractice, updateInvoice, updateUser, updatePractice
+from application.forms import PracticeForm,  UserForm, InvoiceForm
+import json
 
 profile_bp = Blueprint('profile_bp',__name__, template_folder='templates')
 
 
 
-@profile_bp.route('/reset-password', methods=('GET', 'POST'))
+@profile_bp.route('/')
 @fresh_login_required
-def resetPassword():
-    form_password = updatePasswordForm()
-    if request.method == 'POST' and form_password.validate():
-        password = Password()
-        hashed_password = password.set_password(form_password.password.data)
-        status =  updateUserPassword(current_user.id, hashed_password)
-        if status:
-            flash('Password changed succesfully')
-    return render_template('profile/reset_password.html', form_password=form_password,
-            page_title = 'Change password')
+def base():
+    return render_template('profile/base.html', 
+            page_title = 'Edit Profile')
 
 
-@profile_bp.route('/reset-personal', methods=('GET', 'POST'))
+@profile_bp.route('/personal', methods=('GET', 'POST'))
 @login_required
 def resetPersonal():
     data = checkUser(current_user.id)
-    form_personal = updatePersonalForm()
+    form_personal = UserForm()
     if request.method == 'POST' and form_personal.validate():
-        status = updateUserPersonal(current_user.id, form_personal.first_name.data,
-                form_personal.second_name.data, form_personal.cell.data,
-                form_personal.pob.data, form_personal.city.data,
-                form_personal.country.data, form_personal.qualification.data,
-                form_personal.title.data, form_personal.phone.data,
-                form_personal.fax.data, form_personal.specialisation.data)
+        status = updateUser(current_user.id, form_personal.first_name.data,
+                form_personal.second_name.data)
         if status:
             flash('Personal data updated')
-    return render_template('profile/reset_personal.html',
-            form_personal = form_personal,
-            title = data['title'],
-            first_name = data['first_name'],
-            second_name = data['second_name'],
-            phone = data['phone'],
-            cell = data['cell'],
-            fax = data['fax'],
-            pob = data['pob'],
-            city = data['city'],
-            country = data['country'],
-            qualification = data['qualification'],
-            specialisation = data['specialisation'],
-            page_title = 'Change personal')
+    return render_template('profile/personal.html',
+           form_personal = form_personal,
+                first_name = data['first_name'],
+                second_name = data['second_name'],
+                page_title = 'Change personal')
 
 
-@profile_bp.route('/reset-practice', methods=('GET', 'POST'))
+@profile_bp.route('/practice', methods=('GET', 'POST'))
 @login_required
 def resetPractice():
-    data = checkUser(current_user.id)
-    form_practice = updatePracticeForm()
-    if request.method == 'POST' and form_practice.validate():
-        status = updateUserPractice(current_user.id,
-                form_practice.practice_name.data,
-                form_practice.practice_number.data,
-                form_practice.hpcna_number.data)
+    practice = getPractice(practice_uuid = current_user.practice_uuid)
+    form_practice = PracticeForm()
+    if request.method == 'POST':
+        status = updatePractice(current_user.practice_uuid,
+                request.form.get('practice_email'),
+                request.form.get('practice_name'),
+                request.form.get('practice_number'),
+                request.form.get('hpcna_number'),
+                request.form.get('cell'),
+                request.form.get('pob'),
+                request.form.get('city'),
+                request.form.get('country'),
+                request.form.get('qualification'),
+                request.form.get('phone'),
+                request.form.get('fax'),
+                request.form.get('specialisation'),
+                request.form.get('bank_holder'),
+                request.form.get('bank_account'),
+                request.form.get('bank_branch'),
+                request.form.get('bank'))
         if status:
-            flash('Practice data updated')
-    return render_template('profile/reset_practice.html',
+            return json.dumps("success")
+    return render_template('profile/practice.html',
             form_practice = form_practice,
-            practice_name = data['practice_name'],
-            practice_number = data['practice_number'],
-            hpcna_number = data['hpcna_number'],
+            practice_email = practice['practice_email'],
+            practice_name = practice['practice_name'],
+            practice_number = practice['practice_number'],
+            hpcna_number = practice['hpcna_number'],
+            bank_account = practice['bank_account'],
+            bank_holder = practice['bank_holder'],
+            bank_branch = practice['bank_branch'],
+            bank = practice['bank'],
+            phone = practice['phone'],
+            cell = practice['cell'],
+            fax = practice['fax'],
+            pob = practice['pob'],
+            city = practice['city'],
+            country = practice['country'],
+            qualification = practice['qualification'],
+            specialisation = practice['specialisation'],
             page_title = 'Change practice info')
 
 
-@profile_bp.route('/reset-banking', methods=('GET', 'POST'))
-@login_required
-def resetBanking():
-    data = checkUser(current_user.id)
-    form_banking = updateBankingForm()
-    if request.method == 'POST' and form_banking.validate():
-        status = updateUserBanking(current_user.id,
-                form_banking.bank_holder.data,
-                form_banking.bank_account.data,
-                form_banking.bank_branch.data,
-                form_banking.bank.data)
-        if status:
-            flash('Banking data updated')
-    return render_template('profile/reset_banking.html',
-            form_banking = form_banking,
-            bank_holder = data['bank_holder'],
-            bank_account = data['bank_account'],
-            bank_branch = data['bank_branch'],
-            bank = data['bank'],
-            page_title = 'Change banking info')
-
-
-@profile_bp.route('/reset-layout', methods=('GET', 'POST'))
+@profile_bp.route('/invoice', methods=('GET', 'POST'))
 @login_required
 def resetLayout():
-    data = checkUser(current_user.id)
-    layout_code = data['invoice_layout']
-    form_layout = updateLayoutForm()
+    practice = getPractice(practice_uuid = current_user.practice_uuid)
+    layout_code = practice['invoice_layout']
+    form_layout = InvoiceForm()
     if request.method == 'POST' and form_layout.validate():
-        status = updateUserLayout(current_user.id,
+        status = updateInvoice(current_user.id,
                form_layout.phone.data,
                form_layout.fax.data,
                form_layout.hospital.data,
                form_layout.diagnosis.data)
         if status:
            flash('Invoice Layout updated')
-    return render_template('profile/reset_layout.html',
+    return render_template('profile/invoice.html',
             form_layout = form_layout,
             layout_code = layout_code,
             page_title = 'Change Invoice Layout')

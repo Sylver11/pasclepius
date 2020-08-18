@@ -1,47 +1,16 @@
 from application.db_utils import pool
-from datetime import datetime
 
 def checkUser(email):
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute("""SELECT password, uuid_text, email, title, first_name, second_name, phone, cell, fax, pob, city, country, bank_holder,
-    bank_account, bank_branch, bank, practice_name, practice_number,
-    hpcna_number, qualification, specialisation, invoice_layout FROM users
-    WHERE email =  %s""",(email))
+    cursor.execute("""SELECT * FROM users WHERE email =  %s""",(email))
     data = cursor.fetchone()
     cursor.close()
     conn.close()
     return data
 
 
-def checkDuplicateEmail(email):
-    sql_check_duplicate = """SELECT * FROM users WHERE
-    email='{}'""".format(email)
-    conn = pool.connection()
-    cursor = conn.cursor()
-    cursor.execute(sql_check_duplicate)
-    rows = cursor.fetchall()
-    if not rows:
-        status = False
-    else:
-        status = True
-    cursor.close()
-    conn.close()
-    return status
-
-
-def updateUserPassword(email, password):
-    sql = """UPDATE users SET password = '{}' WHERE
-    email = '{}'""".format(password, email)
-    conn = pool.connection()
-    cursor = conn.cursor()
-    cursor.execute(sql)
-    cursor.close()
-    conn.close()
-    status = True
-    return status
-
-def updateUserLayout(email, phone, fax, hospital, diagnosis):
+def updateInvoice(email, phone, fax, hospital, diagnosis):
     if phone and fax and hospital and diagnosis:
         layout_code = 9
     elif phone and fax and hospital:
@@ -76,40 +45,16 @@ def updateUserLayout(email, phone, fax, hospital, diagnosis):
     status = True
     return status
 
-def updateUserPractice(email, practice_name, practice_number, hpcna_number):
-    sql = """ UPDATE users SET practice_name = '{}', practice_number = '{}',
-    hpcna_number = '{}' WHERE email = '{}'""".format(practice_name,
-            practice_number, hpcna_number, email)
-    conn = pool.connection()
-    cursor = conn.cursor()
-    cursor.execute(sql)
-    cursor.close()
-    conn.close()
-    status = True
-    return status
-
-
-def updateUserBanking(email, bank_holder, bank_account, bank_branch, bank):
-    sql = """ UPDATE users SET bank_holder = '{}', bank_account = '{}',
-    bank_branch = '{}', bank = '{}' WHERE email = '{}'""".format(bank_holder,
-            bank_account, bank_branch, bank, email)
-    conn = pool.connection()
-    cursor = conn.cursor()
-    cursor.execute(sql)
-    cursor.close()
-    conn.close()
-    status = True
-    return status
-
-
-
-def updateUserPersonal(email, first_name, second_name, cell, pob, city,
-        country,qualification,title=None,phone=None,fax=None,specialisation=None):
-    sql = """UPDATE users SET first_name = '{}', second_name = '{}', cell =
-    '{}', pob = '{}', city = '{}', country = '{}', qualification = '{}', title
-    = '{}', phone = '{}', fax = '{}', specialisation = '{}' WHERE
-    email = '{}'""".format(first_name, second_name, cell, pob, city, country,
-            qualification, title, phone, fax, specialisation,  email)
+def updatePractice(practice_uuid, practice_email, practice_name,
+        practice_number, hpcna_number, cell, pob, city, country, qualification,
+        phone, fax, specialisation, bank_holder, bank_account, bank_branch, bank):
+    sql = """ UPDATE practices SET practice_name = '{}', practice_number = '{}',
+    hpcna_number = '{}', practice_email = '{}', cell = '{}', pob = '{}', city =
+    '{}', country = '{}',qualification = '{}',  phone = '{}', fax = '{}',
+    specialisation = '{}', bank_holder = '{}', bank_account = '{}', bank_branch = '{}', bank = '{}' WHERE practice_uuid = '{}'""".format(practice_name,
+            practice_number, hpcna_number, practice_email, cell, pob, city, country,
+            qualification, phone, fax, specialisation, bank_holder, bank_account,
+            bank_branch, bank, practice_uuid)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -120,19 +65,73 @@ def updateUserPersonal(email, first_name, second_name, cell, pob, city,
 
 
 
-def addUser(title, first_name, second_name, email, password, phone, cell, fax, pob, city, country, bank_holder, bank_account, bank,
-            bank_branch, practice_number, practice_name, hpcna_number,
-            qualification, specialisation):
+def updateUser(email, first_name, second_name):
+    sql = """UPDATE users SET first_name = '{}', second_name = '{}' WHERE
+    email = '{}'""".format(first_name, second_name, email)
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute("""INSERT INTO users (uuid_bin, title, first_name, second_name, email, password, phone,
-    cell, fax, pob, city, country,
-    bank_holder, bank_account, bank,
-    bank_branch, practice_number, practice_name,
-    hpcna_number, qualification, specialisation)
-    VALUES(unhex(replace(uuid(),'-','')),%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    """,(title, first_name, second_name,
-            email, password, phone, cell, fax,
+    cursor.execute(sql)
+    cursor.close()
+    conn.close()
+    status = True
+    return status
+
+
+
+def addUser(first_name, second_name, email):
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute("""INSERT INTO users (uuid_bin, first_name, second_name, email)
+    VALUES(unhex(replace(uuid(),'-','')),%s,%s,%s)
+    """,(first_name, second_name, email))
+    status = True
+    cursor.close()
+    conn.close()
+    return status
+
+
+
+def getPractice(practice_admin = '', practice_uuid = ''):
+    conn = pool.connection()
+    cursor = conn.cursor()
+    sql = ''
+    if practice_admin:
+        sql = """SELECT * FROM practices WHERE practice_admin =
+        '{}'""".format(practice_admin)
+    else:
+        sql = """ SELECT * FROM practices WHERE practice_uuid =
+        '{}'""".format(practice_uuid)
+
+    cursor.execute(sql)
+    practice = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return practice
+
+
+def mergeUserPractice(practice_uuid, rank, email):
+    conn = pool.connection()
+    cursor = conn.cursor()
+    sql = """UPDATE users SET practice_uuid = '{}', practice_rank = '{}' WHERE
+    email = '{}'""".format(practice_uuid, rank, email)
+    cursor.execute(sql)
+    cursor.close()
+    conn.close()
+    status = True
+    return status
+
+
+def addPractice(email, phone, practice_email, cell, fax, pob, city, country, bank_holder, bank_account, bank, bank_branch, practice_number, practice_name, hpcna_number, qualification, specialisation):
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute("""INSERT INTO practices (uuid_bin, practice_admin,
+        practice_email, phone,
+        cell, fax, pob, city, country,
+        bank_holder, bank_account, bank,
+        bank_branch, practice_number, practice_name,
+        hpcna_number, qualification, specialisation)
+        VALUES(unhex(replace(uuid(),'-','')),%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    """,(email, practice_email, phone, cell, fax,
             pob, city, country, bank_holder, bank_account,
             bank, bank_branch, practice_number, practice_name, hpcna_number,
             qualification, specialisation))

@@ -1,5 +1,4 @@
 from flask_wtf import FlaskForm
-import email_validator
 from wtforms import BooleanField, StringField, PasswordField, IntegerField, TextField, SubmitField, validators, FieldList, FormField, FloatField, DateField, DecimalField, TextAreaField
 from wtforms.fields.html5 import DecimalField
 from wtforms_components.fields import SelectField
@@ -8,7 +7,6 @@ from wtforms.widgets.html5 import NumberInput
 from wtforms.widgets import TextArea, CheckboxInput
 from wtforms import Form as NoCsrfForm
 from application.db_tariffs import getTreatments, getAllTariffs
-from application.db_users import checkDuplicateEmail
 
 def getTreatmentForm(tariff = None):
     class Treatment(FlaskForm):
@@ -85,20 +83,16 @@ def getTreatmentForm(tariff = None):
     return Treatment()
 
 
-class RegistrationForm(FlaskForm):
-    title = SelectField(u'Title', choices =
-                        [('',''),("Dr","Dr"),("Prof Dr","Prof Dr")],
-                        default = '')
+class UserForm(FlaskForm):
     first_name =  StringField('First name', validators=[DataRequired(Length(min=4,
                                                                      max=35))])
     second_name =  StringField('Second name', validators=[DataRequired(Length(min=4,
                                                                      max=35))])
     email = StringField('Email', validators=[DataRequired(),Email(message='Enter a valid email.')])
-    password = PasswordField('New Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords must match')
-    ])
-    confirm = PasswordField('Repeat Password')
+    submit = SubmitField('Update Personal Data')
+
+class PracticeForm(FlaskForm):
+    practice_email = StringField('Practice Email')
     phone = StringField('Landline number')
     cell =  StringField('Cell number', validators=[DataRequired()])
     fax = StringField('Fax number')
@@ -116,68 +110,25 @@ class RegistrationForm(FlaskForm):
     qualification = StringField('Qualification', validators=[DataRequired()])
     specialisation = StringField('Specialisation')
 
-    def validate_email(self, field):
-        status = checkDuplicateEmail(field.data)
-        if status:
-            raise ValidationError('Please use a different email address.')
-
-
-
-class updatePracticeForm(FlaskForm):
-    practice_number = StringField('Practice number', validators=[DataRequired()])
-    practice_name = StringField('Practice name', validators=[DataRequired()])
-    hpcna_number = StringField('HPCNA number', validators=[DataRequired()])
     submit = SubmitField('Update Practice Data')
 
-class updatePersonalForm(FlaskForm):
-    title = SelectField(u'Title', choices =
-                        [('',''),("Dr","Dr"),("Prof Dr","Prof Dr")])
-    first_name = StringField('First name', validators=[DataRequired(Length(min=4,
-                                                                     max=35))])
-    second_name = StringField('Second name', validators=[DataRequired(Length(min=4,
-                                                                     max=35))])
-    phone = StringField('Landline number')
-    cell =  StringField('Cell number', validators=[DataRequired()])
-    fax = StringField('Fax number')
-    pob = StringField('PO Box', validators=[DataRequired()])
-    city = StringField('City', validators=[DataRequired()])
-    country = StringField('Country', validators=[DataRequired()])
-    qualification = StringField('Qualification', validators=[DataRequired()])
-    specialisation = StringField('Specialisation') 
-    submit = SubmitField('Update Personal Data')
+#class updatePersonalForm(FlaskForm):
+#    title = SelectField(u'Title', choices =
+#                        [('',''),("Dr","Dr"),("Prof Dr","Prof Dr")])
+#    first_name = StringField('First name', validators=[DataRequired(Length(min=4,
+#                                                                     max=35))])
+#    second_name = StringField('Second name', validators=[DataRequired(Length(min=4,
+#                                                                     max=35))])
+#    submit = SubmitField('Update Personal Data')
 
 
-class updateBankingForm(FlaskForm):
-    bank = StringField('Bank', validators=[DataRequired()])
-    bank_branch = StringField('Branch number',
-                              validators=[DataRequired()])
-    bank_account = StringField('Account number', validators=[DataRequired()])
-    bank_holder =  StringField('Account holder', validators=[DataRequired()])
-    submit = SubmitField('Update Banking details')
-
-class updatePasswordForm(FlaskForm):
-    password = PasswordField('New Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords must match')
-    ])
-    confirm = PasswordField('Repeat Password')
-    submit = SubmitField('Update Password')
-
-class updateLayoutForm(FlaskForm):
+class InvoiceForm(FlaskForm):
     phone =  BooleanField('Landline')
     fax = BooleanField('Fax')
     hospital = BooleanField('Hospital & Admission Information')
     diagnosis = BooleanField('Diagnosis & Procedure')
     submit = SubmitField('Update Invoice Layout')
 
-class LoginForm(FlaskForm):
-    """User Login Form."""
-    email = StringField('Email', validators=[DataRequired(),
-                                             Email(message='Enter a valid email')],
-                                             render_kw={'autofocus': True})
-    password = PasswordField('Password', validators=[DataRequired()])
-    remember_me = BooleanField('Remember me for 4 weeks')
-    submit = SubmitField('Log In')
 
 class Patient_mva(FlaskForm):
     medical_aid = StringField('Medical Aid')

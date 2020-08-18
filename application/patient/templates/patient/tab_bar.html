@@ -261,6 +261,7 @@ $(document).ready(function(){
         data: {work_type: "patient_tab"},
         success: function (patient) {
             patient = JSON.parse(patient);
+            if(!Array.isArray(patient) || patient.length !==0){
             request_args  = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
 
             if(Object.keys(request_args).length > 1 && request_args.constructor === Object){
@@ -314,6 +315,7 @@ $(document).ready(function(){
                 referenceNode.parentNode.insertBefore(favi, referenceNode.nextSibling);      
                 referenceNode.parentNode.insertBefore(patient_button, referenceNode.nextSibling);       
           }
+        }
         }
       })
 

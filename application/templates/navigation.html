@@ -10,28 +10,36 @@
           <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
         </li>
         {% if current_user.is_authenticated %}
-        <li class="nav-item patient">
-          <a class="nav-link" href="/patient">Patient</a>
-        </li>
-        <li class="nav-item files">
-          <a class="nav-link" href="/files">Files</a>
-        </li>
-        <li class="nav-item account">
-          <a class="nav-link" href="/account">Account</a>
-        </li>
-        <li class="nav-item profile">
-          <a class="nav-link" href="/profile/reset-personal">{{ current_user.first_name }}</a>
-        </li>
-        <li class="nav-item logout">
-          <a class="nav-link" href="/auth/logout">Logout</a>
-        </li>
+
+            {% if current_user.practice_uuid %}
+              <li class="nav-item patient">
+                <a class="nav-link" href="/patient">Patient</a>
+              </li>
+              <li class="nav-item files">
+                <a class="nav-link" href="/files">Files</a>
+              </li>
+              <li class="nav-item account">
+                <a class="nav-link" href="/account">Account</a>
+              </li>
+              <li class="nav-item profile">
+                <a class="nav-link" href="/profile">{{ current_user.first_name }}</a>
+              </li>         
+            {% else %}
+              <li class="nav-item setup">
+                <a class="nav-link" href="/setup">Setup</a>
+              </li>
+            {% endif %}
+            <li class="nav-item logout">
+              <a class="nav-link" href="/auth/logout">Logout</a>
+            </li>
         {% else %}
         <li class="nav-item login">
           <a class="nav-link" href="/auth/login">Login</a>
         </li>
         {% endif %}
       </ul>
-      {% if current_user.is_authenticated %}
+      {% if current_user.is_authenticated and current_user.practice_uuid%}
+
       <form class="search form-inline my-2 my-lg-0" autocomplete="off">
         <input id="patient_name" class="form-control mr-sm-2" name="patient_name" type="search" placeholder="Search patients">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
@@ -43,6 +51,9 @@
     $(document).ready(function(){
       if(window.location.href.match('patient')){
         $('.patient').addClass('active');
+      }
+      else if (window.location.href.match('setup')){
+        $('.setup').addClass('active');
       }
       else if (window.location.href.match('account')){
         $('.account').addClass('active');
@@ -58,21 +69,6 @@
       }
       else if(window.location.href.match('home')) {
         $('.home').addClass('active');
-      }
-      else if(window.location.href.match('profile/reset-personal')){
-        $('.profile').addClass('active');
-      }
-      else if (window.location.href.match('profile/reset-password')){
-        $('.profile').addClass('active');
-      }
-      else if (window.location.href.match('profile/reset-practice')){
-        $('.profile').addClass('active');
-      }
-      else if (window.location.href.match('profile/reset-layout')){
-        $('.profile').addClass('active');
-      }
-      else if (window.location.href.match('profile/reset-banking')){
-        $('.profile').addClass('active');
       }
       else{
         $('.home').addClass('active');

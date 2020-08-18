@@ -1,0 +1,33 @@
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+            <div class="tab-pane" id="personal">
+                <form method="post">
+                    <div class="form-row">
+                        {{ form_personal.hidden_tag() }}
+                        <div class="form-group col-md-5">
+                            {{ form_personal.first_name.label }}
+                            {{ form_personal.first_name(value=first_name, class="form-control") }}
+                        </div>
+                        <div class="form-group col-md-5">
+                            {{ form_personal.second_name.label }}
+                            {{ form_personal.second_name(value=second_name, class="form-control") }}
+                        </div>
+                    </div>
+                    
+                        {{ form_personal.submit }}
+                </form> 
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // $("#title").val('{{ title }}').attr("selected","selected");
+</script>
+

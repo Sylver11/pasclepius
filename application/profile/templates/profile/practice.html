@@ -1,0 +1,96 @@
+<form id="practice_form">
+    <div class="form-group">
+        <label for="practice_name" class="required">Practice Name</label>
+        <input name="practice_name" id="practice_name" class="form-control w-25 p-3" value='{{practice_name}}' type="text">  
+    </div>   
+    <div class="form-group">
+        <label for="practice_number" class="required">Practice Number</label>
+                        <input name="practice_number"  id="practice_number" value='{{practice_number}}' class="form-control w-25 p-3" type="text" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="hpcna_number">HPCNA Number</label>
+                        <input name="hpcna_number" id="hpcna_number" value='{{hpcna_number}}' class="form-control w-25 p-3" type="text">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="practice_email">Practice Email</label>
+                            <input name="practice_email" id="practice_email" value='{{practice_email}}' class="form-control" type="text">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="phone">Landline Number</label>
+                            <input name="phone" id="phone" value='{{phone}}' class="form-control" type="text">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="cell">Cell Phone Number</label>
+                            <input name="cell" id="cell" value='{{cell}}' class="form-control" type="text">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="fax">Fax Number</label>
+                            <input name="fax" id="fax" value='{{fax}}' class="form-control" type="text">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="pob">PO Box</label>
+                            <input name="pob" id="pob" value='{{pob}}' class="form-control" type="text">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="city">City</label>
+                            <input name="city" id="city" value='{{city}}' class="form-control" type="text">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="country">Country</label>
+                            <input name="country" id="country" value='{{country}}' class="form-control" type="text">
+                        </div>
+                    </div>
+                        <div class="form-group">
+                            <label for="qualification">Qualification</label>
+                            <input name="qualification" id="qualification" value='{{qualification}}' class="form-control" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="specialisation">Specialisation</label>
+                            <input name="specialisation" id="specialisation" value='{{specialisation}}' class="form-control" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="bank_holder">Bank Holder</label>
+                            <input name="bank_holder" id="bank_holder" value='{{bank_holder}}' class="form-control w-25 p-3" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="bank_account">Bank Account</label>
+                            <input name="bank_account" id="bank_account" value='{{bank_account}}' class="form-control w-25 p-3" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="bank_branch">Bank Branch</label>
+                            <input name="bank_branch" id="bank_branch" value='{{bank_branch}}' class="form-control w-25 p-3" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="bank">Bank</label> 
+                            <input name="bank" id="bank" value='{{bank}}' class="form-control w-25 p-3" type="text">   
+                        </div>
+    <input type="submit" value="Update Practice">
+</form> 
+<script>
+$("body").on("submit", "#practice_form", function(e){
+    e.preventDefault();
+    var form = $(this);
+    console.log($(this).serialize());
+    console.log("form submitted ");
+    $.ajax({
+        type: "POST",
+        url: '/profile/practice', 
+        data: form.serialize(),
+        success: function (returnData) {
+            console.log(returnData);
+            // patient = JSON.parse(patient);
+            // patient = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
+        },
+        error: function(xhr, status, error){
+            var errorMessage = xhr.status + ': ' + xhr.statusText;
+            alert('Error - ' + errorMessage);
+        }
+    })
+})
+
+
+</script>
+

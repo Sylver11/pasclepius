@@ -10,14 +10,15 @@ login_manager.login_view = 'auth_bp.login'
 login_manager.refresh_view = 'auth_bp.freshLogin'
 
 from application.models import User
-from application.db_users import checkUser
+from application.db_users import checkUser, getPractice
 
 @login_manager.user_loader
 def load_user(id):
     data = checkUser(id)
+    practice = getPractice(practice_uuid = data['practice_uuid'])
     if data:
         return User(id, data["first_name"], data["uuid_text"],
-                data["practice_name"], data["invoice_layout"])
+                data["practice_uuid"], practice['practice_name'],practice['invoice_layout'])
 
 
 def create_app():

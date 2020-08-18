@@ -11,6 +11,7 @@ def setupTable():
     sql_drop_table_invoice_items = "DROP TABLE IF EXISTS invoice_items"
     sql_drop_table_user_workbench = "DROP TABLE IF EXISTS user_workbench"
     sql_drop_table_patients = "DROP TABLE IF EXISTS patients"
+    sql_drop_table_practice = "DROP TABLE IF EXISTS practices"
 
     sql_create_table_namaf_tariffs = """CREATE TABLE namaf_tariffs  (
         id int(11) NOT NULL AUTO_INCREMENT,
@@ -105,24 +106,43 @@ def setupTable():
                     19,0,'-'),
                 24,0,'-')
             ) virtual,
-        title varchar(255) NOT NULL,
+        title varchar(255),
         first_name varchar(255) NOT NULL,
         second_name varchar(255) NOT NULL,
-        email varchar(100) NOT NULL,
-        password varchar(255) NOT NULL,
-        phone varchar(255),
-        cell varchar(255) NOT NULL,
-        fax varchar(255),
-        pob varchar(255) NOT NULL,
-        city varchar(255) NOT NULL,
-        country varchar(255) NOT NULL,
-        bank_holder varchar(255) NOT NULL,
-        bank_account varchar(255) NOT NULL,
-        bank varchar(255) NOT NULL,
-        bank_branch varchar(255) NOT NULL,
-        practice_number varchar(255) NOT NULL,
+        email varchar(100) NOT NULL UNIQUE,
+        practice_uuid varchar(36),
+        practice_rank varchar(255),
+        created_on DATETIME NOT NULL DEFAULT NOW(),
+        last_active DATETIME NOT NULL DEFAULT NOW(),
+        PRIMARY KEY (id));"""
+
+    sql_create_table_practice = """CREATE TABLE practices (
+        id int(11) NOT NULL AUTO_INCREMENT,
+        uuid_bin binary(16),
+        practice_uuid varchar(36) generated always as
+            (insert(
+                insert(
+                    insert(
+                        insert(hex(uuid_bin),9,0,'-'),
+                        14,0,'-'),
+                    19,0,'-'),
+                24,0,'-')
+            ) virtual,
+        practice_admin varchar(255) NOT NULL UNIQUE,
         practice_name varchar(255) NOT NULL,
-        hpcna_number varchar(255) NOT NULL,
+        practice_number varchar(255),
+        practice_email varchar(255),
+        phone varchar(255),
+        cell varchar(255),
+        fax varchar(255),
+        pob varchar(255),
+        city varchar(255),
+        country varchar(255),
+        bank_holder varchar(255),
+        bank_account varchar(255),
+        bank varchar(255),
+        bank_branch varchar(255),
+        hpcna_number varchar(255),
         qualification varchar(255),
         specialisation varchar(255),
         premium BOOLEAN NOT NULL DEFAULT false,
@@ -157,13 +177,15 @@ def setupTable():
     cursor.execute(sql_create_table_invoice_items)
     cursor.execute(sql_drop_table_patients)
     cursor.execute(sql_create_table_patients)
-    #cursor.execute(sql_drop_table_users)
+    cursor.execute(sql_drop_table_practice)
+    cursor.execute(sql_create_table_practice)
+    cursor.execute(sql_drop_table_users)
     cursor.execute(sql_drop_table_invoice)
     cursor.execute(sql_create_table_invoice)
     cursor.execute(sql_drop_table_namaf_tariffs)
     cursor.execute(sql_create_table_namaf_tariffs)
     cursor.execute(create_trigger_status)
-    #cursor.execute(sql_create_table_users)
+    cursor.execute(sql_create_table_users)
     cursor.close()
     conn.close()
 

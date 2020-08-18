@@ -1,6 +1,4 @@
-{% include 'profile/profile.html' %}
-{% block content %}
-    {% with messages = get_flashed_messages() %}
+{% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
                     <p>{{ message }}</p>
@@ -95,4 +93,4 @@
     });
     </script>
 
- {% endblock %}
+
