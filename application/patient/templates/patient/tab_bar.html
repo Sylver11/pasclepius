@@ -255,12 +255,12 @@ $(document).ready(function(){
     }
 
     else{
-
         $.ajax({
         type: "GET",
         url: '/patient/last-five', 
         data: {work_type: "patient_tab"},
         success: function (patient) {
+            console.log(patient);
             patient = JSON.parse(patient);
             request_args  = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
 
