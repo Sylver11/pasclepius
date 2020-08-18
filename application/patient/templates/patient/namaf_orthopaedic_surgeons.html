@@ -91,7 +91,6 @@ function addAmount(event){
 
 
 
-
 function popOver() {
     $('.postvalue').popover({
                 trigger: "manual",
@@ -130,9 +129,7 @@ function popOver() {
                 }
                 }, 50);
             }); 
-}
-
-
+    }
 
 
 function details_in_popup(item_number, div_id){
@@ -187,6 +184,8 @@ function details_in_popup(item_number, div_id){
 }
 
 $(document).ready(function(){
+
+    popOver();
 
     $("body").popover({ 
         selector: '.info_treatment',
