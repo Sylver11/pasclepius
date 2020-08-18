@@ -27,7 +27,7 @@ def patientSearch(uuid, patient_name):
     any_value(patients.patient_note) AS patient_note,
     any_value(patients.created_on) AS created_on
     FROM patients WHERE uuid_text = '{}' AND patient_name LIKE '%{}%'
-    GROUP BY medical_number, case_number
+    GROUP BY patients.medical_number, patients.case_number
     """.format(uuid, patient_name)
     conn = pool.connection()
     cursor = conn.cursor()

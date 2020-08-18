@@ -97,7 +97,6 @@ def callback():
     if userinfo_response.json().get("email_verified"):
         unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
-        picture = userinfo_response.json()["picture"]
         users_name = userinfo_response.json()["given_name"]
         if checkUser(users_email) is None:
             flash('You do not have an account with us. To use the application you need to register first.')
