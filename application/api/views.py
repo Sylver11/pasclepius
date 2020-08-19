@@ -43,7 +43,7 @@ def getValue():
 def newJob():
     work_type = request.args.get('work_type')
     work_quality = request.args.get('work_quality')
-    status = newWork(current_user.uuid, work_type, work_quality)
+    status = newWork(current_user.uuid, current_user.practice_uuid, work_type, work_quality)
     return json.dumps(status)
 
 
@@ -52,14 +52,14 @@ def newJob():
 def removeJob():
     work_type = request.args.get('work_type')
     work_quality = request.args.get('work_quality')
-    status = removeWork(current_user.uuid, work_type, work_quality)
+    status = removeWork(current_user.uuid, current_user.practice_uuid, work_type, work_quality)
     return json.dumps(status)
 
 @api_bp.route('/get-invoice-items',methods=['GET','POST'])
 def getTreatmentName():
     invoice_id = request.args.get('invoice_id')
-    uuid = request.args.get('uuid')
-    invoice_items = getItems(uuid, invoice_id)
+    practice_uuid = request.args.get('practice_uuid')
+    invoice_items = getItems(practice_uuid, invoice_id)
     return json.dumps(invoice_items,
                 sort_keys=True,
                 default=str)
@@ -70,7 +70,7 @@ def getTreatmentName():
 def downloadInvoice(random):
     patient_name = session.get('PATIENT')['patient_name']
     date = session.get('PATIENT')['date']
-    invoice_file_url = getInvoiceURL(current_user.uuid, patient_name, date)
+    invoice_file_url = getInvoiceURL(current_user.practice_uuid, patient_name, date)
     path = str(invoice_file_url['invoice_file_url']) + ".odt"
     return send_file(path, as_attachment=True)
 

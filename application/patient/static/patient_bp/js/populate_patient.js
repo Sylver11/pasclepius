@@ -102,7 +102,7 @@ function populatePatient(){
                 }
             }            
         }
-        else if(value && key != "csrf_token" && key != "treatments" && key != "date_invoice" && key != "modifier" && key.indexOf(".") === -1){
+        else if(value && key != "csrf_token" && key != "treatments" && key != "date_invoice" && key != "created_on" && key != "modifier" && key.indexOf(".") === -1){
             var div = document.createElement("DIV");
             div.className += "form-group ";
             div.className += "row";
@@ -153,7 +153,7 @@ function populatePatient(){
                 invoice_layout = value;
                 div.style.display = "none";
             }  
-            else if(key == "invoice_file_url" || key == "uuid_text" || key == "id") {
+            else if(key == "invoice_file_url" || key == "practice_uuid" || key == "id") {
                 div.style.display = "none";
             }        
         }                                 

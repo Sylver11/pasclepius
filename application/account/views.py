@@ -38,8 +38,8 @@ def settings():
 @account_bp.route("/invoice/<medical_aid>/<year>/<index>", methods=['GET'])
 def singleInvoice(medical_aid, year, index):
     invoice_id = medical_aid + "/" + year + "/" + index
-    invoice = getSingleInvoice(current_user.uuid, invoice_id)
-    invoice_items = getItems(current_user.uuid, invoice_id)
+    invoice = getSingleInvoice(current_user.practice_uuid, invoice_id)
+    invoice_items = getItems(current_user.practice_uuid, invoice_id)
     for i in invoice_items:
         for o in i:
             if isinstance(i[o], datetime2.datetime):
@@ -60,7 +60,7 @@ def singleInvoice(medical_aid, year, index):
 @account_bp.route('/live-search-invoice',methods=['GET','POST'])
 def liveSearchTreatment():
     patient_name = request.args.get('patient_name')
-    invoices = liveSearchInvoices(current_user.uuid, patient_name)
+    invoices = liveSearchInvoices(current_user.practice_uuid, patient_name)
     for i in invoices:
         for o in i:
             if isinstance(i[o], datetime2.datetime):
@@ -72,7 +72,7 @@ def liveSearchTreatment():
 @account_bp.route('/submit-invoice',methods=['GET'])
 def submitInvoice():
     invoice_id = request.args.get('invoice_id')
-    status = updateSubmitted(current_user.uuid, invoice_id)
+    status = updateSubmitted(current_user.practice_uuid, invoice_id)
     if status:
         return json.dumps(invoice_id + " was succesfully submitted")
     else:
@@ -83,7 +83,7 @@ def submitInvoice():
 def addCreditInvoice():
     invoice_id = request.args.get('invoice_id')
     credit_cent = request.args.get('credit_cent')
-    status = updateCredit(current_user.uuid, invoice_id, credit_cent)
+    status = updateCredit(current_user.practice_uuid, invoice_id, credit_cent)
     if status:
         return json.dumps(invoice_id + " added credit")
     else:
@@ -92,7 +92,7 @@ def addCreditInvoice():
 
 @account_bp.route('/all-invoices/<caller_id>/<c_option>/<r_option>/<focus>/<order>/<start>/<range>',methods=['GET'])
 def allInvoices(caller_id, c_option, r_option, focus, order, start, range):
-    invoices = queryInvoices(current_user.uuid, c_option,
+    invoices = queryInvoices(current_user.practice_uuid, c_option,
             r_option, focus, order, start, range)
     if caller_id == 'account':
         return render_template('account_bp/all_invoices.html',
@@ -109,6 +109,6 @@ def allInvoices(caller_id, c_option, r_option, focus, order, start, range):
 @account_bp.route('/check-r-option',methods=['GET'])
 def checkR():
     c_option = request.args.get('c_option')
-    r_option = queryR(current_user.uuid, c_option)
+    r_option = queryR(current_user.practice_uuid, c_option)
     return json.dumps({'c_option': c_option, 'r_option' : r_option})
 

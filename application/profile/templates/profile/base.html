@@ -1,10 +1,27 @@
 {% extends 'layout.html' %}
 {% block content %}
+<div id="profile_modal" class="modal fade" role="dialog">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Success</h5>
+          </div>
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+      </div>
+  </div>
+</div>
 <nav class="navbar navbar-expand-sm navbar-dark" style="background-color:#017B25;">
   <ul class="navbar-nav" id="myTab">
       <a class="profile_tabs nav-link nav-item active" href="/profile/">Personal</a>
       <a class="profile_tabs nav-link nav-item" href="/profile/">Practice</a>
       <a class="profile_tabs nav-link nav-item" href="/profile/">Invoice</a>
+      {% if current_user.practice_role == 'admin' %}
+      <a class="profile_tabs nav-link nav-item" href="/profile/">Assistant</a>
+      {% endif %}
   </ul>
 </nav>
 <div id="profile-tab" class="d-flex flex-column"></div>

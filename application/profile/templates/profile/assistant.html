@@ -1,24 +1,42 @@
-<form id=personal_form>
+
+<p>Current assistants:</p>
+
+{% for i in assistants %}
+<ul>
+    <li> {{ i['user_name'] }}
+        <ul>
+            <li>{{ i['user_email'] }}</li>
+        </ul>
+    </li>  
+</ul>
+{% endfor %}
+
+
+<form id="add_assistant">
     <div class="form-row">
         <div class="form-group col-md-5">
             <label for="first_name">First Name</label>
-            <input name="first_name" id="first_name" value='{{ user["first_name"]}}' class="form-control" type="text">
+            <input name="first_name" id="first_name" class="form-control" type="text">
         </div>
         <div class="form-group col-md-5">
             <label for="second_name">Second Name</label>
-            <input name="second_name" id="second_name" value='{{ user["second_name"]}}' class="form-control" type="text">
+            <input name="second_name" id="second_name" class="form-control" type="text">
+        </div>
+        <div class="form-group col-md-5">
+            <label for="email">Email Address</label>
+            <input name="email" id="email" class="form-control" type="text">
         </div>
     </div>
-    <input type="submit"  value="Update Personal">
+    <input value="Add Assistant" type="submit">
 </form> 
 
 <script>
-$("body").on("submit", "#personal_form", function(e){
+$("body").on("submit", "#add_assistant", function(e){
     e.preventDefault();
     var form = $(this);
     $.ajax({
         type: "POST",
-        url: '/profile/personal', 
+        url: '/profile/assistant', 
         data: form.serialize(),
         success: function (returnData) {
             $('.modal-body').text(returnData)

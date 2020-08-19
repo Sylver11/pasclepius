@@ -31,12 +31,12 @@ def setupConnection():
     return doc, text
 
 
-def createTextInvoice(user, invoice, treatments, descriptions, units,
+def createTextInvoice(practice, invoice, treatments, descriptions, units,
         post_values, dates, modifiers):
     doc, text = setupConnection()
     cursor = text.createTextCursor()
-    doc, text, cursor = populateTopText(cursor, doc, text, user)
-    doc, text, cursor = identityTable(doc, text, cursor,  user, invoice)
+    doc, text, cursor = populateTopText(cursor, doc, text, practice)
+    doc, text, cursor = identityTable(doc, text, cursor,  practice, invoice)
     doc, text, cursor = patientTable(doc, text, cursor, invoice)
     if 4 <= int(invoice['invoice_layout']) <= 9:
         doc, text, cursor = hospitalTable(doc, text, cursor, invoice)
@@ -50,7 +50,7 @@ def createTextInvoice(user, invoice, treatments, descriptions, units,
         doc, text = namaf_physio.treatmentTable(doc,
                 text, cursor, treatments, descriptions,
                 units, post_values, dates, modifiers)
-    doc, text = populateBottomTable(doc, text, user)
+    doc, text = populateBottomTable(doc, text, practice)
     doc, text = configureBorders(doc, text, treatments)
     saveDocument(doc, invoice['invoice_file_url'])
 
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     parser.add_argument('to_json', type=json.loads)
     args = parser.parse_args()
     createTextInvoice(
-            args.to_json["user"],
+            args.to_json["practice"],
             args.to_json["invoice"],
             args.to_json["treatments"],
             args.to_json["descriptions"],

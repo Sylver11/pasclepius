@@ -22,7 +22,7 @@
                 <a class="nav-link" href="/account">Account</a>
               </li>
               <li class="nav-item profile">
-                <a class="nav-link" href="/profile">{{ current_user.first_name }}</a>
+                <a class="nav-link" href="/profile">Settings</a>
               </li>         
             {% else %}
               <li class="nav-item setup">
@@ -39,6 +39,9 @@
         {% endif %}
       </ul>
       {% if current_user.is_authenticated and current_user.practice_uuid%}
+      <span class="navbar-text" style="padding-right: 2em; max-width: 20em; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+        Practice: <p id="practice_name_navbar" style="padding:0;margin:0;display:inline">{{  current_user.practice_name }}</p>
+      </span>
 
       <form class="search form-inline my-2 my-lg-0" autocomplete="off">
         <input id="patient_name" class="form-control mr-sm-2" name="patient_name" type="search" placeholder="Search patients">

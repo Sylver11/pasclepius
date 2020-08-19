@@ -19,6 +19,7 @@ function closeDropDown(){
 
     var invoices = '{{ invoices_json }}';
     invoices = JSON.parse(invoices.replace(/&#34;/g,'"'));
+    console.log(invoices);
     var invoice_list = document.getElementById("invoice_list");
     invoice_list.style.display = "flex";
     invoice_list.style.flexDirection = "column";
@@ -28,7 +29,7 @@ for (let i = 0; i < invoices.length; i++) {
         const element = invoices[i];
         $.getJSON('/get-invoice-items', {
             invoice_id: element["invoice_id"],
-            uuid: element["uuid_text"],
+            practice_uuid: element["practice_uuid"],
         }, function(invoice_items) {
 
             var card = document.createElement("DIV");

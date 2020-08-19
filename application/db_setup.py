@@ -12,6 +12,7 @@ def setupTable():
     sql_drop_table_user_workbench = "DROP TABLE IF EXISTS user_workbench"
     sql_drop_table_patients = "DROP TABLE IF EXISTS patients"
     sql_drop_table_practice = "DROP TABLE IF EXISTS practices"
+    sql_drop_table_practice_connections = "DROP TABLE IF EXISTS practice_connections"
 
     sql_create_table_namaf_tariffs = """CREATE TABLE namaf_tariffs  (
         id int(11) NOT NULL AUTO_INCREMENT,
@@ -31,9 +32,10 @@ def setupTable():
         tariff varchar(255) NOT NULL,
         PRIMARY KEY (id));"""
 
+######changed uuid_text to practice_uuid
     sql_create_table_invoice_items = """CREATE TABLE invoice_items (
         id int(11) NOT NULL AUTO_INCREMENT,
-        uuid_text varchar(36) NOT NULL,
+        practice_uuid varchar(36) NOT NULL,
         invoice_id varchar(255) NOT NULL,
         item int(11) NOT NULL,
         units int(11),
@@ -47,9 +49,11 @@ def setupTable():
         status varchar(255),
         PRIMARY KEY (id))"""
 
+#####same goes here
+############## also adding colum for who last edited invoice
     sql_create_table_invoice = """CREATE TABLE invoices (
         id int(11) NOT NULL AUTO_INCREMENT,
-        uuid_text varchar(36) NOT NULL,
+        practice_uuid varchar(36) NOT NULL,
         patient_id varchar(255) NOT NULL,
         medical_aid varchar(255) NOT NULL,
         date_created DATETIME NOT NULL DEFAULT NOW(),
@@ -73,12 +77,14 @@ def setupTable():
         status varchar(255) NOT NULL DEFAULT 'not-submitted',
         credit_cent int(11) NOT NULL DEFAULT 0,
         remind_me DATETIME,
+        last_edited DATETIME DEFAULT NOW(),
+        last_edited_by VARCHAR(255),
         PRIMARY KEY (id));"""
 
-
+###############here tooo
     sql_create_table_patients = """ CREATE TABLE patients (
         id int(11) NOT NULL AUTO_INCREMENT,
-        uuid_text varchar(36) NOT NULL,
+        practice_uuid varchar(36) NOT NULL,
         patient_id varchar(255) GENERATED ALWAYS AS
             (CASE WHEN medical_number IS NULL THEN case_number ELSE
             medical_number END) VIRTUAL,
@@ -110,8 +116,8 @@ def setupTable():
         first_name varchar(255) NOT NULL,
         second_name varchar(255) NOT NULL,
         email varchar(100) NOT NULL UNIQUE,
-        practice_uuid varchar(36),
-        practice_rank varchar(255),
+        current_practice_uuid varchar(36),
+        current_practice_role varchar(255),
         created_on DATETIME NOT NULL DEFAULT NOW(),
         last_active DATETIME NOT NULL DEFAULT NOW(),
         PRIMARY KEY (id));"""
@@ -150,19 +156,35 @@ def setupTable():
         created_on DATETIME NOT NULL DEFAULT NOW(),
         PRIMARY KEY (id));"""
 
+    sql_create_table_practice_connections = """CREATE TABLE
+    practice_connections (
+    id int(11) NOT NULL AUTO_INCREMENT,
+    practice_uuid varchar(36) NOT NULL,
+    practice_name varchar(255) NOT NULL,
+    user_uuid varchar(36) NOT NULL,
+    user_email varchar(255) NOT NULL,
+    user_name varchar(255) NOT NULL,
+    practice_role varchar(255) NOT NULL,
+    PRIMARY KEY (id));"""
+
+########## adding practice_uuid here too
     sql_create_table_user_workbench = """CREATE TABLE user_workbench (
     uuid_text VARCHAR(36) NOT NULL,
+    practice_uuid VARCHAR(36) NOT NULL,
     work_type VARCHAR(255) NOT NULL,
     work_quality TEXT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW());"""
 
+
+
+#################changes it here too
     create_trigger_status = """CREATE TRIGGER check_settled BEFORE UPDATE ON invoices
     FOR EACH ROW
     BEGIN
-    IF NEW.credit_cent = (SELECT SUM(post_value_cent) FROM invoice_items WHERE uuid_text = OLD.uuid_text AND invoice_id = OLD.invoice_id) THEN
+    IF NEW.credit_cent = (SELECT SUM(post_value_cent) FROM invoice_items WHERE practice_uuid = OLD.practice_uuid AND invoice_id = OLD.invoice_id) THEN
     SET NEW.status = 'settled';
     ELSEIF NEW.credit_cent > (SELECT SUM(post_value_cent)
-    FROM invoice_items WHERE uuid_text = OLD.uuid_text AND invoice_id =
+    FROM invoice_items WHERE practice_uuid = OLD.practice_uuid AND invoice_id =
     OLD.invoice_id) THEN SET NEW.credit_cent = OLD.credit_cent;
     END IF;
     END;"""
@@ -173,19 +195,21 @@ def setupTable():
     cursor = conn.cursor()
     cursor.execute(sql_drop_table_user_workbench)
     cursor.execute(sql_create_table_user_workbench)
-    cursor.execute(sql_drop_table_invoice_items)
-    cursor.execute(sql_create_table_invoice_items)
-    cursor.execute(sql_drop_table_patients)
-    cursor.execute(sql_create_table_patients)
-    cursor.execute(sql_drop_table_practice)
-    cursor.execute(sql_create_table_practice)
-    cursor.execute(sql_drop_table_users)
-    cursor.execute(sql_drop_table_invoice)
-    cursor.execute(sql_create_table_invoice)
+   # cursor.execute(sql_drop_table_invoice_items)
+   # cursor.execute(sql_create_table_invoice_items)
+   # cursor.execute(sql_drop_table_patients)
+   # cursor.execute(sql_create_table_patients)
+   # cursor.execute(sql_drop_table_practice)
+   # cursor.execute(sql_create_table_practice)
+    cursor.execute(sql_drop_table_practice_connections)
+    cursor.execute(sql_create_table_practice_connections)
+   # cursor.execute(sql_drop_table_users)
+   # cursor.execute(sql_drop_table_invoice)
+   # cursor.execute(sql_create_table_invoice)
     cursor.execute(sql_drop_table_namaf_tariffs)
     cursor.execute(sql_create_table_namaf_tariffs)
-    cursor.execute(create_trigger_status)
-    cursor.execute(sql_create_table_users)
+   # cursor.execute(create_trigger_status)
+   # cursor.execute(sql_create_table_users)
     cursor.close()
     conn.close()
 

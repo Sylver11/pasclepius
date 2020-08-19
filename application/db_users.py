@@ -10,7 +10,7 @@ def checkUser(email):
     return data
 
 
-def updateInvoice(email, phone, fax, hospital, diagnosis):
+def updateInvoice(practice_uuid, phone, fax, hospital, diagnosis):
     if phone and fax and hospital and diagnosis:
         layout_code = 9
     elif phone and fax and hospital:
@@ -35,8 +35,8 @@ def updateInvoice(email, phone, fax, hospital, diagnosis):
         layout_code = 10
     else:
         layout_code = 1
-    sql = """UPDATE users SET invoice_layout = '{}' WHERE
-    email = '{}'""".format(layout_code, email)
+    sql = """UPDATE practices SET invoice_layout = '{}' WHERE
+    practice_uuid = '{}'""".format(layout_code, practice_uuid)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -65,9 +65,16 @@ def updatePractice(practice_uuid, practice_email, practice_name,
 
 
 
-def updateUser(email, first_name, second_name):
-    sql = """UPDATE users SET first_name = '{}', second_name = '{}' WHERE
-    email = '{}'""".format(first_name, second_name, email)
+def updateUser(email, first_name = '', second_name = '', current_practice_uuid = '',
+        current_practice_role = ''):
+    sql = ''
+    if(current_practice_uuid):
+        sql = """UPDATE users SET current_practice_uuid = '{}',
+        current_practice_role = '{}' WHERE
+        email = '{}'""".format(current_practice_uuid, current_practice_role, email)
+    else:
+        sql = """UPDATE users SET first_name = '{}', second_name = '{}' WHERE
+        email = '{}'""".format(first_name, second_name, email)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -109,16 +116,44 @@ def getPractice(practice_admin = '', practice_uuid = ''):
     return practice
 
 
-def mergeUserPractice(practice_uuid, rank, email):
+def mergeUserPractice(practice_uuid, practice_name, user_uuid, user_email,
+        user_name, role):
     conn = pool.connection()
     cursor = conn.cursor()
-    sql = """UPDATE users SET practice_uuid = '{}', practice_rank = '{}' WHERE
-    email = '{}'""".format(practice_uuid, rank, email)
+    sql = """UPDATE users SET current_practice_uuid = '{}', current_practice_role = '{}' WHERE
+    uuid_text = '{}'""".format(practice_uuid, role, user_uuid)
     cursor.execute(sql)
+    cursor.execute("""INSERT INTO practice_connections (practice_uuid, practice_name,
+    user_uuid, user_email, user_name, practice_role) VALUES(%s,%s,%s,%s,%s,%s)""",(practice_uuid,
+        practice_name, user_uuid, user_email, user_name, role))
     cursor.close()
     conn.close()
     status = True
     return status
+
+
+def getAssistants(practice_uuid):
+    conn = pool.connection()
+    cursor = conn.cursor()
+    sql = """SELECT * FROM practice_connections WHERE practice_uuid =
+    '{}' AND practice_role = 'assistant'""".format(practice_uuid)
+    cursor.execute(sql)
+    assistants = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return assistants
+
+
+def checkConnections(user_uuid):
+    conn = pool.connection()
+    cursor = conn.cursor()
+    sql = """SELECT * FROM practice_connections WHERE user_uuid =
+    '{}'""".format(user_uuid)
+    cursor.execute(sql)
+    practices = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return practices
 
 
 def addPractice(email, phone, practice_email, cell, fax, pob, city, country, bank_holder, bank_account, bank, bank_branch, practice_number, practice_name, hpcna_number, qualification, specialisation):

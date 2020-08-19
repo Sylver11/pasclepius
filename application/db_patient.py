@@ -1,10 +1,10 @@
 from application.db_utils import pool
 from datetime import datetime
 
-def checkDuplicate(uuid, patient):
-    sql = """SELECT * FROM patients WHERE uuid_text = '{}' AND
+def checkDuplicate(practice_uuid, patient):
+    sql = """SELECT * FROM patients WHERE practice_uuid = '{}' AND
     (medical_number = '{}' OR case_number = '{}')
-    """.format(uuid, patient.get('medical_number'),
+    """.format(practice_uuid, patient.get('medical_number'),
             patient.get('case_number'))
     conn = pool.connection()
     cursor = conn.cursor()
@@ -15,7 +15,7 @@ def checkDuplicate(uuid, patient):
     return row
 
 
-def patientSearch(uuid, patient_name):
+def patientSearch(practice_uuid, patient_name):
     sql = """SELECT 
     any_value(patients.patient_id) AS patient_id,
     any_value(patients.patient_name) AS patient_name,
@@ -26,9 +26,9 @@ def patientSearch(uuid, patient_name):
     any_value(patients.case_number) AS case_number,
     any_value(patients.patient_note) AS patient_note,
     any_value(patients.created_on) AS created_on
-    FROM patients WHERE uuid_text = '{}' AND patient_name LIKE '%{}%'
+    FROM patients WHERE practice_uuid = '{}' AND patient_name LIKE '%{}%'
     GROUP BY patients.medical_number, patients.case_number
-    """.format(uuid, patient_name)
+    """.format(practice_uuid, patient_name)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -37,11 +37,11 @@ def patientSearch(uuid, patient_name):
     conn.close()
     return patients
 
-def removePatient(uuid_text, patient_id):
+def removePatient(practice_uuid, patient_id):
     conn = pool.connection()
     cursor = conn.cursor()
-    sql = """ DELETE FROM patients WHERE uuid_text = '{}' AND
-    patient_id = '{}'""".format(uuid_text, patient_id)
+    sql = """ DELETE FROM patients WHERE practice_uuid = '{}' AND
+    patient_id = '{}'""".format(practice_uuid, patient_id)
     cursor.execute(sql)
     cursor.close()
     conn.close()
@@ -49,13 +49,13 @@ def removePatient(uuid_text, patient_id):
     return status
 
 
-def insertPatient(uuid_text, patient):
+def insertPatient(practice_uuid, patient):
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute("""INSERT INTO patients (uuid_text, patient_name,
+    cursor.execute("""INSERT INTO patients (practice_uuid, patient_name,
     medical_aid, main_member, patient_birth_date, medical_number,
     case_number, patient_note) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)""",
-    (uuid_text,
+    (practice_uuid,
             patient.get('patient_name'),
             patient.get('medical_aid'),
             patient.get('main_member'),

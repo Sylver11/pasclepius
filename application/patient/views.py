@@ -3,10 +3,10 @@ from application.name_generator import InvoiceName
 from flask_login import current_user, login_required
 from flask import render_template, Blueprint, request, session, redirect
 from application.db_workbench import removeWork, newWork, lastFive
-from application.db_users import checkUser
+from application.db_users import checkUser, getPractice
 from application.db_patient import insertPatient, checkDuplicate, patientSearch, removePatient
 from application.forms import Patient_mva, Patient_other,getTreatmentForm
-from application.db_invoice import insertInvoice, get_index, queryInvoices, getSingleInvoice, getItems
+from application.db_invoice import updateInvoice, insertInvoice, get_index, queryInvoices, getSingleInvoice, getItems
 import simplejson as json
 import re
 import subprocess
@@ -40,15 +40,15 @@ def invoiceOption(patient_id):
 @patient_bp.route('/patient/search', methods=('GET','POST'))
 def searchPatient():
     search_term = request.args.get('search_term')
-    patients = patientSearch(current_user.uuid, search_term)
+    patients = patientSearch(current_user.practice_uuid, search_term)
     return json.dumps(patients, sort_keys=True, default=str)
 
 
 @patient_bp.route('/patient/delete', methods = ['POST'])
 def deletePatient():
     patient_id = request.form.get('patient_id')
-    status = removePatient(current_user.uuid, patient_id)
-    removeWork(current_user.uuid, 'patient_tab', 'any')
+    status = removePatient(current_user.practice_uuid, patient_id)
+    removeWork(current_user.practice_uuid, 'patient_tab', 'any')
     if status:
         return json.dumps('success')
     return json.dumps('Unable to delelet patient. Please contact system administrator')
@@ -58,7 +58,7 @@ def deletePatient():
 def addWork():
     work_quality = request.args.get('work_quality')
     work_type = request.args.get('work_type')
-    newWork(current_user.uuid, work_type, work_quality)
+    newWork(current_user.uuid, current_user.practice_uuid,  work_type, work_quality)
     return 'success'
 
 @patient_bp.route('/invoice/create', methods=('GET', 'POST'))
@@ -84,19 +84,22 @@ def Continue():
 @login_required
 def newInvoice():
     if request.method == 'POST':
-        row = checkDuplicate(current_user.uuid, request.form)
+        row = checkDuplicate(current_user.practice_uuid, request.form)
         if row:
             if not request.form.get('continue_patient'):
                 return 'Patient already exists.'
         else:
-            insertPatient(current_user.uuid, request.form)
+            insertPatient(current_user.practice_uuid, request.form)
             if request.form.get('save_patient'):
                 return 'Patient saved'
         patient_name = request.form['patient_name']
         medical_aid = request.form['medical_aid']
         tariff = request.form['tariff']
         item_modifiers = []
-        invoice_index = get_index(current_user.uuid, medical_aid)
+        ############## need better solution. Because draft takes new url but does not
+        ############## insert invoice. That means if two muplitple people work with the 
+        ############### same practice it could lead to duplications of invoice urls
+        invoice_index = get_index(current_user.practice_uuid, medical_aid)
         invoice_file_url = InvoicePath(
                 medical_aid,
                 patient_name,
@@ -110,7 +113,7 @@ def newInvoice():
         patient_info['invoice_id'] = invoice_id
         patient_info['invoice_file_url'] = invoice_file_url
         patient_info['invoice_layout'] = current_user.invoice_layout
-        newWork(current_user.uuid, 'invoice_draft', json.dumps(patient_info))
+        newWork(current_user.uuid, current_user.practice_uuid, 'invoice_draft', json.dumps(patient_info))
         form = getTreatmentForm(tariff)
         status = 'new_draft'
     else:
@@ -125,9 +128,9 @@ def newInvoice():
 @login_required
 def Invoice(medical_aid, year, index):
     invoice_id = medical_aid + "/" + year + "/" + index
-    invoice = getSingleInvoice(current_user.uuid, invoice_id)
-    treatments = getItems(current_user.uuid, invoice_id)
-    newWork(current_user.uuid, 'invoice_tab', invoice_id)
+    invoice = getSingleInvoice(current_user.practice_uuid, invoice_id)
+    treatments = getItems(current_user.practice_uuid, invoice_id)
+    newWork(current_user.uuid, current_user.practice_uuid, 'invoice_tab', invoice_id)
     invoice['treatments'] = treatments
     form = getTreatmentForm(invoice['tariff'])
     return render_template('patient/' + invoice['tariff'][:-5] + '.html',
@@ -139,27 +142,38 @@ def Invoice(medical_aid, year, index):
 @patient_bp.route('/last-five')
 def lastFiveTabs():
     work_quality = request.args.get('work_type')
-    last_five = lastFive(current_user.uuid, work_quality)
+    last_five = lastFive(current_user.uuid, current_user.practice_uuid, work_quality)
     return json.dumps(last_five)
 
 
 @patient_bp.route('/invoice/generate', methods=['POST'])
 def NewInvoice():
     if request.form:
-        if request.form['status'] == 'draft':
-            removeWork(current_user.uuid, 'invoice_draft', 'any')
         status = {}
-        try:
-            status = insertInvoice(current_user.uuid, request.form)
-        except Exception as e:
-            status['db_status'] = 'Error'
-            status['db_description'] = 'Exit code: ' + str(e)
-            return json.dumps(status)
+        if request.form['status'] == 'draft':
+            removeWork(current_user.uuid, current_user.practice_uuid, 'invoice_draft', 'any')
+            try:
+                status = insertInvoice(current_user.practice_uuid,
+                    current_user.first_name, request.form)
+            except Exception as e:
+                status['db_status'] = 'Error'
+                status['db_description'] = 'Exit code: ' + str(e)
+                return json.dumps(status)
+        else:
+            try:
+                status = updateInvoice(current_user.practice_uuid,
+                    current_user.first_name, request.form)
+            except Exception as e:
+                status['db_status'] = 'Error'
+                status['db_description'] = 'Exit code: ' + str(e)
+                return json.dumps(status)
         method = None
         if status['db_status'] == 'Success' and request.form.get('method'):
-            user = checkUser(current_user.id)
+            practice = getPractice(practice_uuid = current_user.practice_uuid)
+            practice['uuid_bin'] = ''
+            practice['created_on'] = ''
             res_dict = {
-                "user" : user,
+                "practice" : practice,
                 "invoice": request.form,
                 "treatments": request.form.getlist('treatments'),
                 "descriptions": request.form.getlist('description'),
@@ -169,6 +183,7 @@ def NewInvoice():
                 "modifiers": request.form.getlist('modifier')
                   }
             to_json = json.dumps(res_dict)
+            print(to_json)
             try:
                 subprocess.check_output([os.getenv("LIBPYTHON"), os.getenv("APP_URL")
                 + '/swriter/main.py', to_json])

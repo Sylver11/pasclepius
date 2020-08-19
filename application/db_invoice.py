@@ -3,12 +3,12 @@ from datetime import date
 from datetime import datetime
 import simplejson as json
 
-def get_index(uuid, medical_aid):
+def get_index(practice_uuid, medical_aid):
     today = date.today()
     month = today.month
     year = today.year
-    sql = """SELECT COUNT(*) FROM invoices WHERE uuid_text = '{}' AND  medical_aid = '{}' AND YEAR
-    (date_created) = '{}' AND MONTH(date_created) = '{}'""".format(uuid, medical_aid, year, month)
+    sql = """SELECT COUNT(*) FROM invoices WHERE practice_uuid = '{}' AND  medical_aid = '{}' AND YEAR
+    (date_created) = '{}' AND MONTH(date_created) = '{}'""".format(practice_uuid, medical_aid, year, month)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -18,7 +18,7 @@ def get_index(uuid, medical_aid):
     return index['COUNT(*)'] + 1
 
 
-def liveSearchInvoices(uuid, patient_name):
+def liveSearchInvoices(practice_uuid, patient_name):
     sql = """SELECT any_value(invoices.invoice_id) AS invoice_id,
     any_value(invoices.patient_name) AS patient_name,
     any_value(invoices.credit_cent) AS credit_cent,
@@ -34,8 +34,8 @@ def liveSearchInvoices(uuid, patient_name):
     group_concat(invoice_items.status) AS item_status
     FROM invoices LEFT JOIN invoice_items
     ON invoice_items.invoice_id = invoices.invoice_id
-    WHERE invoices.uuid_text = '{}' AND invoices.patient_name LIKE '{}%'
-    GROUP BY invoices.invoice_id""".format(uuid, patient_name)
+    WHERE invoices.practice_uuid = '{}' AND invoices.patient_name LIKE '{}%'
+    GROUP BY invoices.invoice_id""".format(practice_uuid, patient_name)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -45,9 +45,9 @@ def liveSearchInvoices(uuid, patient_name):
     return data
 
 
-def getInvoiceURL(uuid, name_patient, date):
-    sql = """SELECT invoice_file_url FROM invoices WHERE uuid_text = '{}' AND name_patient = '{}'
-    AND date_created = '{}'""".format(uuid, name_patient, date)
+def getInvoiceURL(practice_uuid, name_patient, date):
+    sql = """SELECT invoice_file_url FROM invoices WHERE practice_uuid = '{}' AND name_patient = '{}'
+    AND date_created = '{}'""".format(practice_uuid, name_patient, date)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -57,13 +57,13 @@ def getInvoiceURL(uuid, name_patient, date):
     return invoice_file_url
 
 
-def getSingleInvoice(uuid, invoice_id):
+def getSingleInvoice(practice_uuid, invoice_id):
     sql = """SELECT invoices.*, patients.*
         FROM invoices
         LEFT JOIN patients ON patients.patient_id = invoices.patient_id
-        AND patients.uuid_text = '{}' WHERE invoices.uuid_text = '{}' AND
+        AND patients.practice_uuid = '{}' WHERE invoices.practice_uuid = '{}' AND
         invoices.invoice_id = '{}'
-        """.format(uuid, uuid, invoice_id)
+        """.format(practice_uuid, practice_uuid, invoice_id)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -73,9 +73,9 @@ def getSingleInvoice(uuid, invoice_id):
     return invoice
 
 
-def getItems(uuid, invoice_id):
-    sql = """SELECT * FROM invoice_items WHERE uuid_text = '{}' AND invoice_id
-    = '{}'""".format(uuid, invoice_id)
+def getItems(practice_uuid, invoice_id):
+    sql = """SELECT * FROM invoice_items WHERE practice_uuid = '{}' AND invoice_id
+    = '{}'""".format(practice_uuid, invoice_id)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -85,22 +85,22 @@ def getItems(uuid, invoice_id):
     return items
 
 
-def queryInvoices(uuid, c_option, r_option, focus, order, start, range):
+def queryInvoices(practice_uuid, c_option, r_option, focus, order, start, range):
     if c_option == 'None' or r_option == 'None':
-        c_option = 'uuid_text'
-        r_option = uuid
+        c_option = 'practice_uuid'
+        r_option = practice_uuid
     sql = """SELECT invoices.patient_id, date_created, date_invoice, remind_me, credit_cent,
         submitted_on, invoice_id, invoice_file_url, tariff, status, po_number,
-        (SELECT COUNT('patient_name') FROM invoices WHERE invoices.uuid_text = '{}' AND
+        (SELECT COUNT('patient_name') FROM invoices WHERE invoices.practice_uuid = '{}' AND
         invoices.{} = '{}' ) AS rowcounter,
-        (SELECT SUM(post_value_cent) FROM invoice_items WHERE invoice_items.uuid_text = '{}' AND
+        (SELECT SUM(post_value_cent) FROM invoice_items WHERE invoice_items.practice_uuid = '{}' AND
         invoice_items.invoice_id = invoices.invoice_id) AS debit_cent,
         patients.* FROM invoices
         LEFT JOIN patients ON patients.patient_id = invoices.patient_id
-        AND patients.uuid_text = '{}'
-        WHERE invoices.uuid_text = '{}'
+        AND patients.practice_uuid = '{}'
+        WHERE invoices.practice_uuid = '{}'
         AND invoices.{} = '{}' ORDER BY {} {} LIMIT {},{}
-        """.format(uuid, c_option, r_option, uuid, uuid, uuid, c_option, r_option, focus, order,  start, range)
+        """.format(practice_uuid, c_option, r_option, practice_uuid, practice_uuid, practice_uuid, c_option, r_option, focus, order,  start, range)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -109,9 +109,9 @@ def queryInvoices(uuid, c_option, r_option, focus, order, start, range):
     conn.close()
     return invoices
 
-def queryR(uuid, c_option):
-    sql = """SELECT DISTINCT {} FROM invoices WHERE uuid_text = '{}'
-        """.format(c_option, uuid)
+def queryR(practice_uuid, c_option):
+    sql = """SELECT DISTINCT {} FROM invoices WHERE practice_uuid = '{}'
+        """.format(c_option, practice_uuid)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -121,9 +121,9 @@ def queryR(uuid, c_option):
     return r_option
 
 
-def updateSubmitted(uuid, invoice_id):
-    sql= """UPDATE invoices SET submitted_on = NOW(), status = 'due' WHERE uuid_text = '{}' and
-    invoice_id = '{}'""".format(uuid, invoice_id)
+def updateSubmitted(practice_uuid, invoice_id):
+    sql= """UPDATE invoices SET submitted_on = NOW(), status = 'due' WHERE practice_uuid = '{}' and
+    invoice_id = '{}'""".format(practice_uuid, invoice_id)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -133,11 +133,11 @@ def updateSubmitted(uuid, invoice_id):
     return status
 
 
-def updateCredit(uuid, invoice_id, credit_cent):
+def updateCredit(practice_uuid, invoice_id, credit_cent):
     sql = """UPDATE invoices
     SET credit_cent = credit_cent + '{}'
-    WHERE uuid_text = '{}' AND invoice_id =
-    '{}'""".format(credit_cent, uuid, invoice_id)
+    WHERE practice_uuid = '{}' AND invoice_id =
+    '{}'""".format(credit_cent, practice_uuid, invoice_id)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -147,21 +147,18 @@ def updateCredit(uuid, invoice_id, credit_cent):
     return status
 
 
-def insertInvoice(uuid_text, invoice_form):
+def insertInvoice(practice_uuid, user_name, invoice_form):
     conn = pool.connection()
     cursor = conn.cursor()
     status = {}
-    sql_rm_invoice = """DELETE FROM invoices WHERE uuid_text = '{}'
-    AND invoice_id = '{}'""".format(uuid_text, invoice_form['invoice_id'])
-    cursor.execute(sql_rm_invoice)
-    deleted_row_count = cursor.rowcount
-    cursor.execute("""INSERT INTO invoices (uuid_text,
+    cursor.execute("""INSERT INTO invoices (practice_uuid, last_edited_by,
         patient_id, date_invoice, medical_aid, invoice_id, invoice_file_url, tariff,
         invoice_layout, po_number, hospital_name, admission_date,
         discharge_date, `procedure`, procedure_date, diagnosis,
         diagnosis_date, implants, intra_op, post_op)
-        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        """,(uuid_text,
+        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """,(practice_uuid,
+        user_name,
         invoice_form['patient_id'],
         invoice_form['date_invoice'],
         invoice_form['medical_aid'],
@@ -181,14 +178,10 @@ def insertInvoice(uuid_text, invoice_form):
         invoice_form.get('intra_op') or None,
         invoice_form.get('post_op') or None))
 
-    sql_rm_invoice_items = """DELETE FROM invoice_items WHERE uuid_text = '{}'
-    AND invoice_id = '{}'""".format(uuid_text,
-                invoice_form['invoice_id'])
-    cursor.execute(sql_rm_invoice_items)
     list = []
     for i in range(len(invoice_form.getlist('treatments'))):
         list_item = []
-        list_item.extend((uuid_text,
+        list_item.extend((practice_uuid,
             invoice_form['invoice_id'],
             invoice_form.getlist('treatments')[i],
             float(invoice_form.getlist('units')[i]) * 100,
@@ -199,19 +192,71 @@ def insertInvoice(uuid_text, invoice_form):
             invoice_form.getlist('modifier')[i]))
         list_item = tuple(list_item)
         list.append(list_item)
-    sql_individual_item = """INSERT INTO invoice_items (uuid_text,
+    sql_individual_item = """INSERT INTO invoice_items (practice_uuid,
         invoice_id, item, units, description, value_cent, post_value_cent,
         date, modifier) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
     cursor.executemany(sql_individual_item, list)
 
-    if deleted_row_count:
-        status['db_status'] =  'Success'
-        status['db_description'] = 'Updated invoice'
-        status['invoice_id'] = invoice_form['invoice_id']
-    else:
-        status['db_status'] = 'Success'
-        status['db_description'] = 'New invoice created ' + invoice_form['invoice_id']
-        status['invoice_id'] = invoice_form['invoice_id']
+    status['db_status'] = 'Success'
+    status['db_description'] = 'New invoice created ' + invoice_form['invoice_id']
+    status['invoice_id'] = invoice_form['invoice_id']
+    cursor.close()
+    conn.close()
+    return status
+
+def updateInvoice(practice_uuid, user_name, invoice_form):
+    conn = pool.connection()
+    cursor = conn.cursor()
+    status = {}
+    sql = """UPDATE invoices SET po_number = %s, hospital_name = %s,
+        admission_date = %s, discharge_date = %s,  `procedure` = %s,
+        procedure_date = %s, diagnosis = %s, diagnosis_date = %s, implants = %s,
+        intra_op = %s, post_op = %s, last_edited = NOW(), last_edited_by = %s WHERE practice_uuid =
+        %s AND invoice_id = %s
+        """
+    invoice_form_tuple = (invoice_form.get('po_number') or None,
+        invoice_form.get('hospital_name') or None,
+        invoice_form.get('admission_date') or None,
+        invoice_form.get('discharge_date') or None,
+        invoice_form.get('procedure') or None,
+        invoice_form.get('procedure_date') or None,
+        invoice_form.get('diagnosis') or None,
+        invoice_form.get('diagnosis_date') or None,
+        invoice_form.get('implants') or None,
+        invoice_form.get('intra_op') or None,
+        invoice_form.get('post_op') or None,
+        user_name,
+        practice_uuid,
+        invoice_form['invoice_id'])
+
+    cursor.execute(sql, invoice_form_tuple)
+
+    sql_rm_invoice_items = """DELETE FROM invoice_items WHERE practice_uuid = '{}'
+    AND invoice_id = '{}'""".format(practice_uuid,
+                invoice_form['invoice_id'])
+    cursor.execute(sql_rm_invoice_items)
+    list = []
+    for i in range(len(invoice_form.getlist('treatments'))):
+        list_item = []
+        list_item.extend((practice_uuid,
+            invoice_form['invoice_id'],
+            invoice_form.getlist('treatments')[i],
+            float(invoice_form.getlist('units')[i]) * 100,
+            invoice_form.getlist('description')[i],
+            float(invoice_form.getlist('value')[i]) * 100,
+            float(invoice_form.getlist('post_value')[i]) * 100,
+            invoice_form.getlist('date')[i],
+            invoice_form.getlist('modifier')[i]))
+        list_item = tuple(list_item)
+        list.append(list_item)
+    sql_individual_item = """INSERT INTO invoice_items (practice_uuid,
+        invoice_id, item, units, description, value_cent, post_value_cent,
+        date, modifier) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+    cursor.executemany(sql_individual_item, list)
+
+    status['db_status'] =  'Success'
+    status['db_description'] = 'Updated invoice'
+    status['invoice_id'] = invoice_form['invoice_id']
     cursor.close()
     conn.close()
     return status

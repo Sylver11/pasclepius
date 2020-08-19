@@ -35,7 +35,7 @@ def populateBottomTable(doc, text, data):
     first_bottom_table_text = bottom_table.getCellByName("C1")
     first_bottom_table_text.setString("Postal:" )
     first_bottom_table_text = bottom_table.getCellByName("C2")
-    first_bottom_table_text.setString(data["first_name"] +" " +  data["second_name"])
+    first_bottom_table_text.setString(data["practice_name"])
     first_bottom_table_text = bottom_table.getCellByName("C3")
     first_bottom_table_text.setString(data["pob"])
     first_bottom_table_text = bottom_table.getCellByName("C4")

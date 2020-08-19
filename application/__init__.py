@@ -15,10 +15,17 @@ from application.db_users import checkUser, getPractice
 @login_manager.user_loader
 def load_user(id):
     data = checkUser(id)
-    practice = getPractice(practice_uuid = data['practice_uuid'])
     if data:
-        return User(id, data["first_name"], data["uuid_text"],
-                data["practice_uuid"], practice['practice_name'],practice['invoice_layout'])
+        practice = getPractice(practice_uuid = data['current_practice_uuid'])
+        if practice:
+            return User(id,
+                    data["first_name"],
+                    data["uuid_text"],
+                    data["current_practice_uuid"],
+                    practice['practice_name'],
+                    practice['invoice_layout'],
+                    data['current_practice_role'])
+        return User(id, data['first_name'], data['uuid_text'])
 
 
 def create_app():

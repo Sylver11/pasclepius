@@ -1,44 +1,28 @@
-{% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-            <div class="tab-pane" id="layout">
-                <form method="post">
-                    <div class="form-group row">
-                        <div class="col-sm-2">Choose Invoice Layout</div>
-                        <div class="col-sm-10">
-                            {{ form_layout.hidden_tag() }}
-                            <div class="form-check">
-                                {{ form_layout.phone(class="form-check-input") }}
-                                {{ form_layout.phone.label(class_="form-check-label") }}
-                                
-                            </div>
-                            <div class="form-check">
-                                {{ form_layout.fax( class="form-check-input") }}
-                                {{ form_layout.fax.label(class_="form-check-label") }}
-                                
-                            </div>
-                            <div class="form-check">
-                                {{ form_layout.hospital(class="form-check-input") }}
-                                {{ form_layout.hospital.label(class_="form-check-label") }}
-                                
-                            </div>
-                            <div class="form-check">
-                                {{ form_layout.diagnosis(class="form-check-input") }}
-                                {{ form_layout.diagnosis.label(class_="form-check-label") }}
-                            
-                            </div>
-                        </div>
-                    </div>
-                    {{ form_layout.submit }}
-                </form>
+<form id="invoice_form">
+    <div class="form-group row">
+        <div class="col-sm-2">Choose Invoice Layout</div>
+        <div class="col-sm-10">
+            <div class="form-check">
+                <input name="phone" id="phone" type="checkbox" class="form-check-input">
+                <label for="phone" class="form-check-label">Landline</label>
+            </div>
+            <div class="form-check">
+                <input name="fax" id="fax" type="checkbox" class="form-check-input">
+                <label for="fax" class="form-check-label">Fax</label>
+            </div>
+            <div class="form-check">
+                <input name="hospital" id="hospital" type="checkbox" class="form-check-input">
+                <label for="hospital" class="form-check-label">Hospital</label>
+            </div>
+            <div class="form-check">
+                <input name="diagnosis" id="diagnosis" type="checkbox" class="form-check-input">
+                <label for="diagnosis" class="form-check-label">Diangosis</label>
             </div>
         </div>
     </div>
-</div>
+    <input type="submit" value="Update Invoice">
+</form>
+
 
 <script>
     $(document).ready(function(){
@@ -90,6 +74,25 @@
             $("#fax").prop("checked", true);
             $("#diagnosis").prop("checked", true);
         }
+
+        $("body").on("submit", "#invoice_form", function(e){
+            e.preventDefault();
+            var form = $(this);
+            $.ajax({
+                type: "POST",
+                url: '/profile/invoice', 
+                data: form.serialize(),
+                success: function (returnData) {
+                    $('.modal-body').text(returnData)
+                    $("#profile_modal").modal();
+                },
+                error: function(xhr, status, error){
+                    var errorMessage = xhr.status + ': ' + xhr.statusText;
+                    alert('Error - ' + errorMessage);
+                }
+            })
+        })
+
     });
     </script>
 

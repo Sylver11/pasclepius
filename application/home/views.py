@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect, url_for
 from application.forms import PracticeForm
 from application.db_users import addPractice, mergeUserPractice, getPractice
 from flask_login import current_user, login_required
@@ -29,7 +29,12 @@ def setup():
                          form.specialisation.data)
         if status:
             practice = getPractice(current_user.id)
-            mergeUserPractice(practice['practice_uuid'], 'admin', current_user.id) 
+            mergeUserPractice(practice['practice_uuid'],
+                    practice['practice_name'],
+                    current_user.uuid,
+                    current_user.id,
+                    current_user.first_name,
+                    'admin')
             return redirect(url_for('home_bp.home')) 
     return render_template('home/setup.html', form=form, page_title = 'Setup your account')
 

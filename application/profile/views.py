@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, Response, request, session, redirect, url_for, send_file, flash
 from flask_login import current_user, login_required, fresh_login_required
-from application.db_users import checkUser, getPractice, updateInvoice, updateUser, updatePractice
+from application.db_users import checkUser, checkConnections, getAssistants, addUser, updateUser, getPractice, updateInvoice, updateUser, updatePractice, mergeUserPractice
 from application.forms import PracticeForm,  UserForm, InvoiceForm
 import json
 
@@ -11,34 +11,39 @@ profile_bp = Blueprint('profile_bp',__name__, template_folder='templates')
 @profile_bp.route('/')
 @fresh_login_required
 def base():
-    return render_template('profile/base.html', 
+    return render_template('profile/base.html',
             page_title = 'Edit Profile')
 
 
 @profile_bp.route('/personal', methods=('GET', 'POST'))
 @login_required
 def resetPersonal():
-    data = checkUser(current_user.id)
-    form_personal = UserForm()
-    if request.method == 'POST' and form_personal.validate():
-        status = updateUser(current_user.id, form_personal.first_name.data,
-                form_personal.second_name.data)
+    if request.method == 'POST':
+        status = updateUser(current_user.id,
+                first_name = request.form['first_name'],
+                second_name = request.form['second_name'])
         if status:
-            flash('Personal data updated')
-    return render_template('profile/personal.html',
-           form_personal = form_personal,
-                first_name = data['first_name'],
-                second_name = data['second_name'],
-                page_title = 'Change personal')
+            return json.dumps("success")
+    user = checkUser(current_user.id)
+    return render_template('profile/personal.html', user = user)
 
 
 @profile_bp.route('/practice', methods=('GET', 'POST'))
 @login_required
 def resetPractice():
-    practice = getPractice(practice_uuid = current_user.practice_uuid)
-    form_practice = PracticeForm()
-    if request.method == 'POST':
-        status = updatePractice(current_user.practice_uuid,
+    practice = ''
+    if current_user.practice_role =='assistant':
+        if request.method == 'POST':
+            updateUser(current_user.id,
+                    current_practice_uuid = request.form['practice_uuid'],
+                    current_practice_role = 'assistant')
+            return json.dumps("success")
+        else:
+            practice = checkConnections(current_user.uuid)
+
+    elif(current_user.practice_role == 'admin'):
+        if request.method == 'POST':
+            status = updatePractice(current_user.practice_uuid,
                 request.form.get('practice_email'),
                 request.form.get('practice_name'),
                 request.form.get('practice_number'),
@@ -55,27 +60,13 @@ def resetPractice():
                 request.form.get('bank_account'),
                 request.form.get('bank_branch'),
                 request.form.get('bank'))
-        if status:
-            return json.dumps("success")
+            if status:
+                return json.dumps("success")
+        else:
+            practice = getPractice(practice_uuid = current_user.practice_uuid)
+
     return render_template('profile/practice.html',
-            form_practice = form_practice,
-            practice_email = practice['practice_email'],
-            practice_name = practice['practice_name'],
-            practice_number = practice['practice_number'],
-            hpcna_number = practice['hpcna_number'],
-            bank_account = practice['bank_account'],
-            bank_holder = practice['bank_holder'],
-            bank_branch = practice['bank_branch'],
-            bank = practice['bank'],
-            phone = practice['phone'],
-            cell = practice['cell'],
-            fax = practice['fax'],
-            pob = practice['pob'],
-            city = practice['city'],
-            country = practice['country'],
-            qualification = practice['qualification'],
-            specialisation = practice['specialisation'],
-            page_title = 'Change practice info')
+            practice = practice)
 
 
 @profile_bp.route('/invoice', methods=('GET', 'POST'))
@@ -83,16 +74,59 @@ def resetPractice():
 def resetLayout():
     practice = getPractice(practice_uuid = current_user.practice_uuid)
     layout_code = practice['invoice_layout']
-    form_layout = InvoiceForm()
-    if request.method == 'POST' and form_layout.validate():
-        status = updateInvoice(current_user.id,
-               form_layout.phone.data,
-               form_layout.fax.data,
-               form_layout.hospital.data,
-               form_layout.diagnosis.data)
+    if request.method == 'POST':
+        status = updateInvoice(current_user.practice_uuid,
+               request.form.get('phone'),
+               request.form.get('fax'),
+               request.form.get('hospital'),
+               request.form.get('diagnosis'))
         if status:
-           flash('Invoice Layout updated')
+            return json.dumps("success")
     return render_template('profile/invoice.html',
-            form_layout = form_layout,
-            layout_code = layout_code,
-            page_title = 'Change Invoice Layout')
+            layout_code = layout_code)
+
+
+@profile_bp.route('/assistant', methods=('GET', 'POST'))
+def assistant():
+    if current_user.practice_role !='admin':
+        return 'Unauthorised'
+    if request.method == 'POST':
+        newUser = checkUser(request.form['email']) 
+        if not newUser:
+            addUser(request.form['first_name'],
+                request.form['second_name'],
+                request.form['email'])
+        newUser = checkUser(request.form['email']) 
+        mergeUserPractice(current_user.practice_uuid,
+            current_user.practice_name,
+            newUser['uuid_text'],
+            newUser['email'],
+            newUser['first_name'],
+            'assistant')
+        return json.dumps("success")
+    assistants = getAssistants(current_user.practice_uuid)
+    return render_template('profile/assistant.html', assistants = assistants)
+
+
+@profile_bp.route('/select', methods=('GET', 'POST'))
+def select():
+    if current_user.practice_role !='assistant':
+        return 'Unauthorised'
+
+    if request.method == 'POST':
+        status = addUser(request.form['first_name'],
+                request.form['second_name'],
+                request.form['email'])
+        newUser = checkUser(request.form['email']) 
+        mergeUserPractice(current_user.practice_uuid,
+            current_user.practice_name,
+            newUser['uuid_text'],
+            'assistant')
+        if status:
+            return json.dumps("success")
+
+    available_practices = checkConnections(current_user.uuid)
+    print(available_practices)
+    return render_template('profile/select.html', available_practices =
+            available_practices)
+
