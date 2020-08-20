@@ -123,8 +123,14 @@ def mergeUserPractice(practice_uuid, practice_name, user_uuid, user_email,
     sql = """UPDATE users SET current_practice_uuid = '{}', current_practice_role = '{}' WHERE
     uuid_text = '{}'""".format(practice_uuid, role, user_uuid)
     cursor.execute(sql)
-    cursor.execute("""INSERT INTO practice_connections (practice_uuid, practice_name,
-    user_uuid, user_email, user_name, practice_role) VALUES(%s,%s,%s,%s,%s,%s)""",(practice_uuid,
+    cursor.execute("""SELECT * FROM practice_connections WHERE practice_uuid =
+            %s AND user_uuid = %s""",(practice_uuid, user_uuid))
+    row = cursor.fetchone()
+    if not row:
+        cursor.execute("""INSERT INTO practice_connections
+        (practice_uuid, practice_name,
+        user_uuid, user_email, user_name, practice_role)
+        VALUES(%s,%s,%s,%s,%s,%s)""",(practice_uuid,
         practice_name, user_uuid, user_email, user_name, role))
     cursor.close()
     conn.close()

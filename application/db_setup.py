@@ -32,7 +32,6 @@ def setupTable():
         tariff varchar(255) NOT NULL,
         PRIMARY KEY (id));"""
 
-######changed uuid_text to practice_uuid
     sql_create_table_invoice_items = """CREATE TABLE invoice_items (
         id int(11) NOT NULL AUTO_INCREMENT,
         practice_uuid varchar(36) NOT NULL,
@@ -49,8 +48,6 @@ def setupTable():
         status varchar(255),
         PRIMARY KEY (id))"""
 
-#####same goes here
-############## also adding colum for who last edited invoice
     sql_create_table_invoice = """CREATE TABLE invoices (
         id int(11) NOT NULL AUTO_INCREMENT,
         practice_uuid varchar(36) NOT NULL,
@@ -81,7 +78,6 @@ def setupTable():
         last_edited_by VARCHAR(255),
         PRIMARY KEY (id));"""
 
-###############here tooo
     sql_create_table_patients = """ CREATE TABLE patients (
         id int(11) NOT NULL AUTO_INCREMENT,
         practice_uuid varchar(36) NOT NULL,
@@ -167,7 +163,6 @@ def setupTable():
     practice_role varchar(255) NOT NULL,
     PRIMARY KEY (id));"""
 
-########## adding practice_uuid here too
     sql_create_table_user_workbench = """CREATE TABLE user_workbench (
     uuid_text VARCHAR(36) NOT NULL,
     practice_uuid VARCHAR(36) NOT NULL,
@@ -177,7 +172,6 @@ def setupTable():
 
 
 
-#################changes it here too
     create_trigger_status = """CREATE TRIGGER check_settled BEFORE UPDATE ON invoices
     FOR EACH ROW
     BEGIN
@@ -193,8 +187,8 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute(sql_drop_table_user_workbench)
-    cursor.execute(sql_create_table_user_workbench)
+   # cursor.execute(sql_drop_table_user_workbench)
+   # cursor.execute(sql_create_table_user_workbench)
    # cursor.execute(sql_drop_table_invoice_items)
    # cursor.execute(sql_create_table_invoice_items)
    # cursor.execute(sql_drop_table_patients)
@@ -203,13 +197,13 @@ def setupTable():
    # cursor.execute(sql_create_table_practice)
     cursor.execute(sql_drop_table_practice_connections)
     cursor.execute(sql_create_table_practice_connections)
-   # cursor.execute(sql_drop_table_users)
+    cursor.execute(sql_drop_table_users)
    # cursor.execute(sql_drop_table_invoice)
    # cursor.execute(sql_create_table_invoice)
     cursor.execute(sql_drop_table_namaf_tariffs)
     cursor.execute(sql_create_table_namaf_tariffs)
-   # cursor.execute(create_trigger_status)
-   # cursor.execute(sql_create_table_users)
+    cursor.execute(create_trigger_status)
+    cursor.execute(sql_create_table_users)
     cursor.close()
     conn.close()
 
