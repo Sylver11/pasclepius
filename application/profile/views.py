@@ -1,15 +1,13 @@
-from flask import Blueprint, render_template, Response, request, session, redirect, url_for, send_file, flash
-from flask_login import current_user, login_required, fresh_login_required
-from application.db_users import checkUser, checkConnections, getAssistants, addUser, updateUser, getPractice, updateInvoice, updateUser, updatePractice, mergeUserPractice
-from application.forms import PracticeForm,  UserForm, InvoiceForm
+from flask import Blueprint, render_template, request
+from flask_login import current_user, login_required
+from application.db_users import checkUser, checkConnections, getAssistants, addUser, updateUser, getPractice, updateInvoice,  updatePractice, mergeUserPractice
 import json
 
 profile_bp = Blueprint('profile_bp',__name__, template_folder='templates')
 
 
-
 @profile_bp.route('/')
-@fresh_login_required
+@login_required
 def base():
     return render_template('profile/base.html',
             page_title = 'Edit Profile')
@@ -91,12 +89,15 @@ def assistant():
     if current_user.practice_role !='admin':
         return 'Unauthorised'
     if request.method == 'POST':
-        newUser = checkUser(request.form['email']) 
-        if not newUser:
+        newUser = checkUser(request.form['email'])
+        if newUser:
+            if newUser['current_practice_role'] == 'admin':
+                return json.dumps("Could not add assistant. This user is already administering another practice.")
+        else:
             addUser(request.form['first_name'],
                 request.form['second_name'],
                 request.form['email'])
-        newUser = checkUser(request.form['email']) 
+        newUser = checkUser(request.form['email'])
         mergeUserPractice(current_user.practice_uuid,
             current_user.practice_name,
             newUser['uuid_text'],
@@ -126,7 +127,6 @@ def select():
             return json.dumps("success")
 
     available_practices = checkConnections(current_user.uuid)
-    print(available_practices)
     return render_template('profile/select.html', available_practices =
             available_practices)
 

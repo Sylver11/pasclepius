@@ -45,6 +45,9 @@ def updateInvoice(practice_uuid, phone, fax, hospital, diagnosis):
     status = True
     return status
 
+
+
+################### need to add namaf_profession here too 
 def updatePractice(practice_uuid, practice_email, practice_name,
         practice_number, hpcna_number, cell, pob, city, country, qualification,
         phone, fax, specialisation, bank_holder, bank_account, bank_branch, bank):
@@ -162,7 +165,7 @@ def checkConnections(user_uuid):
     return practices
 
 
-def addPractice(email, phone, practice_email, cell, fax, pob, city, country, bank_holder, bank_account, bank, bank_branch, practice_number, practice_name, hpcna_number, qualification, specialisation):
+def addPractice(email, practice_form):
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute("""INSERT INTO practices (uuid_bin, practice_admin,
@@ -170,12 +173,28 @@ def addPractice(email, phone, practice_email, cell, fax, pob, city, country, ban
         cell, fax, pob, city, country,
         bank_holder, bank_account, bank,
         bank_branch, practice_number, practice_name,
-        hpcna_number, qualification, specialisation)
-        VALUES(unhex(replace(uuid(),'-','')),%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    """,(email, practice_email, phone, cell, fax,
-            pob, city, country, bank_holder, bank_account,
-            bank, bank_branch, practice_number, practice_name, hpcna_number,
-            qualification, specialisation))
+        hpcna_number, qualification, specialisation,
+        namaf_profession)
+        VALUES(unhex(replace(uuid(),'-','')),%s,%s,%s,%s,
+        %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """,(email,
+            practice_form.get('practice_email'),
+            practice_form.get('phone'),
+            practice_form.get('cell'),
+            practice_form.get('fax'),
+            practice_form.get('pob'),
+            practice_form.get('city'),
+            practice_form.get('country'),
+            practice_form.get('bank_holder'),
+            practice_form.get('bank_account'),
+            practice_form.get('bank'),
+            practice_form.get('bank_branch'),
+            practice_form.get('practice_number'),
+            practice_form.get('practice_name'),
+            practice_form.get('hpcna_number'),
+            practice_form.get('qualification'),
+            practice_form.get('specialisation'),
+            practice_form.get('namaf_profession')))
     status = True
     cursor.close()
     conn.close()
