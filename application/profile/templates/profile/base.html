@@ -1,21 +1,11 @@
 {% extends 'profile/layout.html' %}
 {% block content %}
-<div id="profile_modal" class="modal fade" role="dialog">
-  <div class="modal-dialog" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title"></h5>
-          </div>
-          <div class="modal-body">
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
 <nav class="navbar navbar-expand-sm navbar-dark" style="background-color:#017B25;">
-  <ul class="navbar-nav" id="myTab">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+    <ul class="navbar-nav" id="myTab">
       <a class="profile_tabs nav-link nav-item active" href="/profile/">Personal</a>
       <a class="profile_tabs nav-link nav-item" href="/profile/">Practice</a>
       <a class="profile_tabs nav-link nav-item" href="/profile/">Invoice</a>
@@ -23,6 +13,9 @@
       <a class="profile_tabs nav-link nav-item" href="/profile/">Assistant</a>
       {% endif %}
   </ul>
+
+  </div>
+ 
 </nav>
 <div id="profile-tab" class="d-flex flex-column"></div>
 <script>

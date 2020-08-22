@@ -1,20 +1,22 @@
-<div class="jumbotron jumbotron-fluid" style="margin-bottom: 0; height: 100vh;">
-    <div class="container">
-<form id=personal_form>
-    <div class="form-row">
-        <div class="form-group col-md-5">
-            <label for="first_name">First Name</label>
-            <input name="first_name" id="first_name" value='{{ user["first_name"]}}' class="form-control" type="text">
+<div class="container-fluid p-5">
+    <h3 class="pb-2">Personal Information</h3>
+            <p class="required">Required Fields</p>
+    <form id=personal_form>
+        <div class="border p-5 my-3">
+            </h5>
+            <div class="form-group">
+                <label for="first_name" class="required">First Name</label>
+                <input name="first_name" id="first_name" value='{{ user["first_name"]}}' class="form-control" type="text">
+            </div>
+            <div class="form-group">
+                <label for="second_name" class="required">Second Name</label>
+                <input name="second_name" id="second_name" value='{{ user["second_name"]}}' class="form-control" type="text">
+            </div>
+        <input type="submit" class="btn btn-primary" value="Update Personal">
         </div>
-        <div class="form-group col-md-5">
-            <label for="second_name">Second Name</label>
-            <input name="second_name" id="second_name" value='{{ user["second_name"]}}' class="form-control" type="text">
-        </div>
-    </div>
-    <input type="submit"  value="Update Personal">
-</form> 
+    </form> 
 </div>
-</div>
+
 
 <script>
 $("body").on("submit", "#personal_form", function(e){

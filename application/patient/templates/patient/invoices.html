@@ -32,9 +32,7 @@ for (let i = 0; i < invoices.length; i++) {
             practice_uuid: element["practice_uuid"],
         }, function(invoice_items) {
 
-            var card = document.createElement("DIV");
-            card.classList.add("card")
-            card.classList.add("mb-3");
+            
             // if(element['status'] == 'not-submitted'){
             //     card.style.backgroundColor = "rgba(0, 0, 255, 0.3)";
             // }
@@ -47,6 +45,9 @@ for (let i = 0; i < invoices.length; i++) {
             // else if(element['status'] == 'settled'){
             //     card.style.backgroundColor = "rgba(0, 255, 0, 0.3)";
             // } 
+            var card = document.createElement("DIV");
+            card.classList.add("card")
+            card.classList.add("mb-3");
             invoice_list.appendChild(card);
             
 
@@ -131,17 +132,20 @@ for (let i = 0; i < invoices.length; i++) {
                     tab.setAttribute("id", "tab-" + i);
                     tab.className += " btn";
                     tab.className += " btn-secondary "
-                    tab.className += " btn-sm "
+                    // tab.className += " btn-sm "
                     tab.className += " active "
                     tab.className += element['invoice_id'];
                     tab.className += " tab";
-                    tab.style.marginLeft = "2em";
+                    // tab.style.marginLeft = "2em";
                     tab.textContent =element['invoice_id'];
+
 
                     var favi = document.createElement("I");
                     favi.setAttribute("id" , "favi-" + i)
                     favi.setAttribute("class" , "fa fa-remove favi")
                     favi.style.paddingLeft ="5px";
+                    favi.style.paddingRight ="5px";
+                    favi.style.verticalAlign =  "top";
                     favi.addEventListener("click", function(e){
                         e.preventDefault();
                         $.ajax({
@@ -157,18 +161,27 @@ for (let i = 0; i < invoices.length; i++) {
                             }) 
                     });
 
+                    var tab_div = document.createElement("DIV"); 
+                    tab_div.appendChild(tab) 
+                    tab_div.appendChild(favi)
+                    // lower_navbar.appendChild(tab_div);
+
                     var  number_of_already_existing_tabs= document.getElementsByClassName("tab");
                     var  number_of_already_existing_favis= document.getElementsByClassName("favi");
                     if(number_of_already_existing_tabs.length > 4){
                         number_of_already_existing_tabs[4].remove();
                         number_of_already_existing_favis[4].remove();
-                        lower_navbar.insertBefore(favi, number_of_already_existing_tabs[0])
-                        lower_navbar.insertBefore(tab, favi)
+                        lower_navbar.insertBefore(tab_div, number_of_already_existing_tabs[0])
+                        // lower_navbar.insertBefore(tab, favi)
+                        // lower_navbar.insertBefore(favi, number_of_already_existing_tabs[0])
+                        // lower_navbar.insertBefore(tab, favi)
                     }
-                    else{
-                        lower_navbar.insertBefore(favi, number_of_already_existing_tabs[0])
-                        lower_navbar.insertBefore(tab, favi)    
-                    }
+                    lower_navbar.insertBefore(tab_div, number_of_already_existing_tabs[0])
+                    // else{
+                    //     lower_navbar.insertBefore(tab_div, number_of_already_existing_tabs[0])
+                    //     // lower_navbar.insertBefore(favi, number_of_already_existing_tabs[0])
+                    //     // lower_navbar.insertBefore(tab, favi)    
+                    // }
                 }
                 dynamic.apply(this, criteria);  
             });   

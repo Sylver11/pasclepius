@@ -1,16 +1,21 @@
 {% extends 'patient/layout.html' %}
 {% block content %}
 <nav class="navbar navbar-expand-sm navbar-dark" style="background-color:#017B25;">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+        
     <ul class="navbar-nav" id="myTab">
         <a class="new-patient nav-link nav-item" href="/patient/">New patient</a>
         <a id="invoices" class="invoices nav-link nav-item" href="/patient/">Invoices</a>
     </ul>
-</nav>
-<div class="jumbotron jumbotron-fluid" style="height:88%; margin:0">
-    <div class="container">
-        <div id="invoice-tab" class="d-flex flex-column"></div>
     </div>
+</nav>
+<div class="container-fluid p-5">
+    <div id="invoice-tab" class="d-flex flex-column"></div>
 </div>
+
 
 <script>   
 
@@ -30,7 +35,12 @@ $(document).ready(function(){
         success: function (patient) {
             if(patient.length > 2){
                 var lower_navbar = document.getElementById("myTab")
-                var draft_button = document.createElement("BUTTON");  
+                
+                var draft_button = document.createElement("BUTTON"); 
+                ////
+                // var draft_div = document.createElement("DIV"); 
+                // draft_div.appendChild(draft_button) 
+                ///
                 draft_button.setAttribute("id", "tab-draft");
                 draft_button.className += " btn";
                 draft_button.className += " btn-secondary "
@@ -108,20 +118,23 @@ $(document).ready(function(){
             tab.setAttribute("id", "tab-" + i);
             tab.setAttribute("type", "button"); 
             tab.className += " btn";
-            tab.className += " btn-sm "
             tab.className += " btn-secondary "
             
             tab.className += element["work_quality"];
             tab.className += " tab";
-            tab.style.marginLeft = "1em";
+            // tab.style.marginLeft = "1em";
             tab.textContent = element["work_quality"]
 
-            lower_navbar.appendChild(tab);
+            var tab_div = document.createElement("DIV"); 
+            tab_div.appendChild(tab) 
+            lower_navbar.appendChild(tab_div);
 
             var favi = document.createElement("I");
             favi.setAttribute("id" , "favi-" + i)
             favi.setAttribute("class" , "fa fa-remove favi")
             favi.style.paddingLeft ="5px";
+            favi.style.paddingRight ="5px";
+            favi.style.verticalAlign =  "top";
             favi.addEventListener("click", function(e){
                 e.preventDefault();
                 $.ajax({
@@ -136,7 +149,8 @@ $(document).ready(function(){
                     }
                 }) 
             });
-            lower_navbar.appendChild(favi);
+            // lower_navbar.appendChild(favi);
+            tab_div.appendChild(favi) 
           }
         }
       })
@@ -201,12 +215,15 @@ $(document).ready(function(){
 
         criteria = ["/patient/" + request_args["patient_id"]];
         
+
+        var patient_div = document.createElement("DIV");
+
         var patient_button = document.createElement("BUTTON");  
         patient_button.setAttribute("id", "patient_tab");
         patient_button.className += " btn";
         patient_button.className += " btn-secondary "
-        patient_button.className += " btn-sm "
-        patient_button.style.marginLeft = "2em";
+        // patient_button.className += " btn-sm "
+        // patient_button.style.marginLeft = "2em";
         patient_button.value = request_args["patient_id"];
         patient_button.textContent = request_args["patient_name"]
         patient_button.addEventListener("click", function(e){
@@ -228,6 +245,8 @@ $(document).ready(function(){
         favi.setAttribute("class" , "fa fa-remove")
         favi.setAttribute("id" , "patient_delete_favi")
         favi.style.paddingLeft ="5px";
+        favi.style.paddingRight ="5px";
+        favi.style.verticalAlign =  "top";
         favi.addEventListener("click", function(e){
             e.preventDefault();
             $.ajax({
@@ -248,8 +267,13 @@ $(document).ready(function(){
         });
 
         var referenceNode = document.getElementById("invoices") 
-        referenceNode.parentNode.insertBefore(favi, referenceNode.nextSibling);      
-        referenceNode.parentNode.insertBefore(patient_button, referenceNode.nextSibling);
+        // patient_div.style.padding ="1em";
+        // referenceNode.parentNode.insertBefore(favi, referenceNode.nextSibling);      
+        // referenceNode.parentNode.insertBefore(patient_button, referenceNode.nextSibling);
+        patient_div.appendChild(patient_button)
+        patient_div.appendChild(favi)
+        referenceNode.parentNode.insertBefore(patient_div, referenceNode.nextSibling);      
+      
    
         $('#patient_tab').addClass('active');
     }
@@ -270,8 +294,8 @@ $(document).ready(function(){
                 patient_button.setAttribute("id", "patient_tab");
                 patient_button.className += " btn";
                 patient_button.className += " btn-secondary ";
-                patient_button.className += " btn-sm ";
-                patient_button.style.marginLeft = "2em";
+                // patient_button.className += " btn-sm ";
+                // patient_button.style.marginLeft = "2em";
                 patient_button.value = request_args["patient_id"];
                 patient_button.textContent = request_args["patient_name"];
                 patient_button.addEventListener("click", function(e){
@@ -292,6 +316,8 @@ $(document).ready(function(){
                 favi.setAttribute("class" , "fa fa-remove")
                 favi.setAttribute("id" , "patient_delete_favi")
                 favi.style.paddingLeft ="5px";
+                favi.style.paddingRight ="5px";
+                favi.style.verticalAlign =  "top";
                 favi.addEventListener("click", function(e){
                     e.preventDefault();
                     $.ajax({
@@ -312,8 +338,15 @@ $(document).ready(function(){
                 });
 
                 var referenceNode = document.getElementById("invoices") 
-                referenceNode.parentNode.insertBefore(favi, referenceNode.nextSibling);      
-                referenceNode.parentNode.insertBefore(patient_button, referenceNode.nextSibling);       
+
+                var patient_div = document.createElement("DIV");
+                // patient_div.style.padding ="em";
+                patient_div.appendChild(patient_button)
+                patient_div.appendChild(favi)
+                referenceNode.parentNode.insertBefore(patient_div, referenceNode.nextSibling);       
+
+                // referenceNode.parentNode.insertBefore(favi, referenceNode.nextSibling);      
+                // referenceNode.parentNode.insertBefore(patient_button, referenceNode.nextSibling);       
           }
         }
         }

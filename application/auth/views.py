@@ -66,6 +66,9 @@ def callback():
             if not status :
                 flash('You do not have an account with us and we were not able to create one for you. Please contact the system administrator')
                 return redirect(url_for('auth_bp.login'))
+            user = User(users_email)
+            login_user(user, remember=True)
+            return redirect(url_for('home_bp.setup'))
         user = User(users_email)
         login_user(user, remember=True)
         return redirect(url_for('home_bp.home'))

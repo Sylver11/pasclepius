@@ -24,6 +24,7 @@ def load_user(id):
                     data["current_practice_uuid"],
                     practice['practice_name'],
                     practice['invoice_layout'],
+                    practice['namaf_profession'],
                     data['current_practice_role'])
         return User(id, data['first_name'], data['uuid_text'])
 

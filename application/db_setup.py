@@ -162,6 +162,7 @@ def setupTable():
     user_email varchar(255) NOT NULL,
     user_name varchar(255) NOT NULL,
     practice_role varchar(255) NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
     PRIMARY KEY (id));"""
 
     sql_create_table_user_workbench = """CREATE TABLE user_workbench (
@@ -188,19 +189,19 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-   # cursor.execute(sql_drop_table_user_workbench)
-   # cursor.execute(sql_create_table_user_workbench)
-   # cursor.execute(sql_drop_table_invoice_items)
-   # cursor.execute(sql_create_table_invoice_items)
-   # cursor.execute(sql_drop_table_patients)
-   # cursor.execute(sql_create_table_patients)
-   # cursor.execute(sql_drop_table_practice)
-   # cursor.execute(sql_create_table_practice)
+    cursor.execute(sql_drop_table_user_workbench)
+    cursor.execute(sql_create_table_user_workbench)
+    cursor.execute(sql_drop_table_invoice_items)
+    cursor.execute(sql_create_table_invoice_items)
+    cursor.execute(sql_drop_table_patients)
+    cursor.execute(sql_create_table_patients)
+    cursor.execute(sql_drop_table_practice)
+    cursor.execute(sql_create_table_practice)
     cursor.execute(sql_drop_table_practice_connections)
     cursor.execute(sql_create_table_practice_connections)
     cursor.execute(sql_drop_table_users)
-   # cursor.execute(sql_drop_table_invoice)
-   # cursor.execute(sql_create_table_invoice)
+    cursor.execute(sql_drop_table_invoice)
+    cursor.execute(sql_create_table_invoice)
     cursor.execute(sql_drop_table_namaf_tariffs)
     cursor.execute(sql_create_table_namaf_tariffs)
     cursor.execute(create_trigger_status)

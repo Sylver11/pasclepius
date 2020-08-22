@@ -1,57 +1,191 @@
-<div class="jumbotron jumbotron-fluid" style="margin-bottom: 0;">
-    <div class="container">
-<p>Current assistants:</p>
-
-{% for i in assistants %}
-<ul>
-    <li> {{ i['user_name'] }}
-        <ul>
-            <li>{{ i['user_email'] }}</li>
-        </ul>
-    </li>  
-</ul>
-{% endfor %}
-
-
-<form id="add_assistant">
-    <div class="form-row">
-        <div class="form-group col-md-5">
-            <label for="first_name">First Name</label>
+<div class="container-fluid p-5">
+    <h3 class="pb-2">Practice Assistant</h3>
+    <p class="required">Required Fields</p>
+    <div class="border p-5 my-3">
+    <div id="assistant_list">
+        <h5 class="pb-2">Current Assistants:</h5>  
+        {% if assistants %}
+            {% for i in assistants %}       
+                <div class="card mb-3">
+                    <div class="card-header">
+                    <p style="display: inline-block;">{{ i['user_name'] }}</p><i title="Added on:"  data-content='{{ i["created_on"] }}' data-toggle="popover" data-trigger="hover" class="fa fa-info-circle" style="float:right"></i>
+                    </div>
+                    <div class="card-body">
+                    <h5 class="card-title">{{ i['user_email'] }}</h5>
+                    </div>
+                </div>            
+            {% endfor %}         
+        {% else %}
+            <p><strong>No assistants found</strong></p>            
+        {% endif %}
+    </div>  
+    </div>
+ 
+    <div class="border p-5 my-3">
+    <form id="add_assistant">
+        <h5 class="pb-2">Add Assistant:</h5>  
+        <div class="form-group">
+            <label class="required" for="first_name">First Name</label>
             <input name="first_name" id="first_name" class="form-control" type="text">
+            <i class="fa" style="float: right"></i>
         </div>
-        <div class="form-group col-md-5">
-            <label for="second_name">Second Name</label>
+        <div class="form-group">
+            <label class="required"  for="second_name">Second Name</label>
             <input name="second_name" id="second_name" class="form-control" type="text">
+            <i class="fa" style="float: right"></i>
         </div>
-        <div class="form-group col-md-5">
-            <label for="email">Email Address</label>
-            <input name="email" id="email" class="form-control" type="text">
+        <div class="form-group">
+            <label class="required"  for="email">Email Address</label>
+            <input name="email" id="email" class="form-control" type="email">
+            <i class="fa" style="float: right"></i>
         </div>
-    </div>
-    <input value="Add Assistant" type="submit">
+        <p><strong>Note:</strong> Max. 2 assistants per practice</p>
+        
+    <button value="Add Assistant" class="btn btn-primary" type="submit">Add Assistant</button>
 </form> 
-    </div>
 </div>
+</div>
+    
+
 
 <script>
+$(document).ready(function(){
+function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
 $("body").on("submit", "#add_assistant", function(e){
     e.preventDefault();
-    var form = $(this);
-    $.ajax({
-        type: "POST",
-        url: '/profile/assistant', 
-        data: form.serialize(),
-        success: function (returnData) {
-            returnData = JSON.parse(returnData.replace(/&#34;/g,'"'));
-            $('.modal-title').text(returnData["status"])    
-            $('.modal-body').text(returnData["description"])
-            $("#profile_modal").modal();
-        },
-        error: function(xhr, status, error){
-            var errorMessage = xhr.status + ': ' + xhr.statusText;
-            alert('Error - ' + errorMessage);
-        }
-    })
+    var email = document.getElementById("email");
+    email = email.value
+    var first_name = document.getElementById("first_name");
+    first_name = first_name.value
+    var second_name = document.getElementById("second_name");
+    second_name = second_name.value
+    if(validateEmail(email)){
+        var form = $(this);
+        $.ajax({
+            type: "POST",
+            url: '/profile/assistant', 
+            data: form.serialize(),
+            success: function (returnData) {
+                returnData = JSON.parse(returnData.replace(/&#34;/g,'"'));   
+                    if (returnData["status"] =="Success"){
+                        $.notify({
+                                    icon:"glyphicon glyphicon-warning-sign",
+                                    title: "<strong> Status: " + returnData["status"] + "</strong>",
+                                    message: returnData["description"]
+                                },{
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    type: 'success',
+                                    delay: 2000,
+                                    animate: {
+                                        enter: 'animated fadeInDown',
+                                        exit: 'animated fadeOutUp'
+                                    }
+                                });
+                                var form = document.getElementById('add_assistant');
+                                var inputs = form.getElementsByTagName("input")          
+                                for(let x = 0; x < inputs.length; x++) {
+                                    var input = inputs[x];
+                                    input.blur();
+                                    input.value = ""
+                                    var icon = input.nextElementSibling;
+                                    icon.classList.add('fa-check');
+                                    input.addEventListener('click', function(){   
+                                        var i_tags = this.parentNode.parentNode.getElementsByTagName("I")
+                                        for (let i = 0; i < i_tags.length; i++) {
+                                            const element = i_tags[i];
+                                            element.classList.remove("fa-check");
+                                        }
+                                    })
+                                } 
+                                var assistant_list = document.getElementById("assistant_list")
+                                var card = document.createElement("DIV");
+                            card.classList.add("card")
+                            card.classList.add("mb-3");
+                            assistant_list.appendChild(card);
+                            
+
+
+                            var card_header = document.createElement("DIV");
+                            card_header.classList.add("card-header");
+                            // card_header.textContent = first_name
+                            card.appendChild(card_header);
+
+                            var card_header_text = document.createElement("P");
+                            card_header_text.textContent = first_name
+                            card_header_text.style.display =  "inline-block";
+                            card_header_text.style.margin = "0"
+                            card_header.appendChild(card_header_text);
+                            
+                            var popover_button = document.createElement("I");
+                            popover_button.setAttribute("title", "Added on:");
+                            popover_button.setAttribute("data-trigger", "hover");
+                            popover_button.setAttribute("data-toggle", "popover");
+                            popover_button.setAttribute("data-html", "true");
+                            popover_button.classList.add("fa");
+                            popover_button.classList.add("fa-info-circle");
+                            popover_button.style.float ="right";
+                            var html_treatment_list = "<p>Today";
+                            html_treatment_list += "</p>";
+                            popover_button.setAttribute("data-content", html_treatment_list);        
+                            card_header.appendChild(popover_button);
+
+                            $('.popover-dismiss').popover({
+                                trigger: 'focus'
+                            })
+                            $('[data-toggle="popover"]').popover();
+
+
+                            var card_body= document.createElement("DIV");
+                            card_body.classList.add("card-body");
+                            card.appendChild(card_body);
+
+                            var card_title = document.createElement("h5");
+                            card_title.classList.add("card-title");
+                            card_title.textContent = email;
+                            card_body.appendChild(card_title);
+
+                            // var card_text = document.createElement("P");
+                            // card_text.classList.add("card-text");
+                            // card_text.textContent = "Created on: " + element['date_created']
+                            // card_body.appendChild(card_text);    
+                            }
+                            else{
+                                $.notify({
+                                    icon:"glyphicon glyphicon-warning-sign",
+                                    title: "<strong> Status: " + returnData["status"] + "</strong>",
+                                    message: returnData["description"]
+                                },{
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    type: 'danger',
+                                    delay: 2000,
+                                    animate: {
+                                        enter: 'animated fadeInDown',
+                                        exit: 'animated fadeOutUp'
+                                    }
+                                });
+                            }
+                        },
+            error: function(xhr, status, error){
+                var errorMessage = xhr.status + ': ' + xhr.statusText;
+                alert('Error - ' + errorMessage);
+            }
+        })
+    }
+    
+})
+$('.popover-dismiss').popover({
+                                trigger: 'focus'
+                            })
+                            $('[data-toggle="popover"]').popover();
 })
 </script>
 

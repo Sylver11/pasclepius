@@ -1,12 +1,14 @@
 from application.db_utils import pool
 import os
 
-def getAllTariffs():
-    sql = """ SELECT tariff FROM namaf_tariffs GROUP BY tariff"""
+def getTariffs(namaf_profession):
+    sql = """ SELECT tariff FROM namaf_tariffs WHERE tariff LIKE '%{}%' GROUP BY
+    tariff""".format(namaf_profession)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
     tariffs = cursor.fetchall()
+    print(tariffs)
     cursor.close()
     conn.close()
     return tariffs

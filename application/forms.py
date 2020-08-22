@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired, Length, Email, Required, NumberRang
 from wtforms.widgets.html5 import NumberInput
 from wtforms.widgets import TextArea, CheckboxInput
 from wtforms import Form as NoCsrfForm
-from application.db_tariffs import getTreatments, getAllTariffs
+from application.db_tariffs import getTreatments, getTariffs
 
 def getTreatmentForm(tariff = None):
     class Treatment(FlaskForm):
@@ -112,15 +112,6 @@ class PracticeForm(FlaskForm):
 
     submit = SubmitField('Update Practice Data')
 
-#class updatePersonalForm(FlaskForm):
-#    title = SelectField(u'Title', choices =
-#                        [('',''),("Dr","Dr"),("Prof Dr","Prof Dr")])
-#    first_name = StringField('First name', validators=[DataRequired(Length(min=4,
-#                                                                     max=35))])
-#    second_name = StringField('Second name', validators=[DataRequired(Length(min=4,
-#                                                                     max=35))])
-#    submit = SubmitField('Update Personal Data')
-
 
 class InvoiceForm(FlaskForm):
     phone =  BooleanField('Landline')
@@ -129,67 +120,71 @@ class InvoiceForm(FlaskForm):
     diagnosis = BooleanField('Diagnosis & Procedure')
     submit = SubmitField('Update Invoice Layout')
 
+def mva_patient_form(namaf_profession):
 
-class Patient_mva(FlaskForm):
-    medical_aid = StringField('Medical Aid')
-    tariffs = getAllTariffs()
-    choices = []
-    for x in tariffs:
-        _tariff = x['tariff']
-        tariff_ = _tariff.replace('_', ' ')
-        _tariff_ = tariff_.upper()
-        choices.append((_tariff, _tariff_))
-    choices.append(('', 'Choose Tariff'))
-    patient_name = StringField(u'Full Name', validators=[DataRequired()])
-    case_number = StringField(u'Case Number', validators=[DataRequired()])
-    po_number = IntegerField(u'PO', validators=[DataRequired()]) #widget=NumberInput(min=111111,max=999999))
-    tariff = SelectField(u'Tariff', choices = choices,
+    class Patient_mva(FlaskForm):
+        medical_aid = StringField('Medical Aid')
+        tariffs = getTariffs(namaf_profession)
+        choices = []
+        for x in tariffs:
+            _tariff = x['tariff']
+            tariff_ = _tariff.replace('_', ' ')
+            _tariff_ = tariff_.upper()
+            choices.append((_tariff, _tariff_))
+        choices.append(('', 'Choose Tariff'))
+        patient_name = StringField(u'Full Name', validators=[DataRequired()])
+        case_number = StringField(u'Case Number', validators=[DataRequired()])
+        po_number = IntegerField(u'PO', validators=[DataRequired()]) #widget=NumberInput(min=111111,max=999999))
+        tariff = SelectField(u'Tariff', choices = choices,
             validators=[DataRequired()], default='')
-    date_created =  StringField(u'Invoice created', validators=[DataRequired()])
-    hospital_name = StringField('Hospital')
-    admission_date = StringField('Date of admission')
-    discharge_date = StringField('Date of discharge')
-    diagnosis = StringField('Diagnosis')
-    diagnosis_date = StringField('Date of diagnosis')
-    procedure = StringField('Procedure')
-    procedure_date = StringField('Date of procedure')
-    implants = StringField('Implants')
-    intra_op = SelectField('Intra-OP imaging', choices = [('',
-    'Select Intra-OP'),('yes','Yes'),('no','No')], default='')
-    post_op =  StringField('Post-OP imaging')
-    status = TextField('Status')
-    submit = SubmitField('Create invoice')
+        date_created =  StringField(u'Invoice created', validators=[DataRequired()])
+        hospital_name = StringField('Hospital')
+        admission_date = StringField('Date of admission')
+        discharge_date = StringField('Date of discharge')
+        diagnosis = StringField('Diagnosis')
+        diagnosis_date = StringField('Date of diagnosis')
+        procedure = StringField('Procedure')
+        procedure_date = StringField('Date of procedure')
+        implants = StringField('Implants')
+        intra_op = SelectField('Intra-OP imaging', choices = [('',
+        'Select Intra-OP'),('yes','Yes'),('no','No')], default='')
+        post_op =  StringField('Post-OP imaging')
+        status = TextField('Status')
+        submit = SubmitField('Create invoice')
+    return Patient_mva()
 
 
-class Patient_other(FlaskForm):
-    medical_aid = StringField('Medical Aid',validators = [DataRequired(),
-        Regexp('^\w+$', message="Please delete all white spaces before & after the word")])
-    patient_name = StringField(u'Full Name', validators=[DataRequired()])
-    main_member = StringField(u'Main Member', validators=[DataRequired()])
-    medical_number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
-    patient_birth_date = StringField(u'Date of Birth', validators=[DataRequired()])
-    date_created =  StringField(u'Invoice created', validators=[DataRequired()])
-    tariffs = getAllTariffs()
-    choices = []
-    for x in tariffs:
-        _tariff = x['tariff']
-        tariff_ = _tariff.replace('_', ' ')
-        _tariff_ = tariff_.upper()
-        choices.append((_tariff, _tariff_))
-    choices.append(('', 'Choose Tariff'))
-    tariff = SelectField(u'Tariff', choices = choices,
+def other_patient_form(namaf_profession):
+    class Patient_other(FlaskForm):
+        medical_aid = StringField('Medical Aid',validators = [DataRequired(),
+            Regexp('^\w+$', message="Please delete all white spaces before & after the word")])
+        patient_name = StringField(u'Full Name', validators=[DataRequired()])
+        main_member = StringField(u'Main Member', validators=[DataRequired()])
+        medical_number = IntegerField(u'Medical Aid No:', validators=[DataRequired()])
+        patient_birth_date = StringField(u'Date of Birth', validators=[DataRequired()])
+        date_created =  StringField(u'Invoice created', validators=[DataRequired()])
+        tariffs = getTariffs(namaf_profession)
+        choices = []
+        for x in tariffs:
+            _tariff = x['tariff']
+            tariff_ = _tariff.replace('_', ' ')
+            _tariff_ = tariff_.upper()
+            choices.append((_tariff, _tariff_))
+        choices.append(('', 'Choose Tariff'))
+        tariff = SelectField(u'Tariff', choices = choices,
                          validators=[DataRequired()] , default='')
-    hospital_name = StringField('Hospital')
-    admission_date = StringField('Date of admission')
-    discharge_date = StringField('Date of discharge')
-    diagnosis = StringField('Diagnosis')
-    diagnosis_date = StringField('Date of diagnosis')
-    procedure = StringField('Procedure')
-    procedure_date = StringField('Date of procedure')
-    implants = StringField('Implants')
-    intra_op = SelectField('Intra-OP imaging',
+        hospital_name = StringField('Hospital')
+        admission_date = StringField('Date of admission')
+        discharge_date = StringField('Date of discharge')
+        diagnosis = StringField('Diagnosis')
+        diagnosis_date = StringField('Date of diagnosis')
+        procedure = StringField('Procedure')
+        procedure_date = StringField('Date of procedure')
+        implants = StringField('Implants')
+        intra_op = SelectField('Intra-OP imaging',
             choices = [('', 'Select Intra-op'),('yes','Yes'),
                 ('no','No')], default='')
-    post_op =  StringField('Post-OP imaging')
-    status = TextField('Status')
-    submit = SubmitField('Create invoice')
+        post_op =  StringField('Post-OP imaging')
+        status = TextField('Status')
+        submit = SubmitField('Create invoice')
+    return Patient_other()

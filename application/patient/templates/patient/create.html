@@ -1,11 +1,16 @@
 {% block content %}
-    <h3>Create new patient</h3> 
-    <select class="medical_aid custom-select w-25">
-        <option value="0">Select medical aid</option>
+    <h3 lass="pb-2">Create new patient</h3> 
+    <!-- <div class="border p-5 my-3"> -->
+        <div class="form-row">
+            <div class="form-group col-md-6">
+    <select class="medical_aid custom-select">
+        <option value="">Select medical aid</option>
         <option value="psemas">PSEMAS</option>
         <option value="mva">MVA</option>
         <option value="other">OTHER</option>
     </select>
+</div>
+    </div>
     <br>
     <br>
     <form method=post autocomplete="off" id="newInvoice_mva" name="mva" class="mva" style="display:none">  
@@ -18,20 +23,20 @@
             {{ form_mva.hidden_tag() }}
             {{ form_mva.medical_aid(value='mva', style='display:none') }}
             
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-6">
                 {{ form_mva.patient_name.label(class="required",  for="patient_name") }} {{ form_mva.patient_name(class_="form-control") }}
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-6">
                 {{ form_mva.case_number.label(class="required",  for="case_number") }} {{ form_mva.case_number(class_="form-control") }}
             </div>
         </div>  
         <div class="form-row">
             
-            <div class="form-group col-md-4">
-                {{ form_mva.tariff.label(class="required", id="tariff_label", class="tariff_label") }} {{ form_mva.tariff(class_="tariff form-control") }}
+            <div class="form-group col-md-6">
+                {{ form_mva.tariff.label(id="tariff_label", class="tariff_label required") }} {{ form_mva.tariff(class_="tariff form-control") }}
             </div>
-            <div class="form-group col-md-4">
-                {{ form_mva.po_number.label(class="required", id="po_label") }} {{ form_mva.po_number(class_="form-control") }}
+            <div class="form-group col-md-6">
+                {{ form_mva.po_number.label(class="required", id="po_label") }} {{ form_mva.po_number(class_="form-control",type="number") }}
             </div>
         </div>
 
@@ -92,26 +97,26 @@
         {% endfor %}
         {{ form_other.hidden_tag() }}
         <div class="form-row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-6">
                 {{form_other.medical_aid.label(class="required")}}  {{ form_other.medical_aid(class_="form-control other_medical_aid") }}
             </div>
-            <div class="form-group col-md-4">
-                {{ form_other.tariff.label(class="required", id="tariff_label", class="tariff_label") }} {{ form_other.tariff(class_="tariff") }}
+            <div class="form-group col-md-6">
+                {{ form_other.tariff.label( id="tariff_label", class="tariff_label required") }} {{ form_other.tariff(class_="tariff form-control") }}
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-6">
                 {{ form_other.patient_name.label(class="required") }} {{ form_other.patient_name(class_="form-control") }}
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-6">
                 {{ form_other.main_member.label(class="required") }} {{ form_other.main_member(class_="form-control") }}
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-6">
                 {{ form_other.patient_birth_date.label(class="required") }} {{ form_other.patient_birth_date(class_="form-control") }}
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-6">
                 {{ form_other.medical_number.label(class="required") }} {{ form_other.medical_number(class_="form-control") }}
             </div>
         </div>
@@ -164,6 +169,7 @@
     <br>
     {{ form_other.submit(class_="btn btn-success") }}
 </form>  
+</div>
 
 <script>
 function toggleOptions(){
@@ -227,7 +233,7 @@ $(document).ready(function() {
                 $('.other').css("display","block")
             }
             else{
-                $('.other_medical_aid').val(selection)
+                $('.other_medical_aid').val(selection.toUpperCase())
                 $('.mva').css("display","none")
                 $('.other').css("display","block")
             }
@@ -252,7 +258,7 @@ $(document).ready(function() {
                     draft_button.className += " btn-secondary "
                     draft_button.className += " btn-sm "
                     
-                    draft_button.style.marginLeft = "2em";
+                    // draft_button.style.marginLeft = "2em";
                     draft_button.textContent = "Draft";
                     draft_button.addEventListener("click", function(e){ 
                         e.preventDefault();
@@ -286,6 +292,7 @@ $(document).ready(function() {
                     favi.setAttribute("class" , "fa fa-remove")
                     favi.setAttribute("id" , "draft_delete_favi")
                     favi.style.paddingLeft ="5px";
+                    favi.style.paddingRight ="5px";
                     favi.addEventListener("click", function(e){
                         e.preventDefault();
                         $.ajax({
@@ -342,7 +349,7 @@ $(document).ready(function() {
                     draft_button.className += " btn";
                     draft_button.className += " btn-secondary "
                     draft_button.className += " btn-sm "
-                    draft_button.style.marginLeft = "2em";
+                    // draft_button.style.marginLeft = "2em";
                     draft_button.textContent = "Draft";
                     draft_button.addEventListener("click", function(e){ 
                         e.preventDefault();
@@ -376,6 +383,7 @@ $(document).ready(function() {
                     favi.setAttribute("class" , "fa fa-remove")
                     favi.setAttribute("id" , "draft_delete_favi")
                     favi.style.paddingLeft ="5px";
+                    favi.style.paddingRight ="5px";
                     favi.addEventListener("click", function(e){
                         e.preventDefault();
                         $.ajax({

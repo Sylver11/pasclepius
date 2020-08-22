@@ -5,7 +5,7 @@ from flask import render_template, Blueprint, request, session, redirect
 from application.db_workbench import removeWork, newWork, lastFive
 from application.db_users import checkUser, getPractice
 from application.db_patient import insertPatient, checkDuplicate, patientSearch, removePatient
-from application.forms import Patient_mva, Patient_other,getTreatmentForm
+from application.forms import mva_patient_form, other_patient_form, getTreatmentForm
 from application.db_invoice import updateInvoice, insertInvoice, get_index, queryInvoices, getSingleInvoice, getItems
 import simplejson as json
 import re
@@ -28,8 +28,8 @@ def invoiceTab():
 @patient_bp.route('/<patient_id>', methods=('GET','POST'))
 @login_required
 def invoiceOption(patient_id):
-    form_mva = Patient_mva()
-    form_other = Patient_other()
+    form_mva = mva_patient_form(current_user.namaf_profession)
+    form_other = other_patient_form(current_user.namaf_profession)
     return render_template('patient/patient.html',
             patient_id = patient_id,
             layout_code = current_user.invoice_layout,
@@ -64,8 +64,8 @@ def addWork():
 @patient_bp.route('/invoice/create', methods=('GET', 'POST'))
 @login_required
 def createPatient():
-    form_mva = Patient_mva()
-    form_other = Patient_other()
+    form_mva = mva_patient_form(current_user.namaf_profession)
+    form_other = other_patient_form(current_user.namaf_profession)
     return render_template('patient/create.html',
             form_mva = form_mva,
             form_other = form_other,

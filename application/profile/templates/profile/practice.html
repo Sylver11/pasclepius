@@ -1,226 +1,252 @@
-
-<div class="jumbotron jumbotron-fluid" style="margin-bottom: 0;">
-    <div class="container">
+<div class="container-fluid p-5">
         {% if current_user.practice_role == 'assistant' %}
+            <h3 class="pb-2">Practice</h3>
+            <div class="border p-5 my-3">
+            {% for i in practice %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title">{{ i['practice_name']  }}</h5>
+                    </div>
+                    <div class="card-body">
+                    
+                    <button class="select_practice btn btn-secondary" value='{{ i["practice_uuid"] }}'>{{ i['practice_name']  }}</button>
+                    </div>
+                </div>  
+            {% endfor %}
+            </div>
 
-<p>Choose practice:</p>
+            <script>
+            $(document).ready(function() {
+                var current_practice = $("#practice_name_navbar").text()
+                var aTags = document.getElementsByTagName("BUTTON");
+                var searchText = current_practice;
+                var found;
 
-{% for i in practice %}
-<ul>
-    <li> <button class="select_practice btn btn-secondary" value='{{ i["practice_uuid"] }}'>{{ i['practice_name'] }}</button></li>  
-</ul>
-{% endfor %}
+                for (var i = 0; i < aTags.length; i++) {
+                    // console.log(aTags[i].value);
+                    if (aTags[i].textContent == searchText) {
+                        found = aTags[i];
+                        break;
+                    }
+                }
+                // console.log(found);
+                found.classList.add("active");
 
-<script>
-$(document).ready(function() {
-    var current_practice = $("#practice_name_navbar").text()
-
-    var aTags = document.getElementsByTagName("BUTTON");
-    var searchText = current_practice;
-    var found;
-
-    for (var i = 0; i < aTags.length; i++) {
-        if (aTags[i].textContent == searchText) {
-            found = aTags[i];
-            break;
-        }
-    }
-    found.classList.add("active");
-
-    $("body").on("click", ".select_practice", function(e){
-        e.preventDefault();
-        var this_button = $(this);
-        var this_text = this_button.text();
-        var practice_uuid = this_button.val();
-        $.ajax({
-            type: "POST",
-            url: '/profile/practice', 
-            data: {practice_uuid: practice_uuid},
-            success: function (returnData) {       
-                returnData = JSON.parse(returnData.replace(/&#34;/g,'"'));
-                $('.modal-title').text(returnData["status"])    
-                $('.modal-body').text(returnData["description"])
-                $("#profile_modal").modal();
-                if (returnData["status"] == "Success"){
-                    $("#practice_name_navbar").text(this_text)
-                    $(".select_practice").removeClass("active")
-                    this_button.addClass("active")
-                }               
-            },
-            error: function(xhr, status, error){
-                var errorMessage = xhr.status + ': ' + xhr.statusText;
-                alert('Error - ' + errorMessage);
-            }
-        })
-    })
-})
-        </script>
+                $("body").on("click", ".select_practice", function(e){
+                    e.preventDefault();
+                    var this_button = $(this);
+                    var this_text = this_button.text();
+                    var practice_uuid = this_button.val();
+                    $.ajax({
+                        type: "POST",
+                        url: '/profile/practice', 
+                        data: {practice_uuid: practice_uuid},
+                        success: function (returnData) {       
+                            returnData = JSON.parse(returnData.replace(/&#34;/g,'"'));
+                            $('.modal-title').text(returnData["status"])    
+                            $('.modal-body').text(returnData["description"])
+                            $("#profile_modal").modal();
+                            if (returnData["status"] == "Success"){
+                                $("#practice_name_navbar").text(this_text)
+                                $(".select_practice").removeClass("active")
+                                this_button.addClass("active")
+                            }               
+                        },
+                        error: function(xhr, status, error){
+                            var errorMessage = xhr.status + ': ' + xhr.statusText;
+                            alert('Error - ' + errorMessage);
+                        }
+                    })
+                })
+            })
+            </script>
 
         {% elif current_user.practice_role == 'admin' %}
-            <form id="practice_form">
-                <div class="border border-dark p-5 my-3">
-                    <p class="h4">h4. Bootstrap heading</p>
-                    <div class="form-group row">
-                        <label for="practice_name" class="required col-sm-3 col-form-label">Practice Name: </label>
-                        <div class="col-sm-9">
-                            <input name="practice_name" id="practice_name" class="form-control" value='{{practice["practice_name"]}}' type="text">  
-                            <small id="passwordHelpBlock" class="form-text text-muted">
-                                Your practice name is will stand on the top of the invoice. If you want your name to 
-                              </small>
-                         </div>
-                    </div>   
-                    <div class="form-group row">
-                        <label for="practice_number" class="required col-sm-3 col-form-label">Practice Number: </label>
-                        <div class="col-sm-9">
+            <h3 class="pb-2">Practice Information</h3>
+            <p class="required">Required Fields</p>
+                <form id="practice_form">
+                    <div class="border p-5 my-3">
+                        <h5 class="pb-2">Practice Details:            
+                        </h5>
+                        <div class="form-group">
+                            <label for="practice_name" class="required">Practice Name: </label>
+                            <input name="practice_name" id="practice_name" class="form-control" value='{{practice["practice_name"]}}' aria-describedby="practice_name_Help" type="text" required>   
+                            <i class="fa" style="float: right"></i>
+                            <small id="practice_name_Help" class="form-text text-muted">
+                                Your practice name will also be used as folder name in which all invoices get saved
+                            </small>
+                        </div>   
+                        <div class="form-group">
+                            <label for="practice_number" class="required">Practice Number: </label>
                             <input name="practice_number"  id="practice_number" value='{{practice["practice_number"]}}' class="form-control" type="text" required>
+                            <i class="fa" style="float: right"></i>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="hpcna_number" class="col-sm-3 col-form-label">HPCNA Number: </label>
-                        <div class="col-sm-9">
-                            <input name="hpcna_number" id="hpcna_number" value='{{practice["hpcna_number"]}}' class="form-control" type="text">
+                        <div class="form-group">
+                            <label for="hpcna_number" class="required">HPCNA Number: </label>
+                            <input name="hpcna_number" id="hpcna_number" value='{{practice["hpcna_number"]}}' class="form-control" type="text" required>
+                            <i class="fa" style="float: right"></i>
                         </div>
-                    </div>
-                </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="practice_email">Practice Email</label>
-                            <input name="practice_email" id="practice_email" value='{{practice["practice_email"]}}' class="form-control" type="email">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="phone">Landline Number</label>
-                            <input name="phone" id="phone" value='{{practice["phone"]}}' class="form-control" type="text">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="cell">Cell Phone Number</label>
-                            <input name="cell" id="cell" value='{{practice["cell"]}}' class="form-control" type="text">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="fax">Fax Number</label>
-                            <input name="fax" id="fax" value='{{practice["fax"]}}' class="form-control" type="text">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="pob">PO Box</label>
-                            <input name="pob" id="pob" value='{{practice["pob"]}}' class="form-control" type="text">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="city">City</label>
-                            <input name="city" id="city" value='{{practice["city"]}}' class="form-control" type="text">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="country">Country</label>
-                            <input name="country" id="country" value='{{practice["country"]}}' class="form-control" type="text">
-                        </div>
-                    </div>
                         <div class="form-group">
                             <label for="qualification">Qualification</label>
-                            <input name="qualification" id="qualification" value='{{practice["qualification"]}}' class="form-control" type="text">
+                            <input name="qualification" id="qualification" value='{{practice["qualification"]}}' aria-describedby="qualification_Help" class="form-control" type="text">
+                            <i class="fa" style="float: right"></i>
+                            <small id="qualification_Help" class="form-text text-muted">Eg. Physiotherapist MSc (UWC)</small>
                         </div>
                         <div class="form-group">
                             <label for="specialisation">Specialisation</label>
-                            <input name="specialisation" id="specialisation" value='{{practice["specialisation"]}}' class="form-control" type="text">
+                            <input name="specialisation" id="specialisation" value='{{practice["specialisation"]}}' aria-describedby="specialisation_Help" class="form-control" type="text">
+                            <i class="fa" style="float: right"></i>
+                             <small id="specialisation_Help" class="form-text text-muted">Eg. Stroke rehabilitation</small>
+                        </div>
+                        <button name="update_practice" class="btn btn-primary" id="submit" type="submit" value="Update Practice">Update Practice</button>
+                    </div>
+                    <div class="border p-5 my-3">
+                    <h5 class="pb-2">Contact Details:</h5>  
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="cell">Cell Phone Number</label>
+                                <input name="cell" id="cell" value='{{practice["cell"]}}' class="form-control" aria-describedby="cell_Help" type="tel" placeholder="Enter Cell Number">
+                                <i class="fa" style="float: right"></i>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="phone">Landline Number</label>
+                                <input name="phone" id="phone" value='{{practice["phone"]}}' class="form-control" type="tel" placeholder="Enter Landline Number">
+                                <i class="fa" style="float: right"></i>
+                            </div>      
+                            <div class="form-group col-md-4">
+                                <label for="fax">Fax Number</label>
+                                <input name="fax" id="fax" value='{{practice["fax"]}}' class="form-control" type="tel" placeholder="Enter Fax Number">
+                                <i class="fa" style="float: right"></i>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="bank_holder">Bank Holder</label>
-                            <input name="bank_holder" id="bank_holder" value='{{practice["bank_holder"]}}' class="form-control w-25 p-3" type="text">
+                            <label for="practice_email">Email Address</label>
+                            <input name="practice_email" id="practice_email" value='{{practice["practice_email"]}}' class="form-control" aria-describedby="practice_email_Help" type="email" placeholder="Enter Email Address">
+                            <i class="fa" style="float: right"></i>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="pob">PO Box</label>
+                                <input name="pob" id="pob" value='{{practice["pob"]}}' class="form-control" type="text">
+                                <i class="fa" style="float: right"></i>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="city">City</label>
+                                <input name="city" id="city" value='{{practice["city"]}}' class="form-control" type="text">
+                                <i class="fa" style="float: right"></i>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="country">Country</label>
+                                <input name="country" id="country" value='{{practice["country"]}}' class="form-control" type="text">
+                                <i class="fa" style="float: right"></i>
+                            </div>
+                        </div>
+                        
+                        <button name="update_contact" class="btn btn-primary" id="submit" type="submit" value="Update Contact">Update Contact</button>
+                    </div>
+                    <div class="border p-5 my-3">
+                        <h5 class="pb-2">Banking Details:
+                            <br><small class="text-muted" ><strong>Note:</strong> The below banking details are only used for displaying purposes on the invoice</small>
+                        </h5>          
+                        <div class="form-group">
+                            <label for="bank_holder">Account Holder</label>
+                            <input name="bank_holder" id="bank_holder" value='{{practice["bank_holder"]}}' aria-describedby="bank_holder_Help" class="form-control" placeholder="Enter Name" type="text">
+                            <i class="fa" style="float: right"></i>                      
                         </div>
                         <div class="form-group">
-                            <label for="bank_account">Bank Account</label>
-                            <input name="bank_account" id="bank_account" value='{{practice["bank_account"]}}' class="form-control w-25 p-3" type="text">
+                            <label for="bank_account">Account Number</label>
+                            <input name="bank_account" id="bank_account" value='{{practice["bank_account"]}}' class="form-control" type="number" placeholder="Enter Account Number">
+                            <i class="fa" style="float: right"></i>
+                            <small id="bank_Help" class="form-text text-muted">Are you quadruple sure the number is correct?</small> 
                         </div>
                         <div class="form-group">
-                            <label for="bank_branch">Bank Branch</label>
-                            <input name="bank_branch" id="bank_branch" value='{{practice["bank_branch"]}}' class="form-control w-25 p-3" type="text">
+                            <label for="bank_branch">Branch Code</label>
+                            <input name="bank_branch" id="bank_branch" value='{{practice["bank_branch"]}}' class="form-control" type="number" placeholder="Enter Branch Number">
+                            <i class="fa" style="float: right"></i>
                         </div>
                         <div class="form-group">
                             <label for="bank">Bank</label> 
-                            <input name="bank" id="bank" value='{{practice["bank"]}}' class="form-control w-25 p-3" type="text">   
+                            <input name="bank" id="bank" value='{{practice["bank"]}}' class="form-control" aria-describedby="bank_Help" type="text" placeholder="Enter Bank Name"> 
+                            <i class="fa" style="float: right"></i> 
+                            <small id="bank_Help" class="form-text text-muted">Try to include the city of your bank branch. Eg. FNB Oshakati</small> 
                         </div>
-    <input id="submit" type="submit" value="Update Practice">
-</form> 
-<script>
-$("body").on("submit", "#practice_form", function(e){
-    e.preventDefault();
-    var submit = document.getElementById("submit");
-    submit.disabled = true;
-    submit.value = "Updating... "
-    var span = document.createElement("SPAN");
-    span.className = "spinner-border"; 
-    span.className +=  " spinner-border-sm";
-    span.setAttribute("role", "status");
-    span.setAttribute("aria-hidden", "true");
-    submit.appendChild(span);
-    var form = $(this);
-    $.ajax({
-        type: "POST",
-        url: '/profile/practice', 
-        data: form.serialize(),
-        success: function (returnData) {      
-            span.remove();
-            returnData = JSON.parse(returnData.replace(/&#34;/g,'"'));   
-            if (returnData["status"] =="Success"){
-                submit.value = "Updated"
-                $.notify({
-                    icon:"glyphicon glyphicon-warning-sign",
-                    title: "<strong> Status: " + returnData["status"] + "</strong>",
-                    message: returnData["description"]
-                },{
-                    placement: {
-                        from: "top",
-                        align: "center"
-                    },
-                    type: 'success',
-                    delay: 2000,
-                    animate: {
-                        enter: 'animated fadeInDown',
-                        exit: 'animated fadeOutUp'
-                    }
-                });
-                var form = document.getElementById('practice_form');
- 
-                    var inputs = form.getElementsByTagName("input")          
-                    for(let x = 0; x < inputs.length; x++) {
-                        var input = inputs[x];
-                        input.disabled = true;
-                    } 
-                    var selects = form.getElementsByTagName("select")
-                    for(let x = 0; x < selects.length; x++) {
-                        var select = selects[x];
-                        select.disabled = true;
-                    }     
-            }
-            else{
-                submit.value = "Update Practice"
-                submit.disabled = false;
-                $.notify({
-                    icon:"glyphicon glyphicon-warning-sign",
-                    title: "<strong> Status: " + returnData["status"] + "</strong>",
-                    message: returnData["description"]
-                },{
-                    placement: {
-                        from: "top",
-                        align: "center"
-                    },
-                    type: 'danger',
-                    delay: 2000,
-                    animate: {
-                        enter: 'animated fadeInDown',
-                        exit: 'animated fadeOutUp'
-                    }
-                });
-            }
-        },
-        error: function(xhr, status, error){
-            var errorMessage = xhr.status + ': ' + xhr.statusText;
-            alert('Error - ' + errorMessage);
-        }
-    })
-})
-</script>
-{% endif %}
+                        <button name="update_banking" class="btn btn-primary" id="submit" type="submit" value="Update Banking">Update Banking</button>
+                    </div>
+                </form>        
+            <script>
+
+            $(document).ready(function() {      
+
+                $("body").on("submit", "#practice_form", function(e){
+                    e.preventDefault();
+                    var form = $(this);
+                    $.ajax({
+                        type: "POST",
+                        url: '/profile/practice', 
+                        data: form.serialize(),
+                        success: function (returnData) {      
+                            returnData = JSON.parse(returnData.replace(/&#34;/g,'"'));   
+                            if (returnData["status"] =="Success"){
+                                $.notify({
+                                    icon:"glyphicon glyphicon-warning-sign",
+                                    title: "<strong> Status: " + returnData["status"] + "</strong>",
+                                    message: returnData["description"]
+                                },{
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    type: 'success',
+                                    delay: 2000,
+                                    animate: {
+                                        enter: 'animated fadeInDown',
+                                        exit: 'animated fadeOutUp'
+                                    }
+                                });
+                                var form = document.getElementById('practice_form');
+                                var inputs = form.getElementsByTagName("input")          
+                                for(let x = 0; x < inputs.length; x++) {
+                                    var input = inputs[x];
+                                    input.blur();
+                                    var icon = input.nextElementSibling;
+                                    icon.classList.add('fa-check');
+                                    input.addEventListener('click', function(){   
+                                        var i_tags = this.parentNode.parentNode.getElementsByTagName("I")
+                                        for (let i = 0; i < i_tags.length; i++) {
+                                            const element = i_tags[i];
+                                            element.classList.remove("fa-check");
+                                        }
+                                    })
+                                }     
+                            }
+                            else{
+                                $.notify({
+                                    icon:"glyphicon glyphicon-warning-sign",
+                                    title: "<strong> Status: " + returnData["status"] + "</strong>",
+                                    message: returnData["description"]
+                                },{
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    type: 'danger',
+                                    delay: 2000,
+                                    animate: {
+                                        enter: 'animated fadeInDown',
+                                        exit: 'animated fadeOutUp'
+                                    }
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error){
+                            var errorMessage = xhr.status + ': ' + xhr.statusText;
+                            alert('Error - ' + errorMessage);
+                        }
+                    })
+                })
+            })
+            </script>
+        {% endif %}
     </div>
-</div>
+
 

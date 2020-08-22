@@ -12,117 +12,127 @@
 
 <!-- TODO add js form validation -->
 
-        <form autocomplete="off" method=post>
-          <br>
-          <p class="required">Required Fields</p>
-          <div class="border border-dark px-5">
-            <br>
-            <h4>Professional Credentials:</h4>
-            <div class="form-group">
-              <label class="required" for="namaf_profession">Namaf Profession</label>
+        <form method=post>
+          <div class="border p-5 my-3">
+            <h5 class="pb-2">Practice Details:            
+            </h5>
+            <label class="required" for="namaf_profession">Namaf Profession</label>
               <select name="namaf_profession" id="namaf_profession" class="form-control col-md-4" required>
                 <option value="">Select Profession</option>
                 <option value="orthopaedic_surgeons">Orthopaedic Surgeons</option>
                 <option value="physiotherapy">Physiotherapy</option>
               </select>
+            <div class="form-group">
+                <label for="practice_name" class="required">Practice Name: </label>
+                <input name="practice_name" id="practice_name" class="form-control" aria-describedby="practice_name_Help" type="text" placeholder="Enter Practice Name" required>   
+                <i class="fa" style="float: right"></i>
+                <small id="practice_name_Help" class="form-text text-muted">
+                    Your practice name will also be used as folder name in which all invoices get saved
+                </small>
+            </div>   
+            <div class="form-group">
+                <label for="practice_number" class="required">Practice Number: </label>
+                <input name="practice_number"  id="practice_number"  class="form-control" type="text" placeholder="Enter Practice Number" required>
+                <i class="fa" style="float: right"></i>
+            </div>
+            <div class="form-group">
+                <label for="hpcna_number" class="required">HPCNA Number: </label>
+                <input name="hpcna_number" id="hpcna_number"  class="form-control" type="text" placeholder="Enter HPCNA Number"required>
+                <i class="fa" style="float: right"></i>
             </div>
             <div class="form-group">
               <label for="qualification">Qualification</label>
-              <input name=qualification class="form-control col-sm-12" type="text">
+              <input name="qualification" id="qualification" aria-describedby="qualification_Help" class="form-control" type="text" placeholder="Enter Qualification">
+              <i class="fa" style="float: right"></i>
+              <small id="qualification_Help" class="form-text text-muted">Eg. Physiotherapist MSc (UWC)</small>
+          </div>
+          <div class="form-group">
+              <label for="specialisation">Specialisation</label>
+              <input name="specialisation" id="specialisation"  aria-describedby="specialisation_Help" class="form-control" type="text"placeholder="Enter Specialisation">
+              <i class="fa" style="float: right"></i>
+               <small id="specialisation_Help" class="form-text text-muted">Eg. Stroke rehabilitation</small>
+          </div>
+        </div>
+        <div class="border p-5 my-3">
+        <h5 class="pb-2">Contact Details:</h5>         
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="cell">Cell Phone Number</label>
+                    <input name="cell" id="cell"  class="form-control" aria-describedby="cell_Help" type="tel" placeholder="Enter Cell Number">
+                    <i class="fa" style="float: right"></i>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="phone">Landline Number</label>
+                    <input name="phone" id="phone"  class="form-control" type="tel" placeholder="Enter Landline Number">
+                    <i class="fa" style="float: right"></i>
+                </div>      
+                <div class="form-group col-md-4">
+                    <label for="fax">Fax Number</label>
+                    <input name="fax" id="fax"  class="form-control" type="tel" placeholder="Enter Fax Number">
+                    <i class="fa" style="float: right"></i>
+                </div>
             </div>
             <div class="form-group">
-              <label for="specialisation">Specialisation</label>
-              <input name=specialisation class="form-control col-sm-12" type="text">
+                <label for="practice_email">Email Address</label>
+                <input name="practice_email" id="practice_email" class="form-control" aria-describedby="practice_email_Help" type="email" placeholder="Enter Email Address">
+                <i class="fa" style="float: right"></i>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="pob">PO Box</label>
+                    <input name="pob" id="pob" class="form-control" type="text" placeholder="Enter PO Box">
+                    <i class="fa" style="float: right"></i>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="city">City</label>
+                    <input name="city" id="city"  class="form-control" type="text" placeholder="Enter City">
+                    <i class="fa" style="float: right"></i>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="country">Country</label>
+                    <input name="country" id="country"  class="form-control" aria-describedby="country_Help" type="text" placeholder="Enter Country">
+                    <i class="fa" style="float: right"></i>
+                    <small id="country_Help" class="form-text text-muted">Eg. Namibia</small>
+                </div>
+            </div>       
+        </div>
+        <div class="border p-5 my-3">
+            <h5 class="pb-2">Banking Details:
+                <br><small class="text-muted" ><strong>Note:</strong> The below banking details are only used for displaying purposes on the invoice</small>
+            </h5>          
+            <div class="form-group">
+                <label for="bank_holder">Account Holder</label>
+                <input name="bank_holder" id="bank_holder"  aria-describedby="bank_holder_Help" class="form-control" placeholder="Enter Name" type="text">
+                <i class="fa" style="float: right"></i>                      
+            </div>
+            <div class="form-group">
+                <label for="bank_account">Account Number</label>
+                <input name="bank_account" id="bank_account"  class="form-control" type="number" placeholder="Enter Account Number">
+                <i class="fa" style="float: right"></i>
+                <small id="bank_Help" class="form-text text-muted">Are you quadruple sure the number is correct?</small> 
+            </div>
+            <div class="form-group">
+                <label for="bank_branch">Branch Code</label>
+                <input name="bank_branch" id="bank_branch"  class="form-control" type="number" placeholder="Enter Branch Number">
+                <i class="fa" style="float: right"></i>
+            </div>
+            <div class="form-group">
+                <label for="bank">Bank</label> 
+                <input name="bank" id="bank" class="form-control" aria-describedby="bank_Help" type="text" placeholder="Enter Bank Name"> 
+                <i class="fa" style="float: right"></i> 
+                <small id="bank_Help" class="form-text text-muted">Try to enter the bank's full name. Eg. FNB Oshakati</small> 
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
+              <label class="form-check-label" for="invalidCheck2">
+                Agree to terms and conditions
+              </label>
             </div>
           </div>
-            <br>
-            <div class="border border-dark px-5">
-            <br>
-            <h4>Practice Details:</h4>
-            <div class="form-row">
-              <div class="form-group col-md-4">
-                <label class="required" for="practice_name">Practice Name</label>
-                <input name=practice_name class="form-control" type="text" required>
-              </div>
-              <div class="form-group col-md-4">
-                <label class="required" for="practice_number">Practice Number</label>
-                <input name=practice_number class="form-control" type="text" required>
-              </div>
-              <div class="form-group col-md-4">
-                <label class="required" for="hpcna_number">HPCNA Number</label>
-                <input name=hpcna_number class="form-control" type="text" required>
-              </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                  <label class="required" for="practice_email">Email</label>
-                  <input name=practice_email class="form-control" type="text" required>
-                </div>
-                <div class="form-group col-md-4">
-                  <label class="required" for="cell">Cellphone</label>
-                  <input name=cell class="form-control" type="text" required>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group col-md-4">
-                  <label for="phone">Landline</label>
-                  <input name=phone class="form-control" type="text">
-                </div>
-                <div class="form-group col-md-4">
-                  <label for="fax">Fax</label>
-                  <input name=fax class="form-control" type="text">
-                </div>
-              </div>
-                <br>
-              </div>  
-              <br>
-              <div class="border border-dark px-5">
-                <br>
-                <h4>Postal address:</h4>
-                <div class="form-row">
-                <div class="form-group col-md-4">
-                  <label for="pob">PO Box</label>
-                  <input name=pob class="form-control" type="text">
-                </div>
-                <div class="form-group col-md-4">
-                  <label for="city">City</label>
-                  <input name=city class="form-control" type="text">
-                </div>
-                <div class="form-group col-md-4">
-                  <label for="country">Country</label>
-                  <input name=country class="form-control" type="text">
-                </div>
-              </div>
-                <br>   
-              </div>
-              <br>
-              <div class="border border-dark px-5">
-                <br>
-                <h4>Banking Details:</h4>
-                <div class="form-row ">
-                <div class="form-group col-md-4">
-                  <label  for="bank_holder">Bank Holder</label>
-                  <input name=bank_holder class="form-control" type="text">
-                </div>
-                <div class="form-group col-md-4">
-                  <label for="bank_account">Bank Account</label>
-                  <input name=bank_account class="form-control" type="text">
-                </div>
-              </div>
-              <div class="form-row ">
-                <div class="form-group col-md-4">
-                  <label for="bank_branch">Bank Branch</label>
-                  <input name=bank_branch class="form-control" type="text">
-                </div>
-                <div class="form-group col-md-4">
-                  <label for="bank">Bank</label>
-                  <input name=bank class="form-control" type="text">
-                </div>
-              </div>
-                <br>
-            </div>
-            <input type=submit value="Finalise Setup">
-        </form>
+        <input type=submit value="Finalise Setup">
+      </form>
     </div>
 </div>
  {% endblock %}
