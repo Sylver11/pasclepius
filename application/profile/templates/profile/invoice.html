@@ -1,3 +1,5 @@
+<div class="jumbotron jumbotron-fluid" style="margin-bottom: 0;">
+    <div class="container">
 <form id="invoice_form">
     <div class="form-group row">
         <div class="col-sm-2">Choose Invoice Layout</div>
@@ -22,6 +24,8 @@
     </div>
     <input type="submit" value="Update Invoice">
 </form>
+    </div>
+</div>
 
 
 <script>
@@ -83,7 +87,9 @@
                 url: '/profile/invoice', 
                 data: form.serialize(),
                 success: function (returnData) {
-                    $('.modal-body').text(returnData)
+                    returnData = JSON.parse(returnData.replace(/&#34;/g,'"'));
+                    $('.modal-title').text(returnData["status"])    
+                    $('.modal-body').text(returnData["description"])
                     $("#profile_modal").modal();
                 },
                 error: function(xhr, status, error){

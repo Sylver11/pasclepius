@@ -3,7 +3,8 @@ from flask_login import current_user, login_required
 from application.db_users import checkUser, checkConnections, getAssistants, addUser, updateUser, getPractice, updateInvoice,  updatePractice, mergeUserPractice
 import json
 
-profile_bp = Blueprint('profile_bp',__name__, template_folder='templates')
+profile_bp = Blueprint('profile_bp',__name__, template_folder='templates',
+        static_folder='static')
 
 
 @profile_bp.route('/')
@@ -21,7 +22,11 @@ def resetPersonal():
                 first_name = request.form['first_name'],
                 second_name = request.form['second_name'])
         if status:
-            return json.dumps("success")
+            return json.dumps({'status': 'Success',
+                'description': 'Updated personal data'})
+        else:
+            return json.dumps({'status': 'Failed',
+                'description': 'Could not update personal data. Please contact system administrator'})
     user = checkUser(current_user.id)
     return render_template('profile/personal.html', user = user)
 
@@ -35,31 +40,21 @@ def resetPractice():
             updateUser(current_user.id,
                     current_practice_uuid = request.form['practice_uuid'],
                     current_practice_role = 'assistant')
-            return json.dumps("success")
+            return json.dumps({'status': 'Success',
+                'description': 'Changed to different practice'})
         else:
             practice = checkConnections(current_user.uuid)
 
     elif(current_user.practice_role == 'admin'):
         if request.method == 'POST':
             status = updatePractice(current_user.practice_uuid,
-                request.form.get('practice_email'),
-                request.form.get('practice_name'),
-                request.form.get('practice_number'),
-                request.form.get('hpcna_number'),
-                request.form.get('cell'),
-                request.form.get('pob'),
-                request.form.get('city'),
-                request.form.get('country'),
-                request.form.get('qualification'),
-                request.form.get('phone'),
-                request.form.get('fax'),
-                request.form.get('specialisation'),
-                request.form.get('bank_holder'),
-                request.form.get('bank_account'),
-                request.form.get('bank_branch'),
-                request.form.get('bank'))
+                    request.form)
             if status:
-                return json.dumps("success")
+                return json.dumps({'status': 'Success',
+                'description': 'Updated practice data'})
+            else:
+                return json.dumps({'status': 'Failed',
+                'description': 'Could not update practice data. Please contact system administrator'})
         else:
             practice = getPractice(practice_uuid = current_user.practice_uuid)
 
@@ -79,7 +74,12 @@ def resetLayout():
                request.form.get('hospital'),
                request.form.get('diagnosis'))
         if status:
-            return json.dumps("success")
+            return json.dumps({'status': 'Success',
+                'description': 'Updated invoice data'})
+        else:
+            return json.dumps({'status': 'Failed',
+                'description': 'Could not update invoice data. Please contact system administrator'})
+
     return render_template('profile/invoice.html',
             layout_code = layout_code)
 
@@ -92,7 +92,8 @@ def assistant():
         newUser = checkUser(request.form['email'])
         if newUser:
             if newUser['current_practice_role'] == 'admin':
-                return json.dumps("Could not add assistant. This user is already administering another practice.")
+                return json.dumps({'status': 'Failed',
+                    'description': 'Could not add assistant. This user already  administers another practice.'})
         else:
             addUser(request.form['first_name'],
                 request.form['second_name'],
@@ -104,7 +105,8 @@ def assistant():
             newUser['email'],
             newUser['first_name'],
             'assistant')
-        return json.dumps("success")
+        return json.dumps({'status': 'Success',
+                'description': 'New assistant has be added'})
     assistants = getAssistants(current_user.practice_uuid)
     return render_template('profile/assistant.html', assistants = assistants)
 
@@ -113,7 +115,6 @@ def assistant():
 def select():
     if current_user.practice_role !='assistant':
         return 'Unauthorised'
-
     if request.method == 'POST':
         status = addUser(request.form['first_name'],
                 request.form['second_name'],
@@ -124,8 +125,11 @@ def select():
             newUser['uuid_text'],
             'assistant')
         if status:
-            return json.dumps("success")
-
+            return json.dumps({'status': 'Success',
+                'description': 'Switched to different practice'})
+        else:
+            return json.dumps({'status': 'Failed',
+                'description': 'Could not switch to different practice'})
     available_practices = checkConnections(current_user.uuid)
     return render_template('profile/select.html', available_practices =
             available_practices)

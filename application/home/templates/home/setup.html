@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block content %}
-<div class="jumbotron jumbotron-fluid">
-    <div class="container">
+<div class="jumbotron jumbotron-fluid" style="margin-bottom: 0;">
+  <div class="container">
         <div id="inside_container" class="align-middle">
             {% if current_user.is_authenticated %}
                 Hi {{ current_user.first_name }},<br>

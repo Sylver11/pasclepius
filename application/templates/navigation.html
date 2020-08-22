@@ -39,7 +39,7 @@
         {% endif %}
       </ul>
       {% if current_user.is_authenticated and current_user.practice_uuid%}
-      <span class="navbar-text" style="padding-right: 2em; max-width: 20em; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+      <span class="navbar-text" style="padding-right: 2em; max-width: 15em; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
         Practice: <p id="practice_name_navbar" style="padding:0;margin:0;display:inline">{{  current_user.practice_name }}</p>
       </span>
 

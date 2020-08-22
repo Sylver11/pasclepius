@@ -1,4 +1,5 @@
-
+<div class="jumbotron jumbotron-fluid" style="margin-bottom: 0;">
+    <div class="container">
 <p>Current assistants:</p>
 
 {% for i in assistants %}
@@ -29,6 +30,8 @@
     </div>
     <input value="Add Assistant" type="submit">
 </form> 
+    </div>
+</div>
 
 <script>
 $("body").on("submit", "#add_assistant", function(e){
@@ -39,7 +42,9 @@ $("body").on("submit", "#add_assistant", function(e){
         url: '/profile/assistant', 
         data: form.serialize(),
         success: function (returnData) {
-            $('.modal-body').text(returnData)
+            returnData = JSON.parse(returnData.replace(/&#34;/g,'"'));
+            $('.modal-title').text(returnData["status"])    
+            $('.modal-body').text(returnData["description"])
             $("#profile_modal").modal();
         },
         error: function(xhr, status, error){

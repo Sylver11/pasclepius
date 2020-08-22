@@ -1,3 +1,5 @@
+<div class="jumbotron jumbotron-fluid" style="margin-bottom: 0; height: 100vh;">
+    <div class="container">
 <form id=personal_form>
     <div class="form-row">
         <div class="form-group col-md-5">
@@ -11,6 +13,8 @@
     </div>
     <input type="submit"  value="Update Personal">
 </form> 
+</div>
+</div>
 
 <script>
 $("body").on("submit", "#personal_form", function(e){
@@ -20,8 +24,10 @@ $("body").on("submit", "#personal_form", function(e){
         type: "POST",
         url: '/profile/personal', 
         data: form.serialize(),
-        success: function (returnData) {
-            $('.modal-body').text(returnData)
+        success: function (returnData) {     
+            returnData = JSON.parse(returnData.replace(/&#34;/g,'"'));
+            $('.modal-title').text(returnData["status"])    
+            $('.modal-body').text(returnData["description"])
             $("#profile_modal").modal();
         },
         error: function(xhr, status, error){

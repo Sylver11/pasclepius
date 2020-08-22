@@ -47,20 +47,45 @@ def updateInvoice(practice_uuid, phone, fax, hospital, diagnosis):
 
 
 
-################### need to add namaf_profession here too 
-def updatePractice(practice_uuid, practice_email, practice_name,
-        practice_number, hpcna_number, cell, pob, city, country, qualification,
-        phone, fax, specialisation, bank_holder, bank_account, bank_branch, bank):
-    sql = """ UPDATE practices SET practice_name = '{}', practice_number = '{}',
-    hpcna_number = '{}', practice_email = '{}', cell = '{}', pob = '{}', city =
-    '{}', country = '{}',qualification = '{}',  phone = '{}', fax = '{}',
-    specialisation = '{}', bank_holder = '{}', bank_account = '{}', bank_branch = '{}', bank = '{}' WHERE practice_uuid = '{}'""".format(practice_name,
-            practice_number, hpcna_number, practice_email, cell, pob, city, country,
-            qualification, phone, fax, specialisation, bank_holder, bank_account,
-            bank_branch, bank, practice_uuid)
+def updatePractice(practice_uuid, practice_form):
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute(sql)
+    cursor.execute(""" UPDATE practices SET 
+    practice_email = %s,
+    phone = %s,
+    cell = %s,
+    fax = %s,
+    pob = %s,
+    city = %s,
+    country = %s,
+    bank_holder = %s,
+    bank_account = %s,
+    bank = %s,
+    bank_branch = %s,
+    practice_number = %s,
+    practice_name = %s,
+    hpcna_number = %s,
+    qualification = %s,
+    specialisation = %s,
+    namaf_profession = %s  WHERE practice_uuid = %s
+    """,(practice_form.get('practice_email'),
+            practice_form.get('phone'),
+            practice_form.get('cell'),
+            practice_form.get('fax'),
+            practice_form.get('pob'),
+            practice_form.get('city'),
+            practice_form.get('country'),
+            practice_form.get('bank_holder'),
+            practice_form.get('bank_account'),
+            practice_form.get('bank'),
+            practice_form.get('bank_branch'),
+            practice_form.get('practice_number'),
+            practice_form.get('practice_name'),
+            practice_form.get('hpcna_number'),
+            practice_form.get('qualification'),
+            practice_form.get('specialisation'),
+            practice_form.get('namaf_profession'),
+            practice_uuid))
     cursor.close()
     conn.close()
     status = True

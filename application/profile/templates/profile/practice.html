@@ -1,4 +1,7 @@
-{% if current_user.practice_role == 'assistant' %}
+
+<div class="jumbotron jumbotron-fluid" style="margin-bottom: 0;">
+    <div class="container">
+        {% if current_user.practice_role == 'assistant' %}
 
 <p>Choose practice:</p>
 
@@ -24,8 +27,6 @@ $(document).ready(function() {
     }
     found.classList.add("active");
 
-    
-
     $("body").on("click", ".select_practice", function(e){
         e.preventDefault();
         var this_button = $(this);
@@ -35,12 +36,16 @@ $(document).ready(function() {
             type: "POST",
             url: '/profile/practice', 
             data: {practice_uuid: practice_uuid},
-            success: function (returnData) {
-                $(".select_practice").removeClass("active")
-                $('.modal-body').text(returnData)
+            success: function (returnData) {       
+                returnData = JSON.parse(returnData.replace(/&#34;/g,'"'));
+                $('.modal-title').text(returnData["status"])    
+                $('.modal-body').text(returnData["description"])
                 $("#profile_modal").modal();
-                $("#practice_name_navbar").text(this_text)
-                this_button.addClass("active")
+                if (returnData["status"] == "Success"){
+                    $("#practice_name_navbar").text(this_text)
+                    $(".select_practice").removeClass("active")
+                    this_button.addClass("active")
+                }               
             },
             error: function(xhr, status, error){
                 var errorMessage = xhr.status + ': ' + xhr.statusText;
@@ -49,29 +54,39 @@ $(document).ready(function() {
         })
     })
 })
-</script>
+        </script>
 
-
-    
-
-{% elif current_user.practice_role == 'admin' %}
-<form id="practice_form">
-    <div class="form-group">
-        <label for="practice_name" class="required">Practice Name</label>
-        <input name="practice_name" id="practice_name" class="form-control w-25 p-3" value='{{practice["practice_name"]}}' type="text">  
-    </div>   
-    <div class="form-group">
-        <label for="practice_number" class="required">Practice Number</label>
-                        <input name="practice_number"  id="practice_number" value='{{practice["practice_number"]}}' class="form-control w-25 p-3" type="text" required>
+        {% elif current_user.practice_role == 'admin' %}
+            <form id="practice_form">
+                <div class="border border-dark p-5 my-3">
+                    <p class="h4">h4. Bootstrap heading</p>
+                    <div class="form-group row">
+                        <label for="practice_name" class="required col-sm-3 col-form-label">Practice Name: </label>
+                        <div class="col-sm-9">
+                            <input name="practice_name" id="practice_name" class="form-control" value='{{practice["practice_name"]}}' type="text">  
+                            <small id="passwordHelpBlock" class="form-text text-muted">
+                                Your practice name is will stand on the top of the invoice. If you want your name to 
+                              </small>
+                         </div>
+                    </div>   
+                    <div class="form-group row">
+                        <label for="practice_number" class="required col-sm-3 col-form-label">Practice Number: </label>
+                        <div class="col-sm-9">
+                            <input name="practice_number"  id="practice_number" value='{{practice["practice_number"]}}' class="form-control" type="text" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="hpcna_number">HPCNA Number</label>
-                        <input name="hpcna_number" id="hpcna_number" value='{{practice["hpcna_number"]}}' class="form-control w-25 p-3" type="text">
+                    <div class="form-group row">
+                        <label for="hpcna_number" class="col-sm-3 col-form-label">HPCNA Number: </label>
+                        <div class="col-sm-9">
+                            <input name="hpcna_number" id="hpcna_number" value='{{practice["hpcna_number"]}}' class="form-control" type="text">
+                        </div>
                     </div>
+                </div>
+
                     <div class="form-row">
                         <div class="form-group col-md-4">
                             <label for="practice_email">Practice Email</label>
-                            <input name="practice_email" id="practice_email" value='{{practice["practice_email"]}}' class="form-control" type="text">
+                            <input name="practice_email" id="practice_email" value='{{practice["practice_email"]}}' class="form-control" type="email">
                         </div>
                         <div class="form-group col-md-4">
                             <label for="phone">Landline Number</label>
@@ -124,20 +139,79 @@ $(document).ready(function() {
                             <label for="bank">Bank</label> 
                             <input name="bank" id="bank" value='{{practice["bank"]}}' class="form-control w-25 p-3" type="text">   
                         </div>
-    <input type="submit" value="Update Practice">
+    <input id="submit" type="submit" value="Update Practice">
 </form> 
 <script>
 $("body").on("submit", "#practice_form", function(e){
     e.preventDefault();
+    var submit = document.getElementById("submit");
+    submit.disabled = true;
+    submit.value = "Updating... "
+    var span = document.createElement("SPAN");
+    span.className = "spinner-border"; 
+    span.className +=  " spinner-border-sm";
+    span.setAttribute("role", "status");
+    span.setAttribute("aria-hidden", "true");
+    submit.appendChild(span);
     var form = $(this);
     $.ajax({
         type: "POST",
         url: '/profile/practice', 
         data: form.serialize(),
-        success: function (returnData) {
-            $('.modal-body').text(returnData)
-            $("#profile_modal").modal();
-            // console.log(returnData);
+        success: function (returnData) {      
+            span.remove();
+            returnData = JSON.parse(returnData.replace(/&#34;/g,'"'));   
+            if (returnData["status"] =="Success"){
+                submit.value = "Updated"
+                $.notify({
+                    icon:"glyphicon glyphicon-warning-sign",
+                    title: "<strong> Status: " + returnData["status"] + "</strong>",
+                    message: returnData["description"]
+                },{
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    },
+                    type: 'success',
+                    delay: 2000,
+                    animate: {
+                        enter: 'animated fadeInDown',
+                        exit: 'animated fadeOutUp'
+                    }
+                });
+                var form = document.getElementById('practice_form');
+ 
+                    var inputs = form.getElementsByTagName("input")          
+                    for(let x = 0; x < inputs.length; x++) {
+                        var input = inputs[x];
+                        input.disabled = true;
+                    } 
+                    var selects = form.getElementsByTagName("select")
+                    for(let x = 0; x < selects.length; x++) {
+                        var select = selects[x];
+                        select.disabled = true;
+                    }     
+            }
+            else{
+                submit.value = "Update Practice"
+                submit.disabled = false;
+                $.notify({
+                    icon:"glyphicon glyphicon-warning-sign",
+                    title: "<strong> Status: " + returnData["status"] + "</strong>",
+                    message: returnData["description"]
+                },{
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    },
+                    type: 'danger',
+                    delay: 2000,
+                    animate: {
+                        enter: 'animated fadeInDown',
+                        exit: 'animated fadeOutUp'
+                    }
+                });
+            }
         },
         error: function(xhr, status, error){
             var errorMessage = xhr.status + ': ' + xhr.statusText;
@@ -147,4 +221,6 @@ $("body").on("submit", "#practice_form", function(e){
 })
 </script>
 {% endif %}
+    </div>
+</div>
 
