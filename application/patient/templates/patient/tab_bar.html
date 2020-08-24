@@ -1,6 +1,6 @@
 {% extends 'patient/layout.html' %}
 {% block content %}
-<nav class="navbar navbar-expand-sm navbar-dark" style="background-color:#017B25;">
+<nav class="navbar navbar-expand-lg navbar-dark justify-content-between" style="background-color:#017B25;">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -37,15 +37,11 @@ $(document).ready(function(){
                 var lower_navbar = document.getElementById("myTab")
                 
                 var draft_button = document.createElement("BUTTON"); 
-                ////
-                // var draft_div = document.createElement("DIV"); 
-                // draft_div.appendChild(draft_button) 
-                ///
                 draft_button.setAttribute("id", "tab-draft");
                 draft_button.className += " btn";
                 draft_button.className += " btn-secondary "
                 draft_button.className += " btn-sm "
-                draft_button.style.marginLeft = "2em";
+                // draft_button.style.marginLeft = "2em";
                 draft_button.textContent = "Draft";
                 draft_button.addEventListener("click", function(e){ 
                     e.preventDefault();
@@ -110,30 +106,52 @@ $(document).ready(function(){
         data: {work_type: "invoice_tab"},
         success: function (returnData) {
           const obj = JSON.parse(returnData)
-          var lower_navbar = document.getElementById("myTab")
+          var lower_navbar = document.getElementById("navbarTogglerDemo01")
 
           for (let i = 0; i < obj.length; i++) {
             const element = obj[i];
             var tab = document.createElement("BUTTON");
-            tab.setAttribute("id", "tab-" + i);
+            // tab.setAttribute("id", "tab-" + i);
             tab.setAttribute("type", "button"); 
             tab.className += " btn";
-            tab.className += " btn-secondary "
-            
+            tab.className += " btn-secondary "   
+            tab.className += " my-2";
+            tab.className += " my-lg-0 ";        
             tab.className += element["work_quality"];
-            tab.className += " tab";
-            // tab.style.marginLeft = "1em";
             tab.textContent = element["work_quality"]
+            tab.addEventListener("click", function(e){
+                e.preventDefault();   
+                var invoice_id = $(this).text();
+                criteria[0] = "/patient/invoice/" + invoice_id;
+                dynamic.apply(this, criteria); 
+                var lower_navbar = document.getElementById("navbarTogglerDemo01");
+                var tabs = lower_navbar.getElementsByTagName('BUTTON');
+                for (var i = 0; i < tabs.length; i++) {
+                    tabs[i].classList.remove("active");
+                }
+                $('.new-patient').removeClass('active'); 
+                $('.invoices').removeClass('active');
+                $(this).addClass('active'); 
+            })
 
-            var tab_div = document.createElement("DIV"); 
+            var tab_div = document.createElement("FORM"); 
+            tab_div.setAttribute("id", "tab-" + i);
+            tab_div.className += "tab";
+            tab_div.className += " form-inline";
+            // tab_div.className += " my-2 my-lg-0";
+            
+            // tab_div.style.minWidth = "158px";
+            // tab_div.style.minHeight = "42px";
+            // tab_div.style.paddingLeft ="5px";
+            // tab_div.style.paddingRight ="5px";
             tab_div.appendChild(tab) 
             lower_navbar.appendChild(tab_div);
 
             var favi = document.createElement("I");
             favi.setAttribute("id" , "favi-" + i)
-            favi.setAttribute("class" , "fa fa-remove favi")
-            favi.style.paddingLeft ="5px";
-            favi.style.paddingRight ="5px";
+            favi.setAttribute("class" , "fa fa-remove favi mr-sm-2 ml-2")
+            // favi.style.marginLeft ="5px";
+            // favi.style.marginRight ="5px";
             favi.style.verticalAlign =  "top";
             favi.addEventListener("click", function(e){
                 e.preventDefault();
@@ -144,8 +162,8 @@ $(document).ready(function(){
                     success: function (status) {
                         tab_to_be_removed = document.getElementById("tab-" + i)
                         tab_to_be_removed.remove();
-                        favi_to_be_removed = document.getElementById("favi-" + i)
-                        favi_to_be_removed.remove();
+                        // favi_to_be_removed = document.getElementById("favi-" + i)
+                        // favi_to_be_removed.remove();
                     }
                 }) 
             });
@@ -174,7 +192,7 @@ $(document).ready(function(){
         e.preventDefault();
         criteria[0] = "/patient/invoice/continue";
         dynamic.apply(this, criteria); 
-        var lower_navbar = document.getElementById("myTab");
+        var lower_navbar = document.getElementById("navbarTogglerDemo01");
         var tabs = lower_navbar.getElementsByTagName('BUTTON');
         for (var i = 0; i < tabs.length; i++) {
             tabs[i].classList.remove("active");
@@ -184,20 +202,20 @@ $(document).ready(function(){
     })
 
     
-    $(document).on("click", ".tab", function (e) {  
-        e.preventDefault();   
-        var invoice_id = $(this).text();
-        criteria[0] = "/patient/invoice/" + invoice_id;
-        dynamic.apply(this, criteria); 
-        var lower_navbar = document.getElementById("myTab");
-        var tabs = lower_navbar.getElementsByTagName('BUTTON');
-        for (var i = 0; i < tabs.length; i++) {
-            tabs[i].classList.remove("active");
-        }
-        $('.new-patient').removeClass('active'); 
-        $('.invoices').removeClass('active');
-        $(this).addClass('active');  
-    })
+    // $(document).on("click", ".tab", function (e) {  
+    //     e.preventDefault();   
+    //     var invoice_id = $(this).text();
+    //     criteria[0] = "/patient/invoice/" + invoice_id;
+    //     dynamic.apply(this, criteria); 
+    //     var lower_navbar = document.getElementById("myTab");
+    //     var tabs = lower_navbar.getElementsByTagName('BUTTON');
+    //     for (var i = 0; i < tabs.length; i++) {
+    //         tabs[i].classList.remove("active");
+    //     }
+    //     $('.new-patient').removeClass('active'); 
+    //     $('.invoices').removeClass('active');
+    //     $(this).addClass('active');  
+    // })
 
     let criteria =[];
     request_args = '{{ request_args }}';
@@ -216,12 +234,19 @@ $(document).ready(function(){
         criteria = ["/patient/" + request_args["patient_id"]];
         
 
-        var patient_div = document.createElement("DIV");
+        var patient_div = document.createElement("FORM");
+        patient_div.className += " form-inline ";
+        // patient_div.style.minWidth = "158px";
+        // patient_div.style.minHeight = "42px";
+        // patient_div.style.paddingLeft ="5px";
+        // patient_div.style.paddingRight ="5px";
 
         var patient_button = document.createElement("BUTTON");  
         patient_button.setAttribute("id", "patient_tab");
         patient_button.className += " btn";
         patient_button.className += " btn-secondary "
+        patient_button.className += " my-2";
+        patient_button.className += " my-sm-0";
         // patient_button.className += " btn-sm "
         // patient_button.style.marginLeft = "2em";
         patient_button.value = request_args["patient_id"];
@@ -230,7 +255,7 @@ $(document).ready(function(){
             e.preventDefault();   
             criteria = ["/patient/" + request_args["patient_id"]];
             dynamic.apply(this, criteria); 
-            var lower_navbar = document.getElementById("myTab");
+            var lower_navbar = document.getElementById("navbarTogglerDemo01");
             var tabs = lower_navbar.getElementsByTagName('BUTTON');
             for (var i = 0; i < tabs.length; i++) {
                 tabs[i].classList.remove("active");
@@ -242,10 +267,13 @@ $(document).ready(function(){
         })
 
         var favi = document.createElement("I");
-        favi.setAttribute("class" , "fa fa-remove")
+        // favi.setAttribute("class" , "fa fa-remove")
         favi.setAttribute("id" , "patient_delete_favi")
-        favi.style.paddingLeft ="5px";
-        favi.style.paddingRight ="5px";
+        favi.setAttribute("class" , "fa fa-remove favi mr-sm-2")
+
+        // favi.style.paddingLeft ="5px";
+        // favi.style.paddingRight ="5px";
+        // favi.style.verticalAlign =  "top";
         favi.style.verticalAlign =  "top";
         favi.addEventListener("click", function(e){
             e.preventDefault();
@@ -266,7 +294,7 @@ $(document).ready(function(){
             }) 
         });
 
-        var referenceNode = document.getElementById("invoices") 
+        var referenceNode = document.getElementById("myTab") 
         // patient_div.style.padding ="1em";
         // referenceNode.parentNode.insertBefore(favi, referenceNode.nextSibling);      
         // referenceNode.parentNode.insertBefore(patient_button, referenceNode.nextSibling);
@@ -294,6 +322,8 @@ $(document).ready(function(){
                 patient_button.setAttribute("id", "patient_tab");
                 patient_button.className += " btn";
                 patient_button.className += " btn-secondary ";
+                patient_button.className += " my-2";
+                patient_button.className += " my-lg-0";
                 // patient_button.className += " btn-sm ";
                 // patient_button.style.marginLeft = "2em";
                 patient_button.value = request_args["patient_id"];
@@ -302,21 +332,24 @@ $(document).ready(function(){
                     e.preventDefault();   
                     criteria = ["/patient/" + request_args["patient_id"]];
                     dynamic.apply(this, criteria); 
-                    var lower_navbar = document.getElementById("myTab");
+                    var lower_navbar = document.getElementById("navbarTogglerDemo01");
                     var tabs = lower_navbar.getElementsByTagName('BUTTON');
                     for (var i = 0; i < tabs.length; i++) {
                         tabs[i].classList.remove("active");
                     }
                     $('.new-patient').removeClass('active'); 
                     $('.invoices').removeClass('active');
+                    // console.log($(this));
                     $(this).addClass('active'); 
                 })
 
                 var favi = document.createElement("I");
-                favi.setAttribute("class" , "fa fa-remove")
+                // favi.setAttribute("class" , "fa fa-remove")
                 favi.setAttribute("id" , "patient_delete_favi")
-                favi.style.paddingLeft ="5px";
-                favi.style.paddingRight ="5px";
+                favi.setAttribute("class" , "fa fa-remove favi mr-lg-2 ml-2")
+                // favi.style.paddingLeft ="5px";
+                // favi.style.paddingRight ="5px";
+                // favi.style.verticalAlign =  "top";
                 favi.style.verticalAlign =  "top";
                 favi.addEventListener("click", function(e){
                     e.preventDefault();
@@ -337,9 +370,14 @@ $(document).ready(function(){
                     }) 
                 });
 
-                var referenceNode = document.getElementById("invoices") 
+                var referenceNode = document.getElementById("myTab") 
 
-                var patient_div = document.createElement("DIV");
+                var patient_div = document.createElement("FORM");
+                patient_div.className += " form-inline ";
+                
+                 
+                // patient_div.style.minHeight = "42px";
+
                 // patient_div.style.padding ="em";
                 patient_div.appendChild(patient_button)
                 patient_div.appendChild(favi)

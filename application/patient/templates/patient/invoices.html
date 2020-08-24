@@ -23,6 +23,7 @@ function closeDropDown(){
     var invoice_list = document.getElementById("invoice_list");
     invoice_list.style.display = "flex";
     invoice_list.style.flexDirection = "column";
+    var lower_navbar = document.getElementById("navbarTogglerDemo01");
 
 for (let i = 0; i < invoices.length; i++) {
 
@@ -111,7 +112,7 @@ for (let i = 0; i < invoices.length; i++) {
                 $('.new-patient').removeClass('active'); 
                 $('.invoices').removeClass('active');
 
-                var lower_navbar = document.getElementById("myTab")
+                // var lower_navbar = document.getElementById("myTab")
                 var tabs = lower_navbar.getElementsByTagName('BUTTON');
 
                 var tab_does_not_exists = true;
@@ -132,19 +133,30 @@ for (let i = 0; i < invoices.length; i++) {
                     tab.setAttribute("id", "tab-" + i);
                     tab.className += " btn";
                     tab.className += " btn-secondary "
-                    // tab.className += " btn-sm "
                     tab.className += " active "
                     tab.className += element['invoice_id'];
-                    tab.className += " tab";
-                    // tab.style.marginLeft = "2em";
                     tab.textContent =element['invoice_id'];
+                    tab.addEventListener("click", function(e){
+                        e.preventDefault();   
+                        var invoice_id = $(this).text();
+                        criteria[0] = "/patient/invoice/" + invoice_id;
+                        dynamic.apply(this, criteria); 
+                        // var lower_navbar = document.getElementById("navbarTogglerDemo01");
+                        var tabs = lower_navbar.getElementsByTagName('BUTTON');
+                        for (var i = 0; i < tabs.length; i++) {
+                            tabs[i].classList.remove("active");
+                        }
+                        $('.new-patient').removeClass('active'); 
+                        $('.invoices').removeClass('active');
+                        $(this).addClass('active'); 
+                    })
 
 
                     var favi = document.createElement("I");
                     favi.setAttribute("id" , "favi-" + i)
-                    favi.setAttribute("class" , "fa fa-remove favi")
-                    favi.style.paddingLeft ="5px";
-                    favi.style.paddingRight ="5px";
+                    favi.setAttribute("class" , "fa fa-remove favi mr-sm-2 ml-2")
+                    // favi.style.marginLeft ="5px";
+                    // favi.style.marginRight ="5px";
                     favi.style.verticalAlign =  "top";
                     favi.addEventListener("click", function(e){
                         e.preventDefault();
@@ -153,30 +165,38 @@ for (let i = 0; i < invoices.length; i++) {
                                 url: '/remove-job', 
                                 data: {work_type: "invoice_tab", work_quality: element['invoice_id']},
                                 success: function (status) {
-                                    favi_to_be_removed = document.getElementById("favi-" + i)
-                                    favi_to_be_removed.remove();
+
+                                    // favi_to_be_removed = document.getElementById("favi-" + i)
+                                    // favi_to_be_removed.remove();
                                     tab_to_be_removed = document.getElementById("tab-" + i)
                                     tab_to_be_removed.remove();
                                 }
                             }) 
                     });
 
-                    var tab_div = document.createElement("DIV"); 
+                    var tab_div = document.createElement("FORM"); 
+                    tab_div.className += "tab";
+                    tab_div.setAttribute("id", "tab-" + i);
+                    // tab_div.style.minWidth = "158px";
+                    // tab_div.style.minHeight = "42px";
                     tab_div.appendChild(tab) 
                     tab_div.appendChild(favi)
                     // lower_navbar.appendChild(tab_div);
 
                     var  number_of_already_existing_tabs= document.getElementsByClassName("tab");
-                    var  number_of_already_existing_favis= document.getElementsByClassName("favi");
+                    console.log(number_of_already_existing_tabs);
+                    // var  number_of_already_existing_favis= document.getElementsByClassName("favi");
                     if(number_of_already_existing_tabs.length > 4){
                         number_of_already_existing_tabs[4].remove();
-                        number_of_already_existing_favis[4].remove();
+                        // number_of_already_existing_favis[4].remove();
+                        console.log(number_of_already_existing_tabs[0]);
                         lower_navbar.insertBefore(tab_div, number_of_already_existing_tabs[0])
                         // lower_navbar.insertBefore(tab, favi)
                         // lower_navbar.insertBefore(favi, number_of_already_existing_tabs[0])
                         // lower_navbar.insertBefore(tab, favi)
                     }
                     lower_navbar.insertBefore(tab_div, number_of_already_existing_tabs[0])
+                    console.log(number_of_already_existing_tabs[0]);
                     // else{
                     //     lower_navbar.insertBefore(tab_div, number_of_already_existing_tabs[0])
                     //     // lower_navbar.insertBefore(favi, number_of_already_existing_tabs[0])
