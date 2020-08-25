@@ -18,8 +18,8 @@ def newWork(uuid_text, practice_uuid, work_type, work_quality):
         'invoice_tab'""".format(uuid_text, practice_uuid)
         cursor.execute(sql_tab_count)
         rows = cursor.fetchone()
-        if (rows['COUNT(*)'] > 4):
-            num_to_delete = rows['COUNT(*)'] - 4
+        if (rows['COUNT(*)'] > 2):
+            num_to_delete = rows['COUNT(*)'] - 2
             sql_max_five = """DELETE FROM user_workbench WHERE uuid_text = '{}'
             AND practice_uuid = '{}' AND work_type = 'invoice_tab'
             ORDER BY created_on ASC LIMIT

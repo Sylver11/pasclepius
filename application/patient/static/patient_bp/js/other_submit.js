@@ -30,13 +30,16 @@ $('.other').submit(function (e) {
         e.preventDefault();
         $.post( "/patient/invoice/new", $('.other').serialize(), function( data ) {
             $( "#invoice-tab" ).html( data );
-            var lower_navbar = document.getElementById("myTab")
+            var lower_navbar = document.getElementById("navbarTogglerDemo01")
+            var tabs = lower_navbar.getElementsByTagName('BUTTON');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            $('.invoices').removeClass('active');
+            $('.new-patient').removeClass('active'); 
             var draft_button = document.createElement("BUTTON");  
-            draft_button.setAttribute("id", "tab-draft");
-            draft_button.className += " btn";
-            draft_button.className += " btn-secondary "
-            draft_button.className += " btn-sm "
-            draft_button.style.marginLeft = "2em";
+            draft_button.setAttribute("id", "tab-draft-button")
+            draft_button.setAttribute("class", "btn btn-secondary my-2 my-lg-0 tab-draft-button active")
             draft_button.textContent = "Draft";
             draft_button.addEventListener("click", function(e){ 
                 e.preventDefault();
@@ -67,9 +70,8 @@ $('.other').submit(function (e) {
             }, false);
 
             var favi = document.createElement("I");
-            favi.setAttribute("class" , "fa fa-remove")
             favi.setAttribute("id" , "draft_delete_favi")
-            favi.style.paddingLeft ="5px";
+            favi.setAttribute("class" , "fa fa-remove favi mr-sm-2 ml-2");
             favi.addEventListener("click", function(e){
                 e.preventDefault();
                 $.ajax({
@@ -77,8 +79,6 @@ $('.other').submit(function (e) {
                     url: '/remove-job', 
                     data: {work_type: "invoice_draft", work_quality: "any"},
                     success: function (status) {
-                        favi_to_be_removed = document.getElementById("draft_delete_favi");
-                        favi_to_be_removed.remove();
                         tab_to_be_removed = document.getElementById("tab-draft");
                         tab_to_be_removed.remove();
                     },
@@ -89,13 +89,18 @@ $('.other').submit(function (e) {
                 }) 
             });
 
+            var draft_tab_wrapper = document.createElement("FORM");
+            draft_tab_wrapper.setAttribute("id", "tab-draft");
+            draft_tab_wrapper.setAttribute("class", "form-inline");           
+            draft_tab_wrapper.appendChild(draft_button);
+            draft_tab_wrapper.appendChild(favi);
+
             if(document.getElementById("tab-draft")){
-                lower_navbar.replaceChild(draft_button, document.getElementById("tab-draft"));
+                lower_navbar.replaceChild(draft_tab_wrapper, document.getElementById("tab-draft"));
             }
             else{
                 var referenceNode = document.getElementById("tab-0")
-                lower_navbar.insertBefore(draft_button, referenceNode)
-                lower_navbar.insertBefore(favi, referenceNode)
+                lower_navbar.insertBefore(draft_tab_wrapper, referenceNode)
             }
         })
         .fail(function(xhr, status, error) {

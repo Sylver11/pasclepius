@@ -19,7 +19,10 @@
 
 <script>   
 
-var request_args;
+let criteria =[];
+var request_args = '{{ request_args }}';
+request_args = JSON.parse(request_args.replace(/&#34;/g,'"'));
+var lower_navbar = document.getElementById("navbarTogglerDemo01")
 
 $(document).ready(function(){
 
@@ -33,15 +36,10 @@ $(document).ready(function(){
         url: '/patient/last-five', 
         data: {work_type: "invoice_draft"},
         success: function (patient) {
-            if(patient.length > 2){
-                var lower_navbar = document.getElementById("myTab")
-                
+            if(patient.length > 2){  
                 var draft_button = document.createElement("BUTTON"); 
-                draft_button.setAttribute("id", "tab-draft");
-                draft_button.className += " btn";
-                draft_button.className += " btn-secondary "
-                draft_button.className += " btn-sm "
-                // draft_button.style.marginLeft = "2em";
+                draft_button.setAttribute("id", "tab-draft-button")
+                draft_button.setAttribute("class", "btn btn-secondary my-2 my-lg-0")
                 draft_button.textContent = "Draft";
                 draft_button.addEventListener("click", function(e){ 
                     e.preventDefault();
@@ -68,9 +66,9 @@ $(document).ready(function(){
                 }, false);
 
                 var favi = document.createElement("I");
-                favi.setAttribute("class" , "fa fa-remove")
-                favi.setAttribute("id" , "draft_delete_favi")
-                favi.style.paddingLeft ="5px";
+                favi.setAttribute("id" , "draft_delete_favi");
+                favi.setAttribute("class" , "fa fa-remove favi mr-sm-2 ml-2");
+                favi.style.verticalAlign =  "top";
                 favi.addEventListener("click", function(e){
                     e.preventDefault();
                     $.ajax({
@@ -78,26 +76,26 @@ $(document).ready(function(){
                         url: '/remove-job', 
                         data: {work_type: "invoice_draft", work_quality: "any"},
                         success: function (status) {
-                            favi_to_be_removed = document.getElementById("draft_delete_favi");
-                            favi_to_be_removed.remove();
                             tab_to_be_removed = document.getElementById("tab-draft");
                             tab_to_be_removed.remove();
                         }
                     }) 
                 });
-
+                var draft_tab_wrapper = document.createElement("FORM");
+                draft_tab_wrapper.setAttribute("id", "tab-draft");
+                draft_tab_wrapper.setAttribute("class", "form-inline");           
+                draft_tab_wrapper.appendChild(draft_button);
+                draft_tab_wrapper.appendChild(favi);
                 if(document.getElementById("tab-draft")){
-                    lower_navbar.replaceChild(draft_button, document.getElementById("tab-draft"));
+                    lower_navbar.replaceChild(draft_tab_wrapper, document.getElementById("tab-draft"));
                 }
                 else{
-                    var referenceNode = document.getElementById("tab-0")
-                    lower_navbar.insertBefore(draft_button, referenceNode)
-                    lower_navbar.insertBefore(favi, referenceNode)
- 
+                    var referenceNode = document.getElementById("tab-0");
+                    lower_navbar.insertBefore(draft_tab_wrapper, referenceNode);
                 }
-          }
+            }
         }
-      })
+    })
 
 
     $.ajax({
@@ -106,17 +104,12 @@ $(document).ready(function(){
         data: {work_type: "invoice_tab"},
         success: function (returnData) {
           const obj = JSON.parse(returnData)
-          var lower_navbar = document.getElementById("navbarTogglerDemo01")
 
           for (let i = 0; i < obj.length; i++) {
             const element = obj[i];
             var tab = document.createElement("BUTTON");
-            // tab.setAttribute("id", "tab-" + i);
             tab.setAttribute("type", "button"); 
-            tab.className += " btn";
-            tab.className += " btn-secondary "   
-            tab.className += " my-2";
-            tab.className += " my-lg-0 ";        
+            tab.setAttribute("class", "btn btn-secondary my-2 my-lg-0")       
             tab.className += element["work_quality"];
             tab.textContent = element["work_quality"]
             tab.addEventListener("click", function(e){
@@ -124,7 +117,6 @@ $(document).ready(function(){
                 var invoice_id = $(this).text();
                 criteria[0] = "/patient/invoice/" + invoice_id;
                 dynamic.apply(this, criteria); 
-                var lower_navbar = document.getElementById("navbarTogglerDemo01");
                 var tabs = lower_navbar.getElementsByTagName('BUTTON');
                 for (var i = 0; i < tabs.length; i++) {
                     tabs[i].classList.remove("active");
@@ -138,20 +130,12 @@ $(document).ready(function(){
             tab_div.setAttribute("id", "tab-" + i);
             tab_div.className += "tab";
             tab_div.className += " form-inline";
-            // tab_div.className += " my-2 my-lg-0";
-            
-            // tab_div.style.minWidth = "158px";
-            // tab_div.style.minHeight = "42px";
-            // tab_div.style.paddingLeft ="5px";
-            // tab_div.style.paddingRight ="5px";
             tab_div.appendChild(tab) 
             lower_navbar.appendChild(tab_div);
 
             var favi = document.createElement("I");
             favi.setAttribute("id" , "favi-" + i)
             favi.setAttribute("class" , "fa fa-remove favi mr-sm-2 ml-2")
-            // favi.style.marginLeft ="5px";
-            // favi.style.marginRight ="5px";
             favi.style.verticalAlign =  "top";
             favi.addEventListener("click", function(e){
                 e.preventDefault();
@@ -162,23 +146,146 @@ $(document).ready(function(){
                     success: function (status) {
                         tab_to_be_removed = document.getElementById("tab-" + i)
                         tab_to_be_removed.remove();
-                        // favi_to_be_removed = document.getElementById("favi-" + i)
-                        // favi_to_be_removed.remove();
                     }
                 }) 
             });
-            // lower_navbar.appendChild(favi);
             tab_div.appendChild(favi) 
           }
         }
       })
+   
+    if(Object.keys(request_args).length > 1 && request_args.constructor === Object){
+        $.ajax({
+            type: "GET",
+            url: '/patient/add-work', 
+            data: {work_type: "patient_tab", work_quality: JSON.stringify(request_args)},
+            success: function (returnData) {
+            }
+        })
+        criteria = ["/patient/" + request_args["patient_id"]];       
+        var patient_button = document.createElement("BUTTON");  
+        patient_button.setAttribute("class", "btn btn-secondary my-2 my-lg-0")
+        patient_button.value = request_args["patient_id"];
+        patient_button.textContent = request_args["patient_name"]
+        patient_button.addEventListener("click", function(e){
+            e.preventDefault();   
+            criteria = ["/patient/" + request_args["patient_id"]];
+            dynamic.apply(this, criteria); 
+            var lower_navbar = document.getElementById("navbarTogglerDemo01");
+            var tabs = lower_navbar.getElementsByTagName('BUTTON');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            $('.new-patient').removeClass('active'); 
+            $('.invoices').removeClass('active');
+            $(this).addClass('active');  
 
+        })
 
+        var favi = document.createElement("I");
+        favi.setAttribute("id" , "patient_delete_favi")
+        favi.setAttribute("class" , "fa fa-remove favi mr-sm-2")
+        favi.style.verticalAlign =  "top";
+        favi.addEventListener("click", function(e){
+            e.preventDefault();
+            $.ajax({
+                type: "GET",
+                url: '/remove-job', 
+                data: {work_type: "patient_tab", work_quality: "any"},
+                success: function (status) {
+                    tab_to_be_removed = document.getElementById("patient_tab");
+                    tab_to_be_removed.remove();
+                },
+                error: function(xhr, status, error){
+                    var errorMessage = xhr.status + ': ' + xhr.statusText;
+                    alert('Error - ' + errorMessage);
+                }
+            }) 
+        });
+
+        var patient_div = document.createElement("FORM");
+        patient_div.setAttribute("id", "patient_tab");
+        patient_div.setAttribute("class", "form-inline");
+        patient_div.appendChild(patient_button)
+        patient_div.appendChild(favi)
+
+        var referenceNode = document.getElementById("myTab")      
+        console.log(referenceNode); 
+        referenceNode.parentNode.insertBefore(patient_div, referenceNode.nextSibling);       
+        $('#patient_tab').addClass('active');
+    }
+
+    else{
+        $.ajax({
+        type: "GET",
+        url: '/patient/last-five', 
+        data: {work_type: "patient_tab"},
+        success: function (patient) {
+            patient = JSON.parse(patient);
+            if(!Array.isArray(patient) || patient.length !==0){
+            request_args  = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
+
+                if(Object.keys(request_args).length > 1 && request_args.constructor === Object){
+
+                    var patient_button = document.createElement("BUTTON");  
+                    patient_button.setAttribute("id", "patient_tab");
+                    patient_button.setAttribute("class", "btn btn-secondary my-2 my-lg-0");
+                    patient_button.value = request_args["patient_id"];
+                    patient_button.textContent = request_args["patient_name"];
+                    patient_button.addEventListener("click", function(e){
+                        e.preventDefault();   
+                        criteria = ["/patient/" + request_args["patient_id"]];
+                        dynamic.apply(this, criteria); 
+                        var lower_navbar = document.getElementById("navbarTogglerDemo01");
+                        var tabs = lower_navbar.getElementsByTagName('BUTTON');
+                        for (var i = 0; i < tabs.length; i++) {
+                            tabs[i].classList.remove("active");
+                        }
+                        $('.new-patient').removeClass('active'); 
+                        $('.invoices').removeClass('active');
+                        $(this).addClass('active'); 
+                    })
+
+                    var favi = document.createElement("I");
+                    favi.setAttribute("id" , "patient_delete_favi")
+                    favi.setAttribute("class" , "fa fa-remove favi mr-lg-2 ml-2")
+                    favi.style.verticalAlign =  "top";
+                    favi.addEventListener("click", function(e){
+                        e.preventDefault();
+                        $.ajax({
+                            type: "GET",
+                            url: '/remove-job', 
+                            data: {work_type: "patient_tab", work_quality: "any"},
+                            success: function (status) {
+                                tab_to_be_removed = document.getElementById("patient_tab");
+                                tab_to_be_removed.remove();
+                            },
+                            error: function(xhr, status, error){
+                                var errorMessage = xhr.status + ': ' + xhr.statusText;
+                                alert('Error - ' + errorMessage);
+                            }
+                        }) 
+                    });
+
+                    var referenceNode = document.getElementById("myTab") 
+
+                    var patient_div = document.createElement("FORM");
+                    patient_div.className += " form-inline ";
+                    patient_div.appendChild(patient_button)
+                    patient_div.appendChild(favi)
+                    referenceNode.parentNode.insertBefore(patient_div, referenceNode.nextSibling);              
+                }
+            }
+        }
+        })
+        criteria = ["/patient/invoice/create"];
+        $('.new-patient').addClass('active');
+    }    
+    
     $(document).on("click", ".new-patient", function (e) {
         e.preventDefault();
         criteria[0] = "/patient/invoice/create";
         dynamic.apply(this, criteria); 
-        var lower_navbar = document.getElementById("myTab");
         var tabs = lower_navbar.getElementsByTagName('BUTTON');
         for (var i = 0; i < tabs.length; i++) {
             tabs[i].classList.remove("active");
@@ -200,205 +307,7 @@ $(document).ready(function(){
         $('.new-patient').removeClass('active');  
         $('.invoices').addClass('active');     
     })
-
-    
-    // $(document).on("click", ".tab", function (e) {  
-    //     e.preventDefault();   
-    //     var invoice_id = $(this).text();
-    //     criteria[0] = "/patient/invoice/" + invoice_id;
-    //     dynamic.apply(this, criteria); 
-    //     var lower_navbar = document.getElementById("myTab");
-    //     var tabs = lower_navbar.getElementsByTagName('BUTTON');
-    //     for (var i = 0; i < tabs.length; i++) {
-    //         tabs[i].classList.remove("active");
-    //     }
-    //     $('.new-patient').removeClass('active'); 
-    //     $('.invoices').removeClass('active');
-    //     $(this).addClass('active');  
-    // })
-
-    let criteria =[];
-    request_args = '{{ request_args }}';
-    request_args = JSON.parse(request_args.replace(/&#34;/g,'"'));
-    if(Object.keys(request_args).length > 1 && request_args.constructor === Object){
-
-        $.ajax({
-            type: "GET",
-            url: '/patient/add-work', 
-            data: {work_type: "patient_tab", work_quality: JSON.stringify(request_args)},
-            success: function (returnData) {
-
-            }
-        })
-
-        criteria = ["/patient/" + request_args["patient_id"]];
-        
-
-        var patient_div = document.createElement("FORM");
-        patient_div.className += " form-inline ";
-        // patient_div.style.minWidth = "158px";
-        // patient_div.style.minHeight = "42px";
-        // patient_div.style.paddingLeft ="5px";
-        // patient_div.style.paddingRight ="5px";
-
-        var patient_button = document.createElement("BUTTON");  
-        patient_button.setAttribute("id", "patient_tab");
-        patient_button.className += " btn";
-        patient_button.className += " btn-secondary "
-        patient_button.className += " my-2";
-        patient_button.className += " my-sm-0";
-        // patient_button.className += " btn-sm "
-        // patient_button.style.marginLeft = "2em";
-        patient_button.value = request_args["patient_id"];
-        patient_button.textContent = request_args["patient_name"]
-        patient_button.addEventListener("click", function(e){
-            e.preventDefault();   
-            criteria = ["/patient/" + request_args["patient_id"]];
-            dynamic.apply(this, criteria); 
-            var lower_navbar = document.getElementById("navbarTogglerDemo01");
-            var tabs = lower_navbar.getElementsByTagName('BUTTON');
-            for (var i = 0; i < tabs.length; i++) {
-                tabs[i].classList.remove("active");
-            }
-            $('.new-patient').removeClass('active'); 
-            $('.invoices').removeClass('active');
-            $(this).addClass('active');  
-
-        })
-
-        var favi = document.createElement("I");
-        // favi.setAttribute("class" , "fa fa-remove")
-        favi.setAttribute("id" , "patient_delete_favi")
-        favi.setAttribute("class" , "fa fa-remove favi mr-sm-2")
-
-        // favi.style.paddingLeft ="5px";
-        // favi.style.paddingRight ="5px";
-        // favi.style.verticalAlign =  "top";
-        favi.style.verticalAlign =  "top";
-        favi.addEventListener("click", function(e){
-            e.preventDefault();
-            $.ajax({
-                type: "GET",
-                url: '/remove-job', 
-                data: {work_type: "patient_tab", work_quality: "any"},
-                success: function (status) {
-                    favi_to_be_removed = document.getElementById("patient_delete_favi");
-                    favi_to_be_removed.remove();
-                    tab_to_be_removed = document.getElementById("patient_tab");
-                    tab_to_be_removed.remove();
-                },
-                error: function(xhr, status, error){
-                    var errorMessage = xhr.status + ': ' + xhr.statusText;
-                    alert('Error - ' + errorMessage);
-                }
-            }) 
-        });
-
-        var referenceNode = document.getElementById("myTab") 
-        // patient_div.style.padding ="1em";
-        // referenceNode.parentNode.insertBefore(favi, referenceNode.nextSibling);      
-        // referenceNode.parentNode.insertBefore(patient_button, referenceNode.nextSibling);
-        patient_div.appendChild(patient_button)
-        patient_div.appendChild(favi)
-        referenceNode.parentNode.insertBefore(patient_div, referenceNode.nextSibling);      
-      
-   
-        $('#patient_tab').addClass('active');
-    }
-
-    else{
-        $.ajax({
-        type: "GET",
-        url: '/patient/last-five', 
-        data: {work_type: "patient_tab"},
-        success: function (patient) {
-            patient = JSON.parse(patient);
-            if(!Array.isArray(patient) || patient.length !==0){
-            request_args  = JSON.parse(patient[0]["work_quality"].replace(/\\"/g, '"'));
-
-            if(Object.keys(request_args).length > 1 && request_args.constructor === Object){
-
-                var patient_button = document.createElement("BUTTON");  
-                patient_button.setAttribute("id", "patient_tab");
-                patient_button.className += " btn";
-                patient_button.className += " btn-secondary ";
-                patient_button.className += " my-2";
-                patient_button.className += " my-lg-0";
-                // patient_button.className += " btn-sm ";
-                // patient_button.style.marginLeft = "2em";
-                patient_button.value = request_args["patient_id"];
-                patient_button.textContent = request_args["patient_name"];
-                patient_button.addEventListener("click", function(e){
-                    e.preventDefault();   
-                    criteria = ["/patient/" + request_args["patient_id"]];
-                    dynamic.apply(this, criteria); 
-                    var lower_navbar = document.getElementById("navbarTogglerDemo01");
-                    var tabs = lower_navbar.getElementsByTagName('BUTTON');
-                    for (var i = 0; i < tabs.length; i++) {
-                        tabs[i].classList.remove("active");
-                    }
-                    $('.new-patient').removeClass('active'); 
-                    $('.invoices').removeClass('active');
-                    // console.log($(this));
-                    $(this).addClass('active'); 
-                })
-
-                var favi = document.createElement("I");
-                // favi.setAttribute("class" , "fa fa-remove")
-                favi.setAttribute("id" , "patient_delete_favi")
-                favi.setAttribute("class" , "fa fa-remove favi mr-lg-2 ml-2")
-                // favi.style.paddingLeft ="5px";
-                // favi.style.paddingRight ="5px";
-                // favi.style.verticalAlign =  "top";
-                favi.style.verticalAlign =  "top";
-                favi.addEventListener("click", function(e){
-                    e.preventDefault();
-                    $.ajax({
-                        type: "GET",
-                        url: '/remove-job', 
-                        data: {work_type: "patient_tab", work_quality: "any"},
-                        success: function (status) {
-                            favi_to_be_removed = document.getElementById("patient_delete_favi");
-                            favi_to_be_removed.remove();
-                            tab_to_be_removed = document.getElementById("patient_tab");
-                            tab_to_be_removed.remove();
-                        },
-                        error: function(xhr, status, error){
-                            var errorMessage = xhr.status + ': ' + xhr.statusText;
-                            alert('Error - ' + errorMessage);
-                        }
-                    }) 
-                });
-
-                var referenceNode = document.getElementById("myTab") 
-
-                var patient_div = document.createElement("FORM");
-                patient_div.className += " form-inline ";
-                
-                 
-                // patient_div.style.minHeight = "42px";
-
-                // patient_div.style.padding ="em";
-                patient_div.appendChild(patient_button)
-                patient_div.appendChild(favi)
-                referenceNode.parentNode.insertBefore(patient_div, referenceNode.nextSibling);       
-
-                // referenceNode.parentNode.insertBefore(favi, referenceNode.nextSibling);      
-                // referenceNode.parentNode.insertBefore(patient_button, referenceNode.nextSibling);       
-          }
-        }
-        }
-      })
-
-
-        criteria = ["/patient/invoice/create"];
-        $('.new-patient').addClass('active');
-    }
-    
-    
     dynamic.apply(this, criteria);
-
 })
-
 </script>
 {% endblock %}

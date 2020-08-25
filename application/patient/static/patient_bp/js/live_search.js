@@ -51,8 +51,7 @@ function insertSelection(item_number, item_description, item_units, item_value){
 }
 
 
-function liveSearch (e) {     
-
+function liveSearch (e) {    
     e.preventDefault();
     var key = e.keyCode || e.which;
     if((key === 38 || key === 40) && !e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey){

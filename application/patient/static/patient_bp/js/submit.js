@@ -62,7 +62,7 @@ function addSubmit(ev) {
                     }      
                 }  
                 if(current_invoice['status'] == "draft"){
-                    var tab_draft = document.getElementById("tab-draft");
+                    var tab_draft = document.getElementById("tab-draft-button");
                     tab_draft.innerHTML = data['invoice_id']
                     tab_draft.disabled = true;
                 }

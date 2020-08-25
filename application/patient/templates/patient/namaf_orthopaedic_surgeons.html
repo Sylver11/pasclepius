@@ -1,6 +1,6 @@
 {% block content %}
-<form id="patient_info"></form>
-<form style="margin-top: 4em;" autocomplete="off" class="treatmentsearch">
+<form name="patient_info" id="patient_info" class="patient_info"></form>
+<form id="live_search" style="margin-top: 4em;" autocomplete="off" class="treatmentsearch">
     <input id="treatmentsearch" class="form-control mr-sm-2" name="treatment" type="search" placeholder="Search treatments">
 </form>
 <form autocomplete="off" class="invoice_form" id="namaf_orthopaedic_surgoens" >   
@@ -231,10 +231,11 @@ $(document).ready(function(){
             success: function (new_invoice) {
                 current_invoice = JSON.parse(new_invoice);
                 current_invoice = JSON.parse(current_invoice[0]["work_quality"].replace(/\\"/g, '"'));
-                var forms = document.getElementsByTagName('FORM');
-                addUniqueClasses(forms[1],forms[3], forms[2])         
-                populatePatient()
-
+                var patient_info = document.querySelectorAll("#patient_info");
+                var treatment_search = document.querySelectorAll("#treatmentsearch");
+                var invoice_form = document.querySelectorAll("#namaf_orthopaedic_surgoens");
+                addUniqueClasses(patient_info[0],invoice_form[0], treatment_search[0])
+                populatePatient()       
             }
         })
 
@@ -246,8 +247,10 @@ $(document).ready(function(){
                 success: function (invoice) {
                     current_invoice = JSON.parse(invoice);
                     current_invoice = JSON.parse(current_invoice[0]["work_quality"].replace(/\\"/g, '"'));
-                    var forms = document.getElementsByTagName('FORM');
-                    addUniqueClasses(forms[1],forms[3], forms[2])
+                    var patient_info = document.querySelectorAll("#patient_info");
+                    var treatment_search = document.querySelectorAll("#treatmentsearch");
+                    var invoice_form = document.querySelectorAll("#namaf_orthopaedic_surgoens");
+                    addUniqueClasses(patient_info[0],invoice_form[0], treatment_search[0])
                     populatePatient()
                     if(current_invoice.treatments){
                         for (let i = 0; i < current_invoice.treatments.length; i++) {
@@ -282,8 +285,10 @@ $(document).ready(function(){
     '{% else %}'
         current_invoice = '{{ invoice }}';
         current_invoice = JSON.parse(current_invoice.replace(/&#34;/g,'"'));
-        var forms = document.getElementsByTagName('FORM');
-        addUniqueClasses(forms[1],forms[3], forms[2])
+        var patient_info = document.querySelectorAll("#patient_info");
+        var treatment_search = document.querySelectorAll("#treatmentsearch");
+        var invoice_form = document.querySelectorAll("#namaf_orthopaedic_surgoens");
+        addUniqueClasses(patient_info[0],invoice_form[0], treatment_search[0])
         populatePatient()
         
 
