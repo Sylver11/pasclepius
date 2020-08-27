@@ -14,8 +14,7 @@
         </div>
     </div>
 </div>
-<div class="jumbotron jumbotron-fluid" style="height:88%; margin:0">
-    <div class="container">
+<div class="container-fluid p-5">
         <form autocomplete="off" class="invoice-search">
             <input id="invoice-search" class="form-control mr-sm-2" name="treatment" type="search" placeholder="Search invoices by patient name">
         </form>
@@ -59,8 +58,9 @@
         <div><span style="float: left;">Pages: </span><ul id="pages" style="list-style: none;"></ul></div>
     </div>
     
-</div>
+
 <script>
+
 function closeDropDown(){
     var dropdowns = document.getElementsByClassName("dropdown-content");
     var i;
@@ -278,15 +278,16 @@ $(document).on("keyup", ".invoice-search", function (e) {
         url: url,
         data: {patient_name: search_item}, 
         dataType: 'json',
-        success: function (returnData) {
-            if (returnData.invoices.length <= 9){
-              var invoices = [], range = returnData.invoices.length;
+        success: function (patients_invoices) {
+            console.log(patients_invoices);
+            if (patients_invoices.length <= 9){
+                var invoices = [], range = patients_invoices.length;
             }
             else{
              var invoices = [], range = 10
             }
             for (i = 0; i < range; i++) {
-                invoices[i] = returnData.invoices[i]['invoice_id'].toString()
+                invoices[i] = patients_invoices[i]['invoice_id'].toString()
             }   
             closeAllLists();
             if (!val) { return false;}
@@ -295,89 +296,125 @@ $(document).on("keyup", ".invoice-search", function (e) {
             a.setAttribute("id", "autocomplete-list-invoices");
             a.setAttribute("class", "autocomplete-invoices");
             input_element.parentNode.insertBefore(a, input_element.nextSibling);
-            if(returnData.invoices.length > 0){
-                var patient_div = document.createElement("DIV");
-                var invoice_from_invoices = [], range = returnData.invoices.length;
-                var patient_name_from_invoices = [], range = returnData.invoices.length;
+            if(patients_invoices.length > 0){
+                var patients_div = document.createElement("DIV");
+                var invoice_from_invoices = [], range = patients_invoices.length;
+                var patient_name_from_invoices = [], range = patients_invoices.length;
                 var arr_unique_patient_name = [];
-                for(i = 0; i < returnData.invoices.length; i++){
-                    patient_name_from_invoices[i] = returnData.invoices[i]['patient_name']
+                for(i = 0; i < patients_invoices.length; i++){
+                    patient_name_from_invoices[i] = patients_invoices[i]['patient_name']
                     arr_unique_patient_name = uniq_fast(patient_name_from_invoices)
                 }
                 var found_patient_names = [], range = arr_unique_patient_name.length;
                 for(i = 0; i < arr_unique_patient_name.length; i++){
-                    found_patient_names[i] = returnData.invoices.filter(function(single) {
+                    found_patient_names[i] = patients_invoices.filter(function(single) {
                         return single.patient_name ==  arr_unique_patient_name[i];})
                     }
                 let index_invoice_names = 0;
                 for (i = 0; i < arr_unique_patient_name.length; i++){
-                    var invoice_div = document.createElement("DIV");
-                    invoice_div.innerHTML += "<strong>" + arr_unique_patient_name[i].substr(0, val.length) + "</strong>";
-                    invoice_div.innerHTML += arr_unique_patient_name[i].substr(val.length) + "<br>";
+
+                    var invoice_list = document.createElement("DIV");
+                    invoice_list.setAttribute("class", "border p-2");
+
+                    var invoice_list_heading = document.createElement("h3")
+                    invoice_list_heading.innerHTML += "<strong>" + arr_unique_patient_name[i].substr(0, val.length) + "</strong>";
+                    invoice_list_heading.innerHTML += arr_unique_patient_name[i].substr(val.length) + "<br>";
+                    invoice_list.appendChild(invoice_list_heading);
+                    
                     for(x=0; x < found_patient_names[i].length; x++){
+
+                        var invoice_id = found_patient_names[i][x]['invoice_id']
                         var sumArr = found_patient_names[i][x]['item_post_values'].split(',');
-                        var flex_wrapper = document.createElement("DIV");
-                        flex_wrapper.style.margin = "2rem";
-                        var single_balance_wrapper = document.createElement("DIV");
-                        single_balance_wrapper.style.display = "flex";
-                        single_balance_wrapper.style.justifyContent = "space-between";
-                        single_balance_wrapper.style.alignItems = "center";
-                        var paragraph_info_wrapper = document.createElement("DIV");
-                        var action_wrapper = document.createElement("DIV");
-                        var balance_wrapper = document.createElement("DIV");
+                        var balance_cent = sum_cent(sumArr) -  found_patient_names[i][x]['credit_cent'];
 
+                        var card = document.createElement("DIV");
+                        card.setAttribute("class", "card mb-3")
+                        invoice_list.appendChild(card);
+
+                        var card_header = document.createElement("DIV");
+                        card_header.classList.add("card-header");
+                        card.appendChild(card_header);
+
+                        var card_header_text = document.createElement("P");
+                        card_header_text.textContent = found_patient_names[i][x]['patient_name'];
+                        card_header_text.style.display =  "inline-block";
+                        card_header_text.style.margin = "0"
+                        card_header.appendChild(card_header_text);
+
+                        var popover_button = document.createElement("I");
+                        popover_button.setAttribute("title", "Balance:");
+                        popover_button.setAttribute("data-trigger", "hover");
+                        popover_button.setAttribute("data-toggle", "popover");
+                        popover_button.setAttribute("data-html", "true");
+                        popover_button.classList.add("fa");
+                        popover_button.classList.add("fa-info-circle");
+                        popover_button.style.float ="right";
                         
-                        var paragraph_invoice = document.createElement("P");
-                        paragraph_invoice.textContent = found_patient_names[i][x]['invoice_id']
-                        paragraph_info_wrapper.appendChild(paragraph_invoice)
-
-                        var paragraph_invoice_created = document.createElement("P");
-                        paragraph_invoice_created.style.marginBottom = "0.5rem";
-                        paragraph_invoice_created.textContent = "Created on: " + found_patient_names[i][x]['date_created'];
-                        paragraph_info_wrapper.appendChild(paragraph_invoice_created)
+                        var html_balance_sheet = "<div>Debit: <span class='bg-danger text-white'>" + (sum_cent(sumArr) / 100).toFixed(2) + "</span><br>Credit: <span class='bg-success text-white'>" + (found_patient_names[i][x]['credit_cent'] / 100).toFixed(2);
+                        if(balance_cent == 0){
+                            html_balance_sheet += "</span><hr>Balance: <span class='bg-success text-white'>" + (balance_cent / 100).toFixed(2) +  "</div>";
+                        }
+                        else{
+                            html_balance_sheet += "</span><hr>Balance: <span class='bg-danger text-white'>" + (balance_cent / 100).toFixed(2) +  "</div>";
+                        }
                         
-                        var paragraph_invoice_date = document.createElement("P");
-                        paragraph_invoice_date.style.marginBottom = "0.5rem";
-                        paragraph_invoice_date.textContent = "Invoice date: " +found_patient_names[i][x]['date_invoice']
-                        paragraph_info_wrapper.appendChild(paragraph_invoice_date)
+                        popover_button.setAttribute("data-content", html_balance_sheet);        
+                        card_header.appendChild(popover_button);
 
-                        var paragraph_sum_credit = document.createElement("P");
-                        paragraph_sum_credit.style.textAlign = "right";
-                        paragraph_sum_credit.style.marginBottom = "0.5rem";
-                        paragraph_sum_credit.style.color = "green";
-                        
-                        var paragraph_sum_debit = document.createElement("P");
-                        paragraph_sum_debit.style.marginBottom = "0";
-                        paragraph_sum_debit.style.color = "red";
+                        var card_body= document.createElement("DIV");
+                        card_body.classList.add("card-body");
+                        card.appendChild(card_body);
 
-                        var paragraph_sum_line = document.createElement("HR");
-                        paragraph_sum_line.style.margin = "0";
+                        var card_title = document.createElement("h5");
+                        card_title.classList.add("card-title");
+                        card_title.textContent = found_patient_names[i][x]['invoice_id'];
+                        card_body.appendChild(card_title);
 
-                        var paragraph_balance = document.createElement("P");
-                        
-                        var input_field = document.createElement("INPUT");
-                        input_field.setAttribute("type", "hidden")
-                        input_field.value = found_patient_names[i][x]['invoice_id']
-                        action_wrapper.appendChild(input_field)
+                        var card_text = document.createElement("P");
+                        card_text.classList.add("card-text");
+                        card_text.textContent = "Created on: " + found_patient_names[i][x]['date_created']
+                        card_body.appendChild(card_text);
 
-                        var open_invoice_button = document.createElement("BUTTON");
-                        open_invoice_button .setAttribute("class", "open_invoice_button");
-                        open_invoice_button .setAttribute("value", found_patient_names[i][x]['invoice_id']);
-                        open_invoice_button.innerHTML = "Open"
-                        action_wrapper.appendChild(open_invoice_button)
+                        var card_text = document.createElement("P");
+                        card_text.classList.add("card-text");
+                        card_text.textContent = "Invoice date: " + found_patient_names[i][x]['date_invoice']
+                        card_body.appendChild(card_text);
 
                         if(found_patient_names[i][x]['submitted_on']){ 
                                 var paragraph_submitted_on = document.createElement("P");
                                 paragraph_submitted_on.textContent = "Submitted on: " + found_patient_names[i][x]['submitted_on']
-                                paragraph_info_wrapper.appendChild(paragraph_submitted_on)
-                            }
-                            else{
+                                card_body.appendChild(paragraph_submitted_on)
+                        }
+                        else{
                                 var submit_button = document.createElement("BUTTON");
-                                submit_button.setAttribute("class", "submit_button_invoice");
+                                submit_button.setAttribute("class", "btn btn-primary mr-2 d-inline-block");
                                 submit_button.innerHTML = "Submit invoice"
-                                action_wrapper.appendChild(submit_button)
-                            }
+                                submit_button.addEventListener("click", function(){
+                                    e.preventDefault();
+                                    $.ajax({
+                                        type: "GET",
+                                        url: '/account/submit-invoice',
+                                        data: {invoice_id: invoice_id}, 
+                                        dataType: 'json',
+                                        success: function (returnData) {
+                                            $('.modal-body').text(returnData)
+                                            $("#account_modal").modal();
+                                        }
+                                    })
+                                })
+                                card_body.appendChild(submit_button)
+                        }
 
+
+                        var open_invoice_button = document.createElement("BUTTON");
+                        open_invoice_button.setAttribute("class","btn btn-primary mr-2 d-inline-block")
+                        open_invoice_button.innerHTML = "Open"
+                        open_invoice_button.addEventListener("click", function(){
+                            e.preventDefault()
+                            window.location.href = "/account/invoice/" + invoice_id
+                        })
+                        card_body.appendChild(open_invoice_button)                      
+                        
                         var paid_button = document.createElement("BUTTON");
                         credit = (found_patient_names[i][x]['credit_cent'] / 100).toFixed(2) 
                         if(credit){
@@ -387,53 +424,47 @@ $(document).on("keyup", ".invoice-search", function (e) {
                         else{
                             paid_button.setAttribute("value", sum_cent(sumArr));
                         }   
-                        paid_button.setAttribute("class", "paid_button");
+                        paid_button.setAttribute("class", "btn btn-primary mr-2 d-inline-block");
                         paid_button.innerHTML = "Paid";
+                        paid_button.addEventListener("click", function(){
+                            e.preventDefault();                    
+                            var credit_cent = $(this).val()
+                            $.ajax({
+                                type: "GET",
+                                url: '/account/add-credit-invoice',
+                                data: {invoice_id: invoice_id, credit_cent: credit_cent}, 
+                                dataType: 'json',
+                                success: function (returnData) {
+                                    $('.modal-body').text(returnData)
+                                    $("#account_modal").modal();
+                            
+                                }
+                            })
 
+                        })
+                        card_body.appendChild(paid_button)
 
-                        if(found_patient_names[i][x]['credit_cent'] == sum_cent(sumArr)){
-                            var paragraph_paid = document.createElement("P");
-                            paragraph_paid.textContent = "Paid"
-                            flex_wrapper.appendChild(paragraph_paid)
+                        var invoice_status = document.createElement("P")
+                        invoice_status.setAttribute("class", "float-right m-2 text-uppercase font-weight-bold align-middle")
+                        invoice_status.textContent = "Status: " + found_patient_names[i][x]['status']          
+                        if(found_patient_names[i][x]['status'] == 'due'){
+                            invoice_status.classList.add("text-warning");
                         }
-                        else if(credit){
-                            paragraph_balance.textContent = credit
-                            action_wrapper.appendChild(paid_button)
+                        else if(found_patient_names[i][x]['status'] == 'over-due'){
+                            invoice_status.classList.add("text-danger");
                         }
-                        else{
-                            action_wrapper.appendChild(paid_button)
+                        else if(found_patient_names[i][x]['status'] == 'settled'){
+                            invoice_status.classList.add("text-success");
                         }
-                        
-                        
-                        if(credit){
-                            paragraph_sum_credit.textContent = credit;
-                            balance = ((sum_cent(sumArr) - found_patient_names[i][x]['credit_cent']) / 100 ).toFixed(2)
-                            paragraph_balance.textContent = balance
-                        }
-                        else{
-                            paragraph_sum_credit.textContent = (0).toFixed(2)
-                            balance = (sum_cent(sumArr) / 100).toFixed(2)
-                            paragraph_balance.textContent = balance
-                        }
-
-                        paragraph_sum_debit.textContent = (sum_cent(sumArr) / 100).toFixed(2)
-                        balance_wrapper.appendChild(paragraph_sum_debit)
-                        balance_wrapper.appendChild(paragraph_sum_credit)
-                       
-                        balance_wrapper.appendChild(paragraph_sum_line)
-                        balance_wrapper.appendChild(paragraph_balance)
-
-                        invoice_div.appendChild(flex_wrapper)
-                        flex_wrapper.appendChild(single_balance_wrapper)
-
-                        single_balance_wrapper.appendChild(paragraph_info_wrapper)
-                        single_balance_wrapper.appendChild(balance_wrapper)
-                        flex_wrapper.appendChild(action_wrapper)  
+                        card_body.appendChild(invoice_status)
                          
                     }
-                    patient_div.appendChild(invoice_div);
+                     patients_div.appendChild(invoice_list);
                 }
-                a.appendChild(patient_div);    
+                a.appendChild(patients_div);  
+                $(function () {
+                    $('[data-toggle="popover"]').popover()
+                })  
             }
 
     function closeAllLists(elmnt) {
@@ -453,46 +484,6 @@ $(document).on("keyup", ".invoice-search", function (e) {
         }
     });
 });
-
-
-$(document).on("click", ".open_invoice_button", function (e) {
-        e.preventDefault()
-        var invoice_id = $(this).val()
-        window.location.href = "/account/invoice/" + invoice_id
-        });
-
-
-    $(document).on("click", ".submit_button_invoice", function (e) {
-            e.preventDefault();
-            var invoice_id = $(this).siblings('input').val();
-            $.ajax({
-                type: "GET",
-                url: '/account/submit-invoice',
-                data: {invoice_id: invoice_id}, 
-                dataType: 'json',
-                success: function (returnData) {
-                    $('.modal-body').text(returnData)
-                    $("#account_modal").modal();
-                }
-            })
-        })
-
-        $(document).on("click", ".paid_button", function (e) {
-            e.preventDefault();
-            var invoice_id = $(this).siblings('input').val();
-            var credit_cent = $(this).val()
-            $.ajax({
-                type: "GET",
-                url: '/account/add-credit-invoice',
-                data: {invoice_id: invoice_id, credit_cent: credit_cent}, 
-                dataType: 'json',
-                success: function (returnData) {
-                    $('.modal-body').text(returnData)
-                    $("#account_modal").modal();
-            
-                }
-            })
-        })
 })
 </script>
  {% endblock %}

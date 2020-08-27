@@ -127,10 +127,7 @@ for (let i = 0; i < invoices.length; i++) {
         
                 if(tab_does_not_exists){
                     var tab = document.createElement("BUTTON");
-                    tab.className += " btn";
-                    tab.className += " btn-secondary "
-                    tab.className += " active "
-                    tab.className += element['invoice_id'];
+                    tab.setAttribute("class", "btn btn-secondary my-2 my-lg-0 active")
                     tab.textContent =element['invoice_id'];
                     tab.addEventListener("click", function(e){
                         e.preventDefault();   
@@ -150,7 +147,6 @@ for (let i = 0; i < invoices.length; i++) {
                     var favi = document.createElement("I");
                     favi.setAttribute("id" , "favi-" + i)
                     favi.setAttribute("class" , "fa fa-remove favi mr-sm-2 ml-2")
-                    favi.style.verticalAlign =  "top";
                     favi.addEventListener("click", function(e){
                         e.preventDefault();
                         $.ajax({

@@ -19,12 +19,16 @@ def get_index(practice_uuid, medical_aid):
 
 
 def liveSearchInvoices(practice_uuid, patient_name):
-    sql = """SELECT any_value(invoices.invoice_id) AS invoice_id,
-    any_value(invoices.patient_name) AS patient_name,
+    sql = """SELECT 
+    any_value(patients.practice_uuid) AS practice_uuid,
+    any_value(patients.patient_name) AS patient_name,
+    any_value(patients.patient_id) AS patient_id,
+    any_value(invoices.invoice_id) AS invoice_id,
     any_value(invoices.credit_cent) AS credit_cent,
     any_value(invoices.submitted_on) AS submitted_on,
     any_value(invoices.date_created) AS date_created,
     any_value(invoices.date_invoice) AS date_invoice,
+    any_value(invoices.status) AS status,
     group_concat(invoice_items.item) AS item_numbers,
     group_concat(invoice_items.units) AS item_units,
     group_concat(invoice_items.description) AS item_descriptions,
@@ -32,17 +36,20 @@ def liveSearchInvoices(practice_uuid, patient_name):
     group_concat(invoice_items.post_value_cent) AS item_post_values,
     group_concat(invoice_items.date) AS item_dates,
     group_concat(invoice_items.status) AS item_status
-    FROM invoices LEFT JOIN invoice_items
+    FROM patients
+    LEFT JOIN invoices
+    ON invoices.patient_id = patients.patient_id
+    LEFT JOIN invoice_items
     ON invoice_items.invoice_id = invoices.invoice_id
-    WHERE invoices.practice_uuid = '{}' AND invoices.patient_name LIKE '{}%'
+    WHERE patients.practice_uuid = '{}' AND patients.patient_name LIKE '{}%'
     GROUP BY invoices.invoice_id""".format(practice_uuid, patient_name)
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)
-    data = cursor.fetchall()
+    patient_invoices = cursor.fetchall()
     cursor.close()
     conn.close()
-    return data
+    return patient_invoices
 
 
 def getInvoiceURL(practice_uuid, name_patient, date):

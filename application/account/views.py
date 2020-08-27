@@ -40,34 +40,21 @@ def singleInvoice(medical_aid, year, index):
     invoice_id = medical_aid + "/" + year + "/" + index
     invoice = getSingleInvoice(current_user.practice_uuid, invoice_id)
     invoice_items = getItems(current_user.practice_uuid, invoice_id)
-    for i in invoice_items:
-        for o in i:
-            if isinstance(i[o], datetime2.datetime):
-                d = datetime.strptime(i[o].__str__(), '%Y-%m-%d %H:%M:%S')
-                date = d.strftime('%d.%m.%Y')
-                i[o] = date
-    for o, i in invoice.items():
-         if isinstance(i, datetime2.datetime):
-             d = datetime.strptime(i.__str__(), '%Y-%m-%d %H:%M:%S')
-             date = d.strftime('%d.%m.%Y')
-             invoice[o] = date
     invoice['invoice_items'] = invoice_items
     return render_template('account_bp/invoice.html',
-            invoice_json = json.dumps(invoice),
+            invoice_json = json.dumps(invoice,
+                sort_keys=True,
+                default=str),
             invoice = invoice)
 
 
 @account_bp.route('/live-search-invoice',methods=['GET','POST'])
 def liveSearchTreatment():
     patient_name = request.args.get('patient_name')
-    invoices = liveSearchInvoices(current_user.practice_uuid, patient_name)
-    for i in invoices:
-        for o in i:
-            if isinstance(i[o], datetime2.datetime):
-                d = datetime.strptime(i[o].__str__(), '%Y-%m-%d %H:%M:%S')
-                date = d.strftime('%d.%m.%Y')
-                i[o] = date
-    return json.dumps({'invoices' : invoices})
+    patients_invoices = liveSearchInvoices(current_user.practice_uuid, patient_name)
+    return json.dumps(patients_invoices,
+                sort_keys=True,
+                default=str)
 
 @account_bp.route('/submit-invoice',methods=['GET'])
 def submitInvoice():

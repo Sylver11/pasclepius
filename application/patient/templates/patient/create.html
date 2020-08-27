@@ -253,13 +253,8 @@ $(document).ready(function() {
                     $( "#invoice-tab" ).html( data );
                     var lower_navbar = document.getElementById("navbarTogglerDemo01")
                     var draft_button = document.createElement("BUTTON");  
-                    // draft_button.setAttribute("id", "tab-draft");
-                    // draft_button.className += " btn";
-                    // draft_button.className += " btn-secondary "
-                    // draft_button.className += " btn-sm "
                     draft_button.setAttribute("id", "tab-draft-button")
                     draft_button.setAttribute("class", "btn btn-secondary my-2 my-lg-0 tab-draft-button")
-                    // draft_button.style.marginLeft = "2em";
                     draft_button.textContent = "Draft";
                     draft_button.addEventListener("click", function(e){ 
                         e.preventDefault();
@@ -352,8 +347,8 @@ $(document).ready(function() {
                     $( "#invoice-tab" ).html( data );
                     var lower_navbar = document.getElementById("navbarTogglerDemo01")
                     var draft_button = document.createElement("BUTTON");  
-                    // draft_button.setAttribute("id", "tab-draft");
-                    draft_button.setAttribute("class", "btn btn-secondary btn-sm tab-draft-button")
+                    draft_button.setAttribute("id", "tab-draft-button");
+                    draft_button.setAttribute("class", "btn btn-secondary my-2 my-lg-0")
                     
                     // draft_button.className += " btn";
                     // draft_button.className += " btn-secondary "

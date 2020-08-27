@@ -3,9 +3,12 @@ from datetime import datetime
 
 def checkDuplicate(practice_uuid, patient):
     sql = """SELECT * FROM patients WHERE practice_uuid = '{}' AND
-    (medical_number = '{}' OR case_number = '{}')
-    """.format(practice_uuid, patient.get('medical_number'),
-            patient.get('case_number'))
+    (medical_number = '{}' OR case_number = '{}' OR medical_number = '{}' OR case_number = '{}')
+    """.format(practice_uuid,
+            patient.get('medical_number'),
+            patient.get('case_number'),
+            patient.get('case_number'),
+            patient.get('medical_number'))
     conn = pool.connection()
     cursor = conn.cursor()
     cursor.execute(sql)

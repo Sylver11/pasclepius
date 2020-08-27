@@ -104,7 +104,6 @@ def newInvoice():
                 medical_aid,
                 patient_name,
                 invoice_index,
-                current_user.first_name,
                 current_user.practice_name)
         invoice_file_url = invoice_file_url.generate()
         invoice_id = InvoiceName(medical_aid, invoice_index, item_modifiers)
