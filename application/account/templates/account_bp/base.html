@@ -1,12 +1,17 @@
 {% extends 'layout.html' %}
 {% block content %}
 <nav class="navbar navbar-expand-sm navbar-dark" style="background-color:#017B25;">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#account_navbar" aria-controls="account_navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="account_navbar">
     <ul class="navbar-nav" id="myTab">
         <a class="general nav-link nav-item" href="/account">General</a>
         <a class="due nav-link nav-item" href="/account/invoices-due">Due</a>
         <a class="not-submitted nav-link nav-item" href="/account/invoices-not-submitted">Not submitted</a>
         <a class="settings nav-link nav-item" href="/account/settings">Settings</a>
     </ul>
+  </div>
 </nav>
 <script>
     $(document).ready(function(){

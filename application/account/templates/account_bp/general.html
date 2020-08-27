@@ -1,4 +1,4 @@
-{% include 'account_bp/index.html' %}
+{% include 'account_bp/base.html' %}
 {% block content %}
 <div id="account_modal" class="modal fade" role="dialog">
     <div class="modal-dialog" role="document">
@@ -16,7 +16,7 @@
 </div>
 <div class="container-fluid p-5">
         <form autocomplete="off" class="invoice-search">
-            <input id="invoice-search" class="form-control mr-sm-2" name="treatment" type="search" placeholder="Search invoices by patient name">
+            <input id="invoice-search" class="form-control mb-4" name="treatment" type="search" placeholder="Search invoices by patient name">
         </form>
         <div id="inside_container" class="align-middle">
         </div>
@@ -298,6 +298,7 @@ $(document).on("keyup", ".invoice-search", function (e) {
             input_element.parentNode.insertBefore(a, input_element.nextSibling);
             if(patients_invoices.length > 0){
                 var patients_div = document.createElement("DIV");
+                patients_div.setAttribute("class", "bg-white")
                 var invoice_from_invoices = [], range = patients_invoices.length;
                 var patient_name_from_invoices = [], range = patients_invoices.length;
                 var arr_unique_patient_name = [];
