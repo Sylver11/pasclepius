@@ -24,6 +24,7 @@ def setup():
             practice = getPractice(current_user.id)
             subprocess.Popen([os.getenv('SYSTEM_BASH'),
                 os.getenv("APP_URL") + "/bin/add_user.sh",
+                os.getenv("PHP"),
                 os.getenv("OC_DIR"),
                 current_user.id,
                 current_user.uuid,
