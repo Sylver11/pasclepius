@@ -105,7 +105,7 @@ def newInvoice():
                 patient_name,
                 invoice_index,
                 current_user.practice_name,
-                current_user.practice_admin)
+                current_user.practice_id)
         invoice_file_url = invoice_file_url.generate()
         invoice_id = InvoiceName(medical_aid, invoice_index, item_modifiers)
         invoice_id = invoice_id.generate()
@@ -198,7 +198,7 @@ def NewInvoice():
                 os.getenv("APP_URL") + "/bin/sync_practice.sh",
                 os.getenv("PHP"),
                 os.getenv("OC_DIR"),
-                current_user.practice_id])
+                str(current_user.practice_id)])
             status['swriter_status'] = 'Success'
             status['swriter_description'] = 'Invoice file created'
         return json.dumps(status)
