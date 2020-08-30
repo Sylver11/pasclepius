@@ -22,6 +22,6 @@ class InvoicePath(object):
             return self.today.day
 
     def generate(self):
-        self.path = os.getenv("INVOICE_URL") + '/' + self.practice_id + '/' + str(self.medical_aid).upper() + '_' + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + calendar.month_name[self.date_digits('month')] + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + '_' + str(self.index) + self.patient_name
+        self.path = os.getenv("INVOICE_URL") + '/' + str(self.practice_id) + '/' + str(self.medical_aid).upper() + '_' + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + calendar.month_name[self.date_digits('month')] + str(self.date_digits('year')) + '/' + str(self.date_digits('month')) + '_' + str(self.index) + self.patient_name
         return self.path
 
