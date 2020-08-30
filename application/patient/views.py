@@ -104,7 +104,8 @@ def newInvoice():
                 medical_aid,
                 patient_name,
                 invoice_index,
-                current_user.practice_name)
+                current_user.practice_name,
+                current_user.practice_admin)
         invoice_file_url = invoice_file_url.generate()
         invoice_id = InvoiceName(medical_aid, invoice_index, item_modifiers)
         invoice_id = invoice_id.generate()
@@ -182,7 +183,6 @@ def NewInvoice():
                 "modifiers": request.form.getlist('modifier')
                   }
             to_json = json.dumps(res_dict)
-            print(to_json)
             try:
                 subprocess.check_output([os.getenv("LIBPYTHON"), os.getenv("APP_URL")
                 + '/swriter/main.py', to_json])
@@ -193,6 +193,12 @@ def NewInvoice():
                 else:
                     status['swriter_description'] = 'Exit code: ' + e.returncode
                 return json.dumps(status)
+
+            subprocess.Popen([os.getenv('SYSTEM_BASH'),
+                os.getenv("APP_URL") + "/bin/sync_user.sh",
+                os.getenv("PHP"),
+                os.getenv("OC_DIR"),
+                current_user.id])
             status['swriter_status'] = 'Success'
             status['swriter_description'] = 'Invoice file created'
         return json.dumps(status)
