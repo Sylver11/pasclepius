@@ -161,14 +161,14 @@ function populatePatient(){
 
     if(invoice_layout >= 4  && invoice_layout <= 9){
         form.appendChild(form_row_hospitial);
-        $('#admission_date').datepicker({dateFormat: 'dd.mm.yy'})
-        $('#discharge_date').datepicker({dateFormat: 'dd.mm.yy'})      
+        $('#admission_date').datepicker({dateFormat: 'yy-mm-dd'})
+        $('#discharge_date').datepicker({dateFormat: 'yy-mm-dd'})      
     }
     if(invoice_layout >= 7  && invoice_layout <= 12){
         form.appendChild(form_row_procedure_1);
         form.appendChild(form_row_procedure_2);
         form.appendChild(form_row_procedure_3);
-        $('#procedure_date').datepicker({dateFormat: 'dd.mm.yy'})
-        $('#diagnosis_date').datepicker({dateFormat: 'dd.mm.yy'})
+        $('#procedure_date').datepicker({dateFormat: 'yy-mm-dd'})
+        $('#diagnosis_date').datepicker({dateFormat: 'yy-mm-dd'})
     }
 }
