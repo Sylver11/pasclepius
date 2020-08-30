@@ -26,11 +26,45 @@ $("body").on("submit", "#personal_form", function(e){
         type: "POST",
         url: '/profile/personal', 
         data: form.serialize(),
-        success: function (returnData) {     
+        success: function (returnData) { 
             returnData = JSON.parse(returnData.replace(/&#34;/g,'"'));
-            $('.modal-title').text(returnData["status"])    
-            $('.modal-body').text(returnData["description"])
-            $("#profile_modal").modal();
+            if (returnData["status"] =="Success"){  
+                $.notify({
+                                    icon:"glyphicon glyphicon-warning-sign",
+                                    title: "<strong> Status: " + returnData["status"] + "</strong>",
+                                    message: returnData["description"]
+                                },{
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    type: 'success',
+                                    delay: 2000,
+                                    animate: {
+                                        enter: 'animated fadeInDown',
+                                        exit: 'animated fadeOutUp'
+                                    }
+                                });  
+
+                            }
+            else{
+                                $.notify({
+                                    icon:"glyphicon glyphicon-warning-sign",
+                                    title: "<strong> Status: " + returnData["status"] + "</strong>",
+                                    message: returnData["description"]
+                                },{
+                                    placement: {
+                                        from: "top",
+                                        align: "center"
+                                    },
+                                    type: 'danger',
+                                    delay: 2000,
+                                    animate: {
+                                        enter: 'animated fadeInDown',
+                                        exit: 'animated fadeOutUp'
+                                    }
+                                });
+                            }
         },
         error: function(xhr, status, error){
             var errorMessage = xhr.status + ': ' + xhr.statusText;

@@ -16,7 +16,7 @@
                 </div>            
             {% endfor %}         
         {% else %}
-            <p><strong>No assistants found</strong></p>            
+            <p id=no_assistants><strong>No assistants found</strong></p>            
         {% endif %}
     </div>  
     </div>
@@ -26,17 +26,17 @@
         <h5 class="pb-2">Add Assistant:</h5>  
         <div class="form-group">
             <label class="required" for="first_name">First Name</label>
-            <input name="first_name" id="first_name" class="form-control" type="text">
+            <input name="first_name" id="first_name" class="form-control" type="text" required>
             <i class="fa" style="float: right"></i>
         </div>
         <div class="form-group">
             <label class="required"  for="second_name">Second Name</label>
-            <input name="second_name" id="second_name" class="form-control" type="text">
+            <input name="second_name" id="second_name" class="form-control" type="text" required>
             <i class="fa" style="float: right"></i>
         </div>
         <div class="form-group">
             <label class="required"  for="email">Email Address</label>
-            <input name="email" id="email" class="form-control" type="email">
+            <input name="email" id="email" class="form-control" type="email" required>
             <i class="fa" style="float: right"></i>
         </div>
         <p><strong>Note:</strong> Max. 2 assistants per practice</p>
@@ -103,6 +103,9 @@ $("body").on("submit", "#add_assistant", function(e){
                                         }
                                     })
                                 } 
+                                var no_assistants = document.getElementById("no_assistants");
+                                no_assistants.remove();
+                                
                                 var assistant_list = document.getElementById("assistant_list")
                                 var card = document.createElement("DIV");
                             card.classList.add("card")
@@ -149,11 +152,7 @@ $("body").on("submit", "#add_assistant", function(e){
                             card_title.classList.add("card-title");
                             card_title.textContent = email;
                             card_body.appendChild(card_title);
-
-                            // var card_text = document.createElement("P");
-                            // card_text.classList.add("card-text");
-                            // card_text.textContent = "Created on: " + element['date_created']
-                            // card_body.appendChild(card_text);    
+   
                             }
                             else{
                                 $.notify({
@@ -179,6 +178,9 @@ $("body").on("submit", "#add_assistant", function(e){
                 alert('Error - ' + errorMessage);
             }
         })
+    }
+    else{
+        alert("Email has an incorrect format.");
     }
     
 })
