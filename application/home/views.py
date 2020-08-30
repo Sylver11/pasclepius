@@ -36,6 +36,13 @@ def setup():
                     current_user.id,
                     current_user.first_name,
                     'admin')
+            subprocess.Popen([os.getenv('SYSTEM_BASH'),
+                os.getenv('APP_URL') + '/bin/add_shared_dir.sh',
+                os.getenv('PHP'),
+                os.getenv('OC_DIR'),
+                practice['practice_name'],
+                practice['practice_uuid'],
+                practice['id']])
             return redirect(url_for('home_bp.home')) 
     return render_template('home/setup.html', page_title = 'Setup your account')
 
