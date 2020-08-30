@@ -104,7 +104,6 @@ def newInvoice():
                 medical_aid,
                 patient_name,
                 invoice_index,
-                current_user.practice_name,
                 current_user.practice_id)
         invoice_file_url = invoice_file_url.generate()
         invoice_id = InvoiceName(medical_aid, invoice_index, item_modifiers)
@@ -193,7 +192,6 @@ def NewInvoice():
                 else:
                     status['swriter_description'] = 'Exit code: ' + e.returncode
                 return json.dumps(status)
-
             subprocess.Popen([os.getenv('SYSTEM_BASH'),
                 os.getenv("APP_URL") + "/bin/sync_practice.sh",
                 os.getenv("PHP"),
