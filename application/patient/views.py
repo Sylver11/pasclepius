@@ -198,7 +198,7 @@ def NewInvoice():
                 os.getenv("APP_URL") + "/bin/sync_user.sh",
                 os.getenv("PHP"),
                 os.getenv("OC_DIR"),
-                current_user.practice_admin])
+                current_user.id])
             status['swriter_status'] = 'Success'
             status['swriter_description'] = 'Invoice file created'
         return json.dumps(status)

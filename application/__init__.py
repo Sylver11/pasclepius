@@ -23,6 +23,7 @@ def load_user(id):
                     data["uuid_text"],
                     data["current_practice_uuid"],
                     practice['practice_name'],
+                    practice['practice_admin'],
                     practice['invoice_layout'],
                     practice['namaf_profession'],
                     data['current_practice_role'])
