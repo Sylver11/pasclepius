@@ -1,8 +1,6 @@
 import os
 import pandas as pd
-from dotenv import load_dotenv
 
-load_dotenv()
 
 def setupTable():
     sql_drop_table_namaf_tariffs = "DROP TABLE IF EXISTS namaf_tariffs"
@@ -240,6 +238,8 @@ def populateTreatment():
     conn.close()
 
 if __name__ == '__main__':
+    from dotenv import load_dotenv
+    load_dotenv()
     from db_utils import pool
     setupTable()
     populateTreatment()

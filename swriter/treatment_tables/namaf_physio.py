@@ -20,14 +20,14 @@ def createTable(doc, text, cursor, unitCount):
     cRange = table.getCellRangeByName("A1:E1")
     cRange.setPropertyValue( "CharFontName", "Liberation Serif" )
     cRange.setPropertyValue( "CharHeight", 10.0 )
-    insertTextIntoCell( table, "A1", "NAMAF Code" )
+    insertTextIntoCell( table, "A1", "Date")
     insertTextIntoCell( table, "B1", "Description" )
-    insertTextIntoCell( table, "C1", "Units")
-    insertTextIntoCell( table, "D1", "Date")
+    insertTextIntoCell( table, "C1", "NAMAF Code" )
+    insertTextIntoCell( table, "D1", "Units")
     insertTextIntoCell( table, "E1", "Value")
-    insertTextIntoCell( table, "D" + str(2 + unitCount), "Total N$: ")
-    cursor_right = table.createCursorByCellName("D" + str(2 + unitCount))
-    cursor_right.setPropertyValue( "ParaAdjust", RIGHT )
+    insertTextIntoCell( table, "E" + str(2 + unitCount), "Total N$: ")
+  #  cursor_right = table.createCursorByCellName("D" + str(2 + unitCount))
+  #  cursor_right.setPropertyValue( "ParaAdjust", RIGHT )
     bottom_range = table.getCellRangeByName("A" + str(2 + unitCount)
         + ":E" + str(2+ unitCount))
     bottom_range.setPropertyValue("CharWeight", FW_BOLD)
@@ -50,17 +50,17 @@ def treatmentTable(doc, text, cursor, treatments, descriptions, units, post_valu
     for treatment, description, unit, post_value, date, modifier in zip(treatments, descriptions, units, post_values, dates, modifiers):
         if modifier == '14' or modifier == '13' or modifier == '10':
             insertTextIntoCell(table,
-                    "A" + str(counter),
+                    "C" + str(counter),
                     str(treatment.zfill(3) + " (0" + modifier + ")"))
         elif modifier == '6' or modifier == '8' or modifier == '9':
             insertTextIntoCell(table,
-                    "A" + str(counter),
+                    "C" + str(counter),
                     str(treatment.zfill(3) + " (00" + modifier + ")"))
         else:
-            insertTextIntoCell(table, "A" + str(counter), treatment.zfill(3))
+            insertTextIntoCell(table, "C" + str(counter), treatment.zfill(3))
+        insertTextIntoCell(table, "A" + str(counter), date)
         insertTextIntoCell(table, "B" + str(counter), description)
-        insertTextIntoCell(table, "C" + str(counter), unit)
-        insertTextIntoCell(table, "D" + str(counter), date)
+        insertTextIntoCell(table, "D" + str(counter), unit)
         insertTextIntoCell(table, "E" + str(counter), post_value)
         counter += 1
     cell_sum = table.getCellByName("E" + str(counter))
