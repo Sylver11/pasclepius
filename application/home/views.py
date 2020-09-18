@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-#from application.forms import PracticeForm
 from application.db_users import addPractice, mergeUserPractice, getPractice
 from flask_login import current_user, login_required
 import subprocess
@@ -26,7 +25,7 @@ def setup():
                 os.getenv("APP_URL") + "/bin/add_user.sh",
                 os.getenv("PHP"),
                 os.getenv("OC_DIR"),
-                current_user.id,
+                str(current_user.id),
                 current_user.uuid,
                 current_user.first_name,
                 practice['practice_uuid']])
@@ -36,13 +35,12 @@ def setup():
                     current_user.id,
                     current_user.first_name,
                     'admin')
-            subprocess.Popen([os.getenv('SYSTEM_BASH'),
-                os.getenv('APP_URL') + '/bin/add_shared_dir.sh',
+            subprocess.Popen([os.getenv('SYSTEM_BASH'), os.getenv('APP_URL') + '/bin/add_shared_dir.sh',
                 os.getenv('PHP'),
                 os.getenv('OC_DIR'),
                 practice['practice_name'],
                 practice['practice_uuid'],
-                practice['id']])
+                str(practice['id'])])
             return redirect(url_for('home_bp.home')) 
     return render_template('home/setup.html', page_title = 'Setup your account')
 
