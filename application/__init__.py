@@ -2,11 +2,6 @@ from flask import Flask
 from flask_login import LoginManager
 import os
 
-if not (os.getenv('PRODUCTION')):
-    print("this runs")
-#    from dotenv import load_dotenv
-#    load_dotenv()
-
 login_manager = LoginManager()
 login_manager.login_view = 'auth_bp.login'
 login_manager.refresh_view = 'auth_bp.freshLogin'

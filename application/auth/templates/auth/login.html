@@ -24,17 +24,15 @@
     <div class="signin-wrapper text-center">
 
         <form method="post" class="form-signin">
-           
                 <img  class="mb-4" src="{{ url_for('static', filename='img/green-leaf.png') }}" alt="" width="72" height="72">
                 <div class="row">
                     <div class="col-md-9" style="margin: auto">
-                      <a class="btn btn-outline-dark google_button" href="/auth/login/google" role="button" style="text-transform:none">
+                      <a class="btn btn-outline-dark google_button" href="/auth/login/redirect" role="button" style="text-transform:none">
                         <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
                         Login with Google
                       </a>
                     </div>
                   </div>
-             
             <p class="mt-5 mb-3 text-muted">&copy; 2020</p>
         </form>
     </div>
