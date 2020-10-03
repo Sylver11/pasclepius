@@ -21,3 +21,4 @@ def populateTopText(cursor, doc, text, practice):
     header_text.insertString( header_cursor, practice["specialisation"], 0 )
     header_text.insertControlCharacter( header_cursor, PARAGRAPH_BREAK, False )
     return doc, text, cursor
+    return doc, text, cursor
