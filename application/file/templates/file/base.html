@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+
+    </div>
+</div>
+	<script>
+		$(document).ready(function(){
+			console.log("this runs")
+			$(".container").load("http://localhost:8088/nextcloud");
+		})
+	</script>
+ {% endblock %}

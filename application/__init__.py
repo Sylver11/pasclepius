@@ -40,6 +40,8 @@ def create_app():
     with application.app_context():
         from .home import views
         application.register_blueprint(views.home_bp)
+        from .file import views
+        application.register_blueprint(views.file_bp, url_prefix='/file')
         from .api import views
         application.register_blueprint(views.api_bp)
         from .account import views
