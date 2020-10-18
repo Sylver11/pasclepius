@@ -15,7 +15,7 @@ def setupTable():
     sql_create_table_namaf_tariffs = """CREATE TABLE namaf_tariffs  (
         id int(11) NOT NULL AUTO_INCREMENT,
         item int(11) NOT NULL,
-        description VARCHAR(500) NOT NULL,
+        description TEXT NOT NULL,
         `procedure` VARCHAR(500),
         units int(11),
         units_specification VARCHAR(255),
