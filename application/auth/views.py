@@ -24,7 +24,7 @@ def login_redirect():
         flash('Flask environment set to development but could not login test user.')
         return redirect(url_for('auth_bp.login'))
     if not request.remote_user:
-        flash('No remote user found: ' + request.remote_user + ' Please inform the System Administrato about this incident.')
+        flash('No remote user found. Please inform the System Administrato about this incident.')
         return redirect(url_for('auth_bp.login'))
     if checkUser(request.remote_user) is None:
         status = addUser(request.headers.get('oidc-claim-given-name'),
