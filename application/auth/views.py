@@ -35,8 +35,7 @@ def login_redirect():
             user = User(os.getenv('TEST_USER'))
             login_user(user)
             return redirect(url_for('home_bp.home'))
-    flash('We were unable to log you in. Please inform the System Administrator
-            about this incident.')
+    flash('We were unable to log you in. Please inform the System Administrato about this incident.')
     return redirect(url_for('auth_bp.login'))
 
 @auth_bp.route('/logout')
