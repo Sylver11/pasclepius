@@ -15,7 +15,7 @@ def login():
 
 
 @auth_bp.route("/login/redirect")
-def loginRedirect():
+def login_redirect():
     if request.remote_user:
         if checkUser(request.remote_user) is None:
             status = addUser(request.headers.get('oidc-claim-given-name'),
@@ -35,6 +35,8 @@ def loginRedirect():
             user = User(os.getenv('TEST_USER'))
             login_user(user)
             return redirect(url_for('home_bp.home'))
+    flash('We were unable to log you in. Please inform the System Administrator
+            about this incident.')
     return redirect(url_for('auth_bp.login'))
 
 @auth_bp.route('/logout')
