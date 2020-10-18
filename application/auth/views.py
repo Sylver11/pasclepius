@@ -16,27 +16,30 @@ def login():
 
 @auth_bp.route("/login/redirect")
 def login_redirect():
-    if request.remote_user:
-        if checkUser(request.remote_user) is None:
-            status = addUser(request.headers.get('oidc-claim-given-name'),
-                    request.headers.get('oidc-claim-family-name'),
-                    request.remote_user)
-            if not status:
-                flash('You do not have an account with us and we were not able to create one for you. Please contact the system administrator')
-                return redirect(url_for('auth_bp.login'))
-            user = User(request.remote_user)
-            login_user(user, remember=True)
-            return redirect(url_for('home_bp.setup'))
-        user = User(request.remote_user)
-        login_user(user, remember=True)
-        return redirect(url_for('home_bp.home'))
-    elif os.getenv('FLASK_ENV') == 'development':
+    if os.getenv('FLASK_ENV') == 'development':
         if checkUser(os.getenv('TEST_USER')):
             user = User(os.getenv('TEST_USER'))
             login_user(user)
             return redirect(url_for('home_bp.home'))
-    flash('We were unable to log you in. Please inform the System Administrato about this incident.')
-    return redirect(url_for('auth_bp.login'))
+        flash('Flask environment set to development but could not login test user.')
+        return redirect(url_for('auth_bp.login'))
+    if not request.remote_user:
+        flash('No remote user found. Please inform the System Administrato about this incident.')
+        return redirect(url_for('auth_bp.login'))
+    if checkUser(request.remote_user) is None:
+        status = addUser(request.headers.get('oidc-claim-given-name'),
+                request.headers.get('oidc-claim-family-name'),
+                request.remote_user)
+        if not status:
+            flash('You do not have an account with us and we were not able to create one for you. Please contact the system administrator')
+            return redirect(url_for('auth_bp.login'))
+        user = User(request.remote_user)
+        login_user(user, remember=True)
+        return redirect(url_for('home_bp.setup'))
+    user = User(request.remote_user)
+    login_user(user, remember=True)
+    return redirect(url_for('home_bp.home'))
+
 
 @auth_bp.route('/logout')
 def logout():
