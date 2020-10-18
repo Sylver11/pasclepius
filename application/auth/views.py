@@ -45,4 +45,5 @@ def login_redirect():
 def logout():
     logout_user()
     flash('You have been logged out.')
-    return redirect(url_for('auth_bp.login') + '/redirect/callback?logout=%2Fauth%2Flogin')
+    return redirect(url_for('auth_bp.login') +
+            '/redirect/callback?logout=https%3A%2F%pasclepius.voigts.cloud2F%2Fauth%2Flogin')
