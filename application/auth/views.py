@@ -17,12 +17,16 @@ def login():
 @auth_bp.route("/login/redirect")
 def login_redirect():
     if os.getenv('FLASK_ENV') == 'development':
-        if checkUser(os.getenv('TEST_USER')):
-            user = User(os.getenv('TEST_USER'))
-            login_user(user)
-            return redirect(url_for('home_bp.home'))
-        flash('Flask environment set to development but could not login test user.')
-        return redirect(url_for('auth_bp.login'))
+        if checkUser(os.getenv('TEST_USER_EMAIL')) is None:
+            status = addUser(os.getenv('TEST_USER_NAME'),
+                    os.getenv('TEST_USER_SURNAME'),
+                    os.getenv('TEST_USER_EMAIL'))
+            if not status:
+                flash('In develop: You do not have an account with us and we were not able to create one for you.')
+                return redirect(url_for('auth_bp.login'))
+        user = User(os.getenv('TEST_USER_EMAIL'))
+        login_user(user)
+        return redirect(url_for('home_bp.home'))
     if not request.remote_user:
         flash('No remote user found. Please inform the System Administrato about this incident.')
         return redirect(url_for('auth_bp.login'))
