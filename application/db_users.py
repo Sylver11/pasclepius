@@ -1,5 +1,17 @@
 from application.db_utils import pool
 
+
+def removeEntry(_sIdentifier, _sColumn, _sTable):
+    try:
+        conn = pool.connection()
+        cursor = conn.cursor()
+        cursor.execute("""DELETE FROM %s WHERE %s = %s""",(_sTable, _sColumn,
+            _sTable))
+    except:
+        return False
+    return True
+
+
 def checkUser(email):
     conn = pool.connection()
     cursor = conn.cursor()

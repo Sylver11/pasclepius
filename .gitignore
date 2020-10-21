@@ -6,3 +6,4 @@ env
 *.swo
 __pycache__/
 *.wsgi
+tags
