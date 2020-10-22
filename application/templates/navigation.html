@@ -15,15 +15,15 @@
               <li class="nav-item patient">
                 <a class="nav-link" href="/patient">Patient</a>
               </li>
-              <li class="nav-item files">
-                <a class="nav-link" href="http://localhost:8088/nextcloud/index.php/apps/files">Files</a>
-              </li>
               <li class="nav-item account">
                 <a class="nav-link" href="/account">Account</a>
               </li>
               <li class="nav-item profile">
                 <a class="nav-link" href="/profile">Settings</a>
-              </li>         
+              </li>     
+              <li class="nav-item profile">
+                <a class="nav-link" href='{{ NEXTCLOUD_DOMAIN_FULL }}'>Nextcloud</a>
+              </li>       
             {% else %}
               <li class="nav-item setup">
                 <a class="nav-link" href="/setup">Setup</a>

@@ -33,6 +33,9 @@ def create_app():
     application = Flask(__name__)
     CORS(application)
     application.secret_key = os.getenv("SECRET_KEY")
+    application.jinja_env.globals['HTTP_MODE'] = os.getenv('HTTP_MODE')
+    application.jinja_env.globals['NEXTCLOUD_DOMAIN_FULL'] = os.getenv('NEXTCLOUD_DOMAIN_FULL')
+    application.jinja_env.globals['PASCLEPIUS_DOMAIN'] = os.getenv('PASCLEPIUS_DOMAIN')
     application.config['SESSION_TYPE'] = 'filesystem'
     application.config['REMEMBER_COOKIE_DURATION'] = 2592000
     application.config['CORS_HEADERS'] = 'Content-Type'
