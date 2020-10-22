@@ -8,7 +8,6 @@ def getTariffs(namaf_profession):
     cursor = conn.cursor()
     cursor.execute(sql)
     tariffs = cursor.fetchall()
-    print(tariffs)
     cursor.close()
     conn.close()
     return tariffs
