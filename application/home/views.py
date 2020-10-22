@@ -3,15 +3,10 @@ from application.db_users import addPractice, mergeUserPractice, getPractice, re
 from flask_login import current_user, login_required
 import subprocess
 import os
-from flask_cors import CORS,cross_origin
-
 
 home_bp = Blueprint('home_bp',__name__, template_folder='templates')
-#CORS(home_bp, resources=r'/*')
-CORS(home_bp)
 
 @home_bp.route('/', methods=('GET', 'POST'))
-#@cross_origin()
 def home():
     return render_template('home/index.html', page_title = 'PANAM - Medical Software')
 

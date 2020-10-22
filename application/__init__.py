@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_login import LoginManager
 import os
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth_bp.login'
@@ -31,8 +31,7 @@ def load_user(id):
 
 def create_app():
     application = Flask(__name__)
-    #CORS(application)#, resources={r"/.*":{"origins":"*"}})
-    #CORS(application)
+    CORS(application)
     application.secret_key = os.getenv("SECRET_KEY")
     application.config['SESSION_TYPE'] = 'filesystem'
     application.config['REMEMBER_COOKIE_DURATION'] = 2592000
