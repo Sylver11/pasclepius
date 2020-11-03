@@ -55,7 +55,6 @@ function liveSearch (e) {
     e.preventDefault();
     var key = e.keyCode || e.which;
     if((key === 38 || key === 40) && !e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey){
-        console.log("arrow key pressed");
         /////////////////////////////////////////////
         //TODO add func for skipping the list down using arrow keys
         /////////////////////////////////////////////

@@ -59,7 +59,8 @@
         <label for="method">Create Invoice File</label>
         <br>
         <button id="submit" type="submit" class="btn btn-primary save_invoice" style="background-color:#017B25;">Save</button>
-        <div style="display:flex; flex-direction: column; align-items: flex-end;"><span id="result"></span><span><input class="btn btn-secondary" id="download_invoice" value="Download invoice" type="button" style="display:none;"></span></div>      
+        <a class="btn btn-secondary mt-2 w-25" id="show_invoice" role="button" style="display:none;">Show invoice in Nextcloud</a>
+        <div style="display:flex; flex-direction: column; align-items: flex-end;"><span id="result"></span><span></span></div>      
     </form> 
 
 <script>
@@ -147,8 +148,6 @@ function details_in_popup(item_number, div_id){
                 div.className += "row";
                 div.style.marginBottom = "0";
                 form.appendChild(div);
-
-
                 var label = document.createElement("Label");
                 label.htmlFor = key;
                 label.innerHTML= firstLetterCapitalise(key);  
@@ -173,9 +172,7 @@ function details_in_popup(item_number, div_id){
                 input.className = "form-control";
                 input.setAttribute("type", "text")
                 input_div.appendChild(input); 
-                    }
-
-                  
+                    }                  
             }          
             $('#'+div_id).html(form);
         }
@@ -211,10 +208,6 @@ $(document).ready(function(){
     }
 
     $(document).on("click", ".remove", remove);
-    // $('#admission_date').datepicker({dateFormat: 'yy-mm-dd'})
-    // $('#discharge_date').datepicker({dateFormat: 'yy-mm-dd'})
-    // $('#procedure_date').datepicker({dateFormat: 'yy-mm-dd'})
-    // $('#diagnosis_date').datepicker({dateFormat: 'yy-mm-dd'})
     $('#date_invoice').datepicker({dateFormat: 'yy-mm-dd'})
     $('#date_invoice').datepicker("setDate", new Date());
     $(document).on("click", ".date", function() {

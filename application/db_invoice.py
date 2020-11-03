@@ -64,6 +64,17 @@ def getInvoiceURL(practice_uuid, name_patient, date):
     return invoice_file_url
 
 
+def getInvoiceFileId(invoice_file_url):
+    sql = """SELECT fileid from oc_filecache WHERE path like '%{}%'""".format(invoice_file_url)
+    conn = pool.connection()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    invoice_file_id = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return invoice_file_id['fileid']
+
+
 def getSingleInvoice(practice_uuid, invoice_id):
     sql = """SELECT invoices.*, patients.*
         FROM invoices

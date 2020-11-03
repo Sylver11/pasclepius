@@ -279,7 +279,6 @@ $(document).on("keyup", ".invoice-search", function (e) {
         data: {patient_name: search_item}, 
         dataType: 'json',
         success: function (patients_invoices) {
-            console.log(patients_invoices);
             if (patients_invoices.length <= 9){
                 var invoices = [], range = patients_invoices.length;
             }

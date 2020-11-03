@@ -23,13 +23,11 @@
                 var found;
 
                 for (var i = 0; i < aTags.length; i++) {
-                    // console.log(aTags[i].value);
                     if (aTags[i].textContent == searchText) {
                         found = aTags[i];
                         break;
                     }
                 }
-                // console.log(found);
                 found.classList.add("active");
 
                 $("body").on("click", ".select_practice", function(e){

@@ -22,7 +22,7 @@
                 <a class="nav-link" href="/profile">Settings</a>
               </li>     
               <li class="nav-item profile">
-                <a class="nav-link" href='{{ NEXTCLOUD_DOMAIN_FULL }}'>Nextcloud</a>
+                <a class="nav-link" href='{{ NEXTCLOUD_DOMAIN_FULL }}' target="_blank">Nextcloud</a>
               </li>       
             {% else %}
               <li class="nav-item setup">
@@ -173,7 +173,6 @@
     function xwwwfurlenc(srcjson){
     if(typeof srcjson !== "object")
       if(typeof console !== "undefined"){
-        // console.log("\"srcjson\" is not a JSON object");
         return null;
       }
     u = encodeURIComponent;

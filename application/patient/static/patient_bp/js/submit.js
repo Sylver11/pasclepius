@@ -1,16 +1,63 @@
 function addShow(data) {
-    for (const [key, value] of Object.entries(data)) {
-        var message = document.getElementById("result")
-        var status = document.createElement("P"); 
-        status.innerHTML = key + ": " + value          
-        message.appendChild(status)
-        if(key == "swriter_status"){
-            if(value == "Success"){
-                var download_button = document.getElementById("download_invoice")
-                download_button.style.display = "block"
-                download_button.disabled = false;
-            }
+    var save_message;
+    var save_type;
+    if (data["db_status"] == "Success"){
+        save_message = "Success"
+        save_type = "success"      
+    }
+    else{
+        save_message = "Failed"
+        save_type = "danger" 
+    }
+    $.notify({
+        icon:"glyphicon glyphicon-warning-sign",
+        title: "<strong> " + save_message + " </strong>",
+        message: data["db_description"]
+    },{
+        placement: {
+            from: "top",
+            align: "right"
+        },
+        type: save_type,
+        delay: 10000,
+        animate: {
+            enter: 'animated fadeInDown',
+            exit: 'animated fadeOutUp'
         }
+    });
+    var swriter_message;
+    var swriter_type;
+    if(data["swriter_status"]){
+        if (data["swriter_status"] == "Success"){
+            swriter_message = "Success";
+            swriter_type = "success";
+            var show_invoice_button = document.getElementById("show_invoice")
+            show_invoice_button.setAttribute("href",data["nextcloud_domain_full"] + "/index.php/f/" + data["invoice_file_id"])
+            show_invoice_button.setAttribute("target","_blank")
+            show_invoice_button.style.display = "block"
+            show_invoice_button.disabled = false;
+            show_invoice_button.className += " active";
+        }
+        else {
+            swriter_message = "Failed";
+            swriter_type = "danger";
+        }
+        $.notify({
+            icon:"glyphicon glyphicon-warning-sign",
+            title: "<strong> " + swriter_message + " </strong>",
+            message: data["swriter_description"]
+        },{
+            placement: {
+                from: "top",
+                align: "right"
+            },
+            type: swriter_type,
+            delay: 10000,
+            animate: {
+                enter: 'animated fadeInDown',
+                exit: 'animated fadeOutUp'
+            }
+        });
     }
 }
 

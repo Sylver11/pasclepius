@@ -6,7 +6,7 @@ from application.db_workbench import removeWork, newWork, lastFive
 from application.db_users import checkUser, getPractice
 from application.db_patient import insertPatient, checkDuplicate, patientSearch, removePatient
 from application.forms import mva_patient_form, other_patient_form, getTreatmentForm
-from application.db_invoice import updateInvoice, insertInvoice, get_index, queryInvoices, getSingleInvoice, getItems
+from application.db_invoice import updateInvoice, insertInvoice, get_index, queryInvoices, getSingleInvoice, getItems, getInvoiceFileId
 import simplejson as json
 import re
 import subprocess
@@ -199,6 +199,10 @@ def NewInvoice():
                 str(current_user.practice_id)])
             status['swriter_status'] = 'Success'
             status['swriter_description'] = 'Invoice file created'
+            status['nextcloud_domain_full'] = os.getenv('NEXTCLOUD_DOMAIN_FULL')
+            _sInvoiceFileUrl = request.form['invoice_file_url']
+            _sInvoiceFileUrl = _sInvoiceFileUrl.replace(os.getenv('INVOICE_URL'),'')
+            status['invoice_file_id'] = getInvoiceFileId(_sInvoiceFileUrl)
         return json.dumps(status)
     return json.dumps({'status': 'Fatal error. Could not read form data.'})
 
