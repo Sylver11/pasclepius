@@ -13,11 +13,36 @@ from unohelper import systemPathToFileUrl
 from com.sun.star.beans import PropertyValue
 
 
-def saveDocument(doc, url):
-    url = systemPathToFileUrl( url + '.odt')
-    args = (PropertyValue('FilterName',0, 'writer8', 0),)
-    doc.storeToURL(url, args)
+def saveDocument(doc, url, _sAsPdf = '', _sAsOdt = ''):
+    url = systemPathToFileUrl( url )
+    _sFeedback = 'Successfully created '
+    if _sAsOdt == 'write':
+        try:
+            odt_args = (PropertyValue('FilterName',0, 'writer8', 0),)
+            doc.storeToURL(url + '.odt', odt_args)
+            _sFeedback += 'Text Document (.odt) '
+        except Exception as e:
+            return str(e)
+    try:
+        doc.refresh()
+    except:
+        pass
+    if _sAsPdf == 'write':
+        try:
+            properties=[]
+            p=PropertyValue()
+            p.Name='FilterName'
+            p.Value='writer_pdf_Export'
+            properties.append(p)
+            doc.storeToURL(url + '.pdf',tuple(properties))
+            if _sAsOdt == 'write':
+                _sFeedback += 'and PDF file (.pdf)'
+            else:
+                _sFeedback += 'PDF file (.pdf)'
+        except Exception as e:
+            return str(e)
     doc.dispose()
+    return _sFeedback
 
 
 def setupConnection():
@@ -32,7 +57,7 @@ def setupConnection():
 
 
 def createTextInvoice(practice, invoice, treatments, descriptions, units,
-        post_values, dates, modifiers):
+        post_values, dates, modifiers, save_as_pdf, save_as_odt):
     doc, text = setupConnection()
     cursor = text.createTextCursor()
     doc, text, cursor = populateTopText(cursor, doc, text, practice)
@@ -52,7 +77,7 @@ def createTextInvoice(practice, invoice, treatments, descriptions, units,
                 units, post_values, dates, modifiers)
     doc, text = populateBottomTable(doc, text, practice)
     doc, text = configureBorders(doc, text, treatments)
-    saveDocument(doc, invoice['invoice_file_url'])
+    saveDocument(doc, invoice['invoice_file_url'], save_as_pdf, save_as_odt)
 
 
 if __name__ == '__main__':
@@ -69,5 +94,7 @@ if __name__ == '__main__':
             args.to_json["units"],
             args.to_json["post_values"],
             args.to_json["dates"],
-            args.to_json["modifiers"]
+            args.to_json["modifiers"],
+            args.to_json["save_as_pdf"],
+            args.to_json["save_as_odt"]
             )

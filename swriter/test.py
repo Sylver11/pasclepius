@@ -6,6 +6,7 @@ def testing():
     data = {"user":
             {"uuid_text": "00D70FBC-CD89-11EA-B445-15AE28BB36DA",
                 "email": "justus@gmail.com",
+                "practice_email":"thepractiece@gmail.com",
                 "title": "Dr",
                 "first_name": "Justus ",
                 "second_name": "Voigt",
@@ -19,8 +20,7 @@ def testing():
                 "bank_account": "234234324",
                 "bank_branch": "5000",
                 "bank": "FNB Oshakati",
-                "practice_name":
-                "Justus's praxis",
+                "practice_name": "Justus's praxis",
                 "practice_number": "2343242",
                 "hpcna_number": "HPCN34223",
                 "qualification": "BA PPE Bachelor ",
@@ -29,6 +29,7 @@ def testing():
             "invoice": {"csrf_token": "IjZhOWQ2NmY2NDU4YTBkMWNhZGY5YWM4OWRiOGFiM2M4NDAyMTcyMmEi.XyGgMg.dBFgyPCziGDSLUsGpNlCCUCLEGU",
                 "date_invoice": "29.07.2020",
                 "treatments": "501",
+                "invoice_id": "someid",
                 "description": "Small bones",
                 "units": "12800",
                 "post_value": "2291.6",
@@ -39,13 +40,16 @@ def testing():
                 "case_number": "2342342",
                 "po_number": "2433",
                 "tariff": "namaf_orthopaedic_surgeons_2020",
+                "invoice_layout": 1,
+                "invoice_file_url": "/mnt/c/Users/jvoigt/Documents/Justus's praxis/MVA_Justus2020/7July2020/7_13George Fischer",
                 "date_created": "08.07.2020"},
             "treatments": ["501", "1333",  "774"],
             "descriptions": ["Small bones", "Ebstein's Anomaly","Repair of Boutonniere deformity or Mallet finger"],
+            "modifiers":['0','0','0'],
             "units": ["12800", "56300", "12200"],
             "post_values": ["2291.6", "10079.6", "2184.2"],
             "dates": ["14.07.2020", "30.07.2020", "16.07.2020"],
-            "invoice_file_url": "/Users/justus/Documents/Justus's praxis/MVA_Justus2020/7July2020/7_13George Fischer",
+            "invoice_file_url": "/mnt/c/Users/jvoigt/Documents/Justus's praxis/MVA_Justus2020/7July2020/7_13George Fischer",
             "invoice_id": "MVA/2020/7-13"}
 
     createTextInvoice(
@@ -56,6 +60,7 @@ def testing():
             data["units"],
             data["post_values"],
             data["dates"],
+            data["modifiers"],
             )
 
 

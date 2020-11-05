@@ -167,7 +167,9 @@ def NewInvoice():
                 status['db_description'] = 'Exit code: ' + str(e)
                 return json.dumps(status)
         method = None
-        if status['db_status'] == 'Success' and request.form.get('method'):
+        if status['db_status'] != 'Success':
+            return json.dumps(status)
+        if request.form.get('save_as_odt') or request.form.get('save_as_pdf'):
             practice = getPractice(practice_uuid = current_user.practice_uuid)
             practice['uuid_bin'] = ''
             practice['created_on'] = ''
@@ -179,7 +181,9 @@ def NewInvoice():
                 "units": request.form.getlist('units'),
                 "post_values": request.form.getlist('post_value'),
                 "dates": request.form.getlist('date'),
-                "modifiers": request.form.getlist('modifier')
+                "modifiers": request.form.getlist('modifier'),
+                "save_as_pdf": request.form.get("save_as_pdf"),
+                "save_as_odt": request.form.get("save_as_odt")
                   }
             to_json = json.dumps(res_dict)
             try:
@@ -192,11 +196,15 @@ def NewInvoice():
                 else:
                     status['swriter_description'] = 'Exit code: ' + e.returncode
                 return json.dumps(status)
-            subprocess.Popen([os.getenv('SYSTEM_BASH'),
-                os.getenv("APP_URL") + "/bin/sync_practice.sh",
-                os.getenv("PHP"),
-                os.getenv("OC_DIR"),
-                str(current_user.practice_id)])
+            try:
+                subprocess.check_output([os.getenv('SYSTEM_BASH'),
+                    os.getenv("APP_URL") + "/bin/sync_practice.sh",
+                    os.getenv("PHP"),
+                    os.getenv("OC_DIR"),
+                    str(current_user.practice_id)])
+            except subprocess.CalledProcessError as e:
+                status['swriter_description'] = 'Exit code: ' + e.returncode
+                return json.dumps(status)
             status['swriter_status'] = 'Success'
             status['swriter_description'] = 'Invoice file created'
             status['nextcloud_domain_full'] = os.getenv('NEXTCLOUD_DOMAIN_FULL')
