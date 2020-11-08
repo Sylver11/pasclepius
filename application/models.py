@@ -3,8 +3,7 @@ from flask_login import UserMixin
 class User(UserMixin):
 
     def __init__(self, id, first_name='', uuid='', practice_uuid='',
-            practice_name='', practice_id='', practice_admin='', invoice_layout = '', namaf_profession = '',
-            practice_role='', active=True):
+            practice_name='', practice_id='', practice_admin='', invoice_layout = '', namaf_profession = '', practice_role='', practice_folder_id='', active=True):
         self.uuid = uuid
         self.first_name = first_name
         self.practice_uuid = practice_uuid
@@ -15,6 +14,7 @@ class User(UserMixin):
         self.namaf_profession = namaf_profession
         self.practice_role = practice_role
         self.id = id
+        self.practice_folder_id = practice_folder_id
         self.active = active
     pass
 

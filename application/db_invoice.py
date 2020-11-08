@@ -19,7 +19,7 @@ def get_index(practice_uuid, medical_aid):
 
 
 def liveSearchInvoices(practice_uuid, patient_name):
-    sql = """SELECT 
+    sql = """SELECT
     any_value(patients.practice_uuid) AS practice_uuid,
     any_value(patients.patient_name) AS patient_name,
     any_value(patients.patient_id) AS patient_id,

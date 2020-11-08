@@ -146,6 +146,7 @@ def setupTable():
         hpcna_number varchar(255),
         qualification varchar(255),
         specialisation varchar(255),
+        practice_folder_id int(11) NOT NULL DEFAULT 0,
         premium BOOLEAN NOT NULL DEFAULT false,
         invoice_layout int(11) NOT NULL DEFAULT 1,
         created_on DATETIME NOT NULL DEFAULT NOW(),

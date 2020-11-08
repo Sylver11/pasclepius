@@ -25,7 +25,8 @@ def load_user(id):
                     practice['practice_admin'],
                     practice['invoice_layout'],
                     practice['namaf_profession'],
-                    data['current_practice_role'])
+                    data['current_practice_role'],
+                    practice['practice_folder_id'])
         return User(id, data['first_name'], data['uuid_text'])
 
 

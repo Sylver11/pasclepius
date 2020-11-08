@@ -77,7 +77,9 @@ def createTextInvoice(practice, invoice, treatments, descriptions, units,
                 units, post_values, dates, modifiers)
     doc, text = populateBottomTable(doc, text, practice)
     doc, text = configureBorders(doc, text, treatments)
-    saveDocument(doc, invoice['invoice_file_url'], save_as_pdf, save_as_odt)
+    _sFeedback = saveDocument(doc, invoice['invoice_file_url'], save_as_pdf, save_as_odt)
+    print(_sFeedback)
+    return _sFeedback
 
 
 if __name__ == '__main__':

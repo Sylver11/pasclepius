@@ -12,6 +12,38 @@ def removeEntry(_sIdentifier, _sColumn, _sTable):
     return True
 
 
+def getScalar( _sIdentifier, _sLkpVal, _sLkpCol, _sLkpTbl, _sOrderBy = None):
+    try:
+        conn = pool.connection()
+        cursor = conn.cursor()
+        sql = 'SELECT ' + _sIdentifier + ' FROM ' + _sLkpTbl
+        sql += ' WHERE ' + _sLkpCol + ' = %s '
+        if _sOrderBy:
+            sql += ' ORDER BY ' + _sOrderBy + ' DESC '
+        cursor.execute(sql,( _sLkpVal ))
+        _sScalar = cursor.fetchone()
+        cursor.close()
+        conn.close()
+    except  Exception as e:
+        return str(e)
+    return _sScalar
+
+
+def updateScalar( _sVal, _sCol, _sIdentifier, _sLkpCol, _sLkpTbl):
+    try:
+        conn = pool.connection()
+        cursor = conn.cursor()
+        sql = 'UPDATE ' + _sLkpTbl
+        sql += ' SET ' + _sCol + '=%s WHERE ' + _sLkpCol + '= %s'
+        cursor.execute(sql, ( _sVal, _sIdentifier))
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(str(e))
+        return False
+    return True
+
+
 def checkUser(email):
     conn = pool.connection()
     cursor = conn.cursor()
@@ -158,24 +190,25 @@ def getPractice(practice_admin = '', practice_uuid = ''):
 
 def mergeUserPractice(practice_uuid, practice_name, user_uuid, user_email,
         user_name, role):
-    conn = pool.connection()
-    cursor = conn.cursor()
-    sql = """UPDATE users SET current_practice_uuid = '{}', current_practice_role = '{}' WHERE
-    uuid_text = '{}'""".format(practice_uuid, role, user_uuid)
-    cursor.execute(sql)
-    cursor.execute("""SELECT * FROM practice_connections WHERE practice_uuid =
-            %s AND user_uuid = %s""",(practice_uuid, user_uuid))
-    row = cursor.fetchone()
-    if not row:
-        cursor.execute("""INSERT INTO practice_connections
-        (practice_uuid, practice_name,
-        user_uuid, user_email, user_name, practice_role)
-        VALUES(%s,%s,%s,%s,%s,%s)""",(practice_uuid,
-        practice_name, user_uuid, user_email, user_name, role))
-    cursor.close()
-    conn.close()
-    status = True
-    return status
+    try:
+        conn = pool.connection()
+        cursor = conn.cursor()
+        sql = """UPDATE users SET current_practice_uuid = '{}', current_practice_role = '{}' WHERE uuid_text = '{}'""".format(practice_uuid, role, user_uuid)
+        cursor.execute(sql)
+        cursor.execute("""SELECT * FROM practice_connections WHERE practice_uuid = %s AND user_uuid = %s""",(practice_uuid, user_uuid))
+        row = cursor.fetchone()
+        if not row:
+            cursor.execute("""INSERT INTO practice_connections
+            (practice_uuid, practice_name,
+            user_uuid, user_email, user_name, practice_role)
+            VALUES(%s,%s,%s,%s,%s,%s)""",(practice_uuid,
+            practice_name, user_uuid, user_email, user_name, role))
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        app.logger.info(str(e)) 
+        return False
+    return True
 
 
 def getAssistants(practice_uuid):

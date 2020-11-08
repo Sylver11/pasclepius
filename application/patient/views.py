@@ -104,7 +104,7 @@ def newInvoice():
                 medical_aid,
                 patient_name,
                 invoice_index,
-                current_user.practice_id)
+                current_user.practice_folder_id)
         invoice_file_url = invoice_file_url.generate()
         invoice_id = InvoiceName(medical_aid, invoice_index, item_modifiers)
         invoice_id = invoice_id.generate()
@@ -170,43 +170,41 @@ def NewInvoice():
         if status['db_status'] != 'Success':
             return json.dumps(status)
         if request.form.get('save_as_odt') or request.form.get('save_as_pdf'):
-            practice = getPractice(practice_uuid = current_user.practice_uuid)
-            practice['uuid_bin'] = ''
-            practice['created_on'] = ''
-            res_dict = {
-                "practice" : practice,
-                "invoice": request.form,
-                "treatments": request.form.getlist('treatments'),
-                "descriptions": request.form.getlist('description'),
-                "units": request.form.getlist('units'),
-                "post_values": request.form.getlist('post_value'),
-                "dates": request.form.getlist('date'),
-                "modifiers": request.form.getlist('modifier'),
-                "save_as_pdf": request.form.get("save_as_pdf"),
-                "save_as_odt": request.form.get("save_as_odt")
-                  }
-            to_json = json.dumps(res_dict)
             try:
-                subprocess.check_output([os.getenv("LIBPYTHON"), os.getenv("APP_URL")
-                + '/swriter/main.py', to_json])
-            except subprocess.CalledProcessError as e:
-                status['swriter_status'] = 'Error'
-                if e.returncode == 1:
-                    status['swriter_description'] =  'NoConnectException: Connector : could not connect to socket (Connection refused)'
-                else:
-                    status['swriter_description'] = 'Exit code: ' + e.returncode
-                return json.dumps(status)
+                practice = getPractice(practice_uuid = current_user.practice_uuid)
+                practice['uuid_bin'] = ''
+                practice['created_on'] = ''
+                res_dict = {
+                    "practice" : practice,
+                    "invoice": request.form,
+                    "treatments": request.form.getlist('treatments'),
+                    "descriptions": request.form.getlist('description'),
+                    "units": request.form.getlist('units'),
+                    "post_values": request.form.getlist('post_value'),
+                    "dates": request.form.getlist('date'),
+                    "modifiers": request.form.getlist('modifier'),
+                    "save_as_pdf": request.form.get("save_as_pdf"),
+                    "save_as_odt": request.form.get("save_as_odt")
+                    }
+                to_json = json.dumps(res_dict)
+            except Exception as e:
+                status['swriter_status'] = 'Failed'
+                status['swriter_description'] = 'Wrap form into JSON failed.' + str(e)
+                return status
             try:
-                subprocess.check_output([os.getenv('SYSTEM_BASH'),
+                _sReturnValInvFile = subprocess.check_output([os.getenv("LIBPYTHON"),
+                    os.getenv("APP_URL") + '/swriter/main.py', to_json])
+                status['swriter_status'] = 'Success'
+                status['swriter_description'] = _sReturnValInvFile.decode('ascii')
+                _sReturnValSyncFile = subprocess.check_output([os.getenv('SYSTEM_BASH'),
                     os.getenv("APP_URL") + "/bin/sync_practice.sh",
                     os.getenv("PHP"),
                     os.getenv("OC_DIR"),
-                    str(current_user.practice_id)])
+                    str(current_user.practice_folder_id)])
             except subprocess.CalledProcessError as e:
-                status['swriter_description'] = 'Exit code: ' + e.returncode
+                status['swriter_status'] = 'Error'
+                status['swriter_description'] = 'Exit code: ' + str(e.returncode)
                 return json.dumps(status)
-            status['swriter_status'] = 'Success'
-            status['swriter_description'] = 'Invoice file created'
             status['nextcloud_domain_full'] = os.getenv('NEXTCLOUD_DOMAIN_FULL')
             _sInvoiceFileUrl = request.form['invoice_file_url']
             _sInvoiceFileUrl = _sInvoiceFileUrl.replace(os.getenv('INVOICE_URL'),'')
