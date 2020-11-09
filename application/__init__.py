@@ -40,10 +40,8 @@ def create_app():
     application.config['SESSION_TYPE'] = 'filesystem'
     application.config['REMEMBER_COOKIE_DURATION'] = 2592000
     application.config['CORS_HEADERS'] = 'Content-Type'
-    application.config.update(
-)
+    application.config.update()
     login_manager.init_app(application)
-
     with application.app_context():
         from .home import views
         application.register_blueprint(views.home_bp)
@@ -58,4 +56,3 @@ def create_app():
         from .auth import views
         application.register_blueprint(views.auth_bp, url_prefix='/auth')
         return application
-

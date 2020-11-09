@@ -13,10 +13,11 @@
     <script src="{{ url_for('static', filename='js/notify.js') }}"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/signin.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hover-menu.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
     <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', filename='img/favicon/apple-icon-57x57.png') }}">
     <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', filename='img/favicon/apple-icon-60x60.png') }}">
     <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='img/favicon/apple-icon-72x72.png') }}">
@@ -39,13 +40,27 @@
     {% include 'navigation.html' %}
     {% block content %}
     {% endblock %}
-    <script>var LHC_API = LHC_API||{};
+    <div id="calender" class="overlay">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeCalender()">&times;</a>
+      <div class="overlay-content">
+        <a>Calender soon to come</a>
+      </div>
+    </div>
+    <i onclick="openCalender()" class="fas fa-clock fa-4x" style="position:absolute;bottom:25px;left:25px;z-index: 9999;color:#888888;cursor: pointer;"></i>
+    <script>
+      var LHC_API = LHC_API||{};
       LHC_API.args = {mode:'widget',lhc_base_url:'//chat.voigts.cloud/',wheight:450,wwidth:350,pheight:520,pwidth:500,domain:'{{ PASCLEPIUS_DOMAIN }}',leaveamessage:true,check_messages:false};
       (function() {
       var po = document.createElement('script'); po.type = 'text/javascript'; po.setAttribute('crossorigin','anonymous'); po.async = true;
       var date = new Date();po.src = 'https://chat.voigts.cloud/design/defaulttheme/js/widgetv2/index.js?'+(""+date.getFullYear() + date.getMonth() + date.getDate());
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
       })();
+      function openCalender() {
+        document.getElementById("calender").style.display = "block";
+      }
+      function closeCalender() {
+        document.getElementById("calender").style.display = "none";
+      }
       </script>
   </body>
 </html>
