@@ -21,7 +21,7 @@
               <li class="nav-item profile">
                 <a class="nav-link" href="/profile">Settings</a>
               </li>     
-              <li class="nav-item profile">
+              <li class="nav-item nextcloud">
                 <a class="nav-link" href='{{ NEXTCLOUD_DOMAIN_FULL }}' target="_blank">Nextcloud</a>
               </li>       
             {% else %}
@@ -60,9 +60,6 @@
       }
       else if (window.location.href.match('account')){
         $('.account').addClass('active');
-      }
-      else if (window.location.href.match('files')){
-        $('.files').addClass('active');
       }
       else if (window.location.href.match('profile')){
         $('.profile').addClass('active');   
