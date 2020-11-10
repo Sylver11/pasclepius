@@ -135,26 +135,30 @@ display:inline-block;
 }
 
 .overlay {
-  display:none; 
-  height: 100%;
-  min-width: 100%;
-  position: fixed; 
+  visibility: hidden;
+  /* display:none;  */
+  /* height: 100%; */
+  /* min-width: 100%; */
+  /* position: fixed;  */
   z-index: 1;
   left: 0;
   top: 0;
-  background-color: rgb(0,0,0); 
-  background-color: rgba(0,0,0, 0.9);
-  overflow-x: hidden; 
-  transition: 0.5s;
+  /* overflow: auto !important; */
+  /* height: auto !important; */
+  /* background-color: rgb(0,0,0);  */
+  background-color: white;
+  /* background-color: rgba(0,0,0, 0.9); */
+  /* overflow-x: hidden;  */
+  /* transition: 0.5s; */
 }
 
-.overlay-content {
+/* .overlay-content {
   position: relative;
   top: 25%;
   width: 100%;
   text-align: center;
   margin-top: 30px;
-}
+} */
 
 .overlay a {
   padding: 8px;

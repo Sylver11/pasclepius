@@ -10,7 +10,10 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.2/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.3.2,npm/fullcalendar@5.3.2/locales-all.min.js"></script>
     <script src="{{ url_for('static', filename='js/notify.js') }}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.2/main.min.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
@@ -40,13 +43,11 @@
     {% include 'navigation.html' %}
     {% block content %}
     {% endblock %}
-    <div id="calender" class="overlay">
-      <a href="javascript:void(0)" class="closebtn" onclick="closeCalender()">&times;</a>
-      <div class="overlay-content">
-        <a>Calender soon to come</a>
-      </div>
+    <div id="calendar" class="overlay" style=padding:50px>
+        <a href="javascript:void(0)" class="closebtn" onclick="closeCalendarWindow()">&times;</a>
     </div>
-    <i onclick="openCalender()" class="fas fa-clock fa-4x" style="position:absolute;bottom:25px;left:25px;z-index: 9999;color:#888888;cursor: pointer;"></i>
+    <i onclick="openCalendarWindow()" class="fas fa-clock fa-4x" style="position:absolute;bottom:25px;left:25px;z-index: 9999;color:#888888;cursor: pointer;"></i>
+    
     <script>
       var LHC_API = LHC_API||{};
       LHC_API.args = {mode:'widget',lhc_base_url:'//chat.voigts.cloud/',wheight:450,wwidth:350,pheight:520,pwidth:500,domain:'{{ PASCLEPIUS_DOMAIN }}',leaveamessage:true,check_messages:false};
@@ -55,12 +56,25 @@
       var date = new Date();po.src = 'https://chat.voigts.cloud/design/defaulttheme/js/widgetv2/index.js?'+(""+date.getFullYear() + date.getMonth() + date.getDate());
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
       })();
-      function openCalender() {
-        document.getElementById("calender").style.display = "block";
+      function openCalendarWindow() {
+        document.getElementById("calendar").style.visibility = "visible";
       }
-      function closeCalender() {
-        document.getElementById("calender").style.display = "none";
+      function closeCalendarWindow() {
+        document.getElementById("calendar").style.visibility = "hidden";
       }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          height: 'auto',
+          editable: true,
+          selectable: true,
+          events: 'https://fullcalendar.io/demo-events.json',
+          initialView: 'dayGridMonth'
+        });
+        calendar.render();
+      });
+    
       </script>
   </body>
 </html>
