@@ -39,16 +39,85 @@
     <meta name="msapplication-TileImage" content="{{ url_for('static', filename='img/favicon/ms-icon-144x144.png') }}">
     <meta name="theme-color" content="#ffffff">  
   </head>
+  
   <body style="background-color: #e9ecef">
+    <div id="backdrop">
+      <div id="calendar"></div>
+    </div>
+    
     {% include 'navigation.html' %}
     {% block content %}
     {% endblock %}
-    <div id="calendar" class="overlay" style=padding:50px>
-        <a href="javascript:void(0)" class="closebtn" onclick="closeCalendarWindow()">&times;</a>
-    </div>
-    <i onclick="openCalendarWindow()" class="fas fa-clock fa-4x" style="position:absolute;bottom:25px;left:25px;z-index: 9999;color:#888888;cursor: pointer;"></i>
+    
+
+    <!-- class="overlay"> -->
+      <!-- <a href="javascript:void(0)" class="closebtn" onclick="closeCalendarWindow()">&times;</a> -->
+    <!-- </div> -->
+    
+    <i id=opencal onclick="openCalendarWindow()" class="fas fa-clock fa-4x" style="position:absolute;bottom:25px;left:25px;z-index: 9999;color:#888888;cursor: pointer;"></i>
     
     <script>
+
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          aspectRatio: 2,
+          // expandRows: true,
+          editable: true,
+          eventDrop: function(arg) {
+            var start = arg.event.start.toDateString()+' '+arg.event.start.getHours()+':'+arg.event.start.getMinutes()+':'+arg.event.start.getSeconds();
+            if (arg.event.end == null) {
+                end = start;
+            } else {
+                var end = arg.event.end.toDateString()+' '+arg.event.end.getHours()+':'+arg.event.end.getMinutes()+':'+arg.event.end.getSeconds();
+            }
+
+            $.ajax({
+              url: "/calendar-events/update",
+              type:"GET",
+              data:{id:arg.event.id, start:start, end:end},
+            });
+          },
+          selectable: true,
+          // selectHelper: true,
+          eventClick: function (info) {
+            if (info) {
+              console.log(info)
+              var id = info.event.id;
+              console.log(id)
+                // var start = calendar.formatDate(start, "Y-MM-DD HH:mm:ss");
+                // var end = calendar.formatDate(end, "Y-MM-DD HH:mm:ss");
+
+                // $.ajax({
+                //     url: '/calendar-event/add',
+                //     data: 'title=' + title + '&start=' + start + '&end=' + end,
+                //     type: "POST",
+                //     success: function (data) {
+                //         displayMessage("Added Successfully");
+                //     }
+                // });
+            }
+            calendar.unselect()
+        },
+        //   eventAdd: function(arg) {
+        //     var start = arg.event.start.toDateString()+' '+arg.event.start.getHours()+':'+arg.event.start.getMinutes()+':'+arg.event.start.getSeconds();
+        //     var end = arg.event.end.toDateString()+' '+arg.event.end.getHours()+':'+arg.event.end.getMinutes()+':'+arg.event.end.getSeconds();
+
+        //     $.ajax({
+        //       url:url+"/calendar-event/add",
+        //       type:"GET",
+        //       data:{id:arg.event.id, start:start, end:end},
+        //     });
+        // },
+          // events: 'https://fullcalendar.io/demo-events.json',
+         // plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
+          events: '/calendar-events/retrieve',
+          initialView: 'dayGridMonth'
+        });
+
+
+
+
+
       var LHC_API = LHC_API||{};
       LHC_API.args = {mode:'widget',lhc_base_url:'//chat.voigts.cloud/',wheight:450,wwidth:350,pheight:520,pwidth:500,domain:'{{ PASCLEPIUS_DOMAIN }}',leaveamessage:true,check_messages:false};
       (function() {
@@ -57,24 +126,27 @@
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
       })();
       function openCalendarWindow() {
-        document.getElementById("calendar").style.visibility = "visible";
-      }
-      function closeCalendarWindow() {
-        document.getElementById("calendar").style.visibility = "hidden";
-      }
+        var favion_open_cal_button = document.getElementById("opencal");
+        if (favion_open_cal_button.classList.contains("active")){
+          calendar.destroy()
+          favion_open_cal_button.classList.remove("active")
+          document.getElementById("backdrop").style.display= "none";
 
-      document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          height: 'auto',
-          editable: true,
-          selectable: true,
-          events: 'https://fullcalendar.io/demo-events.json',
-          initialView: 'dayGridMonth'
-        });
-        calendar.render();
-      });
-    
+        }
+        else{
+          document.getElementById("backdrop").style.display= "block";
+          calendar.render()
+          calendar.updateSize()
+          // height: $(window).height(),
+          // calendar.setOption('height', $(window).height());
+          favion_open_cal_button.classList += " active"
+        }
+        // document.getElementById("calendar").style.visibility = "visible";
+        
+        // //  $('#calendar').fullCalendar('render');
+        // // console.log($(window).height())
+        // calendar.render()
+      }  
       </script>
   </body>
 </html>

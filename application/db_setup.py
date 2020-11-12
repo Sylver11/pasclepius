@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-
+#from .calendar_model import db
 
 def setupTable():
     sql_drop_table_namaf_tariffs = "DROP TABLE IF EXISTS namaf_tariffs"
@@ -10,7 +10,21 @@ def setupTable():
     sql_drop_table_user_workbench = "DROP TABLE IF EXISTS user_workbench"
     sql_drop_table_patients = "DROP TABLE IF EXISTS patients"
     sql_drop_table_practice = "DROP TABLE IF EXISTS practices"
+    sql_drop_table_calendar = "DROP TABLE IF EXISTS pa_calendar"
     sql_drop_table_practice_connections = "DROP TABLE IF EXISTS practice_connections"
+
+    sql_create_table_calendar = """ CREATE TABLE pa_calendar (
+        id int(11) NOT NULL AUTO_INCREMENT,
+        practice_uuid varchar(36) NOT NULL,
+        title text NOT NULL,
+        start_event DATETIME NOT NULL,
+        end_event DATETIME NOT NULL,
+        color VARCHAR(255),
+        text_color VARCHAR(255),
+        created_on DATETIME NOT NULL DEFAULT now(),
+        updated_on DATETIME NOT NULL DEFAULT now(),
+        PRIMARY KEY (id))"""
+
 
     sql_create_table_namaf_tariffs = """CREATE TABLE namaf_tariffs  (
         id int(11) NOT NULL AUTO_INCREMENT,
@@ -91,7 +105,6 @@ def setupTable():
         patient_note varchar(500),
         created_on DATETIME NOT NULL DEFAULT NOW(),
         PRIMARY KEY (id));"""
-
 
 
     sql_create_table_users = """CREATE TABLE users (
@@ -188,25 +201,28 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-    cursor.execute(sql_drop_table_user_workbench)
-    cursor.execute(sql_create_table_user_workbench)
-    cursor.execute(sql_drop_table_invoice_items)
-    cursor.execute(sql_create_table_invoice_items)
-    cursor.execute(sql_drop_table_patients)
-    cursor.execute(sql_create_table_patients)
-    cursor.execute(sql_drop_table_practice)
-    cursor.execute(sql_create_table_practice)
-    cursor.execute(sql_drop_table_practice_connections)
-    cursor.execute(sql_create_table_practice_connections)
-    cursor.execute(sql_drop_table_users)
-    cursor.execute(sql_drop_table_invoice)
-    cursor.execute(sql_create_table_invoice)
-    cursor.execute(sql_drop_table_namaf_tariffs)
-    cursor.execute(sql_create_table_namaf_tariffs)
-    cursor.execute(create_trigger_status)
-    cursor.execute(sql_create_table_users)
+    cursor.execute(sql_drop_table_calendar)
+    cursor.execute(sql_create_table_calendar)
+#    cursor.execute(sql_drop_table_user_workbench)
+#    cursor.execute(sql_create_table_user_workbench)
+#    cursor.execute(sql_drop_table_invoice_items)
+#    cursor.execute(sql_create_table_invoice_items)
+#    cursor.execute(sql_drop_table_patients)
+#    cursor.execute(sql_create_table_patients)
+#    cursor.execute(sql_drop_table_practice)
+#    cursor.execute(sql_create_table_practice)
+#    cursor.execute(sql_drop_table_practice_connections)
+#    cursor.execute(sql_create_table_practice_connections)
+#    cursor.execute(sql_drop_table_users)
+#    cursor.execute(sql_drop_table_invoice)
+#    cursor.execute(sql_create_table_invoice)
+#    cursor.execute(sql_drop_table_namaf_tariffs)
+#    cursor.execute(sql_create_table_namaf_tariffs)
+#    cursor.execute(create_trigger_status)
+#    cursor.execute(sql_create_table_users)
     cursor.close()
     conn.close()
+#    db.create_all()
 
 
 def populateTreatment():
@@ -243,4 +259,4 @@ if __name__ == '__main__':
     load_dotenv()
     from db_utils import pool
     setupTable()
-    populateTreatment()
+#    populateTreatment()

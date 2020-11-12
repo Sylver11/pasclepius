@@ -2,10 +2,15 @@ from flask import Flask
 from flask_login import LoginManager
 import os
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth_bp.login'
 login_manager.refresh_view = 'auth_bp.freshLogin'
+
+db = SQLAlchemy()
+
 
 from application.models import User
 from application.db_users import checkUser, getPractice
@@ -40,8 +45,12 @@ def create_app():
     application.config['SESSION_TYPE'] = 'filesystem'
     application.config['REMEMBER_COOKIE_DURATION'] = 2592000
     application.config['CORS_HEADERS'] = 'Content-Type'
+    application.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_CONN_STRING")
+    application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     application.config.update()
     login_manager.init_app(application)
+    db.init_app(application)
+  #  db = SQLAlchemy(application)
     with application.app_context():
         from .home import views
         application.register_blueprint(views.home_bp)

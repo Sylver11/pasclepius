@@ -29,6 +29,32 @@ def liveSearchTreatment():
     return value_json
 
 
+@api_bp.route('/calendar-events/<arg>',methods=['GET','POST'])
+def calendarEvents(arg):
+    print(arg)
+    if arg == 'retrieve':
+        print('retrieve runs')
+        start = request.args.get('start')
+        end = request.args.get('end')
+        test_data = [{"id":"1",
+            "title": "Event 1",
+            "start": "2020-11-08T09:00:00",
+            "end": "2020-11-08T18:00:00"},]
+        return json.dumps(test_data)
+    if arg == 'update':
+        print("the update runs")
+        id = request.args.get('id')
+        start = request.args.get('start')
+        end = request.args.get('end')
+        print(start)
+        print(end)
+        print(id)
+        return json.dumps("success")
+
+
+    print(start)
+    print(end)
+    return json.dumps(end)
 
 @api_bp.route('/get-value',methods=['GET','POST'])
 @login_required
@@ -65,12 +91,12 @@ def getTreatmentName():
                 default=str)
 
 
-@api_bp.route('/download-invoice/<random>')
-@login_required
-def downloadInvoice(random):
-    patient_name = session.get('PATIENT')['patient_name']
-    date = session.get('PATIENT')['date']
-    invoice_file_url = getInvoiceURL(current_user.practice_uuid, patient_name, date)
-    path = str(invoice_file_url['invoice_file_url']) + ".odt"
-    return send_file(path, as_attachment=True)
+#@api_bp.route('/download-invoice/<random>')
+#@login_required
+#def downloadInvoice(random):
+#    patient_name = session.get('PATIENT')['patient_name']
+#    date = session.get('PATIENT')['date']
+#    invoice_file_url = getInvoiceURL(current_user.practice_uuid, patient_name, date)
+#    path = str(invoice_file_url['invoice_file_url']) + ".odt"
+#    return send_file(path, as_attachment=True)
 
