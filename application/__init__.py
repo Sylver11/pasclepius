@@ -4,13 +4,11 @@ import os
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
-
 login_manager = LoginManager()
 login_manager.login_view = 'auth_bp.login'
 login_manager.refresh_view = 'auth_bp.freshLogin'
 
 db = SQLAlchemy()
-
 
 from application.models import User
 from application.db_users import checkUser, getPractice
@@ -50,7 +48,6 @@ def create_app():
     application.config.update()
     login_manager.init_app(application)
     db.init_app(application)
-  #  db = SQLAlchemy(application)
     with application.app_context():
         from .home import views
         application.register_blueprint(views.home_bp)
@@ -64,4 +61,5 @@ def create_app():
         application.register_blueprint(views.patient_bp, url_prefix='/patient')
         from .auth import views
         application.register_blueprint(views.auth_bp, url_prefix='/auth')
+        db.create_all()
         return application

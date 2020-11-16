@@ -12,7 +12,7 @@ import datetime as datetime2
 from decimal import *
 import subprocess
 import simplejson as json
-
+from application.models import Calendar
 from application.db_workbench import newWork, removeWork
 
 api_bp = Blueprint('api_bp',__name__)
@@ -33,9 +33,17 @@ def liveSearchTreatment():
 def calendarEvents(arg):
     print(arg)
     if arg == 'retrieve':
-        print('retrieve runs')
         start = request.args.get('start')
         end = request.args.get('end')
+        print(end)
+        print(start)
+        calendar_items = Calendar()
+        calendar_items.query.filter(Calendar.start_event <= start,
+                Calendar.end_event >= end).all()
+        print(calendar_items.id)
+
+        print(calendar_items)
+        print('retrieve runs')
         test_data = [{"id":"1",
             "title": "Event 1",
             "start": "2020-11-08T09:00:00",
@@ -89,14 +97,4 @@ def getTreatmentName():
     return json.dumps(invoice_items,
                 sort_keys=True,
                 default=str)
-
-
-#@api_bp.route('/download-invoice/<random>')
-#@login_required
-#def downloadInvoice(random):
-#    patient_name = session.get('PATIENT')['patient_name']
-#    date = session.get('PATIENT')['date']
-#    invoice_file_url = getInvoiceURL(current_user.practice_uuid, patient_name, date)
-#    path = str(invoice_file_url['invoice_file_url']) + ".odt"
-#    return send_file(path, as_attachment=True)
 
