@@ -13,6 +13,7 @@ from decimal import *
 import subprocess
 import simplejson as json
 from application.models import Calendar
+from application import db
 from application.db_workbench import newWork, removeWork
 
 api_bp = Blueprint('api_bp',__name__)
@@ -33,17 +34,22 @@ def liveSearchTreatment():
 def calendarEvents(arg):
     print(arg)
     if arg == 'retrieve':
-        start = request.args.get('start')
-        end = request.args.get('end')
-        print(end)
-        print(start)
-        calendar_items = Calendar()
-        calendar_items.query.filter(Calendar.start_event <= start,
-                Calendar.end_event >= end).all()
-        print(calendar_items.id)
-
+        #start = request.args.get('start')
+       # end = request.args.get('end')
+       # print(end)
+        start = datetime.strptime(request.args.get('start'),'%Y-%m-%dT%H:%M:%S%z')
+        end = datetime.strptime(request.args.get('end'),'%Y-%m-%dT%H:%M:%S%z')
+        _AddNewAppointment = Calendar(practice_uuid='3470B9C0-21E4-11EB-98A9-80913344E64E',title='Justus Voigt',start_event=start,end_event=end,color='red',text_color='blue')
+        #db.session.add(_AddNewAppointment)
+        #db.session.commit()
+        #calendar_items = Calendar()
+        calendar_items = db.session.query(Calendar).filter(Calendar.start_event <= start, Calendar.end_event >= end).all()
         print(calendar_items)
-        print('retrieve runs')
+        for calendar_item in calendar_items:
+            print(calendar_item.title)
+
+        #print(calendar_items)
+        #print('retrieve runs')
         test_data = [{"id":"1",
             "title": "Event 1",
             "start": "2020-11-08T09:00:00",

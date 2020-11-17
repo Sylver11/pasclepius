@@ -1,7 +1,7 @@
 from flask_login import UserMixin
-from flask_sqlalchemy import SQLAlchemy
+#from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from . import db
+from application import db
 
 class Calendar(db.Model):
     __tablename__ = 'pa_calendar'
