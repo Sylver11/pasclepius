@@ -3,12 +3,23 @@ from flask_login import LoginManager
 import os
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from flask.json import JSONEncoder
+import datetime
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth_bp.login'
 login_manager.refresh_view = 'auth_bp.freshLogin'
 
 db = SQLAlchemy()
+
+class CustomJSONEncoder(JSONEncoder):
+    def default(self, o):
+        if type(o) == datetime.timedelta:
+            return str(o)
+        elif type(o) == datetime.datetime:
+            return o.isoformat()
+        else:
+            return super().default(o)
 
 from application.models import User
 from application.db_users import checkUser, getPractice
@@ -46,6 +57,7 @@ def create_app():
     application.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_CONN_STRING")
     application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     application.config.update()
+    application.json_encoder = CustomJSONEncoder
     login_manager.init_app(application)
     db.init_app(application)
     with application.app_context():

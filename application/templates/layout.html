@@ -113,6 +113,20 @@
           events: '/calendar-events/retrieve',
           initialView: 'dayGridMonth'
         });
+        $.ajax({
+                            type: "GET",
+                            url: '/calendar-events/retrieve', 
+                            data:{start:"2020-11-01T00:00:00+02:00", end:"2020-12-13T00:00:00+02:00"},
+                            success: function (patient) {
+                              console.log(patient)
+                                //patient = JSON.parse(patient);
+                                
+                            },
+                            error: function(xhr, status, error){
+                                var errorMessage = xhr.status + ': ' + xhr.statusText;
+                                alert('Error - ' + errorMessage);
+                            }
+                        })
 
 
 

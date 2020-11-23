@@ -32,43 +32,22 @@ def liveSearchTreatment():
 
 @api_bp.route('/calendar-events/<arg>',methods=['GET','POST'])
 def calendarEvents(arg):
-    print(arg)
     if arg == 'retrieve':
-        #start = request.args.get('start')
-       # end = request.args.get('end')
-       # print(end)
-        start = datetime.strptime(request.args.get('start'),'%Y-%m-%dT%H:%M:%S%z')
-        end = datetime.strptime(request.args.get('end'),'%Y-%m-%dT%H:%M:%S%z')
-        _AddNewAppointment = Calendar(practice_uuid='3470B9C0-21E4-11EB-98A9-80913344E64E',title='Justus Voigt',start_event=start,end_event=end,color='red',text_color='blue')
-        #db.session.add(_AddNewAppointment)
-        #db.session.commit()
-        #calendar_items = Calendar()
-        calendar_items = db.session.query(Calendar).filter(Calendar.start_event <= start, Calendar.end_event >= end).all()
-        print(calendar_items)
-        for calendar_item in calendar_items:
-            print(calendar_item.title)
+        start = request.args.get('start')
+        end = request.args.get('end')
+        _CalendarEntries = db.session.query(Calendar).filter(Calendar.start <= start, Calendar.end >= end).all()
+        return jsonify(_CalendarEntries)
 
-        #print(calendar_items)
-        #print('retrieve runs')
-        test_data = [{"id":"1",
-            "title": "Event 1",
-            "start": "2020-11-08T09:00:00",
-            "end": "2020-11-08T18:00:00"},]
-        return json.dumps(test_data)
+    if arg=='add':
+        _AddNewAppointment = Calendar(practice_uuid='3470B9C0-21E4-11EB-98A9-80913344E64E',title='Justus Voigt',start=start,end=end,color='red',text_color='blue')
+        db.session.add(_AddNewAppointment)
+        db.session.commit()
     if arg == 'update':
-        print("the update runs")
         id = request.args.get('id')
         start = request.args.get('start')
         end = request.args.get('end')
-        print(start)
-        print(end)
-        print(id)
         return json.dumps("success")
-
-
-    print(start)
-    print(end)
-    return json.dumps(end)
+    return json.dumps('failed')
 
 @api_bp.route('/get-value',methods=['GET','POST'])
 @login_required

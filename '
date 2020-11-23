@@ -1,5 +1,6 @@
 from flask_login import UserMixin
 from datetime import datetime
+import datetime as datetime2
 from application import db
 from dataclasses import dataclass
 
@@ -9,23 +10,23 @@ class Calendar(db.Model):
     id:int
     practice_uuid:str
     title:str
-    start:datetime
-    end:datetime
+    start_event:datetime = field(default_factory=datetime)
+    end_event:datetime2.datetime
     color:str
     text_color:str
-    created_on:datetime
-    updated_on:datetime
+    created_on:datetime2.datetime
+    updated_on:datetime2.datetime
+
     __tablename__ = 'pa_calendar'
     id = db.Column(db.Integer(), primary_key=True)
     practice_uuid = db.Column(db.String(36), nullable=False)
     title = db.Column(db.Text(), nullable=False)
-    start = db.Column(db.DateTime, nullable=False)
-    end = db.Column(db.DateTime, nullable=False)
+    start_event = db.Column(db.DateTime, nullable=False)
+    end_event = db.Column(db.DateTime, nullable=False)
     color = db.Column(db.String(255), nullable=True)
     text_color = db.Column(db.String(255), nullable=True)
     created_on = db.Column(db.DateTime(),default=datetime.utcnow)
     updated_on = db.Column(db.DateTime(),default=datetime.utcnow,onupdate=datetime.utcnow)
-
 
 
 class User(UserMixin):
