@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.2/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.3.2,npm/fullcalendar@5.3.2/locales-all.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.3.2,npm/fullcalendar@5.3.2/locales-all.min.js"></script> -->
     <script src="{{ url_for('static', filename='js/notify.js') }}"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.2/main.min.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -60,7 +60,32 @@
 
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'timeGridWeek',
           aspectRatio: 2,
+          headerToolbar: {
+            left: 'dayGridMonth,timeGridWeek,timeGridDay',
+            center: 'addEventButton'
+          },
+          customButtons: {         
+            addEventButton: {
+              text: 'New Appointment',
+              click: function() {
+                var dateStr = prompt('Enter a date in YYYY-MM-DD format');
+                var date = moment(dateStr);
+
+                if (date.isValid()) {
+                  $('#calendar').fullCalendar('renderEvent', {
+                    title: 'dynamic event',
+                    start: date,
+                    allDay: true
+                  });
+                  alert('Great. Now, update your database...');
+                } else {
+                  alert('Invalid date.');
+                }
+              }
+            }
+          },
           // expandRows: true,
           editable: true,
           eventDrop: function(arg) {
@@ -97,7 +122,7 @@
                 // });
             }
             calendar.unselect()
-        },
+          },
         //   eventAdd: function(arg) {
         //     var start = arg.event.start.toDateString()+' '+arg.event.start.getHours()+':'+arg.event.start.getMinutes()+':'+arg.event.start.getSeconds();
         //     var end = arg.event.end.toDateString()+' '+arg.event.end.getHours()+':'+arg.event.end.getMinutes()+':'+arg.event.end.getSeconds();
@@ -111,22 +136,21 @@
           // events: 'https://fullcalendar.io/demo-events.json',
          // plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
           events: '/calendar-events/retrieve',
-          initialView: 'dayGridMonth'
         });
-        $.ajax({
-                            type: "GET",
-                            url: '/calendar-events/retrieve', 
-                            data:{start:"2020-11-01T00:00:00+02:00", end:"2020-12-13T00:00:00+02:00"},
-                            success: function (patient) {
-                              console.log(patient)
-                                //patient = JSON.parse(patient);
+        // $.ajax({
+        //                     type: "GET",
+        //                     url: '/calendar-events/retrieve', 
+        //                     data:{start:"2020-11-01T00:00:00+02:00", end:"2020-12-13T00:00:00+02:00"},
+        //                     success: function (patient) {
+        //                       console.log(patient)
+        //                         //patient = JSON.parse(patient);
                                 
-                            },
-                            error: function(xhr, status, error){
-                                var errorMessage = xhr.status + ': ' + xhr.statusText;
-                                alert('Error - ' + errorMessage);
-                            }
-                        })
+        //                     },
+        //                     error: function(xhr, status, error){
+        //                         var errorMessage = xhr.status + ': ' + xhr.statusText;
+        //                         alert('Error - ' + errorMessage);
+        //                     }
+        //                 })
 
 
 

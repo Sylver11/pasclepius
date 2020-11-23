@@ -32,22 +32,36 @@ def liveSearchTreatment():
 
 @api_bp.route('/calendar-events/<arg>',methods=['GET','POST'])
 def calendarEvents(arg):
-    if arg == 'retrieve':
-        start = request.args.get('start')
-        end = request.args.get('end')
-        _CalendarEntries = db.session.query(Calendar).filter(Calendar.start <= start, Calendar.end >= end).all()
-        return jsonify(_CalendarEntries)
-
-    if arg=='add':
-        _AddNewAppointment = Calendar(practice_uuid='3470B9C0-21E4-11EB-98A9-80913344E64E',title='Justus Voigt',start=start,end=end,color='red',text_color='blue')
-        db.session.add(_AddNewAppointment)
-        db.session.commit()
-    if arg == 'update':
+    try:
+        user = current_user.practice_uuid
         id = request.args.get('id')
+        title = request.args.get('title')
+        color = request.args.get('color')
+        text_color = request.args.get('text_color')
         start = request.args.get('start')
         end = request.args.get('end')
-        return json.dumps("success")
-    return json.dumps('failed')
+        if arg == 'retrieve':
+            _CalendarEntries = db.session.query(Calendar).\
+                    filter(Calendar.practice_uuid == user,
+                            Calendar.start <= start,
+                            Calendar.end >= end).\
+                                    all()
+            return jsonify(_CalendarEntries)
+        if arg=='add':
+            _AddNewAppointment = Calendar(practice_uuid=user,
+                    title=title,
+                    start=start,
+                    end=end,
+                    color=color,
+                    text_color=text_color)
+            db.session.add(_AddNewAppointment)
+            db.session.commit()
+            return jsonify("success")
+        if arg == 'update':
+            return json.dumps("success")
+    except AttributeError:
+        return jsonify("Please authorise before accessing the calendar")
+
 
 @api_bp.route('/get-value',methods=['GET','POST'])
 @login_required
