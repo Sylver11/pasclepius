@@ -43,20 +43,26 @@ def calendarEvents(arg):
         if arg == 'retrieve':
             _CalendarEntries = db.session.query(Calendar).\
                     filter(Calendar.practice_uuid == user,
-                            Calendar.start <= start,
-                            Calendar.end >= end).\
+                            Calendar.start >= start,
+                            Calendar.end <= end).\
                                     all()
             return jsonify(_CalendarEntries)
         if arg=='add':
             _AddNewAppointment = Calendar(practice_uuid=user,
                     title=title,
-                    start=start,
-                    end=end,
+                    start=datetime.fromisoformat(start),
+                    end=datetime.fromisoformat(end),
                     color=color,
                     text_color=text_color)
             db.session.add(_AddNewAppointment)
             db.session.commit()
             return jsonify("success")
+        if arg == 'detail':
+            _CalendarEntries = db.session.query(Calendar).\
+                    filter(Calendar.practice_uuid == user,
+                            Calendar.id == id).\
+                                    all()
+            return jsonify(_CalendarEntries)
         if arg == 'update':
             return json.dumps("success")
     except AttributeError:
