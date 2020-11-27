@@ -40,6 +40,7 @@ def calendarEvents(arg):
         text_color = request.args.get('text_color')
         start = request.args.get('start')
         end = request.args.get('end')
+        return jsonify(user,id,title,color,text_color,start,end)
         if arg == 'retrieve':
             _CalendarEntries = db.session.query(Calendar).\
                     filter(Calendar.practice_uuid == user,
