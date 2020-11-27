@@ -40,7 +40,6 @@ def calendarEvents(arg):
         text_color = request.args.get('text_color')
         start = request.args.get('start')
         end = request.args.get('end')
-        return jsonify(user,id,title,color,text_color,start,end)
         if arg == 'retrieve':
             _CalendarEntries = db.session.query(Calendar).\
                     filter(Calendar.practice_uuid == user,
@@ -66,8 +65,12 @@ def calendarEvents(arg):
             return jsonify(_CalendarEntries)
         if arg == 'update':
             return json.dumps("success")
-    except AttributeError:
-        return jsonify("Please authorise before accessing the calendar")
+    except Exception as ex:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        message = template.format(type(ex).__name__, ex.args)
+        return jsonify(message)
+    #except AttributeError:
+    #    return jsonify("Please authorise before accessing the calendar")
 
 
 @api_bp.route('/get-value',methods=['GET','POST'])
