@@ -8,7 +8,9 @@ from dataclasses import dataclass
 class Calendar(db.Model):
     id:int
     practice_uuid:str
+    patient_uuid:str
     title:str
+    description:str
     start:datetime
     end:datetime
     color:str
@@ -18,7 +20,9 @@ class Calendar(db.Model):
     __tablename__ = 'pa_calendar'
     id = db.Column(db.Integer(), primary_key=True)
     practice_uuid = db.Column(db.String(36), nullable=False)
+    patient_uuid = db.Column(db.String(36), nullable=True)
     title = db.Column(db.Text(), nullable=False)
+    description = db.Column(db.Text(), nullable=True)
     start = db.Column(db.DateTime, nullable=False)
     end = db.Column(db.DateTime, nullable=False)
     color = db.Column(db.String(255), nullable=True)

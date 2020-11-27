@@ -56,7 +56,7 @@ def calendarEvents(arg):
                     text_color=text_color)
             db.session.add(_AddNewAppointment)
             db.session.commit()
-            return jsonify("success")
+            return jsonify(_AddNewAppointment.id)
         if arg == 'detail':
             _CalendarEntries = db.session.query(Calendar).\
                     filter(Calendar.practice_uuid == user,

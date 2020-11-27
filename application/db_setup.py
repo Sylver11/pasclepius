@@ -16,7 +16,9 @@ def setupTable():
     sql_create_table_calendar = """ CREATE TABLE pa_calendar (
         id int(11) NOT NULL AUTO_INCREMENT,
         practice_uuid varchar(36) NOT NULL,
+        patient_uuid varchar(36),
         title text NOT NULL,
+        description text,
         start_event DATETIME NOT NULL,
         end_event DATETIME NOT NULL,
         color VARCHAR(255),
@@ -201,25 +203,25 @@ def setupTable():
 
     conn = pool.connection()
     cursor = conn.cursor()
-#    cursor.execute(sql_drop_table_calendar)
-#    cursor.execute(sql_create_table_calendar)
-    cursor.execute(sql_drop_table_user_workbench)
-    cursor.execute(sql_create_table_user_workbench)
-    cursor.execute(sql_drop_table_invoice_items)
-    cursor.execute(sql_create_table_invoice_items)
-    cursor.execute(sql_drop_table_patients)
-    cursor.execute(sql_create_table_patients)
-    cursor.execute(sql_drop_table_practice)
-    cursor.execute(sql_create_table_practice)
-    cursor.execute(sql_drop_table_practice_connections)
-    cursor.execute(sql_create_table_practice_connections)
-    cursor.execute(sql_drop_table_users)
-    cursor.execute(sql_drop_table_invoice)
-    cursor.execute(sql_create_table_invoice)
-    cursor.execute(sql_drop_table_namaf_tariffs)
-    cursor.execute(sql_create_table_namaf_tariffs)
-    cursor.execute(create_trigger_status)
-    cursor.execute(sql_create_table_users)
+    cursor.execute(sql_drop_table_calendar)
+    cursor.execute(sql_create_table_calendar)
+#    cursor.execute(sql_drop_table_user_workbench)
+#    cursor.execute(sql_create_table_user_workbench)
+#    cursor.execute(sql_drop_table_invoice_items)
+#    cursor.execute(sql_create_table_invoice_items)
+#    cursor.execute(sql_drop_table_patients)
+#    cursor.execute(sql_create_table_patients)
+#    cursor.execute(sql_drop_table_practice)
+#    cursor.execute(sql_create_table_practice)
+#    cursor.execute(sql_drop_table_practice_connections)
+#    cursor.execute(sql_create_table_practice_connections)
+#    cursor.execute(sql_drop_table_users)
+#    cursor.execute(sql_drop_table_invoice)
+#    cursor.execute(sql_create_table_invoice)
+#    cursor.execute(sql_drop_table_namaf_tariffs)
+#    cursor.execute(sql_create_table_namaf_tariffs)
+#    cursor.execute(create_trigger_status)
+#    cursor.execute(sql_create_table_users)
     cursor.close()
     conn.close()
 
@@ -256,5 +258,5 @@ if __name__ == '__main__':
     from dotenv import load_dotenv
     load_dotenv()
     from db_utils import pool
-    setupTable()
+#    setupTable()
     populateTreatment()

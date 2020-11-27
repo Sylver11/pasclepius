@@ -11,8 +11,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.2/main.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.3.2,npm/fullcalendar@5.3.2/locales-all.min.js"></script> -->
     <script src="{{ url_for('static', filename='js/notify.js') }}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>  
+    <script src="{{ url_for('static', filename='js/colorPick.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colorPick.css') }}">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.3.2/main.min.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -20,7 +23,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/signin.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hover-menu.css') }}">
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
     <link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', filename='img/favicon/apple-icon-57x57.png') }}">
     <link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', filename='img/favicon/apple-icon-60x60.png') }}">
     <link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='img/favicon/apple-icon-72x72.png') }}">
@@ -41,6 +43,60 @@
   </head>
   
   <body style="background-color: #e9ecef">
+    <div class="modal fade" id="addAppointment" tabindex="-1" aria-labelledby="addAppointment" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <form id="createEvent" class="form-horizontal">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Appointment</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="control-label" for="title">Patient</label>
+                    <input type="text" class="form-control" name="title">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-4">
+                      <label class="control-label" for="startDate">Start Date</label>
+                      <input type="text" class="form-control datetimepicker" id="startDate" name="startDate">          
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label class="control-label" style="display:none" for="endDate">End Date</label>
+                    <input type="hidden" class="form-control datetimepicker" id="endDate" name="endDate">          
+                </div>
+                  <div class="form-group col-md-4">
+                      <label class="control-label" for="startTime">Start Time</label>
+                      <input type="text" class="form-control timepicker" id="startTime" name="startTime">               
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label class="control-label" for="endTime">End Time</label>
+                    <input type="text" class="form-control timepicker" id="endTime" name="endTime"> 
+                  </div>              
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                      <label class="control-label" for="color">Colour</label>
+                      <div class="colorpicker"></div>
+                      <input id="eventColorpicker" type="hidden"  name="color" value="#3498db">
+                  </div>
+                </div>          
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
     <div id="backdrop">
       <div id="calendar"></div>
     </div>
@@ -48,11 +104,33 @@
     {% include 'navigation.html' %}
     {% block content %}
     {% endblock %}
-    
-    <i id=opencal onclick="openCalendarWindow()" class="fas fa-clock fa-4x" style="position:absolute;bottom:25px;left:25px;z-index: 9999;color:#888888;cursor: pointer;"></i>
-    
+    {% if current_user.practice_uuid %}
+      <i id=opencal onclick="openCalendarWindow()" class="fas fa-clock fa-4x" ></i>
+    {% endif %}
     <script>
-
+        $(".colorpicker").colorPick({
+          'zindex': '9999999',
+          'initialColor': '#3498db',
+          'allowRecent': true,
+          'recentMax': 5,
+          'allowCustomColor': false,
+          'palette': ["#1abc9c", "#16a085", "#2ecc71", "#27ae60", "#3498db", "#2980b9", "#9b59b6", "#8e44ad", "#34495e", "#2c3e50", "#f1c40f", "#f39c12", "#e67e22", "#d35400", "#e74c3c", "#c0392b", "#ecf0f1", "#bdc3c7", "#95a5a6", "#7f8c8d"],
+          'onColorSelected': function() {
+            $("#eventColorpicker").val(this.color)
+            this.element.css({'backgroundColor': this.color, 'color': this.color});
+          }
+        });
+        $('.timepicker').timepicker({
+          zindex: 9999999,
+          timeFormat: 'HH:mm',
+          interval: 30,
+          defaultTime: new Date().getHours().toString(),
+          startTime: '7',
+        });
+        $('#startDate').datepicker({dateFormat: 'yy-mm-dd'})
+        $('#startDate').datepicker("setDate", new Date());
+        $('#endDate').datepicker({dateFormat: 'yy-mm-dd'})
+        $('#endDate').datepicker("setDate", new Date());
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'timeGridWeek',
@@ -65,19 +143,7 @@
             addEventButton: {
               text: 'New Appointment',
               click: function() {
-                var dateStr = prompt('Enter a date in YYYY-MM-DD format');
-                var date = moment(dateStr);
-
-                if (date.isValid()) {
-                  $('#calendar').fullCalendar('renderEvent', {
-                    title: 'dynamic event',
-                    start: date,
-                    allDay: true
-                  });
-                  alert('Great. Now, update your database...');
-                } else {
-                  alert('Invalid date.');
-                }
+                $('#addAppointment').modal()
               }
             }
           },
@@ -91,26 +157,31 @@
           },
           selectable: true,
           select: function(info) {
-            console.log(info.start)
-            var title = "my first appointment"
-            $.ajax({
-              url:"/calendar-events/add",
-              type:"GET",
-              data:{title:title, start:info.startStr, end:info.endStr},
-              success:function()
-              {
-               // calendar.fullCalendar('refetchEvents');
-                alert("Added Successfully");
-              }
-              })
-          //   //= prompt("Enter Event Title");
-            alert('selected ' + info.startStr + ' to ' + info.endStr);
+            var startTime = ("0" + info.start.getHours()).slice(-2) + ":" + (info.start.getMinutes() + "0").slice(-2);
+            var endTime = ("0" + info.end.getHours()).slice(-2) + ":" + (info.end.getMinutes() + "0").slice(-2);
+            $('#startTime').timepicker( "destroy" );
+            $('#startTime').timepicker({
+             zindex: 9999999,
+             timeFormat: 'HH:mm',
+             interval: 30,
+             defaultTime: startTime,
+             startTime: '7',
+            });
+            $( '#endTime').timepicker( "destroy" );
+            $('#endTime').timepicker({
+              zindex: 9999999,
+              interval: 30,
+              timeFormat: 'HH:mm',
+              defaultTime: endTime,
+              startTime: '7',
+            });
+            $('#startDate').datepicker('setDate', info.start);
+            $('#endDate').datepicker('setDate', info.end);
+            $('#addAppointment').modal();
           },
           eventClick: function (info) {
             if (info) {
-              console.log(info)
               var id = info.event.id;
-              console.log(id)
                 $.ajax({
                     url: '/calendar-events/detail',
                     data: {id:id},
@@ -124,24 +195,80 @@
           },
           events: '/calendar-events/retrieve',
         });
-        // $.ajax({
-        //                     type: "GET",
-        //                     url: '/calendar-events/retrieve', 
-        //                     data:{start:"2020-11-01T00:00:00+02:00", end:"2020-12-13T00:00:00+02:00"},
-        //                     success: function (patient) {
-        //                       console.log(patient)
-        //                         //patient = JSON.parse(patient);
-                                
-        //                     },
-        //                     error: function(xhr, status, error){
-        //                         var errorMessage = xhr.status + ': ' + xhr.statusText;
-        //                         alert('Error - ' + errorMessage);
-        //                     }
-        //                 })
 
-
-
-
+        $("body").on("submit", "#createEvent", function(e){
+                  e.preventDefault();
+                  var inputData = $(this).serializeArray()
+                  var title = "title";
+                  var startDate = "startDate";
+                  var endDate = "endDate";
+                  var startTime = "startTime";
+                  var endTime = "endTime";
+                  var color = "color";
+                  for (var i = 0; i < inputData.length; i++) {
+                    switch( inputData[i]["name"] ){
+                      case startDate:
+                      startDate = inputData[i]["value"];
+                      break;
+                      case endDate:
+                      endDate = inputData[i]["value"];
+                      break;
+                      case startTime:
+                      startTime = inputData[i]["value"];
+                      break;
+                      case endTime:
+                      endTime = inputData[i]["value"];
+                      break;
+                      case title:
+                      title = inputData[i]["value"];
+                      break;
+                      case color:
+                      color = inputData[i]["value"];
+                      break;
+                    }
+                  };                
+                  startDate = new Date(startDate);
+                  endDate = new Date(endDate);
+                  var allDay = false;
+                  if (startDate < endDate){
+                    allDay = true;
+                    startTime = "00:00";
+                    endTime = "00:00";
+                  }
+                  var offset =  new Date().getTimezoneOffset() / 60;
+                  offset = offset.toString().slice(1);
+                  endDate = endDate.toISOString().slice(0, 11);
+                  startDate = startDate.toISOString().slice(0, 11);     
+                  var start = startDate + startTime + ":00-0" + offset + ":00";
+                  var end = endDate + endTime + ":00-0" + offset + ":00";                  
+                  $.ajax({
+                    url:"/calendar-events/add",
+                    type:"GET",
+                    data: {title: title, start: start, end:end, color: color},
+                  }).done(function(id) {
+                    $('#addAppointment').modal("hide");
+                    $('#addAppointment:input', $(this)).each(function(index) {
+                      this.value = "";
+                    })
+                    $('#endTime').timepicker( "destroy" );
+                    $('#startTime').timepicker( "destroy" );
+                    $('.timepicker').timepicker({
+                      zindex: 9999999,
+                      timeFormat: 'HH:mm',
+                      interval: 30,
+                      defaultTime: new Date().getHours().toString(),
+                      startTime: '7',
+                    });
+                    calendar.addEvent({
+                      id:id,
+                      title: title,
+                      start: startDate + startTime + ":00",
+                      end: endDate + endTime + ":00",
+                      color: color,
+                      allDay: allDay
+                    });
+                  })                 
+                })
 
       var LHC_API = LHC_API||{};
       LHC_API.args = {mode:'widget',lhc_base_url:'//chat.voigts.cloud/',wheight:450,wwidth:350,pheight:520,pwidth:500,domain:'{{ PASCLEPIUS_DOMAIN }}',leaveamessage:true,check_messages:false};
@@ -162,16 +289,20 @@
           document.getElementById("backdrop").style.display= "block";
           calendar.render()
           calendar.updateSize()
-          // height: $(window).height(),
-          // calendar.setOption('height', $(window).height());
           favion_open_cal_button.classList += " active"
         }
-        // document.getElementById("calendar").style.visibility = "visible";
-        
-        // //  $('#calendar').fullCalendar('render');
-        // // console.log($(window).height())
-        // calendar.render()
-      }  
+      } 
+
+      $(window).scroll(function(e){ 
+        var $el = $('#opencal'); 
+        var isPositionFixed = ($el.css('position') == 'fixed');
+        if ($(this).scrollTop() > 2 && !isPositionFixed){ 
+          $el.css({'position': 'fixed', 'bottom': '25px'}); 
+        }
+        if ($(this).scrollTop() < 2 && isPositionFixed){
+          $el.css({'position': 'absolute', 'bottom': '25px'}); 
+        } 
+      });
       </script>
   </body>
 </html>
