@@ -270,20 +270,6 @@
                   })                 
                 })
 
-                    $.ajax({
-                            type: "GET",
-                            url: '/calendar-events/retrieve', 
-                            data:{start:"2020-11-01T00:00:00+02:00", end:"2020-12-13T00:00:00+02:00"},
-                            success: function (patient) {
-                              console.log(patient)
-                                //patient = JSON.parse(patient);
-
-                            },
-                            error: function(xhr, status, error){
-                                var errorMessage = xhr.status + ': ' + xhr.statusText;
-                                alert('Error - ' + errorMessage);
-                            }
-                        })
 
       var LHC_API = LHC_API||{};
       LHC_API.args = {mode:'widget',lhc_base_url:'//chat.voigts.cloud/',wheight:450,wwidth:350,pheight:520,pwidth:500,domain:'{{ PASCLEPIUS_DOMAIN }}',leaveamessage:true,check_messages:false};

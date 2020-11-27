@@ -4,7 +4,7 @@ import os
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask.json import JSONEncoder
-import datetime
+import datetime as datetime2
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth_bp.login'
@@ -14,9 +14,9 @@ db = SQLAlchemy()
 
 class CustomJSONEncoder(JSONEncoder):
     def default(self, o):
-        if type(o) == datetime.timedelta:
+        if type(o) == datetime2.timedelta:
             return str(o)
-        elif type(o) == datetime.datetime:
+        elif type(o) == datetime2.datetime:
             return o.isoformat()
         else:
             return super().default(o)

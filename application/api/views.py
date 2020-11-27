@@ -15,6 +15,10 @@ import simplejson as json
 from application.models import Calendar
 from application import db
 from application.db_workbench import newWork, removeWork
+import sys
+from backports.datetime_fromisoformat import MonkeyPatch
+if sys.version_info[1] < 7:
+    MonkeyPatch.patch_fromisoformat()
 
 api_bp = Blueprint('api_bp',__name__)
 
@@ -67,10 +71,8 @@ def calendarEvents(arg):
             return json.dumps("success")
     except Exception as ex:
         template = "An exception of type {0} occurred. Arguments:\n{1!r}"
-        message = template.format(type(ex).__name__, ex.args)
-        return jsonify(message)
-    #except AttributeError:
-    #    return jsonify("Please authorise before accessing the calendar")
+        errorMessage = template.format(type(ex).__name__, ex.args)
+        return jsonify(errorMessage)
 
 
 @api_bp.route('/get-value',methods=['GET','POST'])
