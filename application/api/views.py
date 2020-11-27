@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, request, session, send_file, jsonify
+from flask import Blueprint, request, session, jsonify
 from application.forms import getTreatmentForm
 from application.db_tariffs import getTreatmentByItem, getValueTreatments, getMultipleValues, getTreatmentByGroup, liveSearchTreatments
 from application.db_invoice import get_index, getInvoiceURL, getSingleInvoice, getItems
