@@ -19,8 +19,8 @@ def setupTable():
         patient_uuid varchar(36),
         title text NOT NULL,
         description text,
-        start_event DATETIME NOT NULL,
-        end_event DATETIME NOT NULL,
+        start DATETIME NOT NULL,
+        end DATETIME NOT NULL,
         color VARCHAR(255),
         text_color VARCHAR(255),
         created_on DATETIME NOT NULL DEFAULT now(),
@@ -258,5 +258,5 @@ if __name__ == '__main__':
     from dotenv import load_dotenv
     load_dotenv()
     from db_utils import pool
-#    setupTable()
-    populateTreatment()
+    setupTable()
+#    populateTreatment()
