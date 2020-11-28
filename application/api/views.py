@@ -68,11 +68,16 @@ def calendarEvents(arg):
                                     all()
             return jsonify(_CalendarEntries)
         if arg == 'update':
-            return json.dumps("success")
+            db.session.query(Calendar).\
+                    filter(Calendar.id == id).\
+                    update({Calendar.start:datetime.fromisoformat(start),
+                        Calendar.end:datetime.fromisoformat(end)})
+            db.session.commit()
+            return jsonify("success")
     except Exception as ex:
         template = "An exception of type {0} occurred. Arguments:\n{1!r}"
         errorMessage = template.format(type(ex).__name__, ex.args)
-        return jsonify(errorMessage)
+        return jsonify(errorMessage), 500
 
 
 @api_bp.route('/get-value',methods=['GET','POST'])

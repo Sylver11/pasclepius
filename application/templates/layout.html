@@ -54,8 +54,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <div class="container-fluid">
-              
+            <div class="container-fluid">           
                 <div class="form-row">
                   <div class="form-group">
                     <label class="control-label" for="title">Patient</label>
@@ -152,7 +151,13 @@
             $.ajax({
               url: "/calendar-events/update",
               type:"GET",
-              data:{id:info.id, start:info.startStr, end:info.endStr},
+              data:{id:info.event.id, start:info.event.startStr, end:info.event.endStr},
+              success: function (data) {
+                          //console.log(data)
+                    },
+              error: function (xhr, ajaxOptions, thrownError) {
+                alert(thrownError + "(" + xhr.status + "): " + xhr.responseText);
+              }
             });
           },
           selectable: true,
@@ -187,13 +192,45 @@
                     data: {id:id},
                     type: "GET",
                     success: function (data) {
+                      $(info.el).popover({
+                        html: true,
+                        title: info.event.title,
+                        placement:'top',
+                        trigger : 'hover',
+                        content:function() {
+                          var div_wrapper = document.createElement("DIV");
+                          var form = document.createElement("FORM");
+                          div_wrapper.appendChild(form);
+                          var input = document.createElement("INPUT"); 
+                          input.setAttribute("type", "hidden")
+                          input.value = id;
+                          form.appendChild(input);
+                          var submit = document.createElement("INPUT"); 
+                          submit.setAttribute("type", "submit")
+                          submit.value = "Delete";
+                          form.appendChild(submit);
+                         // var htmlString = "<div>This is a button</div>";
+                          return div_wrapper //.html();
+                          //console.log($('#popover_content_wrapper').html())
+                          //return $('#popover_content_wrapper').html();
+                          //$('#popover_content_wrapper').html();
+                        }, //info.event.start + " to " + info.event.end,
+                        container:'body'
+                    }).popover('show');
+
                           console.log(data)
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                      alert(thrownError + "(" + xhr.status + "): " + xhr.responseText);
                     }
                 });
             }
             calendar.unselect()
           },
           events: '/calendar-events/retrieve',
+          eventSourceFailure: function (errorMessage){
+            alert(errorMessage["message"] + ": " + errorMessage["xhr"]["response"] )
+          }
         });
 
         $("body").on("submit", "#createEvent", function(e){
@@ -245,29 +282,31 @@
                     url:"/calendar-events/add",
                     type:"GET",
                     data: {title: title, start: start, end:end, color: color},
-                  }).done(function(id) {
-                    $('#addAppointment').modal("hide");
-                    $('#addAppointment:input', $(this)).each(function(index) {
-                      this.value = "";
-                    })
-                    $('#endTime').timepicker( "destroy" );
-                    $('#startTime').timepicker( "destroy" );
-                    $('.timepicker').timepicker({
-                      zindex: 9999999,
-                      timeFormat: 'HH:mm',
-                      interval: 30,
-                      defaultTime: new Date().getHours().toString(),
-                      startTime: '7',
-                    });
-                    calendar.addEvent({
-                      id:id,
-                      title: title,
-                      start: startDate + startTime + ":00",
-                      end: endDate + endTime + ":00",
-                      color: color,
-                      allDay: allDay
-                    });
-                  })                 
+                    success: function(id) {
+                      $('#addAppointment').modal("hide");
+                      $("#createEvent")[0].reset()
+                      $('#endTime').timepicker( "destroy" );
+                      $('#startTime').timepicker( "destroy" );
+                      $('.timepicker').timepicker({
+                        zindex: 9999999,
+                        timeFormat: 'HH:mm',
+                        interval: 30,
+                        defaultTime: new Date().getHours().toString(),
+                        startTime: '7',
+                      });
+                      calendar.addEvent({
+                        id:id,
+                        title: title,
+                        start: startDate + startTime + ":00",
+                        end: endDate + endTime + ":00",
+                        color: color,
+                        allDay: allDay
+                      });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                      alert(thrownError + "(" + xhr.status + "): " + xhr.responseText);
+                    }
+                  })                
                 })
 
 
