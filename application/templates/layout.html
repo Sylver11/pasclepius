@@ -196,7 +196,7 @@
                         html: true,
                         title: info.event.title,
                         placement:'top',
-                        trigger : 'hover',
+                        trigger: "manual",
                         content:function() {
                           var div_wrapper = document.createElement("DIV");
                           var form = document.createElement("FORM");
@@ -205,20 +205,41 @@
                           input.setAttribute("type", "hidden")
                           input.value = id;
                           form.appendChild(input);
-                          var submit = document.createElement("INPUT"); 
-                          submit.setAttribute("type", "submit")
-                          submit.value = "Delete";
-                          form.appendChild(submit);
-                         // var htmlString = "<div>This is a button</div>";
-                          return div_wrapper //.html();
-                          //console.log($('#popover_content_wrapper').html())
-                          //return $('#popover_content_wrapper').html();
-                          //$('#popover_content_wrapper').html();
-                        }, //info.event.start + " to " + info.event.end,
+                          var newAppointment = document.createElement("INPUT"); 
+                          newAppointment.setAttribute("type", "button")
+                          newAppointment.value = "New Appointment";
+                          form.appendChild(newAppointment);
+                          var showInvoices = document.createElement("INPUT"); 
+                          showInvoices.setAttribute("type", "button")
+                          showInvoices.value = "Show Invoices";
+                          form.appendChild(showInvoices);
+                          var createInvoice = document.createElement("INPUT"); 
+                          createInvoice.setAttribute("type", "button")
+                          createInvoice.value = "Create Invoice";
+                          form.appendChild(createInvoice);
+                          var deleteEntry = document.createElement("INPUT"); 
+                          deleteEntry.setAttribute("type", "button")
+                          deleteEntry.value = "Remove Appointment";
+                          form.appendChild(deleteEntry);
+                          return div_wrapper
+                        },
                         container:'body'
-                    }).popover('show');
-
-                          console.log(data)
+                    })
+                    .popover("show")
+                    .on('shown.bs.popover', function () {
+                      var _this = this;
+                      $(".popover").on("mouseleave", function() {
+                      $(_this).popover('hide');
+                    })
+                    })
+                    .on("mouseleave", function() {
+                      var _this = this;
+                      setTimeout(function() {
+                      if (!$(".popover:hover").length) {
+                          $(_this).popover("hide");
+                      }
+                      }, 50);
+                    }); 
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                       alert(thrownError + "(" + xhr.status + "): " + xhr.responseText);
