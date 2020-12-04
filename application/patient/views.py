@@ -1,7 +1,7 @@
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 from flask_login import current_user, login_required
-from flask import render_template, Blueprint, request, session, redirect
+from flask import render_template, Blueprint, request, session, redirect, jsonify
 from application.db_workbench import removeWork, newWork, lastFive
 from application.db_users import checkUser, getPractice
 from application.db_patient import insertPatient, checkDuplicate, patientSearch, removePatient
@@ -40,8 +40,12 @@ def invoiceOption(patient_id):
 @patient_bp.route('/patient/search', methods=('GET','POST'))
 def searchPatient():
     search_term = request.args.get('search_term')
+    if search_term is None:
+        search_term = request.args.get("term")
     patients = patientSearch(current_user.practice_uuid, search_term)
-    return json.dumps(patients, sort_keys=True, default=str)
+    print(json.dumps(patients, sort_keys=True, default=str))
+    return jsonify(patients)
+    #return json.dumps(patients, sort_keys=True, default=str)
 
 
 @patient_bp.route('/patient/delete', methods = ['POST'])

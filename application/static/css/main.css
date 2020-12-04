@@ -13,7 +13,7 @@
     border: 1px solid #d4d4d4;
     border-bottom: none;
     border-top: none;
-    z-index: 99;
+    z-index: 9999;
     top: 100%;
     left: 0;
     right: 0;

@@ -58,8 +58,10 @@
                 <div class="form-row">
                   <div class="form-group">
                     <label class="control-label" for="title">Patient</label>
-                    <input type="text" class="form-control" name="title">
+                    <input id="patientSearch" type="text" class="form-control" name="title" autocomplete="off">
+                    <input id="patientId" type="hidden" name="patientId">
                   </div>
+                  <div id="log"></div>    
                 </div>
                 <div class="form-row">
                   <div class="form-group col-md-4">
@@ -201,32 +203,40 @@
                           var div_wrapper = document.createElement("DIV");
                           var form = document.createElement("FORM");
                           div_wrapper.appendChild(form);
+                          var buttonGroup = document.createElement("DIV");
+                          buttonGroup.classList += "btn-group btn-group-sm"
+                          form.appendChild(buttonGroup);
                           var input = document.createElement("INPUT"); 
                           input.setAttribute("type", "hidden")
                           input.value = id;
-                          form.appendChild(input);
+                          buttonGroup.appendChild(input);
                           var newAppointment = document.createElement("INPUT"); 
                           newAppointment.setAttribute("type", "button")
                           newAppointment.value = "New Appointment";
-                          form.appendChild(newAppointment);
+                          newAppointment.classList += "btn btn-secondary";
+                          buttonGroup.appendChild(newAppointment);
                           var showInvoices = document.createElement("INPUT"); 
                           showInvoices.setAttribute("type", "button")
                           showInvoices.value = "Show Invoices";
-                          form.appendChild(showInvoices);
+                          showInvoices.classList += "btn btn-secondary";
+                          buttonGroup.appendChild(showInvoices);
                           var createInvoice = document.createElement("INPUT"); 
                           createInvoice.setAttribute("type", "button")
                           createInvoice.value = "Create Invoice";
-                          form.appendChild(createInvoice);
+                          createInvoice.classList += "btn btn-secondary";
+                          buttonGroup.appendChild(createInvoice);
                           var deleteEntry = document.createElement("INPUT"); 
                           deleteEntry.setAttribute("type", "button")
                           deleteEntry.value = "Remove Appointment";
-                          form.appendChild(deleteEntry);
+                          deleteEntry.classList += "btn btn-secondary";
+                          buttonGroup.appendChild(deleteEntry);
                           return div_wrapper
                         },
                         container:'body'
                     })
                     .popover("show")
                     .on('shown.bs.popover', function () {
+                      $(".popover").css("maxWidth", "600px")
                       var _this = this;
                       $(".popover").on("mouseleave", function() {
                       $(_this).popover('hide');
@@ -258,6 +268,7 @@
                   e.preventDefault();
                   var inputData = $(this).serializeArray()
                   var title = "title";
+                  var patientId = "patientId";
                   var startDate = "startDate";
                   var endDate = "endDate";
                   var startTime = "startTime";
@@ -279,6 +290,9 @@
                       break;
                       case title:
                       title = inputData[i]["value"];
+                      break;
+                      case patientId:
+                      patientId = inputData[i]["value"];
                       break;
                       case color:
                       color = inputData[i]["value"];
@@ -302,7 +316,7 @@
                   $.ajax({
                     url:"/calendar-events/add",
                     type:"GET",
-                    data: {title: title, start: start, end:end, color: color},
+                    data: {title: title, patient_id: patientId, start: start, end:end, color: color},
                     success: function(id) {
                       $('#addAppointment').modal("hide");
                       $("#createEvent")[0].reset()
@@ -364,6 +378,39 @@
           $el.css({'position': 'absolute', 'bottom': '25px'}); 
         } 
       });
+
+        $( "#patientSearch" ).autocomplete({
+          source: "{{ url_for('api_bp.searchPatients') }}",
+          minLength: 2,
+          appendTo: "#log",
+          select: function( event, ui ) {
+
+             $("#patientSearch").val(ui.item.label);
+             $("#patientId").val(ui.item.value);
+            return false;
+          },
+        })
+        .data("ui-autocomplete")._renderItem = function( ul, item ) {
+            return $( "<li>" )
+             .attr( "data-value", item.value )
+             .append( "<div class='ui-menu-item-wrapper'>" + item.label + " (" + item.value + ")</div>" )
+             .appendTo( ul );
+          };
+       
+    
+
+
+      // $.ajax({
+      //         url:"{{ url_for('api_bp.searchPatients') }}",
+      //         type:"GET",
+      //         data:{term:"ha"},
+      //         success: function (data) {
+      //                     console.log(data)
+      //               },
+      //         error: function (xhr, ajaxOptions, thrownError) {
+      //           alert(thrownError + "(" + xhr.status + "): " + xhr.responseText);
+      //         }
+      //       });
       </script>
   </body>
 </html>

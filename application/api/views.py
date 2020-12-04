@@ -12,7 +12,7 @@ import datetime as datetime2
 from decimal import *
 import subprocess
 import simplejson as json
-from application.models import Calendar
+from application.models import Calendar, Patient
 from application import db
 from application.db_workbench import newWork, removeWork
 import sys
@@ -21,6 +21,22 @@ if sys.version_info[1] < 7:
     MonkeyPatch.patch_fromisoformat()
 
 api_bp = Blueprint('api_bp',__name__)
+
+
+@api_bp.route('/patient-search', methods=('GET','POST'))
+def searchPatients():
+    try:
+        term = request.args.get("term")
+        term = "%{}%".format(term)
+        _Patients = db.session.query(Patient.patient_name.label("label"),
+                Patient.patient_id.label("value")).\
+                filter((Patient.patient_name.like(term)) | (Patient.patient_id.like(term))).\
+                all()
+        return jsonify(_Patients)
+    except Exception as ex:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        errorMessage = template.format(type(ex).__name__, ex.args)
+        return jsonify(errorMessage), 500
 
 
 @api_bp.route('/live-search-treatment',methods=['GET','POST'])
@@ -39,9 +55,9 @@ def calendarEvents(arg):
     try:
         user = current_user.practice_uuid
         id = request.args.get('id')
+        patient_id = request.args.get('patient_id')
         title = request.args.get('title')
         color = request.args.get('color')
-        text_color = request.args.get('text_color')
         start = request.args.get('start')
         end = request.args.get('end')
         if arg == 'retrieve':
@@ -54,10 +70,10 @@ def calendarEvents(arg):
         if arg=='add':
             _AddNewAppointment = Calendar(practice_uuid=user,
                     title=title,
+                    patient_id = patient_id,
                     start=datetime.fromisoformat(start),
                     end=datetime.fromisoformat(end),
-                    color=color,
-                    text_color=text_color)
+                    color=color)
             db.session.add(_AddNewAppointment)
             db.session.commit()
             return jsonify(_AddNewAppointment.id)
