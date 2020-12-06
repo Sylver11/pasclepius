@@ -30,6 +30,7 @@ def searchPatients():
         term = "%{}%".format(term)
         _Patients = db.session.query(Patient.patient_name.label("label"),
                 Patient.patient_id.label("value")).\
+                filter(Patient.practice_uuid == current_user.practice_uuid).\
                 filter((Patient.patient_name.like(term)) | (Patient.patient_id.like(term))).\
                 all()
         return jsonify(_Patients)

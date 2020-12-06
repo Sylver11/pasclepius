@@ -21,7 +21,9 @@
 
 let criteria =[];
 var request_args = '{{ request_args }}';
+console.log(request_args)
 request_args = JSON.parse(request_args.replace(/&#34;/g,'"'));
+console.log(request_args)
 var lower_navbar = document.getElementById("navbarTogglerDemo01")
 
 $(document).ready(function(){

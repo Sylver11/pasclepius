@@ -193,7 +193,7 @@
                     url: '/calendar-events/detail',
                     data: {id:id},
                     type: "GET",
-                    success: function (data) {
+                    success: function (calendarEntry) {
                       $(info.el).popover({
                         html: true,
                         title: info.event.title,
@@ -210,21 +210,19 @@
                           input.setAttribute("type", "hidden")
                           input.value = id;
                           buttonGroup.appendChild(input);
-                          var newAppointment = document.createElement("INPUT"); 
-                          newAppointment.setAttribute("type", "button")
-                          newAppointment.value = "New Appointment";
-                          newAppointment.classList += "btn btn-secondary";
-                          buttonGroup.appendChild(newAppointment);
-                          var showInvoices = document.createElement("INPUT"); 
-                          showInvoices.setAttribute("type", "button")
-                          showInvoices.value = "Show Invoices";
-                          showInvoices.classList += "btn btn-secondary";
-                          buttonGroup.appendChild(showInvoices);
-                          var createInvoice = document.createElement("INPUT"); 
-                          createInvoice.setAttribute("type", "button")
-                          createInvoice.value = "Create Invoice";
-                          createInvoice.classList += "btn btn-secondary";
-                          buttonGroup.appendChild(createInvoice);
+                          if (calendarEntry[0]["patient_id"]){
+                            var newAppointment = document.createElement("INPUT"); 
+                            newAppointment.setAttribute("type", "button")
+                            newAppointment.value = "New Appointment";
+                            newAppointment.classList += "btn btn-secondary";
+                            buttonGroup.appendChild(newAppointment);
+                            var showPatient = document.createElement("A"); 
+                            showPatient.setAttribute("type", "button");
+                            showPatient.text = "Show Patient";
+                            showPatient.href = "/patient/id/" + calendarEntry[0]["patient_id"];
+                            showPatient.classList += "btn btn-secondary text-white";
+                            buttonGroup.appendChild(showPatient);
+                          }                 
                           var deleteEntry = document.createElement("INPUT"); 
                           deleteEntry.setAttribute("type", "button")
                           deleteEntry.value = "Remove Appointment";
@@ -248,7 +246,7 @@
                       if (!$(".popover:hover").length) {
                           $(_this).popover("hide");
                       }
-                      }, 50);
+                      }, 150);
                     }); 
                     },
                     error: function (xhr, ajaxOptions, thrownError) {

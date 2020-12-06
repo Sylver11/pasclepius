@@ -4,6 +4,8 @@ from application import db
 from dataclasses import dataclass
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import case
+from sqlalchemy.ext.declarative import DeclarativeMeta
+import simplejson as json
 
 @dataclass
 class Calendar(db.Model):
@@ -32,7 +34,7 @@ class Calendar(db.Model):
     updated_on = db.Column(db.DateTime(),default=datetime.utcnow,onupdate=datetime.utcnow)
 
 
-
+@dataclass
 class Patient(db.Model):
     practice_uuid:str
     patient_id:str
@@ -44,7 +46,7 @@ class Patient(db.Model):
     case_number:str
     patient_note:str
     created_on:datetime
-    updated_on:datetime
+    #updated_on:datetime
     __tablename__ = 'patients'
     id = db.Column(db.Integer(), primary_key=True)
     practice_uuid = db.Column(db.String(36), nullable=False)
@@ -56,7 +58,7 @@ class Patient(db.Model):
     case_number = db.Column(db.String(255), nullable=True)
     patient_note = db.Column(db.Text, nullable=True)
     created_on = db.Column(db.DateTime(),default=datetime.utcnow)
-    updated_on = db.Column(db.DateTime(),default=datetime.utcnow,onupdate=datetime.utcnow)
+    #updated_on = db.Column(db.DateTime(),default=datetime.utcnow,onupdate=datetime.utcnow)
 
     @hybrid_property
     def patient_id(self):
@@ -87,3 +89,17 @@ class User(UserMixin):
         self.active = active
     pass
 
+
+class AlchemyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj.__class__, DeclarativeMeta):
+            fields = {}
+            for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata']:
+                data = obj.__getattribute__(field)
+                try:
+                    json.dumps(data)
+                    fields[field] = data
+                except TypeError:
+                    fields[field] = None
+            return fields
+        return json.JSONEncoder.default(self, obj)

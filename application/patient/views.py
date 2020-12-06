@@ -1,12 +1,14 @@
 from application.url_generator import InvoicePath
 from application.name_generator import InvoiceName
 from flask_login import current_user, login_required
-from flask import render_template, Blueprint, request, session, redirect, jsonify
+from flask import url_for, render_template, Blueprint, request, session, redirect, jsonify
 from application.db_workbench import removeWork, newWork, lastFive
 from application.db_users import checkUser, getPractice
 from application.db_patient import insertPatient, checkDuplicate, patientSearch, removePatient
 from application.forms import mva_patient_form, other_patient_form, getTreatmentForm
 from application.db_invoice import updateInvoice, insertInvoice, get_index, queryInvoices, getSingleInvoice, getItems, getInvoiceFileId
+from application.models import Patient, AlchemyEncoder
+from application import db
 import simplejson as json
 import re
 import subprocess
@@ -23,6 +25,21 @@ def invoiceTab():
             request_args = json.dumps(request.args,
                 sort_keys=True,
                 default=str))
+
+@patient_bp.route('/id/<patient_id>')
+def retrievePatientInfo(patient_id):
+    try:
+        user = current_user.practice_uuid
+        _Patient = db.session.query(Patient).\
+                filter(Patient.patient_id == patient_id,
+                        Patient.practice_uuid == user).\
+                scalar()
+        return render_template('patient/tab_bar.html',
+                request_args = json.dumps(_Patient, cls=AlchemyEncoder))
+    except Exception as ex:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        errorMessage = template.format(type(ex).__name__, ex.args)
+        return jsonify(errorMessage), 500
 
 
 @patient_bp.route('/<patient_id>', methods=('GET','POST'))
@@ -43,7 +60,7 @@ def searchPatient():
     if search_term is None:
         search_term = request.args.get("term")
     patients = patientSearch(current_user.practice_uuid, search_term)
-    print(json.dumps(patients, sort_keys=True, default=str))
+    #print(json.dumps(patients, sort_keys=True, default=str))
     return jsonify(patients)
     #return json.dumps(patients, sort_keys=True, default=str)
 
