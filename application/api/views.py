@@ -91,6 +91,12 @@ def calendarEvents(arg):
                         Calendar.end:datetime.fromisoformat(end)})
             db.session.commit()
             return jsonify("success")
+        if arg == 'delete':
+            db.session.query(Calendar).\
+                    filter(Calendar.id == id).\
+                    delete()
+            db.session.commit()
+            return jsonify("success")
     except Exception as ex:
         template = "An exception of type {0} occurred. Arguments:\n{1!r}"
         errorMessage = template.format(type(ex).__name__, ex.args)

@@ -109,7 +109,7 @@
       <i id=opencal onclick="openCalendarWindow()" class="fas fa-clock fa-4x" ></i>
     {% endif %}
     <script>
-        $(".colorpicker").colorPick({
+      $(".colorpicker").colorPick({
           'zindex': '9999999',
           'initialColor': '#3498db',
           'allowRecent': true,
@@ -121,7 +121,7 @@
             this.element.css({'backgroundColor': this.color, 'color': this.color});
           }
         });
-        $('.timepicker').timepicker({
+      $('.timepicker').timepicker({
           zindex: 9999999,
           timeFormat: 'HH:mm',
           interval: 30,
@@ -189,6 +189,7 @@
           eventClick: function (info) {
             if (info) {
               var id = info.event.id;
+              var _this;
                 $.ajax({
                     url: '/calendar-events/detail',
                     data: {id:id},
@@ -213,6 +214,12 @@
                           if (calendarEntry[0]["patient_id"]){
                             var newAppointment = document.createElement("INPUT"); 
                             newAppointment.setAttribute("type", "button")
+                            newAppointment.addEventListener("click", function(){
+                              $("#patientSearch").val(calendarEntry[0]["title"]);
+                              $("#patientId").val(calendarEntry[0]["patient_id"]);
+                              $('#addAppointment').modal();
+                              $(_this).popover('hide');
+                            })
                             newAppointment.value = "New Appointment";
                             newAppointment.classList += "btn btn-secondary";
                             buttonGroup.appendChild(newAppointment);
@@ -225,6 +232,21 @@
                           }                 
                           var deleteEntry = document.createElement("INPUT"); 
                           deleteEntry.setAttribute("type", "button")
+                          deleteEntry.addEventListener("click", function(){
+                            $.ajax({
+                                url: "/calendar-events/delete",
+                                type:"GET",
+                                data:{id:id},
+                                success: function () {
+                                  var event = calendar.getEventById( id );
+                                  event.remove();
+                                  $(_this).popover('hide');
+                                },
+                                error: function (xhr, ajaxOptions, thrownError) {
+                                  alert(thrownError + "(" + xhr.status + "): " + xhr.responseText);
+                                }
+                              });
+                          })
                           deleteEntry.value = "Remove Appointment";
                           deleteEntry.classList += "btn btn-secondary";
                           buttonGroup.appendChild(deleteEntry);
@@ -235,13 +257,13 @@
                     .popover("show")
                     .on('shown.bs.popover', function () {
                       $(".popover").css("maxWidth", "600px")
-                      var _this = this;
+                      _this = this;
                       $(".popover").on("mouseleave", function() {
                       $(_this).popover('hide');
                     })
                     })
                     .on("mouseleave", function() {
-                      var _this = this;
+                      _this = this;
                       setTimeout(function() {
                       if (!$(".popover:hover").length) {
                           $(_this).popover("hide");
@@ -261,7 +283,6 @@
             alert(errorMessage["message"] + ": " + errorMessage["xhr"]["response"] )
           }
         });
-
         $("body").on("submit", "#createEvent", function(e){
                   e.preventDefault();
                   var inputData = $(this).serializeArray()
@@ -317,7 +338,13 @@
                     data: {title: title, patient_id: patientId, start: start, end:end, color: color},
                     success: function(id) {
                       $('#addAppointment').modal("hide");
-                      $("#createEvent")[0].reset()
+                      $("#createEvent")[0].reset();
+                      $('#startDate').datepicker( "destroy" );
+                      $('#endDate').datepicker( "destroy" );
+                      $('#startDate').datepicker({dateFormat: 'yy-mm-dd'});
+                      $('#startDate').datepicker("setDate", new Date());
+                      $('#endDate').datepicker({dateFormat: 'yy-mm-dd'});
+                      $('#endDate').datepicker("setDate", new Date());
                       $('#endTime').timepicker( "destroy" );
                       $('#startTime').timepicker( "destroy" );
                       $('.timepicker').timepicker({
@@ -339,10 +366,8 @@
                     error: function (xhr, ajaxOptions, thrownError) {
                       alert(thrownError + "(" + xhr.status + "): " + xhr.responseText);
                     }
-                  })                
-                })
-
-
+              })                
+            })
       var LHC_API = LHC_API||{};
       LHC_API.args = {mode:'widget',lhc_base_url:'//chat.voigts.cloud/',wheight:450,wwidth:350,pheight:520,pwidth:500,domain:'{{ PASCLEPIUS_DOMAIN }}',leaveamessage:true,check_messages:false};
       (function() {
@@ -356,7 +381,6 @@
           calendar.destroy()
           favion_open_cal_button.classList.remove("active")
           document.getElementById("backdrop").style.display= "none";
-
         }
         else{
           document.getElementById("backdrop").style.display= "block";
@@ -365,7 +389,6 @@
           favion_open_cal_button.classList += " active"
         }
       } 
-
       $(window).scroll(function(e){ 
         var $el = $('#opencal'); 
         var isPositionFixed = ($el.css('position') == 'fixed');
@@ -376,8 +399,7 @@
           $el.css({'position': 'absolute', 'bottom': '25px'}); 
         } 
       });
-
-        $( "#patientSearch" ).autocomplete({
+      $( "#patientSearch" ).autocomplete({
           source: "{{ url_for('api_bp.searchPatients') }}",
           minLength: 2,
           appendTo: "#log",
@@ -394,21 +416,6 @@
              .append( "<div class='ui-menu-item-wrapper'>" + item.label + " (" + item.value + ")</div>" )
              .appendTo( ul );
           };
-       
-    
-
-
-      // $.ajax({
-      //         url:"{{ url_for('api_bp.searchPatients') }}",
-      //         type:"GET",
-      //         data:{term:"ha"},
-      //         success: function (data) {
-      //                     console.log(data)
-      //               },
-      //         error: function (xhr, ajaxOptions, thrownError) {
-      //           alert(thrownError + "(" + xhr.status + "): " + xhr.responseText);
-      //         }
-      //       });
       </script>
   </body>
 </html>
