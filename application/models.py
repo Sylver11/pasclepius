@@ -1,5 +1,6 @@
 from flask_login import UserMixin
 from datetime import datetime
+import datetime as datetime2
 from application import db
 from dataclasses import dataclass
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -97,6 +98,14 @@ class AlchemyEncoder(json.JSONEncoder):
             for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata']:
                 data = obj.__getattribute__(field)
                 try:
+                    if isinstance(data, datetime2.datetime):
+                        d = datetime.strptime(data.__str__(), '%Y-%m-%d %H:%M:%S')
+                        date = d.strftime('%d.%m.%Y')
+                        data = date
+                    elif isinstance(data, datetime2.date):
+                        d = datetime.strptime(data.__str__(), '%Y-%m-%d')
+                        date = d.strftime('%Y-%m-%d')
+                        data = date
                     json.dumps(data)
                     fields[field] = data
                 except TypeError:
