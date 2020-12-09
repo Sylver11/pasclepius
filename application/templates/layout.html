@@ -105,8 +105,10 @@
     {% include 'navigation.html' %}
     {% block content %}
     {% endblock %}
-    {% if current_user.practice_uuid %}
-      <i id=opencal onclick="openCalendarWindow()" class="fas fa-clock fa-4x" ></i>
+    {% if current_user.is_authenticated and current_user.practice_uuid %}
+
+        <i id=opencal onclick="openCalendarWindow()" class="fas fa-clock fa-4x" ></i>
+    
     {% endif %}
     <script>
       $(".colorpicker").colorPick({

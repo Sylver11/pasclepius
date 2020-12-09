@@ -27,6 +27,7 @@ def invoiceTab():
                 default=str))
 
 @patient_bp.route('/id/<patient_id>')
+@login_required
 def retrievePatientInfo(patient_id):
     try:
         user = current_user.practice_uuid
@@ -60,9 +61,8 @@ def searchPatient():
     if search_term is None:
         search_term = request.args.get("term")
     patients = patientSearch(current_user.practice_uuid, search_term)
-    #print(json.dumps(patients, sort_keys=True, default=str))
-    return jsonify(patients)
-    #return json.dumps(patients, sort_keys=True, default=str)
+    return json.dumps(patients, sort_keys=True, default=str)
+    #return jsonify(patients)
 
 
 @patient_bp.route('/patient/delete', methods = ['POST'])

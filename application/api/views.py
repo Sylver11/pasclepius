@@ -24,6 +24,7 @@ api_bp = Blueprint('api_bp',__name__)
 
 
 @api_bp.route('/patient-search', methods=('GET','POST'))
+@login_required
 def searchPatients():
     try:
         term = request.args.get("term")
@@ -52,9 +53,12 @@ def liveSearchTreatment():
 
 
 @api_bp.route('/calendar-events/<arg>',methods=['GET','POST'])
+@login_required
 def calendarEvents(arg):
     try:
-        user = current_user.practice_uuid
+        user = ''
+        if current_user.is_authenticated:
+            user = current_user.practice_uuid
         id = request.args.get('id')
         patient_id = request.args.get('patient_id')
         title = request.args.get('title')
