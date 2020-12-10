@@ -94,6 +94,7 @@ def calendarEvents(arg):
         id = request.args.get('id')
         patient_id = request.args.get('patient_id')
         title = request.args.get('title')
+        description = request.args.get('description')
         color = request.args.get('color')
         start = request.args.get('start')
         end = request.args.get('end')
@@ -105,8 +106,19 @@ def calendarEvents(arg):
                                     all()
             return jsonify(_CalendarEntries)
         if arg=='add':
+            if(patient_id == 'new'):
+                _NewPatient = Patient(practice_uuid=user,
+                        patient_name=title,
+                        medical_aid=request.args.get('medical_aid'),
+                        main_member=request.args.get('main_member') or None,
+                        patient_birth_date=request.args.get('patient_dob') or None,
+                        medical_number=request.args.get('medical_number') or None,
+                        case_number=request.args.get('case_number') or None)
+                patient_id = _NewPatient.patient_id
+                db.session.add(_NewPatient)
             _AddNewAppointment = Calendar(practice_uuid=user,
                     title=title,
+                    description=description,
                     patient_id = patient_id,
                     start=datetime.fromisoformat(start),
                     end=datetime.fromisoformat(end),

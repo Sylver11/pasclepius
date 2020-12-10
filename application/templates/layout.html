@@ -72,30 +72,30 @@
                   <div class="form-row">
                     <div class="form-group col-md-6">
                       <label for="medical_aid">Medical Aid</label>
-                      <input id="medicalAidSearch" type="text" class="form-control" name="medical_aid" autocomplete="off">
+                      <input id="medicalAidSearch" type="text" class="form-control" name="medicalAid" autocomplete="off">
                     </div>
                     <div id="medicalAidSearchResults"></div>
-                    <div class="form-group col-md-6">
+                    <!-- <div class="form-group col-md-6">
                       <label for="tariff">Tariff</label>
                       <select id="tariff" type="text" class="form-control" name="tariff">
                       </select>
-                    </div>
+                    </div> -->
                   </div>
                   <div  id="other-medical-aid" class="d-none" >
                     <div class="form-row">
                       <div class="form-group col-md-6">
                         <label for="mainMember">Main Member</label>
-                        <input id="mainMemeber" type="text" class="form-control" name="main_member" placeholder="Main Member">
+                        <input id="mainMemeber" type="text" class="form-control" name="mainMember" placeholder="Main Member">
                       </div>
                       <div class="form-group col-md-6">
                         <label for="medicalNumber">Medical Number</label>
-                        <input id="medicalNumber" type="text" class="form-control" name="medical_number" placeholder="Medical Number">
+                        <input id="medicalNumber" type="text" class="form-control" name="medicalNumber" placeholder="Medical Number">
                       </div>
                     </div>
                     <div class="form-row">
                       <div class="form-group col-md-6">
                         <label for="patientDob">Patient DOB</label>
-                        <input id="patientDob" type="text" class="form-control" name="patient_dob" placeholder="YYYY-MM-DD">
+                        <input id="patientDob" type="text" class="form-control" name="patientDob" placeholder="YYYY-MM-DD">
                       </div>
                     </div>
                   </div>
@@ -103,12 +103,12 @@
                     <div  class="form-row">
                       <div class="form-group col-md-6">
                         <label for="caseNumber">Case Number</label>
-                        <input id="caseNumber" type="text" class="form-control" name="case_number" placeholder="Case Number">
+                        <input id="caseNumber" type="text" class="form-control" name="caseNumber" placeholder="Case Number">
                       </div>
-                      <div class="form-group col-md-6">
+                      <!-- <div class="form-group col-md-6">
                         <label for="poNumber">PO Number</label>
                         <input id="poNumber" type="text" class="form-control" name="po_number" placeholder="PO Number">
-                      </div>
+                      </div> -->
                     </div>
                   </div>                 
                 </div>           
@@ -357,6 +357,11 @@
                   var startTime = "startTime";
                   var endTime = "endTime";
                   var color = "color";
+                  var medicalAid = "medicalAid";
+                  var caseNumber = "caseNumber";
+                  var medicalNumber = "medicalNumber";
+                  var patientDob = "patientDob";
+                  var mainMember = "mainMember";
                   for (var i = 0; i < inputData.length; i++) {
                     switch( inputData[i]["name"] ){
                       case startDate:
@@ -380,6 +385,21 @@
                       case color:
                       color = inputData[i]["value"];
                       break;
+                      case mainMember:
+                      mainMember = inputData[i]["value"];
+                      break;
+                      case medicalAid:
+                      medicalAid = inputData[i]["value"];
+                      break;
+                      case medicalNumber:
+                      medicalNumber = inputData[i]["value"];
+                      break;
+                      case caseNumber:
+                      caseNumber = inputData[i]["value"];
+                      break;
+                      case patientDob:
+                      patientDob = inputData[i]["value"];
+                      break;
                     }
                   };                
                   startDate = new Date(startDate);
@@ -395,11 +415,12 @@
                   endDate = endDate.toISOString().slice(0, 11);
                   startDate = startDate.toISOString().slice(0, 11);     
                   var start = startDate + startTime + ":00-0" + offset + ":00";
-                  var end = endDate + endTime + ":00-0" + offset + ":00";                  
+                  var end = endDate + endTime + ":00-0" + offset + ":00";   
+                  console.log(medicalAid)               
                   $.ajax({
                     url:"/calendar-events/add",
                     type:"GET",
-                    data: {title: title, patient_id: patientId, start: start, end:end, color: color},
+                    data: {title: title, patient_id: patientId, start: start, end:end, color: color, medical_aid:medicalAid,medical_number:medicalNumber,case_number:caseNumber,patient_dob:patientDob,main_member:mainMember},
                     success: function(id) {
                       $('#addAppointment').modal("hide");
                       $("#createEvent")[0].reset();
@@ -475,7 +496,17 @@
               $("#mva-medical-aid").addClass("d-none")
               $("#other-medical-aid").removeClass("d-none")
           }
-        }
+        },
+        select: function( event, ui ) { 
+          var term = $("#medicalAidSearch").val();
+          if( term.match(/mva/i) ){
+              $("#mva-medical-aid").removeClass("d-none")
+              $("#other-medical-aid").addClass("d-none")
+          }else{
+              $("#mva-medical-aid").addClass("d-none")
+              $("#other-medical-aid").removeClass("d-none")
+          } 
+          },
       })
       $( "#patientSearch" ).autocomplete({
           source: function( request, response ) {
@@ -506,14 +537,14 @@
                 success: function (data) {
                   $("#mva-medical-aid").addClass("d-none");
                   $("#other-medical-aid").addClass("d-none");
-                  $("#tariff")
-                    .find('option')
-                    .remove()
-                    .end()
-                    .append($("<option />").val("").text("Choose Tariff").prop("selected",true).prop('disabled', 'disabled').hide());
-                  $.each(data, function() {                  
-                      $("#tariff").append($("<option />").val(this.value).text(this.value.replace(/_/g, ' ').toLocaleUpperCase()));
-                  });
+                  // $("#tariff")
+                  //   .find('option')
+                  //   .remove()
+                  //   .end()
+                  //   .append($("<option />").val("").text("Choose Tariff").prop("selected",true).prop('disabled', 'disabled').hide());
+                  // $.each(data, function() {                  
+                  //     $("#tariff").append($("<option />").val(this.value).text(this.value.replace(/_/g, ' ').toLocaleUpperCase()));
+                  // });
                   $(".new-patient").find("input[type=text], textarea").val("")
                   $(".new-patient").removeClass("d-none")
                 },
