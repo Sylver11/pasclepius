@@ -56,38 +56,91 @@
           <div class="modal-body">
             <div class="container-fluid">           
                 <div class="form-row">
-                  <div class="form-group">
+                  <div class="form-group col-md-6">
                     <label class="control-label" for="title">Patient</label>
                     <input id="patientSearch" type="text" class="form-control" name="title" autocomplete="off">
                     <input id="patientId" type="hidden" name="patientId">
                   </div>
-                  <div id="log"></div>    
-                </div>
+                  <div id="log"></div>   
+                  <div class="form-group col-md-2">
+                    <label class="control-label" for="color">Colour</label>
+                    <div class="colorpicker"></div>
+                    <input id="eventColorpicker" type="hidden"  name="color" value="#3498db">
+                  </div> 
+                </div> 
+                <div class="d-none new-patient">
+                  <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label for="medical_aid">Medical Aid</label>
+                      <input id="medicalAidSearch" type="text" class="form-control" name="medical_aid" autocomplete="off">
+                    </div>
+                    <div id="medicalAidSearchResults"></div>
+                    <div class="form-group col-md-6">
+                      <label for="tariff">Tariff</label>
+                      <select id="tariff" type="text" class="form-control" name="tariff">
+                      </select>
+                    </div>
+                  </div>
+                  <div  id="other-medical-aid" class="d-none" >
+                    <div class="form-row">
+                      <div class="form-group col-md-6">
+                        <label for="mainMember">Main Member</label>
+                        <input id="mainMemeber" type="text" class="form-control" name="main_member" placeholder="Main Member">
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="medicalNumber">Medical Number</label>
+                        <input id="medicalNumber" type="text" class="form-control" name="medical_number" placeholder="Medical Number">
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-md-6">
+                        <label for="patientDob">Patient DOB</label>
+                        <input id="patientDob" type="text" class="form-control" name="patient_dob" placeholder="YYYY-MM-DD">
+                      </div>
+                    </div>
+                  </div>
+                  <div id="mva-medical-aid" class="d-none">
+                    <div  class="form-row">
+                      <div class="form-group col-md-6">
+                        <label for="caseNumber">Case Number</label>
+                        <input id="caseNumber" type="text" class="form-control" name="case_number" placeholder="Case Number">
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for="poNumber">PO Number</label>
+                        <input id="poNumber" type="text" class="form-control" name="po_number" placeholder="PO Number">
+                      </div>
+                    </div>
+                  </div>                 
+                </div>           
                 <div class="form-row">
-                  <div class="form-group col-md-4">
+                  <div class="form-group col-md-6">
                       <label class="control-label" for="startDate">Start Date</label>
                       <input type="text" class="form-control datetimepicker" id="startDate" name="startDate">          
                   </div>
-                  <div class="form-group col-md-4">
-                    <label class="control-label" style="display:none" for="endDate">End Date</label>
+                  <div class="form-group col-md-3 d-none">
+                    <label class="control-label" for="endDate">End Date</label>
                     <input type="hidden" class="form-control datetimepicker" id="endDate" name="endDate">          
                 </div>
-                  <div class="form-group col-md-4">
+                  <div class="form-group col-md-3">
                       <label class="control-label" for="startTime">Start Time</label>
                       <input type="text" class="form-control timepicker" id="startTime" name="startTime">               
                   </div>
-                  <div class="form-group col-md-4">
+                  <div class="form-group col-md-3">
                     <label class="control-label" for="endTime">End Time</label>
                     <input type="text" class="form-control timepicker" id="endTime" name="endTime"> 
                   </div>              
                 </div>
                 <div class="form-row">
-                  <div class="form-group col-md-6">
-                      <label class="control-label" for="color">Colour</label>
-                      <div class="colorpicker"></div>
-                      <input id="eventColorpicker" type="hidden"  name="color" value="#3498db">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="addNote">
+                    <label class="form-check-label" for="addNote">
+                      Add Note
+                    </label>            
                   </div>
-                </div>          
+                </div>  
+                <div class="form-row">
+                  <textarea id="description" class="form-control d-none" name="description" rows="3" cols="60"></textarea>
+                </div> 
             </div>
           </div>
           <div class="modal-footer">
@@ -130,6 +183,15 @@
           defaultTime: new Date().getHours().toString(),
           startTime: '7',
         });
+        $("#addNote").change( function(){
+          if(this.checked){          
+            $("#description").removeClass("d-none")
+          } else {
+            $("#description").val("");
+            $("#description").addClass("d-none")
+            
+          }
+        })
         $('#startDate').datepicker({dateFormat: 'yy-mm-dd'})
         $('#startDate').datepicker("setDate", new Date());
         $('#endDate').datepicker({dateFormat: 'yy-mm-dd'})
@@ -401,21 +463,76 @@
           $el.css({'position': 'absolute', 'bottom': '25px'}); 
         } 
       });
+      $( "#medicalAidSearch" ).autocomplete({
+        source: "{{ url_for('api_bp.searchMedicalAid') }}",
+        appendTo: "#medicalAidSearchResults",
+        search: function( event, ui ) {
+          var term = $("#medicalAidSearch").val();
+          if( term.match(/mva/i) ){
+              $("#mva-medical-aid").removeClass("d-none")
+              $("#other-medical-aid").addClass("d-none")
+          }else{
+              $("#mva-medical-aid").addClass("d-none")
+              $("#other-medical-aid").removeClass("d-none")
+          }
+        }
+      })
       $( "#patientSearch" ).autocomplete({
-          source: "{{ url_for('api_bp.searchPatients') }}",
+          source: function( request, response ) {
+            $.ajax({
+              url: "{{ url_for('api_bp.searchPatients') }}",
+              type:"GET",
+              data: request,
+              success: function (data) {
+                if(data.length < 1 || data == undefined){
+                  var createPatient = {label: "Create Patient: " + request.term, value: "new"}
+                  data.push(createPatient);
+                }
+                response( data );
+              },
+              error: function (xhr, ajaxOptions, thrownError) {
+                alert(thrownError + "(" + xhr.status + "): " + xhr.responseText);
+              }
+            });            
+          },
           minLength: 2,
           appendTo: "#log",
           select: function( event, ui ) {
-
-             $("#patientSearch").val(ui.item.label);
-             $("#patientId").val(ui.item.value);
+            if( ui.item.label.search("Create Patient:") > -1 ){
+              ui.item.label = ui.item.label.replace("Create Patient: ","");
+              $.ajax({
+                url:  "{{ url_for('api_bp.searchTariff') }}",
+                type: "GET",
+                success: function (data) {
+                  $("#mva-medical-aid").addClass("d-none");
+                  $("#other-medical-aid").addClass("d-none");
+                  $("#tariff")
+                    .find('option')
+                    .remove()
+                    .end()
+                    .append($("<option />").val("").text("Choose Tariff").prop("selected",true).prop('disabled', 'disabled').hide());
+                  $.each(data, function() {                  
+                      $("#tariff").append($("<option />").val(this.value).text(this.value.replace(/_/g, ' ').toLocaleUpperCase()));
+                  });
+                  $(".new-patient").find("input[type=text], textarea").val("")
+                  $(".new-patient").removeClass("d-none")
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                  alert(thrownError + "(" + xhr.status + "): " + xhr.responseText);
+                }
+              });
+            } else{
+              $(".new-patient").addClass("d-none")
+            }       
+            $("#patientSearch").val(ui.item.label);
+            $("#patientId").val(ui.item.value);
             return false;
           },
         })
         .data("ui-autocomplete")._renderItem = function( ul, item ) {
             return $( "<li>" )
              .attr( "data-value", item.value )
-             .append( "<div class='ui-menu-item-wrapper'>" + item.label + " (" + item.value + ")</div>" )
+             .append( "<div class='ui-menu-item-wrapper'>" + item.label + (item.value != "new" ?  " (" + item.value + ")" : "" ) + "</div>" )
              .appendTo( ul );
           };
       </script>

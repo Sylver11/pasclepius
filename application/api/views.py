@@ -12,7 +12,7 @@ import datetime as datetime2
 from decimal import *
 import subprocess
 import simplejson as json
-from application.models import Calendar, Patient
+from application.models import Calendar, Patient, Invoice, Practice, Tariff
 from application import db
 from application.db_workbench import newWork, removeWork
 import sys
@@ -50,6 +50,38 @@ def liveSearchTreatment():
     value_json = json.dumps({'treatments' : data, 'procedures': data2,
         'categories': data3, 'items': data4})
     return value_json
+
+
+@api_bp.route('/medical-aid-search',methods=['GET','POST'])
+@login_required
+def searchMedicalAid():
+    try:
+        term = request.args.get("term")
+        term = "%{}%".format(term)
+        _MedicalAids = db.session.query(Invoice.medical_aid.label("label")).\
+                filter(Invoice.practice_uuid == current_user.practice_uuid).\
+                filter(Invoice.medical_aid.like(term)).\
+                all()
+        return jsonify(_MedicalAids)
+    except Exception as ex:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        errorMessage = template.format(type(ex).__name__, ex.args)
+        return jsonify(errorMessage), 500
+
+
+@api_bp.route('/tariff-search',methods=['GET','POST'])
+@login_required
+def searchTariff():
+    try:
+        term = "%{}%".format(current_user.namaf_profession)
+        _Tariffs = db.session.query(Tariff.tariff.distinct().label("value")).\
+                filter(Tariff.tariff.like(term)).\
+                all()
+        return jsonify(_Tariffs)
+    except Exception as ex:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        errorMessage = template.format(type(ex).__name__, ex.args)
+        return jsonify(errorMessage), 500
 
 
 @api_bp.route('/calendar-events/<arg>',methods=['GET','POST'])
