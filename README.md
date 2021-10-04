@@ -16,9 +16,14 @@ python3
 ### Installing
 
 1. Set global variables as following:
+    * DB_CONN_STRING=mysql+pymysql://<username>:<password>@localhost/<database_name>
     * DATABASE_USER
     * DATABASE_PASSWORD
     * DATABASE_NAME
+    * TEST_USER_EMAIL=<email>
+    * TEST_USER_NAME=<name>
+    * TEST_USER_SURNAME=<surname>
+    * FLASK_ENV=development
     * SYSTEM_URL (eg. /User/me/)
     * SECRET_KEY (for the flask server)
     * APP_URL (URL to root directory of project)
@@ -48,10 +53,8 @@ python application/database_setup.py
 &nbsp;
 5. Start core application:
 ```
-python start.py
+python development.py
 ```
-
-Now you can register at [localhost:4003/register](localhost:4003/register)
 
 
 ## License

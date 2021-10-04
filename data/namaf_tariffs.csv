@@ -180,6 +180,67 @@ item;description;procedure;units;units_specification;value_cent;anaesthetic_unit
 938;Bird or equivalent freestanding nebuliser excluding oxygen domicilliary per day;;2009;;20520;0;;0;OTHER;;;;;namaf_physio_2020
 939;Cost of material: Single items below N$ 3576.10 plus VAT may be charged for at cost price plus 20%;;0;;0;0;;0;OTHER;;;;;namaf_physio_2020
 940;Cost of appliances: Single items below N$ 3576.10 plus VAT may be charged for at cost price plus 20%;;0;;0;0;;0;OTHER;;;;;namaf_physio_2020
+1;Infra-red, Radiant heat, Wax therapy Hot packs;;1000;;10450;0;;0;RADIATION THERAPY / MOIST HEAT / CRYOTHERAPY;;;;;namaf_physio_2021
+5;Ultraviolet light;;1700;;17760;0;;0;RADIATION THERAPY / MOIST HEAT / CRYOTHERAPY;;;;;namaf_physio_2021
+6;Laser beam;;1700;;17760;0;;0;RADIATION THERAPY / MOIST HEAT / CRYOTHERAPY;;;;;namaf_physio_2021
+7;Cryotherapy;;1000;;10450;0;;0;RADIATION THERAPY / MOIST HEAT / CRYOTHERAPY;;;;;namaf_physio_2021
+103;Galvanism, Diodynamic current, Tens;;1000;;10450;0;;0;LOW FREQUENCY CURRENTS;;;;;namaf_physio_2021
+105;Muscle and nerve stimulating currents;;1200;;12540;0;;0;LOW FREQUENCY CURRENTS;;;;;namaf_physio_2021
+107;Interferential Therapy;;1500;;15670;0;;0;LOW FREQUENCY CURRENTS;;;;;namaf_physio_2021
+201;Shortwave diathermy;;1500;;15670;0;;0;HIGH FREQUENCY CURRENTS;;;;;namaf_physio_2021
+203;Ultrasound;;1700;;17760;0;;0;HIGH FREQUENCY CURRENTS;;;;;namaf_physio_2021
+205;Microwave;;1500;;15670;0;;0;HIGH FREQUENCY CURRENTS;;;;;namaf_physio_2021
+300;Vibration;;1310;;13690;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+301;Percussion;;1610;;16820;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+302;Massage;;1000;;10450;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+303;Myofacial release/soft tissue mobilisation, one or more body parts;;2009;;20990;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+310;Neural tissue mobilisation;;2000;;20900;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+314;Lymph drainage;;1000;;10450;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+304;Acupuncture;;2000;;20900;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+305;Re-education of movement/ Exercises (excluding ante- and post-natal exercises);;1004;;10490;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+307;Pre- and post-operative exercises and/or breathing exercises;;1004;;10490;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+308;Group exercises (excluding ante- and post-natal exercises - maximum of 10 in a group);;1000;;10450;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+309;Isokinetic treatment;;2000;;20900;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+313;Ante and post natal exercises/counselling;;0;;0;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+315;Postural drainage;;1307;;13650;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+317;Traction;;2000;;20900;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+318;Upper respiratory nebulisation or lavage;;1000;;10450;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+319;Nebulisation;;1509;;15760;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+321;Intermittent positive pressure ventilation;;1509;;15760;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+323;Suction: Level 1 (including sputum specimen taken by suction);;1004;;10490;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+325;Suction: Level 2 (Suction with involvement of lavage as a treatment in a special unit situation or in the respiratory compromised patient);;2009;;20990;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+327;Bagging (used on the intubated unconscious patient or in the severely respiratory distressed patient);;1004;;10490;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+328;Dry needling;;2000;;20900;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+329;Extra-Corporeal Shock-Wave Therapy (ESWT);;0;;0;0;;0;PHYSICAL MODALITIES;;;;;namaf_physio_2021
+401;Spinal;;2513;;26260;0;;0;MANIPULATION/MOBILISATION OF JOINTS OR IMMOBILISATION;;;;;namaf_physio_2021
+402;Pre meditated manipulation;;2000;;20900;0;;0;MANIPULATION/MOBILISATION OF JOINTS OR IMMOBILISATION;;;;;namaf_physio_2021
+405;All other joints;;2000;;20900;0;;0;MANIPULATION/MOBILISATION OF JOINTS OR IMMOBILISATION;;;;;namaf_physio_2021
+407;Immobilisation (excluding materials). Rule 008 does not apply;;1500;;15670;0;;0;MANIPULATION/MOBILISATION OF JOINTS OR IMMOBILISATION;;;;;namaf_physio_2021
+410;Facial manipulation;;2000;;20900;0;;0;MANIPULATION/MOBILISATION OF JOINTS OR IMMOBILISATION;;;;;namaf_physio_2021
+411;Visceral manipulation;;2000;;20900;0;;0;MANIPULATION/MOBILISATION OF JOINTS OR IMMOBILISATION;;;;;namaf_physio_2021
+501;Rehabilitation where the pathology requires the undivided attention of the physiotherapist. Rule 008 does not apply;;2500;;26120;0;;0;REHABILITATION;;;;;namaf_physio_2021
+502;Hydrotherapy where the pathology requires the undivided attention of the physiotherapist. Rule 008 does not apply;;2500;;26120;0;;0;REHABILITATION;;;;;namaf_physio_2021
+503;Rehabilitation for Central Nervous System disorders - condition to be clearly stated and fully documented (No other treatment modality may be charged in conjunction with this);;5500;;57470;0;;0;REHABILITATION;;;;;namaf_physio_2021
+504;EMG Biofeedback treatment;;2000;;20900;0;;0;REHABILITATION;;;;;namaf_physio_2021
+505;Group rehabilitation. Treatment of a patient with disabling pathology in an appropriate facility requiring specific equipment and supervision, without individual attention for the whole treatment session, in accredited venue only and no charge may be levied by facility;;3500;;36580;0;;0;REHABILITATION;;;;;namaf_physio_2021
+506;Stress management;;0;;0;0;;0;REHABILITATION;;;;;namaf_physio_2021
+507;Respiratory Re-education and Training;;2211;;23110;0;;0;REHABILITATION;;;;;namaf_physio_2021
+508;Hourly rehabilitation facility fee;;0;;0;0;;0;REHABILITATION;;;;;namaf_physio_2021
+701;Evaluation/counselling at the first visit only (to be fully documented);;1500;;15670;0;;0;EVALUATION;;;;;namaf_physio_2021
+702;Complex evaluation/counselling at the first visit only (to be fully documented);;3000;;31340;0;;0;EVALUATION;;;;;namaf_physio_2021
+703;One complete re-assessment of a patient's condition during the course of treatment, and/or counselling of the patient or his family;;1500;;15670;0;;0;EVALUATION;;;;;namaf_physio_2021
+704;Lung function: Peak flow (once per treatment);;504;;5270;0;;0;EVALUATION;;;;;namaf_physio_2021
+705;Computerised/Electronic test for lung pathology;;1500;;15670;0;;0;EVALUATION;;;;;namaf_physio_2021
+707;Physical Performance test. Must be fully documented;;0;;0;0;;0;EVALUATION;;;;;namaf_physio_2021
+801;Electrical test for diagnostic purposes (including IT curve and Isokinetic tests) for a specific medical condition;;3500;;36580;0;;0;EVALUATION;;;;;namaf_physio_2021
+803;Effort test - multistage treadmill;;3500;;36580;0;;0;EVALUATION;;;;;namaf_physio_2021
+901;Treatment at a nursing home: Relevant fee plus (to be charged only once per day and not with every hospital visit;;1004;;10490;0;;0;VISITING CODES;;;;;namaf_physio_2021
+903;Domicilliary treatments: Relevant fee plus;;2000;;20900;0;;0;VISITING CODES;;;;;namaf_physio_2021
+117;Appointment not kept (medical aid funds will not necessarily grant benefits in respect of this item, it will fall into the 'By arrangement with the fund' or 'Patient own account' category);;0;;0;0;;0;OTHER;;;;;namaf_physio_2021
+937;Bird or equivalent freestanding nebuliser excluding oxygen at hospital per day;;2009;;20990;0;;0;OTHER;;;;;namaf_physio_2021
+938;Bird or equivalent freestanding nebuliser excluding oxygen domicilliary per day;;2009;;20990;0;;0;OTHER;;;;;namaf_physio_2021
+939;Cost of material: Single items below N$ 3576.10 plus VAT may be charged for at cost price plus 20%;;0;;0;0;;0;OTHER;;;;;namaf_physio_2021
+940;Cost of appliances: Single items below N$ 3576.10 plus VAT may be charged for at cost price plus 20%;;0;;0;0;;0;OTHER;;;;;namaf_physio_2021
 46;Where in the treatment of a specific fracture or dislocation (compound or closed) an initial procedure is followed within one month by an open reduction, internal fixation, external skeletal fixation or bone grafting on the same bone, the fee for the initial treatment of that fracture or dislocation shall be reduced by 50%. Please note: This reduction does not include the assistant's fee or after-hours levy where applicable. After one month, a full fee as for the initial treatment, is applicable;Modifier;0;;0;0;;0;MUSCULO-SKELETAL SYSTEM;;;;;namaf_orthopaedic_surgeons_2020
 47;A fracture NOT requiring reduction shall be charged on a fee per service basis;Modifier;0;;0;0;;0;MUSCULO-SKELETAL SYSTEM;;;;;namaf_orthopaedic_surgeons_2020
 48;Where in the treatment of a fracture or dislocation an initial closed reduction is followed within one month by further closed reductions under general anaesthesia, the fee for such subsequent reductions will be 27,00 clinical procedure units (not including after-care);Modifier;0;;0;0;;0;MUSCULO-SKELETAL SYSTEM;;;;;namaf_orthopaedic_surgeons_2020

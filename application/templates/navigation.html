@@ -105,7 +105,8 @@
                 data: {search_term: name}, 
                 dataType: 'json',
                 success: function (returnData) {
-                    if (returnData.length <= 5){
+                    if(returnData && returnData.length <= 5){
+                    // if (returnData.length <= 5){
                       var names = [], range = returnData.length;
                     }
                     else{
@@ -160,7 +161,7 @@
                 closeAllLists(e.target);
             });
 
-                }
+                },
             });
         });
     })

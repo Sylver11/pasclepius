@@ -344,7 +344,7 @@
           },
           events: '/calendar-events/retrieve',
           eventSourceFailure: function (errorMessage){
-            alert(errorMessage["message"] + ": " + errorMessage["xhr"]["response"] )
+            // alert(errorMessage["message"] + ": " + errorMessage["xhr"]["response"] )
           }
         });
         $("body").on("submit", "#createEvent", function(e){
@@ -453,13 +453,13 @@
                     }
               })                
             })
-      var LHC_API = LHC_API||{};
-      LHC_API.args = {mode:'widget',lhc_base_url:'//chat.voigts.cloud/',wheight:450,wwidth:350,pheight:520,pwidth:500,domain:'{{ PASCLEPIUS_DOMAIN }}',leaveamessage:true,check_messages:false};
-      (function() {
-      var po = document.createElement('script'); po.type = 'text/javascript'; po.setAttribute('crossorigin','anonymous'); po.async = true;
-      var date = new Date();po.src = 'https://chat.voigts.cloud/design/defaulttheme/js/widgetv2/index.js?'+(""+date.getFullYear() + date.getMonth() + date.getDate());
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-      })();
+      // var LHC_API = LHC_API||{};
+      // LHC_API.args = {mode:'widget',lhc_base_url:'//chat.voigts.cloud/',wheight:450,wwidth:350,pheight:520,pwidth:500,domain:'{{ PASCLEPIUS_DOMAIN }}',leaveamessage:true,check_messages:false};
+      // (function() {
+      // var po = document.createElement('script'); po.type = 'text/javascript'; po.setAttribute('crossorigin','anonymous'); po.async = true;
+      // var date = new Date();po.src = 'https://chat.voigts.cloud/design/defaulttheme/js/widgetv2/index.js?'+(""+date.getFullYear() + date.getMonth() + date.getDate());
+      // var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+      // })();
       function openCalendarWindow() {
         var favion_open_cal_button = document.getElementById("opencal");
         if (favion_open_cal_button.classList.contains("active")){

@@ -224,8 +224,8 @@ class Tariff(db.Model):
     __tablename__ = 'namaf_tariffs'
     id = db.Column(db.Integer(), primary_key=True)
     item = db.Column(db.Integer(), nullable=False)
-    description = db.Column(db.String(255), nullable=False)
-    procedure = db.Column(db.String(), nullable=True)
+    description = db.Column(db.Text(), nullable=False)
+    procedure = db.Column(db.String(500), nullable=True)
     units = db.Column(db.Integer(), nullable=False)
     units_specification = db.Column(db.String(255), nullable=True)
     value_cent = db.Column(db.Integer(), nullable=True)
@@ -239,7 +239,7 @@ class Tariff(db.Model):
     tariff = db.Column(db.String(255),nullable=False)
 
 
-class User(UserMixin):
+class User(UserMixin, db.Model):
     def __init__(self, id, first_name='', uuid='', practice_uuid='',
             practice_name='', practice_id='', practice_admin='', invoice_layout = '', namaf_profession = '', practice_role='', practice_folder_id='', active=True):
         self.uuid = uuid
@@ -254,7 +254,19 @@ class User(UserMixin):
         self.id = id
         self.practice_folder_id = practice_folder_id
         self.active = active
-    pass
+
+    __tablename__ = 'users'
+    id = db.Column(db.Integer(), primary_key=True)
+    uuid_bin =  db.Column(UUIDType(binary=False))
+    uuid_text = db.Column(db.String(36), nullable=False)
+    title = db.Column(db.String(255), nullable=True)
+    first_name = db.Column(db.String(255), nullable=False)
+    second_name = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(100), unique=True)
+    current_practice_uuid = db.Column(db.String(36), nullable=True)
+    current_practice_role = db.Column(db.DateTime, nullable=False)
+    created_on = db.Column(db.DateTime(),default=datetime.utcnow)
+    last_active = db.Column(db.DateTime(),default=datetime.utcnow,onupdate=datetime.utcnow)
 
 
 class AlchemyEncoder(json.JSONEncoder):
